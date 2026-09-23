@@ -449,20 +449,28 @@ module head_back_raw() intersection() {
         hull() { along_y(body_d - edge_c, body_d - edge_c + tip) head_outline(0, false);
                  along_y(body_d - tip, body_d) head_outline(edge_c, false); }
     }
+    // The joint plane cuts the plate square again along its lower edge, which left the one sharp edge on the
+    // part, right where it lands on the base (user, 2026-09-23). Same 45 degree chamfer as the rest of the
+    // rim, and it prints as the elephant-foot chamfer of that edge - the outer face is the bed face.
+    along_x(-1, body_w + 1) let (z0 = base_h + cover_gap)
+        polygon([[body_d - edge_c, z0], [body_d - edge_c, z0 - 1],
+                 [body_d + 2, z0 - 1], [body_d + 2, z0 + edge_c + 2]]);
     }
 }
 module head_back() head_at() head_back_raw();
 module head_back_print_pose() translate([0, -base_h, body_d]) rotate([-90, 0, 0]) children();   // outer face on the bed
 
 // ---------- filter cassette (untilted frame, in front of the intake face) ----------
+// The cassette lies on the intake face and touches no rim, so like the back cover it keeps the radius
+// on all four corners rather than the shell's square bottom (user, 2026-09-23).
 module cassette_raw() difference() {
-    along_y(-cass_t, 0) head_outline(cass_inset);
+    along_y(-cass_t, 0) head_outline(cass_inset, false);
     translate([body_w / 2, 0, head_cz]) along_y(-cass_t - 1, 1) grid_2d(open_sq);
     for (p = mag_xz()) cyl_y(p, -mag[1], eps, mag[0] / 2);              // pockets open towards the head
     difference() {                                                      // chamfer on the outer bed face
-        along_y(-cass_t - eps, -cass_t + cass_c) head_outline(-1);
-        hull() { along_y(-cass_t - eps, -cass_t + tip) head_outline(cass_inset + cass_c);
-                 along_y(-cass_t + cass_c - tip, -cass_t + cass_c) head_outline(cass_inset); }
+        along_y(-cass_t - eps, -cass_t + cass_c) head_outline(-1, false);
+        hull() { along_y(-cass_t - eps, -cass_t + tip) head_outline(cass_inset + cass_c, false);
+                 along_y(-cass_t + cass_c - tip, -cass_t + cass_c) head_outline(cass_inset, false); }
     }
 }
 module cassette() head_at() cassette_raw();
@@ -487,6 +495,12 @@ module base() difference() {
         ballast_walls();
     }
     joint_halfspace();                                   // the tilted joint plane cuts the rim
+    // That plane rises 15 degrees towards the back, so it meets the vertical back face at 75 degrees and
+    // leaves an acute edge across the full width - the sharp edge under the back cover (user, 2026-09-23).
+    // Cut at 45 degrees to the joint plane, so it mirrors the chamfer on the cover's lower edge and the two
+    // read as one groove. It stays behind head_y[4], where the rim carries no head wall anyway.
+    head_at() along_x(-1, body_w + 1)
+        polygon([[body_d - edge_c, base_h], [body_d + 3, base_h - edge_c - 3], [body_d + 3, base_h + 3]]);
     pot_cuts();
     led_cut();
     usbc_cuts();
