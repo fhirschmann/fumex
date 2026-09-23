@@ -1,10 +1,14 @@
 # FUMEX — a solder fume extractor that bends towards the work
 
+[![Open the interactive 3D viewer](img/viewer_button.svg)](https://fhirschmann.github.io/fumex/)
+
+Explore every part in the browser with an exploded view and section plane.
+
 A 120 mm PWM fan pulls the smoke off the soldering iron through a 120 × 120 × 17 mm filter mat and blows it out the back, away from you. The housing stands upright over its electronics bay and then bends 15° forward, so the intake face looks down at the joint instead of past it. Battery powered: a 3.2 V 6000 mAh LiFePO4 pack runs it for hours and charges over USB-C while the fan keeps going.
 
 Designed for a Bambu Lab H2S with AMS in Bambu PETG black and grey. The electronics are the ones from [LEO-AC1](https://github.com/fhirschmann/leo-ac1); only the fan is different.
 
-![Assembly](img/01_assembly.png)
+[![Assembly](img/01_assembly.png)](https://fhirschmann.github.io/fumex/)
 
 | Exploded | Back |
 |:---:|:---:|
@@ -99,7 +103,7 @@ battery (JST-PH, built-in BMS) ──► (PTC) ──► rocker switch ──►
 3. Slide the support cross into the head from the open back, with its flat crossed face towards the mat and its four posts towards the fan. Its widened ends fit the four rear-open pockets in the filter tube. No screws or glue are needed.
 4. Lay the back cover on the bench, set the fan on its four posts **blowing towards the cover**, so it pushes the air out through its grid, and screw it down with M3 × 30 from the front of the fan. The cable comes out on the side that will face the head floor.
 5. Place the PWM controller flat on its rib pads, with the potentiometer through the front wall. Insert it before the rocker switch: keep the PCB rear tilted up, feed the shaft through the covered front slot, then lower it onto the pads and bosses. Fasten its two front PCB holes into the floor bosses with the 2.5 × 8 thermoplastic screws, without a nut or washer on the front. Use a driver with a slim shaft no wider than 4 mm for the first 25 mm above the head and tighten gently by hand.
-6. Glue the LED into its blind pocket from inside, with its flange against the rear of the boss and the front skin intact. A second matching pocket sits 8 mm to its left. Fit the USB-C module into its channel in the back wall and snap the rocker switch into the right wall. The USB-C channel rests on two 45° gussets from the back wall and opens into the bay at the wire end; seat the board against its side stop and route the wires through the open end. Keep wires clear of the lid and switch recess.
+6. Glue the LED into its blind pocket from inside, with its flange against the rear of the boss and the front skin intact. A second matching pocket sits 12 mm to its left. Fit the USB-C module into its channel in the back wall and snap the rocker switch into the right wall. The USB-C channel rests on two 45° gussets from the back wall and opens into the bay at the wire end; seat the board against its side stop and route the wires through the open end. Keep wires clear of the lid and switch recess.
 7. Stick the insulating pad onto the metal pad on the back of the charge module and the heatsink onto the pad. Set the board's cool OUT end into the holder on the ballast lid, against its end, bottom and rear supports; components face forwards and the heatsink faces the back wall. Secure it with one 2.5 × 1.2 mm cable tie through the holder and around the board, 11.25–13.75 mm from the OUT end. Check the tie against the actual components and solder joints before tightening. Leave the heatsink end free, leave slack in the wires and keep the air passages open. Cut and replace the tie when removing the board.
 8. Fill the ballast trough behind the battery with iron offcuts — up to about 199 g — and fit the lid around the USB support ribs using its rear-open slots. Fasten it with two M3 × 8, one at each end, into the heat-set inserts. The wider switch recess leaves 5.5 mm in front of the terminals, about 2 mm at the closest point of the switch body and 2.4 mm between the switch and lid. Fill it properly or pack the rest with foam; loose pieces under a half-empty lid rattle.
 9. Lay the battery into its three saddles, protection board up, cable end to the right, a strip of foam tape above and below.
@@ -126,14 +130,16 @@ To change the mat: pull the cassette off using its side scoops, pinch the flexib
 - The joint plane rises 15° towards the back, so it meets the vertical back face of the base at 75°. That edge — the one the back cover lands on — is chamfered at 45°, as is the lower edge of the cover itself, and the two form one groove instead of a sharp rim.
 - The head is located on the base by four screws in one row behind the fan, two on each side; there is no register, and the outer contours match. That row is also where the load is: the head leans forward, so its centre of mass sits 22 mm in front of the joint, pressing the front of the joint together and lifting the back. Every screw in the design is checked for driver access — a bit and its holder are modelled on each screw head and must not touch anything.
 - The mat is 17 mm of soft fleece, so it seals against the chamber walls: everything downstream of it is filtered air.
-- The two LED pockets are Ø3.2 mm, 8 mm apart, and stop 0.8 mm behind the closed front surface. Each LED flange rests on its boss inside the housing. These thin light windows are deliberate; leave them closed and check visibility through the printed material.
+- The two LED pockets are Ø3.2 mm, 12 mm apart, and stop 0.8 mm behind the closed front surface. Each LED flange rests on its boss inside the housing. These thin light windows are deliberate; leave them closed and check visibility through the printed material.
 - PETG softens well below a soldering iron. Keep the tip away from the housing.
 
 ## Build from source
 
-Model: [`fumex.scad`](fumex.scad) (OpenSCAD, parameters at the top), project settings and checks: [`print_project.py`](print_project.py). The scripts in `scripts/` export and check the meshes, slice with the Bambu Studio CLI and build the 3D assembly viewer. [BOSL2](https://github.com/BelfrySCAD/BOSL2) supplies the edge profiles and is pinned as the `BOSL2/` Git submodule; initialise it before opening the model in OpenSCAD or running the tools.
+Model: [`fumex.scad`](fumex.scad) (OpenSCAD, parameters at the top), project settings and checks: [`print_project.py`](print_project.py). The scripts in `scripts/` export and check the meshes, slice with the Bambu Studio CLI and build the [3D assembly viewer](https://fhirschmann.github.io/fumex/), published from [`docs/index.html`](docs/index.html) on GitHub Pages. [BOSL2](https://github.com/BelfrySCAD/BOSL2) supplies the edge profiles and is pinned as the `BOSL2/` Git submodule; initialise it before opening the model in OpenSCAD or running the tools.
 
 ```sh
+git clone --recurse-submodules https://github.com/fhirschmann/fumex.git
+cd fumex
 git submodule update --init --recursive          # pinned BOSL2 geometry library
 python3 -m venv .venv
 .venv/bin/python -m pip install -r scripts/requirements.txt

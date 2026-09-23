@@ -1,5 +1,5 @@
 {
-  "source_sha256": "b21de4cee404bf7ec0729d4387ee1f67255d2660a494efb6897dea5861848cb0",
+  "source_sha256": "b6aff7a9f9fa3554201d193ca9fee87963f8a676dbf34cea3bda2e38d5a54595",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -36,10 +36,10 @@
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "8483476a5263d1ecf8870796efc198b8802694bc0e7c9cab318b077d2d5eb9e8",
+      "sha256": "e8a802f7c1add0880fcb5c36e008eca999fd9d819ca4e4c2b32fff48b6d2ef99",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "8483476a5263d1ecf8870796efc198b8802694bc0e7c9cab318b077d2d5eb9e8"
+      "committed_sha256": "e8a802f7c1add0880fcb5c36e008eca999fd9d819ca4e4c2b32fff48b6d2ef99"
     },
     "head": {
       "size_mm": [
@@ -429,11 +429,11 @@
     "led_pocket": [
       [
         [
-          80,
+          78,
           21
         ],
         [
-          88,
+          90,
           21
         ]
       ],
@@ -1616,7 +1616,7 @@
     "windows": [
       {
         "centre_xz_mm": [
-          80,
+          78,
           21
         ],
         "skin_measurements_mm": [
@@ -1634,7 +1634,7 @@
       },
       {
         "centre_xz_mm": [
-          88,
+          90,
           21
         ],
         "skin_measurements_mm": [
@@ -1691,17 +1691,17 @@
     "expected_thickness_findings": [
       {
         "part": "base",
-        "feature": "Closed LED optical skin at x=80, z=21",
+        "feature": "Closed LED optical skin at x=78, z=21",
         "nominal_mm": 0.8,
         "standard_threshold_mm": 1.2,
         "bounds_mm": [
           [
-            78.4,
+            76.4,
             0,
             19.4
           ],
           [
-            81.6,
+            79.6,
             0.8,
             22.6
           ]
@@ -1710,17 +1710,17 @@
       },
       {
         "part": "base",
-        "feature": "Closed LED optical skin at x=88, z=21",
+        "feature": "Closed LED optical skin at x=90, z=21",
         "nominal_mm": 0.8,
         "standard_threshold_mm": 1.2,
         "bounds_mm": [
           [
-            86.4,
+            88.4,
             0,
             19.4
           ],
           [
-            89.6,
+            91.6,
             0.8,
             22.6
           ]

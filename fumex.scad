@@ -205,7 +205,7 @@ sw_well = [5, 0.2, 2.2];    // depth below the outer face, floor margin, wall me
 
 /* [LED holders] */
 led_d = 3;           // nominal 3 mm breathing LED, glued into the blind pocket from inside
-led_xz = [[80, 21], [88, 21]]; // second holder beside the existing charge indicator; wiring is unspecified
+led_xz = [[78, 21], [90, 21]]; // second holder beside the existing charge indicator; wiring is unspecified
 led_cl = 0.2;        // retain the LEO-AC1 bore and flange bearing ring
 led_skin = 0.8;      // closed front skin, as in LEO-AC1; check visibility through the chosen filament
 led_boss = [7, 5.8]; // boss diameter and rear face from the front; the flange seats on that face

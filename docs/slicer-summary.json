@@ -6,11 +6,11 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "8483476a5263d1ecf8870796efc198b8802694bc0e7c9cab318b077d2d5eb9e8",
+      "source_sha256": "e8a802f7c1add0880fcb5c36e008eca999fd9d819ca4e4c2b32fff48b6d2ef99",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 3.711,
+      "hours": 3.709,
       "grams": 118.799,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -56,7 +56,7 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.731,
+      "hours": 2.73,
       "grams": 59.538,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -287,6 +287,6 @@
       }
     },
     "own_infill_parts": 4,
-    "sha256": "d3d9d8962c551327f11dff6f41e301dced816fbfd13a5130bc75f9da63c00782"
+    "sha256": "bfc179dfce07eec1e342cd737cd6a5c3a27fb68412ee98312540da7ee908d4ed"
   }
 }

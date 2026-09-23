@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="286" height="44" viewBox="0 0 286 44" role="img" aria-label="Open the interactive 3D viewer">
+  <title>Open the interactive 3D viewer</title>
+  <rect x="0.5" y="0.5" width="285" height="43" rx="8" fill="#2da44e"/>
+  <polygon points="18,14.5 18,29.5 31,22" fill="#ffffff"/>
+  <text x="40" y="27.5" textLength="228" lengthAdjust="spacingAndGlyphs"
+        font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#ffffff">Open the interactive 3D viewer</text>
+</svg>
