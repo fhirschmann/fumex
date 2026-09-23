@@ -11,6 +11,13 @@ Internal notes for coding agents (Claude, Codex). The README is public and stays
 - No vendor CAD in the repo or the viewer. The fan is the simple `fan_visual()` placeholder.
 - Electrically this is LEO-AC1 minus the bail, the QR code and the logo. When a measured value of a shared part is needed, take it from `~/Projects/leo-ac1/AGENTS.md` rather than re-measuring.
 
+## BOSL2 provenance and scope
+
+- `BOSL2/` is a Git submodule pinned to `989cc33b56313238f3ffeafcbd2876b71a0a593a`. Initialise it with `git submodule update --init --recursive`; it retains its BSD-2-Clause licence.
+- `profile_sweep_y()` uses BOSL2 `offset_sweep()` and `os_chamfer()` on the finished head, cover and cassette outlines. The bevels are measured from their actual end planes, so the former hull-tip thickness no longer changes their height or width. The base bottom bevel uses the same operations on `joint_plan_points(0)`.
+- This is a targeted edge-profile change. The tangent R3.5 plan rounds along the long sides of the head and cover are deliberately retained; do not add a second bevel across them. The upper-corner blends and the joint loft remain the specific G2/G3 geometry described below.
+- BOSL2 quantizes these offsets to 1/1024 mm, so a 1.2 mm chamfer finishes at 1.200195 mm. The cutters must extend beyond that end; the head/cover tools also offset the outside profile one grid step and add the same amount to the chamfer to avoid a vanishing cut against the native outline. Do not trim the tool at exactly `edge_c` or remove that overlap. The local helpers are named `bounds_rect` and `axis_orient` to avoid BOSL2's `rect` and `orient` names.
+
 ## User constraints and preferences
 
 - Bench tool, no child-safety requirement. Plain and functional: no logo, no QR code, no decorative grooves (user, 2026-09-21).
@@ -132,11 +139,10 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   - `bat_cy` is limited by the **tilted** run-outs of the front head screw bosses: built at y 4–14 they reach world y ≈ 18 at z ≈ 30 after the tilt, which is where the cell's shoulder is. 35 clears it, 34 does not (0.14 mm³).
   - Lid on four Ø10 posts in the trough corners, each 3.5 mm off both walls so its circle covers the corner point — at Ø8 it left a sealed sliver void that exports as a second body. The trough walls end `ball_rim` = 0.4 mm below the posts so no two faces of the base share the plane z = 35; coplanar face unions there produced degenerate triangles.
   - **M3 plastic-forming screws straight into the posts, no inserts** (user, 2026-09-22). Core hole `pt_core` = 2.5 mm; that is a starting value, verify the holding torque on a test print.
-  - The lid has no lip over the front wall: the cell has to lift past it (`battery_out`). It slides forward 25 mm before it can come up, because the rear head screw bosses hang over the trough (`lid_off`).
+  - The lid has no lip over the front wall: the cell has to lift past it (`battery_out`). The current `lid_off` check moves the lid together with its charge module and heatsink 10 mm up after the head and battery have been removed; complete extraction still needs a tilt.
   - The free space in front of the cell (about 50 cm³) is the wrong side of the centre of mass and is deliberately left empty.
-- Charge module back in the bay with a vent over it (user, 2026-09-22, after outside the housing and after the plenum): the best of the three. Short wires, nothing in the fan's way out, and brackets on the bay floor are plain vertical walls in print instead of cantilevers off a wall.
-  - Two grooved end brackets take the short edges of the board; the long edges are no good, the board carries parts up to them. Brackets 3.6 mm thick (at 3 the 2 mm groove left 1 mm of wall) and only as deep as parts plus PCB, because the heatsink is wider than the board and hangs free behind them. The board sits 2 mm off the floor so the heatsink, which is 1.5 mm taller than the board at each edge, clears it.
-  - **The vent works because the head already has a channel:** between the filter tube (127.5) and the shell (139) a 5.75 mm gap runs all round, closed at the front by the intake face and open at the back into the plenum, under the fan. Slots in the head floor meet it, so the fan pushes filtered air down into the bay and out of the back wall slots; with the fan off the same path is a chimney. Nothing bypasses the mat.
+- Charge module upright on the ballast lid, directly below the plenum slots (user, 2026-09-23: both sides of the board should get air). Components face forwards, heatsink backwards. Two narrow holders take the short edges and leave both broad faces open; see Electrics below for dimensions and the physical-fit limits. The earlier flat tray and bay-floor brackets are no longer built.
+  - **The air route starts in the plenum:** the six slots in the head floor connect the fan's filtered outlet side to the component and heatsink passages, which lead to the back-wall slots. The surrounding 5.75 mm channel between filter tube and shell also remains open to the plenum. Geometric corridors are checked; flow rate, natural convection and cooling performance are not measured.
   - The vent is a row of six slots, not one opening: printed intake-face-down the head floor is a vertical wall, and a single 38 mm opening left a 113 mm² flat bridge at its far edge.
   - Ventilation slots in the back wall (user: slots, not honeycomb, and not staggered) sit above the ballast
     lid - an assert keeps them there, below it they would let the offcuts out. Aligned they export clean
@@ -145,33 +151,40 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 - Ballast trough over the full width, lower, with the USB-C socket above it (user, 2026-09-22): x 3–142, y 53–71, rim 26, 44.5 cm³ or about 209 g. 24.5° of tip angle at 1.04 kg.
   - Everything above the lid has to leave it 10 mm of lift: the USB-C channel went to z 45 and the cable tie loops to z 45. The channel's floor is only `usbc_floor` = 6 mm deep, because a full-length floor at that height is a 198 mm² flat overhang and a 45° gusset would stand in the trough.
   - The switch moved to y 37 / z 34: its well box reached into the trough's front wall, and higher up its bezel poked through the joint plane. Its pins in turn forced the PWM board 4 mm left (`pot_x` 108).
-  - `lid_off` only proves 10 mm up and 8 mm forward. Getting the lid out of the bay after that is a tilt, which a rigid axis-aligned path cannot express; the lid's front right corner is notched so it clears the switch well.
+  - `lid_off` checks the loaded group (`ball_lid`, `chg_module`, `chg_sink`) 10 mm up. Getting it out of the bay after that is a tilt, which a rigid axis-aligned path cannot express; the lid's front right corner is notched so it clears the switch well.
 - The switch well flanks rise 1.25 mm per mm instead of 1.0: at exactly 45° `analyze.py overhangs` counted them.
 - The rocker switch stands upright in the right wall (long side vertical): the base prints bottom down, so its panel cut-out is a sideways hole and the bridge over it is 12.2 mm instead of 19.2 mm.
 
 ## Electrics — two things that belong in the README and in the build
 
 1. **0.32 A against 0.33 A.** The LFUPSMA charge/boost module is specified for 0–0.32 A at 12 V, the P12 Pro draws 0.33 A at full speed. The top of the knob range is therefore at the module's limit: it gets warm and starting at 100 % may brown out. Start slow, then turn up.
-2. **Charger heat — solved by a draught, not by leaving the housing.** The CN3058E is a linear charger; at
-   1 A from 5 V it turns about 1.6 W into heat, and in LEO-AC1 it stood in the fan's intake. The first
-   layout here put it upright in the middle of a closed bay, 4.4 mm from the cell, which the user rejected
-   on 2026-09-22 ("wird recht warm und kriegt schlecht Luft") — rightly, because charging a LiFePO4 cell
-   above 45 °C costs life and the heat appears exactly while charging. A second layout put the heatsink
-   through a cut-out in the back wall into ambient air; that is **no longer what is built**, and any text
-   claiming a heatsink proud of the back face is stale.
+2. **Charger heat — upright board with open air passages.** The CN3058E is a linear charger: at 1 A
+   from 5 V it turns about 1.6 W into heat while charging. The earlier closed-bay, external-heatsink and
+   flat-tray arrangements have been replaced. The user asked to turn the board so air can reach both
+   its components and its heatsink; the current holder is on the **ballast lid**, under the six plenum slots.
 
-   What is built (user, 2026-09-23: "da kommt doch ueberhaupt keine luft hin"): the board lies flat in a
-   printed tray on the **ballast lid** at x 54-86, y 56.5-67.5, heatsink up. Six slots in the head floor
-   right over it open into the **plenum** - the side the fan blows into - so filtered air is pushed down
-   onto the heatsink and out through the back wall slots a few centimetres behind it. Before this the
-   board stood at the bottom of the front wall with its slots 25 mm above it and the outlet at the far
-   end of the bay: a dead corner.
-   - The tray's lip has to stay below the top face of the board almost all round, because the heatsink
-     is wider than the PCB on three sides. Only the left end is clear, so that wall is full height and
-     carries a tab over the board; it slides in from the right.
-   - The board rests on two end ledges. `chg_module_env()` keeps its parts `chg_br[2]` clear of both
-     ends for them - the original brackets gripped the same two edges for the same reason.
-   - `ball_post_x` moved to 12/40 and `ball_dish` to x 25: both were under the tray.
+   - The measured 32.2 × 11 × 1 mm PCB now spans x 53.9–86.1, y 59.5–60.5 and z 32.2–43.2. Its
+     components face forwards to y 56.8. The 14 × 14 × 6 mm heatsink and 1 mm pad face backwards,
+     spanning x 76.6–90.6, y 60.5–67.5 and z 30.7–44.7. The heatsink clears the lid surface by 1.7 mm.
+   - Two narrow end holders replace the surrounding tray. The left guide has a 1.4 mm groove for the
+     1 mm PCB, 0.2 mm clearance per face, and grips only z 35.2–38.4, leaving the end corners exposed for
+     the OUT wires. The right holder has a front cheek and end stop; a rear cheek would hit the overhanging
+     heatsink and pad. Two narrow seats support the lower PCB edge. The sloped cheeks print without support.
+   - The board and heatsink lower in from above; `chg_off` includes the real holder and proves their
+     vertical removal. Stops check both forward and backward translation. These open-top guides do not
+     prevent lifting the board by its wires. `lid_off` moves the loaded lid 10 mm up; subsequent withdrawal
+     and tilting are not checked. Leave wire slack for service and remove the head and battery first.
+   - The closest pad-to-right-guide clearance is only 0.2 mm. Check the real pad edge, solder joints and
+     OUT/BAT/IN wire exits before final assembly. The component envelope still reserves 2 mm at each end;
+     it does not model the soldered wires read from the LEO-AC1 photos.
+   - `check_charger_air()` checks free volumes in front of the components and behind the heatsink, anchored
+     to the actual mesh faces. Continuous Ø1.2 mm probe corridors connect each space through an existing
+     head-floor slot to the plenum and through a rear vent to the outside. The component-side route passes
+     round the board's left end; the heatsink route exits directly behind it. These are geometric access
+     checks, **not CFD, an airflow measurement or proof of adequate cooling**. Check closed-housing charging
+     temperatures with the actual wiring, both with the fan running and stopped.
+   - `ball_post_x` remains 12/40 and `ball_dish` x 25, clear of the holder. The upright holder makes the
+     printed ballast lid 12.4 mm tall overall.
 
    Still available if it is not enough: swapping the ISET resistor (marked 122, 1.2 kΩ) for 2.4 kΩ halves the charge current to 0.5 A and the heat to about 0.85 W, at 12–13 h for a full charge. The user chose the heatsink route alone for now.
 
@@ -194,7 +207,7 @@ An external audit of commit `a90c581`. What it found and what happened to it:
 | A1 | The switch notch in the ballast lid opened the trough into the electronics, 9 x 3.5 mm | fixed: `ball_switch_fill()` closes the trough under the notch, behind the switch body |
 | A2 | The USB-C board could be pushed 15 mm into the bay by a cable | fixed: the channel keeps a 2 mm end wall (the inner cut starts at the board, not 3 mm in front of it) with a notch for the wires; new `usbc_in` stop |
 | A3 | Assembly step named the wrong fan direction, and "fleece side first" contradicts the parts list | fixed in README: blowing towards the cover, and the mat's end position is named instead of the order |
-| A4 | The tab over the charge module made both straight insertion and straight removal impossible; `chg_off` did not include the lid | fixed: tab removed, board drops straight into the tray; `chg_off` now has `ball_lid` as an obstacle |
+| A4 | The tab over the charge module made both straight insertion and straight removal impossible; `chg_off` did not include the lid | fixed: tab removed; the current upright board lowers into open-top end holders, and `chg_off` includes `ball_lid` as an obstacle |
 | A5 | M3 x 12 reached 0.9 mm past the core hole and the head bore on a 1.1 mm ring | fixed: `lid_pocket` = 1.2 (ring 1.8 mm), screws M3 x 10, `screws_lid` are assembly bodies now, and an assert ties the length to `pt_depth` |
 | G1 | The cassette's side bevel was cut off by the plan prism - 4.5 mm of square wall on both long sides | fixed: `cass_face()` is the finished contour and the bevel comes off THAT. `cass_c` 2.0 -> 1.2, because the bevel now starts at `plan_r` and has to clear the magnet pockets |
 | S1 | Tip angle ignored the foot height and used the full pad outline | fixed: lever arm from the sole, contact patch inset by `foot_chamfer`. 23.5 -> 21.4 degrees |
@@ -215,7 +228,7 @@ An external audit of commit `a90c581`. What it found and what happened to it:
 - `check_joint_profile()` compares actual base/head silhouette spans in five cross sections, 2 mm either side of the joint. Old excess: 2.58–2.61 mm; new: 0.403–0.408 mm, reflecting the remaining transition below the joint. The accepted band is -0.1 to +0.6 mm. This guards the shoulder; it does not certify every surface tangent or erase the intentional seam chamfers.
 - Follow-up evidence and images: `docs/rounding-2026-09-23.md`. Fresh full checks: seven mesh types, ten physical parts, 394 coaxial feature pairs, eight paths, 435 assembly pairs; all four analyses CLEAN. Estimated assembled mass 1008.4 g and tip angle 21.4 degrees. Slicer: 470.5 g / 15.4 h across four plates; 470.9 g / 16.1 h as individual part jobs.
 
-Everything the audit lists as "verify on the real part" stays open: magnet force, knob press fit, switch body depth, the charge module's actual pad layout against the tray's end ledges, insert pull-out, bridge quality on the small overhangs, and every thermal and airflow figure.
+Everything the audit lists as "verify on the real part" stays open: magnet force, knob press fit, switch body depth, the charge module's soldered connections against the upright end holders, insert pull-out, bridge quality on the small overhangs, and every thermal and airflow figure.
 
 ## Open items
 
@@ -223,6 +236,7 @@ Everything the audit lists as "verify on the real part" stays open: magnet force
 - Part masses for the tipping check are data-sheet or estimated values, not weighed (reported by `print_tools.py` as an OPEN item).
 - The knob bore is nominal 5.8 mm with zero clearance, as in LEO-AC1 — validate the push fit on the real knurled shaft with a test print.
 - Rocker switch body depth behind the panel is still the assumed value from LEO-AC1.
+- Charge module: verify solder joints and wire exits at the two end holders, the 0.2 mm pad/right-guide clearance, and wire slack for the loaded lid's service path. Check temperatures while charging in the closed housing, with the fan on and off; free geometric air corridors do not establish cooling performance.
 - Filter pressure drop and capture distance are not modelled. The P12 Pro is pressure-optimised (6.9 mmH₂O), which is why it suits a mat, but the working point is unknown.
 
 ## Verification and known limits
@@ -230,3 +244,11 @@ Everything the audit lists as "verify on the real part" stays open: magnet force
 `docs/verification.json` holds the full report. Checked: closed meshes and body counts, bed placement and build envelope, all 435 assembly pairs checked (14 documented assembly-stage or intentional-fit exceptions), coaxial round features, contacts, stops, eight assembly paths, heat-set insert pockets, the intake lip, mat displacement, and the centre of mass over the foot polygon.
 
 Not checked: flexible deformation (the mat and the TPU feet are rigid bodies here), strength, thermal behaviour, airflow, and anything about the real hardware that has not been measured.
+
+## BOSL2 and upright-charger verification (2026-09-23)
+
+- Final report: `docs/bosl2-charger-2026-09-23.md`; source SHA `544894c9fc4dc5176798e87bd9ad6000a1cbd028eab20a550ffad9b17326cd1d`.
+- Seven valid print meshes / ten physical parts, 394 coaxial feature pairs, 435 assembly pairs and eight paths. All four printability analyses are CLEAN. The head thickness sampler retains its pre-existing numerical Trimesh warnings (64,906 valid samples of 65,060); this is not a complete wall-thickness proof.
+- `check_rim_chamfers()` measures 24 exported profiles; maximum error 0.00020 mm. Both charger stops engage at 0.25 mm. `check_charger_air()` confirms two unobstructed connected passages at the real board/heatsink faces. These regressions reject the old chamfer and flat-board layouts respectively.
+- Slicer: all seven parts and four plates pass with supports disabled; 469.7 g / 15.3 h as arranged plates, 470.0 g / 16.1 h as individual jobs. Existing base/head floating-cantilever warnings remain. The upright charger lid adds no warning. Estimated assembled mass 1007.6 g, tip angle 21.4 degrees.
+- STLs, 3MF, README images and viewer are regenerated. No physical print or thermal/airflow test has been performed.

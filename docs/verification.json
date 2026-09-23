@@ -1,5 +1,5 @@
 {
-  "source_sha256": "2ee71d3e391d893c87b16388e7a91ab0cb0bb93b17c226c91c1aef14e64e940a",
+  "source_sha256": "544894c9fc4dc5176798e87bd9ad6000a1cbd028eab20a550ffad9b17326cd1d",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -29,17 +29,17 @@
           57.2657
         ]
       ],
-      "volume_mm3": 110923.7388,
-      "triangles": 9796,
+      "volume_mm3": 110869.5516,
+      "triangles": 9740,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "c16dd978712483650b2771892610f7090d20adeea659f82ebb4c38f6b97ce11d",
+      "sha256": "2229d70da3b04850a11f2b32caf60ea9cb3d82edc292f41b1cb4a09787c8bc46",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "c16dd978712483650b2771892610f7090d20adeea659f82ebb4c38f6b97ce11d"
+      "committed_sha256": "2229d70da3b04850a11f2b32caf60ea9cb3d82edc292f41b1cb4a09787c8bc46"
     },
     "head": {
       "size_mm": [
@@ -59,17 +59,17 @@
           70.0
         ]
       ],
-      "volume_mm3": 196221.6209,
-      "triangles": 7820,
+      "volume_mm3": 196185.9392,
+      "triangles": 7626,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "5f9a1312442bc1c6e340f480adcf3d1c28e1c963eed6adc73fef99e774973a5b",
+      "sha256": "65d02c4af1b9a97e9e59b8076cdc3abb7212bb4e993ae460b843583d11982aed",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "5f9a1312442bc1c6e340f480adcf3d1c28e1c963eed6adc73fef99e774973a5b"
+      "committed_sha256": "65d02c4af1b9a97e9e59b8076cdc3abb7212bb4e993ae460b843583d11982aed"
     },
     "head_back": {
       "size_mm": [
@@ -89,17 +89,17 @@
           18.3
         ]
       ],
-      "volume_mm3": 60368.5543,
-      "triangles": 14248,
+      "volume_mm3": 60351.5997,
+      "triangles": 14088,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "00f4024bece656b6352cb7d125a98ae24feeb287878371c6689ee8a538e8858c",
+      "sha256": "9026807746a966b8bb27bb2fa43da7072ed28677015b5cb63ec15d2b207631c8",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "00f4024bece656b6352cb7d125a98ae24feeb287878371c6689ee8a538e8858c"
+      "committed_sha256": "9026807746a966b8bb27bb2fa43da7072ed28677015b5cb63ec15d2b207631c8"
     },
     "cassette": {
       "size_mm": [
@@ -119,17 +119,17 @@
           4.5
         ]
       ],
-      "volume_mm3": 51581.3329,
-      "triangles": 9404,
+      "volume_mm3": 51510.9539,
+      "triangles": 9342,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "2d8a4d584dad3f75d5e7a71ab77ae0582dcdde8c90f334d53b5f294a7ce3b1f0",
+      "sha256": "32c90fbbf4a9494c4d4ad982ee74d91c48520018f32c789aa0243979d6a7bf41",
       "quantity": 1,
       "material": "PETG-grey",
-      "committed_sha256": "2d8a4d584dad3f75d5e7a71ab77ae0582dcdde8c90f334d53b5f294a7ce3b1f0"
+      "committed_sha256": "32c90fbbf4a9494c4d4ad982ee74d91c48520018f32c789aa0243979d6a7bf41"
     },
     "knob": {
       "size_mm": [
@@ -195,7 +195,7 @@
       "size_mm": [
         138.6,
         17.8,
-        8.4
+        12.4
       ],
       "bounds_mm": [
         [
@@ -206,20 +206,20 @@
         [
           138.8,
           17.8,
-          8.4
+          12.4
         ]
       ],
-      "volume_mm3": 7311.7327,
-      "triangles": 1310,
+      "volume_mm3": 6666.6897,
+      "triangles": 1366,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "e181b16bbf5f7ae29c9cc0418aeb2eb6e3f5ff42793633514f2fcabaa2cb0193",
+      "sha256": "8ad3b8e236f0e421dab689669bc16ccaaddc01c9d5941066601b287b471a0c00",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "e181b16bbf5f7ae29c9cc0418aeb2eb6e3f5ff42793633514f2fcabaa2cb0193"
+      "committed_sha256": "8ad3b8e236f0e421dab689669bc16ccaaddc01c9d5941066601b287b471a0c00"
     }
   },
   "color_meshes": {},
@@ -227,6 +227,10 @@
   "assembly_bodies": 30,
   "assembly_pairs": 435,
   "metrics": {
+    "cass_t": 4.5,
+    "cass_c": 1.2,
+    "cass_inset": 1,
+    "cover_gap": 0.3,
     "corner_r": 6,
     "plan_r": 3.5,
     "edge_c": 1.2,
@@ -286,6 +290,23 @@
     "fan_post": [
       8,
       14.3
+    ],
+    "charge_pcb": [
+      32.2,
+      11,
+      1
+    ],
+    "charge_origin": [
+      53.9,
+      59.5,
+      32.2
+    ],
+    "charge_components": 2.7,
+    "charge_sink": [
+      14,
+      14,
+      6,
+      1
     ],
     "base_h": 48,
     "joint_y": 37,
@@ -415,13 +436,13 @@
     "allowed_misaligned": 0
   },
   "contact_volumes_mm3": {
-    "head@base": 35.5223,
-    "cassette@head": 266.5145,
+    "head@base": 34.1661,
+    "cassette@head": 266.2837,
     "fan@head": 35.945,
     "fan@head_back": 7.5396,
     "feet@base": 54.8257,
     "pwm_board@base": 3.473,
-    "chg_module@ball_lid": 2.1945,
+    "chg_module@ball_lid": 0.1448,
     "ball_lid@base": 14.5837
   },
   "stops": [
@@ -439,6 +460,16 @@
       "name": "head_on_screws",
       "first_contact_mm": 0.25,
       "limit_mm": 0.6
+    },
+    {
+      "name": "charger_forward",
+      "first_contact_mm": 0.25,
+      "limit_mm": 0.4
+    },
+    {
+      "name": "charger_backward",
+      "first_contact_mm": 0.25,
+      "limit_mm": 0.4
     }
   ],
   "clearances_mm": [
@@ -681,7 +712,7 @@
   "intake_lip_mm": 2.25,
   "mat_free_travel_mm": 1.62,
   "mat_squashed_percent": 0.0,
-  "mass_g": 1008.4,
+  "mass_g": 1007.6,
   "centre_of_mass_mm": [
     69.2,
     31.6,
@@ -704,28 +735,28 @@
     {
       "part": "head",
       "side": "left",
-      "edges": 847,
+      "edges": 851,
       "max_jump_deg": 6.546,
       "over_limit_length_mm": 0.0
     },
     {
       "part": "head",
       "side": "right",
-      "edges": 866,
-      "max_jump_deg": 7.833,
+      "edges": 873,
+      "max_jump_deg": 7.827,
       "over_limit_length_mm": 0.0
     },
     {
       "part": "head_back",
       "side": "left",
-      "edges": 878,
+      "edges": 879,
       "max_jump_deg": 6.112,
       "over_limit_length_mm": 0.0
     },
     {
       "part": "head_back",
       "side": "right",
-      "edges": 880,
+      "edges": 877,
       "max_jump_deg": 6.541,
       "over_limit_length_mm": 0.0
     }
@@ -772,8 +803,8 @@
         73.19187644982557
       ],
       "head_front_back_mm": [
-        0.4767539085898189,
-        73.5264388759186
+        0.4767540647783637,
+        73.52644339548462
       ],
       "base_excess_span_mm": 0.40265
     },
@@ -781,11 +812,11 @@
       "x_mm": 4.5,
       "base_front_back_mm": [
         -0.739839562302052,
-        73.66804399902665
+        73.66804399902668
       ],
       "head_front_back_mm": [
-        1.7985183298208085e-07,
-        74.00000073935223
+        2.678591251026319e-07,
+        73.99999887327354
       ],
       "base_excess_span_mm": 0.40788
     },
@@ -793,11 +824,11 @@
       "x_mm": 72.5,
       "base_front_back_mm": [
         -0.739839562302052,
-        73.66804399902665
+        73.66804399902668
       ],
       "head_front_back_mm": [
-        2.0952225554538018e-07,
-        74.00000108340916
+        2.94342576978579e-07,
+        73.99999893845495
       ],
       "base_excess_span_mm": 0.40788
     },
@@ -805,27 +836,312 @@
       "x_mm": 140.5,
       "base_front_back_mm": [
         -0.739839562302052,
-        73.66804399902665
+        73.66804399902668
       ],
       "head_front_back_mm": [
-        1.7985181344215562e-07,
-        74.00000101431135
+        2.6785910556270665e-07,
+        73.99999888526204
       ],
       "base_excess_span_mm": 0.40788
     },
     {
       "x_mm": 143.25,
       "base_front_back_mm": [
-        -0.2636743917308806,
+        -0.26367439173087703,
         73.18866583385608
       ],
       "head_front_back_mm": [
-        0.47355479475101525,
-        73.52324967629093
+        0.4735549000085797,
+        73.52324728305433
       ],
       "base_excess_span_mm": 0.40265
     }
   ],
+  "rim_chamfer_profiles": [
+    {
+      "part": "base",
+      "profile": "left/right",
+      "depth_mm": 0.1,
+      "limits_mm": [
+        1.1002,
+        143.8998
+      ],
+      "max_error_mm": 0.0002
+    },
+    {
+      "part": "base",
+      "profile": "front/back",
+      "depth_mm": 0.1,
+      "limits_mm": [
+        1.1002,
+        72.8998
+      ],
+      "max_error_mm": 0.0002
+    },
+    {
+      "part": "cassette",
+      "profile": "left/right",
+      "depth_mm": 0.1,
+      "limits_mm": [
+        4.6002,
+        140.3998
+      ],
+      "max_error_mm": 0.0002
+    },
+    {
+      "part": "cassette",
+      "profile": "bottom/top",
+      "depth_mm": 0.1,
+      "limits_mm": [
+        50.1002,
+        190.8998
+      ],
+      "max_error_mm": 0.0002
+    },
+    {
+      "part": "head",
+      "profile": "bottom/top",
+      "depth_mm": 0.1,
+      "limits_mm": [
+        49.1002,
+        191.8998
+      ],
+      "max_error_mm": 0.0002
+    },
+    {
+      "part": "head_back",
+      "profile": "bottom/top",
+      "depth_mm": 0.1,
+      "limits_mm": [
+        49.4002,
+        191.8998
+      ],
+      "max_error_mm": 0.0002
+    },
+    {
+      "part": "base",
+      "profile": "left/right",
+      "depth_mm": 0.6,
+      "limits_mm": [
+        0.6002,
+        144.3998
+      ],
+      "max_error_mm": 0.0002
+    },
+    {
+      "part": "base",
+      "profile": "front/back",
+      "depth_mm": 0.6,
+      "limits_mm": [
+        0.6002,
+        73.3998
+      ],
+      "max_error_mm": 0.0002
+    },
+    {
+      "part": "cassette",
+      "profile": "left/right",
+      "depth_mm": 0.6,
+      "limits_mm": [
+        4.1002,
+        140.8998
+      ],
+      "max_error_mm": 0.0002
+    },
+    {
+      "part": "cassette",
+      "profile": "bottom/top",
+      "depth_mm": 0.6,
+      "limits_mm": [
+        49.6002,
+        191.3998
+      ],
+      "max_error_mm": 0.0002
+    },
+    {
+      "part": "head",
+      "profile": "bottom/top",
+      "depth_mm": 0.6,
+      "limits_mm": [
+        48.6002,
+        192.3998
+      ],
+      "max_error_mm": 0.0002
+    },
+    {
+      "part": "head_back",
+      "profile": "bottom/top",
+      "depth_mm": 0.6,
+      "limits_mm": [
+        48.9002,
+        192.3998
+      ],
+      "max_error_mm": 0.00019
+    },
+    {
+      "part": "base",
+      "profile": "left/right",
+      "depth_mm": 1.1,
+      "limits_mm": [
+        0.1002,
+        144.8998
+      ],
+      "max_error_mm": 0.0002
+    },
+    {
+      "part": "base",
+      "profile": "front/back",
+      "depth_mm": 1.1,
+      "limits_mm": [
+        0.1002,
+        73.8998
+      ],
+      "max_error_mm": 0.0002
+    },
+    {
+      "part": "cassette",
+      "profile": "left/right",
+      "depth_mm": 1.1,
+      "limits_mm": [
+        3.6002,
+        141.3998
+      ],
+      "max_error_mm": 0.0002
+    },
+    {
+      "part": "cassette",
+      "profile": "bottom/top",
+      "depth_mm": 1.1,
+      "limits_mm": [
+        49.1002,
+        191.8998
+      ],
+      "max_error_mm": 0.0002
+    },
+    {
+      "part": "head",
+      "profile": "bottom/top",
+      "depth_mm": 1.1,
+      "limits_mm": [
+        48.1002,
+        192.8998
+      ],
+      "max_error_mm": 0.00019
+    },
+    {
+      "part": "head_back",
+      "profile": "bottom/top",
+      "depth_mm": 1.1,
+      "limits_mm": [
+        48.4002,
+        192.8998
+      ],
+      "max_error_mm": 0.00019
+    },
+    {
+      "part": "base",
+      "profile": "left/right",
+      "depth_mm": 1.3,
+      "limits_mm": [
+        0.0,
+        145.0
+      ],
+      "max_error_mm": 0.0
+    },
+    {
+      "part": "base",
+      "profile": "front/back",
+      "depth_mm": 1.3,
+      "limits_mm": [
+        0.0,
+        74.0
+      ],
+      "max_error_mm": 0.0
+    },
+    {
+      "part": "cassette",
+      "profile": "left/right",
+      "depth_mm": 1.3,
+      "limits_mm": [
+        3.5,
+        141.5
+      ],
+      "max_error_mm": 0.0
+    },
+    {
+      "part": "cassette",
+      "profile": "bottom/top",
+      "depth_mm": 1.3,
+      "limits_mm": [
+        49.0,
+        192.0
+      ],
+      "max_error_mm": 0.0
+    },
+    {
+      "part": "head",
+      "profile": "bottom/top",
+      "depth_mm": 1.3,
+      "limits_mm": [
+        48.0,
+        193.0
+      ],
+      "max_error_mm": 0.0
+    },
+    {
+      "part": "head_back",
+      "profile": "bottom/top",
+      "depth_mm": 1.3,
+      "limits_mm": [
+        48.3,
+        193.0
+      ],
+      "max_error_mm": 0.0
+    }
+  ],
+  "charger_air_access": {
+    "module_extents_mm": [
+      32.19999694824219,
+      3.700000762939453,
+      11.0
+    ],
+    "probes": {
+      "component_face_space": {
+        "volume_mm3": 468.0,
+        "collisions_mm3": {}
+      },
+      "heatsink_rear_space": {
+        "volume_mm3": 259.2,
+        "collisions_mm3": {}
+      },
+      "component_side_route": {
+        "volume_mm3": 68.4163,
+        "collisions_mm3": {}
+      },
+      "heatsink_side_route": {
+        "volume_mm3": 40.8029,
+        "collisions_mm3": {}
+      }
+    },
+    "vertical_pose": true,
+    "face_anchor_gaps_mm": {
+      "components": 0.19999923706054545,
+      "heatsink": 0.20000000000000284
+    },
+    "fields_inside_face_extents": true,
+    "route_connections": {
+      "component": {
+        "components": 1,
+        "face_space_overlap_mm3": 15.3845,
+        "probe_diameter_mm": 1.2
+      },
+      "heatsink": {
+        "components": 1,
+        "face_space_overlap_mm3": 10.24402,
+        "probe_diameter_mm": 1.2
+      }
+    }
+  },
   "stl_difference_mm3": {
     "base": 0.0,
     "head": -0.0,
