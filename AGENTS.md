@@ -77,7 +77,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   `head_at()` so it mirrors the chamfer on the cover's lower edge; both sit behind `head_y[4]`, where the rim
   carries no head wall. The cover's lower edge had only 0.9 mm of the rim chamfer left on it, because the
   joint plane cuts that chamfer off `cover_gap` above the outline's own bottom edge; now it is the full 1.2.
-- Filter cassette held by four magnet pairs in open pockets (skill rule: glue one side in, place the counterparts on them, then glue — polarity is then automatic). Two 45° finger scoops in the side edges of the intake face get a finger behind the flange; two half-round notches in the intake lip get a finger behind the mat.
+- Filter cassette held by four magnet pairs in open pockets (skill rule: glue one side in, place the counterparts on them, then glue — polarity is then automatic). Two 45° finger scoops in the side edges of the intake face get a finger behind the flange. The redundant half-round mat notches were removed at the user's request on 2026-09-23; the intake lip is continuous.
 - **The chamber has a rear lip too** (`mat_stop()`, user asked 2026-09-23 what stops the mat falling into the
   fan - nothing did). The mat's back face rested on the four gusset corners only, 7.8 % of it, with 10.5 mm
   of clear air to the fan frame, while the fan pulls it that way with about 1 N at 69 Pa. The lip closes the
@@ -181,13 +181,41 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     here (12 slots, 2 mm wide, 5 mm pitch); the collinear-corner trap that hit the old slot rows did not
     reappear, so `vent[4]` is 0. If it ever does come back, stagger before reaching for anything else.
 - Ballast trough over the full width, lower, with the USB-C socket above it (user, 2026-09-22): nominal x 3–142, y 53–71, rim 26. Its initial 44.5 cm³ / 209 g estimate and 24.5° tip angle at 1.04 kg predate later cut-outs, posts and tipping corrections; use current exports for the usable volume and stability results.
-  - Everything above the lid must leave it 10 mm of lift. The USB-C channel remains at z 45; the two old back-wall cable-tie loops have been removed (user, 2026-09-23). The channel's floor is only `usbc_floor` = 6 mm deep, because a full-length floor at that height is a 198 mm² flat overhang and a 45° gusset would stand in the trough.
-  - The USB-C channel is open towards the board's wire end inside the bay. A side stop takes insertion load, retaining `usbc_in` without the old continuous end wall across the wiring route. Do not restore the removed back-wall tie loops or close that wire opening.
-  - The trough wall and lid share a larger contoured recess around the switch. Design clearances are 1.5 mm behind the central switch-body envelope and at least 1.2 mm around the well. Keep the trough closed below the matching lid outline; enlarging only the lid would reopen the old ballast escape path. Final mesh measurements belong in the verification report.
-  - The switch moved to y 37 / z 34: its well box reached into the trough's front wall, and higher up its bezel poked through the joint plane. Its pins in turn forced the PWM board 4 mm left (`pot_x` 108).
-  - `lid_off` checks the loaded group (`ball_lid`, `chg_module`, `chg_sink`) 10 mm up. Getting it out of the bay after that is a tilt, which a rigid axis-aligned path cannot express; the lid's front right corner is notched so it clears the switch well.
+  - The USB-C channel remains at z 45 and now rests on two vertical ribs from the trough floor.
+    The right rib is wider and reaches inward to x 108.475, supporting the side stop as well as the
+    channel wall. The remaining floor bridge between the ribs spans 7.85 mm. The lid has matching
+    slots open to the back, so it can move around the fixed ribs; retain and recheck its 10 mm lift.
+    This replaces the unsupported channel ledge. The two former back-wall cable-tie loops remain removed.
+  - The USB-C channel stays open towards the board's wire end inside the bay. A side stop takes
+    insertion load, retaining `usbc_in` without the old continuous end wall across the wiring route.
+    The ribs must not close that opening or the connected cable corridors. Do not restore the removed
+    back-wall tie loops. The former shallow `usbc_floor` ledge and rejected 45° gusset describe earlier
+    unsupported layouts, not the current load path through the vertical ribs.
+  - The wider switch recess uses `ball_step=[118.5,60]` and the existing diagonal through (137,60)
+    to (142,65). Measured prototype clearances are 5.50 mm before the terminal envelope, 2.002 mm
+    minimum to the body and 2.402 mm from lid to switch. The unchanged Ø10 right insert post limits
+    the body gap locally; the rest of the straight recess lies 4 mm behind the body envelope.
+    A radius-4.6 mm lid ear at (135,63) preserves a full rim around the Ø6.4 mm head pocket. The two
+    M3 x 8 axes and Ruthex inserts stay at (10,63)/(135,63). Keep the trough and lid contours matched;
+    enlarging only the lid would reopen the old ballast escape path. Probe evidence is in
+    `build/switch-room/evidence.json`; final assembly results belong in the verification report.
+  - Early switch positions at y 37 / z 34 were superseded. The current upright switch centre is
+    y 50 / z 26, behind the PWM board; its body depth remains an inherited hardware assumption.
+  - `lid_off` checks the loaded group (`ball_lid`, `chg_module`, `chg_sink`, `chg_tie`) 10 mm up.
+    Complete withdrawal and tilting remain unproven; the matching switch recess and rear-open USB
+    rib slots must stay clear throughout the checked lift.
 - The switch well flanks rise 1.25 mm per mm instead of 1.0: at exactly 45° `analyze.py overhangs` counted them.
 - The rocker switch stands upright in the right wall (long side vertical): the base prints bottom down, so its panel cut-out is a sideways hole and the bridge over it is 12.2 mm instead of 19.2 mm.
+- **The LED now sits behind a closed 0.8 mm front skin**, matching LEO-AC1 (user, 2026-09-23).
+  `led_cut()` is a Ø3.2 mm blind bore open only to the bay, from y 0.8 to the rear of the Ø7 boss.
+  The boss rear face is y 5.8; the LED flange rests there, and the nominal lens starts at y 1.1,
+  leaving 0.3 mm before the skin. Insert and glue the LED from inside. This replaces the former
+  through-hole and the claim that the front must be open because black PETG cannot transmit light.
+  Visibility with the chosen filament still needs a physical check.
+  - The 0.8 mm optical skin is an intentional local exception to the usual 1.2 mm wall-thickness
+    threshold. Report it separately when `analyze.py thickness` flags it; do not describe the current
+    design as unconditionally CLEAN, lower the global threshold, or enlarge the exception beyond
+    this light window to hide unrelated thin walls.
 
 ## Electrics — two things that belong in the README and in the build
 
@@ -234,13 +262,13 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 
 The current design has eight print types and eleven physical printed pieces, all intended to print
 without supports. The support cross lies flat and its end posts grow upwards; its rear-open head
-pockets add no chamber-wide bridge. The following completed checks predate the support-cross addition
-and the two-insert lid, OUT-end holder, open USB-C channel and removal of the back-wall tie loops:
+pockets add no chamber-wide bridge. The following completed checks predate the support-cross addition,
+two-insert lid, OUT-end holder, USB support ribs, wider switch recess and closed LED window:
 
 - `analyze.py islands`, `overhangs` (100 mm²), `fins` and `thickness` are all CLEAN on all seven parts.
 - `analyze.py overhangs --min-area 5` lists 27 small downward faces, all of them understood: four Ø3.3 foot peg holes and four Ø4 insert pockets in the bay floor (circular bridges, 6–10 mm²), the six vent slots in the head floor (10.8 mm² each), the two finger scoops in the intake face (45 mm² flat cone ends 2 mm above the bed), the USB-C channel floor (85 mm², a 5.8 mm ledge off the back wall) and the two cable tie loops (28 mm² each, 6 mm off the back wall). None is a floating island; every one of them grows out of a wall or bridges a hole under 15 mm.
 - Before the support-cross addition, the Bambu CLI sliced all seven parts and all four plates without support. The individual `base` and `head` slices each report "floating cantilever", also present before the G2/G3 changes. The base candidates are the USB-C channel ledge and the tie loops. The warning locations have not been conclusively isolated; keep these warnings visible in the report and inspect the small bridges on the first print.
-- Historical decision: gussets under the USB-C floor and former tie loops would eat the lid's lift clearance. The tie loops have since been removed. The remaining short USB-C floor must still leave `lid_off` clear; verify its bridge quality on the first print.
+- Historical decision: gussets under the USB-C floor and former tie loops would eat the lid's lift clearance. The tie loops have since been removed and vertical ribs now support the USB channel through rear-open slots in the lid. Verify the remaining 7.85 mm bridge between ribs on the first print.
 - The two tall bridges in the design are the rocker switch panel cut-out (12.2 mm, which is why the switch stands upright) and the magnet pockets in the intake face (Ø10.3, in the bed face).
 
 ## Audit of 2026-09-23 (`docs/audit-2026-09-23.md`)
@@ -281,13 +309,14 @@ Everything the audit lists as "verify on the real part" stays open: magnet force
 - Part masses for the tipping check are data-sheet or estimated values, not weighed (reported by `print_tools.py` as an OPEN item).
 - The knob bore is nominal 5.8 mm with zero clearance, as in LEO-AC1 — validate the push fit on the real knurled shaft with a test print.
 - Rocker switch body depth behind the panel is still the assumed value from LEO-AC1.
+- LED: verify visibility through the closed 0.8 mm skin with the chosen black PETG and actual LED. Keep this optical thickness exception local; flange fit and light transmission have not been tested on a printed FUMEX base.
 - Charge module: verify solder joints, wire exits, the tie band and clamping pressure at the cool OUT-end holder, the free heatsink end and wire slack for the loaded lid's service path. Check temperatures while charging in the closed housing, with the fan on and off; free geometric air corridors do not establish cooling performance.
 - Filter support: check all four post contacts against the real fan frame, pocket fit, bar stiffness and creep, and mat bowing or loose fibres at maximum speed. The sparse cross does not establish that rubbing is impossible.
 - Filter pressure drop and capture distance are not modelled. The P12 Pro is pressure-optimised (6.9 mmH₂O), which is why it suits a mat, but the working point is unknown.
 
 ## Verification and known limits
 
-`docs/verification.json` holds the full report and the current check counts. Checks cover closed meshes and body counts, bed placement and build envelope, assembly pairs with documented assembly-stage or intentional-fit exceptions, coaxial round features, contacts, stops, assembly paths, heat-set insert pockets, the intake lip, mat displacement, and the centre of mass over the foot polygon. The dated results below precede the support-cross addition.
+`docs/verification.json` holds the full report and the current check counts. Checks cover closed meshes and body counts, bed placement and build envelope, assembly pairs with documented assembly-stage or intentional-fit exceptions, coaxial round features, contacts, stops, assembly paths, heat-set insert pockets, the intake lip, mat displacement, and the centre of mass over the foot polygon. The dated results below describe their respective earlier revisions; none establishes an unconditional thickness pass for the current 0.8 mm LED window.
 
 Not checked: flexible deformation (the mat and the TPU feet are rigid bodies here), strength, thermal behaviour, airflow, and anything about the real hardware that has not been measured.
 
@@ -301,12 +330,23 @@ Not checked: flexible deformation (the mat and the TPU feet are rigid bodies her
 
 ## Filter support and hardware follow-up (2026-09-23)
 
-- Current follow-up: `docs/hardware-2026-09-23.md`. Eight print types / eleven physical pieces, 340 coaxial feature pairs, 496 assembly pairs and nine sampled linear paths; all four printability analyses are CLEAN.
-- `ball_step[0]` is 122.5, not 126: the latter left the lid and trough tangent to the switch terminal envelope at y53. The new lid and isolated trough-step clearance probes both measure 1.5 mm and reject the previous touching geometry.
+- Earlier hardware follow-up: `docs/hardware-2026-09-23.md`, before the wider switch recess, USB support ribs and closed LED window. That revision had eight print types / eleven physical pieces, 340 coaxial feature pairs, 496 assembly pairs and nine sampled linear paths; all four printability analyses were CLEAN.
+- At that revision `ball_step[0]` was 122.5 rather than 126: 126 left the lid and trough tangent to the switch terminal envelope at y53. The intermediate lid and isolated trough-step probes measured 1.5 mm. The current 118.5/60 step and radius-4.6 mm lid ear supersede that contour, providing the clearances recorded above.
 - The rear lid corner reliefs are 0.5 mm. The old 5 mm cuts depended on the removed corner posts to close the trough. `check_ballast_cover()` compares actual near-rim contents and lid sections, allowing only the intentional seam; the maximum measured normal gap is 0.2 mm. New insert bores are excluded from `ballast_env()`.
 - `check_charger_holder()` probes each of the three seats, the hot-side exclusion and connected tie passages. `check_usb_wire_access()` includes the inner terminal face itself; probes above and below the board alone also passed with the old blocking end wall and were insufficient.
-- Final ballast capacity is 44.0 cm3 / about 207 g of loose iron at the assumed packing density. Estimated assembled mass is 1020.5 g, tip angle 21.8 degrees, front margin 28.9 mm. Printed lid envelope is 138.6 x 17.8 x 13.7 mm.
+- At that earlier hardware revision ballast capacity was 44.0 cm3 / about 207 g of loose iron at the assumed packing density. Estimated assembled mass is 1020.5 g, tip angle 21.8 degrees, front margin 28.9 mm. Printed lid envelope is 138.6 x 17.8 x 13.7 mm.
 - Only the loaded lid's 10 mm vertical lift is established. Sampled X/Y/Z tilts and coupled forward moves did not establish a complete extraction sequence; that remains unproven, not certified impossible. The head and battery are removed before the checked lift.
 - General corner-post/cover dependency documented in the shared skill's PITFALLS.md, commit `41a0b0d`. Project scripts remain identical to the skill.
 
-- Final slicer: all eight types and four plates pass without supports; 468.9 g / 15.3 h on arranged plates, 469.3 g / 16.3 h as individual jobs. Existing base/head floating-cantilever warnings remain; lid and support cross have none. Head thickness sampling returns 64,941 valid points of 65,128 with the known numerical Trimesh warnings.
+- Slicer at that earlier hardware revision: all eight types and four plates passed without supports; 468.9 g / 15.3 h on arranged plates, 469.3 g / 16.3 h as individual jobs. Existing base/head floating-cantilever warnings remain; lid and support cross have none. Head thickness sampling returns 64,941 valid points of 65,128 with the known numerical Trimesh warnings.
+
+
+## Lid, switch, USB and front-detail verification (2026-09-23)
+
+- Current follow-up: `docs/detail-refinements-2026-09-23.md`. Source SHA `6bf5fd11fdefd249b418a3faa7921d67a7f2b9f68ec29cc29cbbd020050e2df5`.
+- Exactly two M3 x 8 lid screws remain at (10,63) and (135,63), centred between the trough's inner front and back faces at y55/71. Both engage Ruthex RX-M3x5.7 inserts through Ø4 x 7 mm pockets. Actual seat material and enclosure fill are 100%; full 5.7 mm insert engagement leaves 0.8 mm to the pocket bottom. The right lid ear keeps its screw pocket enclosed beside the wider switch recess.
+- USB support ribs run from the floor to the channel, verified by full solid probes. Both rear-open lid slots clear their ribs, the PCB contacts its seat at z42.85 and the three wire corridors remain open. The loaded lid's checked service motion is still only 10 mm vertically; full extraction remains unproven.
+- Eight closed print types / eleven pieces; 337 coaxial feature pairs, 496 assembly pairs, nine general sampled paths and the additional 15 mm LED inside-access path pass. Islands, overhangs (100 mm² threshold) and fins are CLEAN. Thickness reports exactly one intended 0.8 mm region at the closed LED window (estimated sampled area 20 mm²); the 1.2 mm threshold is unchanged elsewhere. The head's existing Trimesh numerical warnings leave 65,088 of 65,277 usable samples.
+- All eight individual slices and four arranged plates pass with supports disabled. The base's floating-cantilever warning is gone; the existing head warning remains on its individual and arranged slice. Arranged plates: 472.9 g / 15.4 h; individual jobs: 473.4 g / 16.4 h.
+- Current ballast volume is 40.97 cm³, about 193 g at the assumed packing density. Estimated assembled mass 1009.8 g, front tipping margin 28.6 mm and tip angle 21.3 degrees. These supersede the previous revision's values above.
+- All eight documentation views, the STLs, 3MF and both viewer copies are rebuilt. `07_ballast_mount` makes the two fasteners visible; `08_usb_mount` shows the floor-connected channel ribs.

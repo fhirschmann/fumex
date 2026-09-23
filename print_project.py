@@ -424,20 +424,111 @@ def check_usb_wire_access(ctx):
     return dict(usb_wire_access=rows)
 
 
+def check_usb_support(ctx):
+    """Real floor-connected ribs, the short bridge and clear rear-open lid slots."""
+    bounds = ctx.meshes['usbc'].bounds
+    xmin, xmax = bounds[:, 0]
+    y0, zseat = bounds[0, 1], bounds[0, 2]
+    front, back = y0 - 2, 71.0
+    lower, upper = zseat - 2.2, zseat + 4.5
+    left = [xmin - 2.2, xmin - 0.2]
+    right = [xmax - 2.7, xmax + 2.2]
+    core_specs = {
+        'left_wall': ([left[0] + .02, front + .02, .2], [left[1] - .02, back - .02, upper - .02]),
+        'right_foot': ([right[0] + .02, front + .02, .2], [right[1] - .02, back - .02, lower - .02]),
+        'right_wall': ([xmax + .22, front + .02, .2], [right[1] - .02, back - .02, upper - .02]),
+        'inner_stop': ([right[0] + .02, front + .02, .2], [right[1] - .02, y0 - .22, upper - .02]),
+    }
+    filled = {}
+    for name, (lo, hi) in core_specs.items():
+        probe = _air_box(lo, hi)
+        fill = (probe ^ ctx.solids['base']).volume() / probe.volume()
+        assert fill > .999, f'USB support does not grow continuously from the floor: {name}, {fill:.5f}'
+        filled[name] = round(fill, 6)
+    # The lid must clear the whole fixed footprint, not just the thin upper walls.
+    slot_overlap = {}
+    for name, (lo, hi) in [('left', left), ('right', right)]:
+        probe = _air_box([lo - .19, front - .19, 26.01], [hi + .19, 75, 28.99])
+        overlap = (probe ^ ctx.solids['ball_lid']).volume()
+        assert overlap < .01, f'USB support lid slot is blocked or too tight: {name}, {overlap:.4f} mm3'
+        slot_overlap[name] = round(overlap, 6)
+    contact = (ctx.solids['usbc'].translate([0, 0, -.05]) ^ ctx.solids['base']).volume()
+    assert contact > 1, f'USB board floats above its floor seat: {contact:.4f} mm3'
+    return dict(usb_support=dict(vertical_material_fill=filled, slot_overlap_mm3=slot_overlap,
+                pcb_seat_z_mm=round(float(zseat), 3), seat_contact_mm3=round(contact, 5)))
+
+
+def check_led_window(ctx):
+    """Measure the blind LED pocket, optical skin and access from inside the assembled bay."""
+    (x, z), diameter, clearance, skin, boss = ctx.metrics["led_pocket"]
+    base, led = ctx.solids["base"], ctx.solids["led"]
+    assert abs(skin - 0.8) < 0.01, "LED window must retain the reviewed 0.8-mm optical skin"
+    assert abs(diameter - 3) < 0.01 and abs(diameter + clearance - 3.2) < 0.01, \
+        "LED pocket no longer matches the nominal LEO-AC1 LED and flange seat"
+    radius, rear = (diameter + clearance) / 2, boss[1]
+    material = ctx.cylinder([x, 0.01, z], [0, 1, 0], skin - 0.02, radius, 120)
+    missing = (material - base).volume()
+    assert missing < 0.0001, f"LED front skin is open: {missing:.6f} mm3 missing"
+    # The small radial inset avoids comparing two different faceted circles.
+    pocket = ctx.cylinder([x, skin + 0.01, z], [0, 1, 0], rear - skin + 0.49, radius - 0.03, 120)
+    filled = (pocket ^ base).volume()
+    assert filled < 0.0001, f"Blind LED pocket is obstructed: {filled:.6f} mm3"
+
+    offsets = [(0, 0), (-0.6, 0), (0.6, 0), (0, -0.6), (0, 0.6)]
+    origins = np.array([[x + dx, -1, z + dz] for dx, dz in offsets])
+    hits, rays, _ = ctx.meshes["base"].ray.intersects_location(
+        origins, np.tile([0, 1, 0], (len(origins), 1)), multiple_hits=True)
+    measured = []
+    for index in range(len(origins)):
+        ys = np.sort(hits[rays == index, 1])
+        assert len(ys) >= 2 and abs(ys[0]) < 0.01, "LED window ray misses the closed front face"
+        depth = float(ys[1] - ys[0])
+        assert abs(depth - 0.8) < 0.02, f"Actual LED skin is {depth:.4f} mm"
+        measured.append(round(depth, 5))
+
+    bounds = ctx.meshes["led"].bounds
+    lens_gap = float(bounds[0, 1] - skin)
+    assert 0.25 <= lens_gap <= 0.35, f"LED lens does not clear the optical skin: {lens_gap:.3f} mm"
+    assert (led ^ base).volume() < 0.01, "Installed LED intersects its pocket"
+    ring = ctx.cylinder([x, rear - 0.2, z], [0, 1, 0], 0.19, 1.88, 120) - \
+           ctx.cylinder([x, rear - 0.21, z], [0, 1, 0], 0.21, radius + 0.02, 120)
+    ring_fill = (ring ^ base).volume() / ring.volume()
+    flange_contact = (led.translate([0, -0.05, 0]) ^ base ^
+                      _air_box([x - 2, rear - 0.06, z - 2], [x + 2, rear + 0.01, z + 2])).volume()
+    assert ring_fill > 0.995 and flange_contact > 0.1, \
+        f"LED flange seat missing: ring fill {ring_fill:.4f}, contact {flange_contact:.4f} mm3"
+
+    # Reverse this sampled removal path to insert the LED from the bay. The only
+    # exclusions are the LED itself and temporary screwdriver/tool envelopes.
+    fixed = [name for name in ctx.solids if name != "led" and not name.startswith("driver_")]
+    path = ctx.paths([("led_inside_access", "led", fixed, [0, 1, 0], 15, 0.5)])
+    ctx.summary.append("LED: closed 0.8 mm window and 15 mm inside access")
+    ctx.open_items.append("LED: test visibility through the 0.8 mm black PETG skin; nominal 3 mm body and "
+                          "3.8 mm flange dimensions remain unmeasured, as in LEO-AC1")
+    return dict(led_window=dict(skin_measurements_mm=measured, skin_missing_mm3=round(missing, 7),
+        pocket_filled_mm3=round(filled, 7), lens_to_skin_mm=round(lens_gap, 3),
+        flange_ring_fill=round(ring_fill, 5), flange_contact_mm3=round(flange_contact, 5),
+        inside_access=path, checked_fixed_bodies=fixed,
+        expected_thickness_finding=dict(part="base", feature="Closed LED optical skin",
+            nominal_mm=0.8, standard_threshold_mm=1.2,
+            bounds_mm=[[x - radius, 0, z - radius], [x + radius, skin, z + radius]],
+            policy="Report this intended thin optical area; retain the standard 1.2 mm check elsewhere")))
+
+
 def check_ballast_cover(ctx):
     """Actual top slices must overlap apart from the narrow assembly seam."""
     top = ctx.metrics["ballast"][3]
     ballast = ctx.solids["ballast"].slice(top - 0.01)
     cover = ctx.solids["ball_lid"].slice(top + 0.1)
     assert ballast.area() > 1000 and cover.area() > 1000, "Ballast cover probe misses the top section"
-    uncovered = (ballast - cover.offset(0.3)).area()
+    uncovered = (ballast - cover.offset(0.3, circular_segments=64)).area()
     assert uncovered < 0.01, f"Ballast lid leaves a top opening beyond its seam: {uncovered:.3f} mm2"
     # Measure the required normal dilation, rather than just testing a formula
     # derived from the nominal clearance. The former 5-mm corner cuts fail here.
     lo, hi = 0.0, 0.45
     for _ in range(14):
         mid = (lo + hi) / 2
-        if (ballast - cover.offset(mid)).area() > 0.01:
+        if (ballast - cover.offset(mid, circular_segments=64)).area() > 0.01:
             lo = mid
         else:
             hi = mid
@@ -587,6 +678,7 @@ def checks(ctx):
         ("pwm_board", "base", [0, 0, -1]),            # board on the rib pads
         ("chg_module", "ball_lid", [0, 0, -1]),       # lower cut edge at the cool OUT end
         ("ball_lid", "base", [0, 0, -1]),             # lid on its posts and walls
+        ("usbc", "base", [0, 0, -1]),                 # PCB on the floor-connected rear seat
     ])
     # Stops: the fan cannot move sideways in its corner guides, the head is located by its screws
     # There is no register between head and base: the four screws locate it, so that is what is checked
@@ -680,7 +772,7 @@ def checks(ctx):
                 tip_angle_deg=round(tip_angle, 1), **check_top_corners(ctx), **check_joint_profile(ctx),
                 **check_rim_chamfers(ctx), **check_charger_air(ctx), **check_charger_holder(ctx),
                 **check_lid_fasteners(ctx), **check_usb_wire_access(ctx), **check_ballast_cover(ctx),
-                **check_switch_trough_clearance(ctx), **check_filter_support(ctx))
+                **check_switch_trough_clearance(ctx), **check_filter_support(ctx), **check_led_window(ctx), **check_usb_support(ctx))
 
 
 def _tilt(m, point):
@@ -742,4 +834,14 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
                               "color(\"#aeb5bb\") chg_sink_env(); color(\"#55595e\") chg_tie_env();", "110,-90,90,70,60,34"),
          "05_charger_back": ("color(\"#8a9096\") ball_lid(); color(\"#2f5d3a\") chg_module_env(); "
                              "color(\"#aeb5bb\") chg_sink_env(); color(\"#55595e\") chg_tie_env();", "110,180,90,70,60,34"),
-         "06_filter_support": ("color(\"#aeb5bb\") filter_support_raw();", "220,-240,220,72.5,26,120.5")}
+         "06_filter_support": ("color(\"#aeb5bb\") filter_support_raw();", "220,-240,220,72.5,26,120.5"),
+         # Exploded only along Z: the two screw heads and both lid holes stay visible.
+         "07_ballast_mount": ("color(\"#717980\") intersection() { base(); "
+                              "translate([0, ball[2] - 1, 0]) cube([body_w, body_d - ball[2] + 1, ball[3] + 0.2]); } "
+                              "color(\"#b8c0c7\") translate([0, 0, 8]) ball_lid(); "
+                              "color(\"#414950\") translate([0, 0, 16]) screws_lid(socket = true);",
+                              "100,-180,240,72.5,63,24"),
+         "08_usb_mount": ("color(\"#8a9096\") intersection() { base(); "
+                          "translate([94, 52, 0]) cube([24, 23, 60]); } "
+                          "color(\"#2f5d3a\") usbc_env();",
+                          "145,-45,85,106,64,25")}
