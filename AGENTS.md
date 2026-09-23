@@ -93,9 +93,17 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 - Ballast lid posts moved to x 45/90 (from 30/115): the rim bosses now hang over the trough left and right,
   and the USB-C channel and the tie loops block everything right of x 90. Vent slots 14 mm instead of 16,
   so the rim bosses clear them.
-- `head_outline()` is rounded `corner_r` = 6 at the top and `corner_rb` = **2** at the two corners on the
-  joint plane, and `joint_neck()` cuts the same 2 mm into the base rim with a 45 degree run-out, so head
-  and base meet without a step and nothing stands proud behind the back cover or the cassette.
+- `head_outline()` is rounded `corner_r` = 6 at the top and `corner_rb` = **0.5** at the two corners on the
+  joint plane, and `joint_neck()` carries that arc on into the base rim, so head and base meet without a
+  step. The cutter's top corners are an arc of `neck_r` whose centres sit `corner_rb` in from the housing
+  edge and `neck_r` below the joint plane: at the joint both parts are exactly as wide and both arcs are
+  tangent to the horizontal, so the rounding continues through the edge instead of breaking into a chamfer.
+  Do not build it by mirroring `head_outline()` - widening that contour moves its bottom edge with it and
+  the arc lands half a millimetre off, which is exactly what the user saw first.
+  - 0.5, not 2: at 2 the elevation arc and the 3.5 arc of the vertical edge met in the same corner together
+    with the chamfers around the joint, and the pile of different radii looked bad (user, 2026-09-23:
+    "diese rundungen hinten sehen einfach beschissen aus"). At 0.5 the joint is a straight parting line
+    running into the rounded vertical edge, and that edge carries the corner on its own.
   - The radius at the joint is limited by the wall, and this was built and measured before it was dropped.
     At `corner_r` 6 the neck removes the whole 3 mm side wall of the base over its top 3 mm - the export
     came back with 7 bodies - and the head's bottom face would be 133 mm wide against a 139 mm bay opening,
