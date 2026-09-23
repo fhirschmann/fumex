@@ -6,12 +6,12 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "f5344979a40db9d799d8f4b4398780d480e477b27ce7c8c2526039d8987440bf",
+      "source_sha256": "19bcfa08767892ef794fa682f5d252c12b1980c9109d5a6fd8271ef47be3d6b1",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "It seems object base.stl has floating cantilever. Please re-orient the object or enable support generation.",
-      "hours": 3.718,
-      "grams": 117.29,
+      "hours": 3.713,
+      "grams": 117.286,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -33,7 +33,7 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 5.905,
+      "hours": 5.904,
       "grams": 228.918,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -263,6 +263,6 @@
       }
     },
     "own_infill_parts": 4,
-    "sha256": "8abd68b2e17bf1d083e9d4d63f274c1dbde3147b0adff402927067ddb073d1bd"
+    "sha256": "12976fb614d759402a4831f6462af89301ce34a58575689b22b592c3eace1b36"
   }
 }

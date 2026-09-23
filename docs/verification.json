@@ -1,5 +1,5 @@
 {
-  "source_sha256": "e62e00e1900b71e6cbf24f5a536c541cf13c62d1d5666bd7a6498aaa5a947c9c",
+  "source_sha256": "360788e7db5519fff73808a99caab239acb91be1d05ffc70e30c71d7af85a674",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -36,10 +36,10 @@
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "f5344979a40db9d799d8f4b4398780d480e477b27ce7c8c2526039d8987440bf",
+      "sha256": "19bcfa08767892ef794fa682f5d252c12b1980c9109d5a6fd8271ef47be3d6b1",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "f5344979a40db9d799d8f4b4398780d480e477b27ce7c8c2526039d8987440bf"
+      "committed_sha256": "19bcfa08767892ef794fa682f5d252c12b1980c9109d5a6fd8271ef47be3d6b1"
     },
     "head": {
       "size_mm": [
