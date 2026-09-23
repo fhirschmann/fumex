@@ -6,12 +6,12 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "d7aa2da478a6a2b5633c54a342c3eeec068d774162f90487beb55e5f244868cc",
+      "source_sha256": "c8d5f6c5c67433697810898a76f51b54ebd16f97b9ac5b8671718b8cf1c281bb",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "It seems object base.stl has floating cantilever. Please re-orient the object or enable support generation.",
-      "hours": 3.565,
-      "grams": 117.178,
+      "hours": 3.613,
+      "grams": 118.398,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -33,8 +33,8 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "It seems object head.stl has floating cantilever. Please re-orient the object or enable support generation.",
-      "hours": 5.57,
-      "grams": 221.852,
+      "hours": 5.569,
+      "grams": 221.851,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -56,7 +56,7 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.729,
+      "hours": 2.728,
       "grams": 59.744,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -75,12 +75,12 @@
       "quantity": 1,
       "material": "PETG-grey",
       "passed": true,
-      "source_sha256": "4c11d5288f5c33e721a53750df3ecaef86b0d150ff8cea986f4ef751091a40a6",
+      "source_sha256": "2d8a4d584dad3f75d5e7a71ab77ae0582dcdde8c90f334d53b5f294a7ce3b1f0",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.4,
-      "grams": 49.681,
+      "hours": 2.403,
+      "grams": 49.739,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -144,12 +144,12 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "5cd216fc2e6ee33a40d4b10d23f4d517fa921aaba2ce7b18fad3e927a3331533",
+      "source_sha256": "74de811ee80bc9a5a93de9f4370ec5d7393e2140eb06c7834a2247072f5bac8d",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 0.415,
-      "grams": 7.735,
+      "hours": 0.411,
+      "grams": 7.801,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -164,7 +164,7 @@
     }
   ],
   "total_parts": 10,
-  "total_grams_individual_plates": 468.6,
+  "total_grams_individual_plates": 470.0,
   "total_hours_individual_plates": 16.1,
   "production_gcode": false,
   "project_3mf": {
@@ -224,7 +224,7 @@
       }
     ],
     "total_hours_plates": 15.3,
-    "total_grams_plates": 468.2,
+    "total_grams_plates": 469.6,
     "multicolour_parts": {},
     "multicolour_slices": {},
     "pause_slices": {},
@@ -233,23 +233,23 @@
         "plate": 1,
         "hours": 5.84,
         "grams_by_filament": {
-          "1": 229.53
+          "1": 229.59
         },
         "warnings": "It seems object head_1 has floating cantilever. Please re-orient the object or enable support generation."
       },
       "Base and back cover": {
         "plate": 2,
-        "hours": 6.1,
+        "hours": 6.15,
         "grams_by_filament": {
-          "1": 176.86
+          "1": 178.08
         },
         "warnings": "It seems object base_1 has floating cantilever. Please re-orient the object or enable support generation."
       },
       "Grey parts": {
         "plate": 3,
-        "hours": 2.75,
+        "hours": 2.76,
         "grams_by_filament": {
-          "2": 55.88
+          "2": 55.95
         },
         "warnings": ""
       },
@@ -263,6 +263,6 @@
       }
     },
     "own_infill_parts": 4,
-    "sha256": "366b40e16a133b0aa6a1e22150d0431892d0ba3a84d6455a2c1967e07289138e"
+    "sha256": "6ed318bc03bc065161fb21831cb235603be5cf3e726e1a5fd35eca346811610d"
   }
 }

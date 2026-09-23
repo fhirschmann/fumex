@@ -1,0 +1,34 @@
+overhangs base: 12 found
+  {'z_mm': 2.1, 'area_mm2': 6.4, 'bounds_xy': [132.55, 8.58, 135.45, 11.42]}
+  {'z_mm': 2.1, 'area_mm2': 6.4, 'bounds_xy': [23.55, 8.58, 26.45, 11.42]}
+  {'z_mm': 2.1, 'area_mm2': 6.4, 'bounds_xy': [132.55, 59.58, 135.45, 62.42]}
+  {'z_mm': 2.1, 'area_mm2': 6.4, 'bounds_xy': [23.55, 59.58, 26.45, 62.42]}
+  {'z_mm': 7.1, 'area_mm2': 10.0, 'bounds_xy': [16.22, 8.21, 19.8, 11.79]}
+  {'z_mm': 7.1, 'area_mm2': 10.0, 'bounds_xy': [125.22, 8.21, 128.8, 11.79]}
+  {'z_mm': 7.1, 'area_mm2': 10.0, 'bounds_xy': [16.22, 59.21, 19.8, 62.79]}
+  {'z_mm': 7.1, 'area_mm2': 10.0, 'bounds_xy': [125.22, 59.21, 128.8, 62.79]}
+  {'z_mm': 40.7, 'area_mm2': 85.5, 'bounds_xy': [98.62, 65.0, 113.38, 70.8]}
+  {'z_mm': 42.1, 'area_mm2': 28.0, 'bounds_xy': [124.0, 65.0, 132.0, 68.5]}
+  {'z_mm': 42.1, 'area_mm2': 28.0, 'bounds_xy': [114.0, 65.0, 122.0, 68.5]}
+  {'z_mm': 47.5, 'area_mm2': 18.5, 'bounds_xy': [102.96, 71.0, 109.12, 74.0]}
+overhangs head: 19 found
+  {'z_mm': 2.1, 'area_mm2': 41.9, 'bounds_xy': [0.31, 66.48, 4.67, 78.52]}
+  {'z_mm': 2.1, 'area_mm2': 42.0, 'bounds_xy': [140.31, 66.48, 144.7, 78.52]}
+  {'z_mm': 3.3, 'area_mm2': 22.0, 'bounds_xy': [130.05, 8.7, 136.34, 14.94]}
+  {'z_mm': 3.3, 'area_mm2': 22.0, 'bounds_xy': [8.69, 8.67, 14.95, 14.94]}
+  {'z_mm': 3.3, 'area_mm2': 54.1, 'bounds_xy': [8.75, 62.86, 11.75, 82.14]}
+  {'z_mm': 3.3, 'area_mm2': 54.2, 'bounds_xy': [133.25, 62.81, 136.25, 82.19]}
+  {'z_mm': 3.3, 'area_mm2': 22.0, 'bounds_xy': [8.66, 130.06, 14.95, 136.3]}
+  {'z_mm': 3.3, 'area_mm2': 22.0, 'bounds_xy': [130.05, 130.06, 136.31, 136.33]}
+  {'z_mm': 30.9, 'area_mm2': 44.6, 'bounds_xy': [134.5, 3.2, 141.8, 10.49]}
+  {'z_mm': 30.9, 'area_mm2': 44.6, 'bounds_xy': [3.2, 3.2, 10.5, 10.49]}
+  {'z_mm': 30.9, 'area_mm2': 45.3, 'bounds_xy': [134.18, 131.01, 141.8, 138.99]}
+  {'z_mm': 30.9, 'area_mm2': 45.3, 'bounds_xy': [3.2, 131.01, 10.82, 138.99]}
+  ... 7 more
+overhangs head_back: 0 found
+overhangs cassette: 0 found
+overhangs knob: 0 found
+overhangs foot: 0 found
+overhangs ball_lid: 1 found
+  {'z_mm': 7.3, 'area_mm2': 16.8, 'bounds_xy': [50.6, 5.5, 53.4, 11.5]}
+FOUND: 32 overhangs findings in 7 meshes -> /Users/fabian/Projects/fumex/build/analysis/overhangs.json

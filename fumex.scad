@@ -78,7 +78,7 @@ fan_cl = 0.4;        // clearance per side in the corner guides
 cass_t = 4.5;        // magnet pocket 3.2 plus 1.3 mm skin - the minimum wall is 1.2, so this is as thin
                      // as the cassette gets. It cannot be let into the intake face either: that recess
                      // would be a 5687 mm2 flat overhang in print (user asked, 2026-09-23)
-cass_c = 2.0;        // 45 degree bevel round its rim instead, so the step is 2.5 mm of wall, not 4.5.
+cass_c = 1.2;        // 45 degree bevel round its rim instead, so the step is 2.5 mm of wall, not 4.5.
                      // 2.0 is the limit: at 1 + 2.0 the bevel stops 0.15 mm short of the magnet pockets
 cass_inset = 1;      // flange inside the head outline, leaves a ledge beside the finger scoops
 mag = [10.3, 3.2];   // pocket for a 10 x 3 neodymium disc (skill: +0.3 diameter, +0.2 depth)
@@ -216,6 +216,7 @@ ball_post = 10;      // screw posts for the lid, standing free on the trough flo
 ball_post_x = [12, 40];     // driver access: the rim bosses now hang over the trough left and right,
                             // and the USB-C channel and the tie loops block the right end (2026-09-23)
 ball_lid_t = 3;
+lid_pocket = 1.2;    // counterbore in the lid: at head_pocket's 1.9 the head bore on 1.1 mm (audit A5)
 ball_lip = 0;        // no lip over the front wall: the cell has to lift past it (battery_out)
 ball_dish = [16, 1.5];   // finger dish in the lid instead: diameter, depth
 ball_step = [126, 57];  // the front wall steps back to y = 57 from this x on, around the switch body
@@ -261,6 +262,8 @@ rim_screws = [[25, 66], [120, 66]];
 rim_boss_len = 9;
 rim_boss_d = 10;     // 13 bulged 12.5 mm into the bay and read as a random step (user, 2026-09-22)
 // ISO 7380 button head Torx from the user's set (M3 x 6, 8, 10, 12, 16, 25) except the fan screws
+len_lid = 10;        // M3 x 10 plastic-forming into the lid posts: at 12 the tip reached 0.9 mm past the
+                     // 10 mm core hole before the head was seated (audit 2026-09-23, A5)
 len_fan = 30;        // M3 x 30, bought: through the 25 mm frame, 5 mm of thread in the insert
 len_back = 8;
 len_head = 8;
@@ -328,8 +331,9 @@ assert(chg_z0 + chg_pcb[2] + chg_sink[3] + chg_sink[2] + 5 < base_top(chg_cy),
        "Less than 5 mm over the heatsink to the head floor");
 assert(vent_xz[1] > ball[3] + ball_lid_t, "Back wall slots would let the ballast out");
 assert(mag[1] < cass_t - 1.2, "Cassette too thin for the magnet pockets");
-assert(cass_inset + cass_c < body_w / 2 - mag_off - mag[0] / 2, "Cassette bevel cuts into the magnet pockets");
+assert(plan_r + cass_c < body_w / 2 - mag_off - mag[0] / 2, "Cassette bevel cuts into the magnet pockets");
 assert(len_fan - fan_t >= 5, "Fan screws reach less than 5 mm into the insert");
+assert(len_lid - (ball_lid_t - lid_pocket) < pt_depth, "Ballast lid screws are longer than their core hole");
 assert(min([for (p = foot_xy) bat_low(p[1])]) > foot_boss[1], "Foot boss reaches into the battery");
 assert(foot_boss[1] - insert_depth >= 1.2, "Foot insert pocket floor thinner than three perimeters");
 assert(floor_t - foot_peg[1] >= 3 * 0.4, "Floor under the foot peg holes thinner than three perimeters");
@@ -361,10 +365,6 @@ module base_outline(inset = 0) translate([body_w / 2, body_d / 2]) rrect([body_w
 // The same footprint as a prism, to give the head the base's vertical edges. The cassette stands cass_t in
 // front of it, so its own prism runs on forward at the width the footprint has at y = 0.
 module plan_prism() translate([0, 0, base_h - 1]) linear_extrude(head_h + 2) base_outline();
-module cass_prism() translate([0, 0, base_h - 1]) linear_extrude(head_h + 2) union() {
-    base_outline();
-    translate([plan_r, -cass_t - 1]) square([body_w - 2 * plan_r, cass_t + 1 + eps]);
-}
 // corner_r at the top, corner_rb at the two corners that sit on the joint plane. They have to be smaller:
 // whatever radius the head has there, the base rim has to follow it or the head's side walls curve away
 // from the base and leave a step. At corner_r = 6 that neck would remove the whole 3 mm side wall of the
@@ -478,9 +478,9 @@ module mat_stop() let (y0 = mat_stop_y()[0], y1 = mat_stop_y()[1])
 // take the short edges of the board. One cable tie through the tunnels above it stops the board lifting
 // out. Printed with the plate on the bed, so the brackets and their grooves are plain vertical walls.
 // Holder on the ballast lid: a shallow tray the board drops into, heatsink up, parts hanging down in the
-// chg_stand gap. The lip has to stay below the top face of the board almost all the way round - the
-// heatsink is wider than the PCB on three sides. Only the left end is clear of it, so that wall runs full
-// height and a tab reaches 2.5 mm over the board: it slides in from the right, under the tab. The lid
+// chg_stand gap. The lip stays below the top face of the board all round - the heatsink is wider than the
+// PCB on three sides - so the board goes straight down into the tray and straight back out. A tab over the
+// left end held it before and made both of those impossible (audit 2026-09-23, A4). The lid
 // prints flat, so all of this is plain walls on a plate.
 module chg_tray() let (w = chg_br[0], z0 = ball[3] + ball_lid_t,
                        low = chg_z0 + chg_pcb[2] - 0.3, high = chg_z0 + chg_pcb[2] + 1.2)
@@ -497,8 +497,6 @@ module chg_tray() let (w = chg_br[0], z0 = ball[3] + ball_lid_t,
                 cube([w + 1 + eps, chg_pcb[1] + 2 * (chg_cl + w) + 2, low]);
         }
         translate([-w, -w, z0 - eps]) cube([w, chg_pcb[1] + 2 * (chg_cl + w), high - z0 + eps]);   // left wall
-        translate([-w, chg_pcb[1] / 2 - 3, chg_z0 + chg_pcb[2]])                                  // and its tab
-            cube([w + chg_cl + 2.5, 6, high - chg_z0 - chg_pcb[2]]);
     }
 module chg_brackets() chg_tray();
 // ventilation slots in the back wall, above the ballast lid: the outlet of the draught through the bay
@@ -564,15 +562,22 @@ module head_back_print_pose() translate([0, -base_h, body_d]) rotate([-90, 0, 0]
 // ---------- filter cassette (untilted frame, in front of the intake face) ----------
 // The cassette lies on the intake face and touches no rim, so like the back cover it keeps the radius
 // on all four corners rather than the shell's square bottom (user, 2026-09-23).
-module cassette_raw() intersection() { cass_prism(); cassette_body(); }
-module cassette_body() difference() {
-    along_y(-cass_t, 0) head_outline(cass_inset);
+// Its finished outline, not the one it starts from: the head outline first, then the width the shared
+// footprint leaves in front of the intake face. The bevel below is taken from THIS contour. Built the
+// other way round - bevel first, prism afterwards - the prism cut the bevel off the two long sides
+// entirely and left a square 4.5 mm wall there (audit 2026-09-23, G1).
+module cass_face(inset = 0) offset(delta = -inset) intersection() {
+    head_outline(cass_inset);
+    translate([body_w / 2, head_cz]) square([body_w - 2 * plan_r, head_h + 10], center = true);
+}
+module cassette_raw() difference() {
+    along_y(-cass_t, 0) cass_face();
     translate([body_w / 2, 0, head_cz]) along_y(-cass_t - 1, 1) grid_2d(open_sq);
     for (p = mag_xz()) cyl_y(p, -mag[1], eps, mag[0] / 2);              // pockets open towards the head
     difference() {                                                      // chamfer on the outer bed face
-        along_y(-cass_t - eps, -cass_t + cass_c) head_outline(-1);
-        hull() { along_y(-cass_t - eps, -cass_t + tip) head_outline(cass_inset + cass_c);
-                 along_y(-cass_t + cass_c - tip, -cass_t + cass_c) head_outline(cass_inset); }
+        along_y(-cass_t - eps, -cass_t + cass_c) cass_face(-1);
+        hull() { along_y(-cass_t - eps, -cass_t + tip) cass_face(cass_c);
+                 along_y(-cass_t + cass_c - tip, -cass_t + cass_c) cass_face(); }
     }
 }
 module cassette() head_at() cassette_raw();
@@ -594,6 +599,7 @@ module base() difference() {
         tie_loops();
         sw_wall_box();
         ballast_walls();
+        ball_switch_fill();
     }
     joint_halfspace();                                   // the tilted joint plane cuts the rim
     joint_neck();                                        // whose corners follow the head's bottom radius
@@ -650,8 +656,13 @@ module usbc_channel() {
     difference() {
         translate([usbc_xz[0] - usbc[1] / 2 - usbc_cl - usbc_wall, usbc_y0 - 2, usbc_xz[1] - usbc[2] / 2 - usbc_cl - usbc_wall])
             cube([usbc[1] + 2 * (usbc_cl + usbc_wall), body_d - wall - usbc_y0 + 2, usbc[2] + 2 * usbc_cl + usbc_wall]);
-        translate([usbc_xz[0] - usbc[1] / 2 - usbc_cl, usbc_y0 - 3, usbc_xz[1] - usbc[2] / 2 - usbc_cl])
+        // Starts at the board, not 3 mm in front of it: what is left is a 2 mm end wall the board bears on
+        // when a cable is pushed into the socket. Without it the board had 15 mm of free travel into the bay
+        // (audit 2026-09-23, A2). It drops in from above, so the wall is in its way at no point.
+        translate([usbc_xz[0] - usbc[1] / 2 - usbc_cl, usbc_y0, usbc_xz[1] - usbc[2] / 2 - usbc_cl])
             cube([usbc[1] + 2 * usbc_cl, body_d - usbc_y0 + 4, usbc[2] + 2 * usbc_cl + 2]);
+        translate([usbc_xz[0] - 4, usbc_y0 - 3, usbc_xz[1] + 1])      // notch in it for the wires
+            cube([8, 4, usbc[2]]);
         translate([usbc_xz[0] - usbc[1], body_d - wall - usbc[0] - 1, usbc_xz[1] - usbc[2] / 2 - usbc_cl - usbc_wall - 1])
             cube([2 * usbc[1], usbc[0] + 1 - usbc_floor, usbc_wall + 1]);   // floor only near the wall
     }
@@ -686,11 +697,15 @@ module ballast_walls() {
 module ballast_screw_holes() for (q = ball_posts())
     translate([q[0], q[1], ball[3] - pt_depth]) cylinder(d = pt_core, h = pt_depth + 1);
 // lid: it rests on the two walls, the ledge and the four posts, and reaches ball_lip over the front wall
+// The lid is notched round the switch body, and that notch sat over live trough volume: a 9 x 3.5 mm hole
+// from the iron into the electronics (audit 2026-09-23, A1). This block fills the trough underneath it.
+module ball_switch_fill() translate([ball[1] - 15, ball[2] + 3.2, floor_t - eps])
+    cube([15, 8.3, ball[3] - floor_t + eps]);   // starts behind the switch body, which reaches y 56
 module ball_lid() difference() {
     union() { ball_lid_plate(); chg_brackets(); }
     for (q = ball_posts()) translate([q[0], q[1], ball[3] - 1]) {
         cylinder(d = screw_clear_d, h = ball_lid_t + 2);
-        translate([0, 0, 1 + ball_lid_t - head_pocket[1]]) cylinder(d = head_pocket[0], h = head_pocket[1] + 1);
+        translate([0, 0, 1 + ball_lid_t - lid_pocket]) cylinder(d = head_pocket[0], h = lid_pocket + 1);
     }
     translate([ball[0] + 22, ball[2] + 6, ball[3] + ball_lid_t - ball_dish[1]])
         cylinder(d = ball_dish[0], h = ball_dish[1] + 1);
@@ -706,7 +721,7 @@ module ball_lid_plate() difference() {
     }
     for (q = ball_posts()) translate([q[0], q[1], ball[3] - 1]) {
         cylinder(d = screw_clear_d, h = ball_lid_t + 2);
-        translate([0, 0, 1 + ball_lid_t - head_pocket[1]]) cylinder(d = head_pocket[0], h = head_pocket[1] + 1);
+        translate([0, 0, 1 + ball_lid_t - lid_pocket]) cylinder(d = head_pocket[0], h = lid_pocket + 1);
     }
     translate([ball[0] + 22, ball[2] + 6, ball[3] + ball_lid_t - ball_dish[1]])   // grip to slide it out
         cylinder(d = ball_dish[0], h = ball_dish[1] + 1);
@@ -865,6 +880,8 @@ module screw(len, socket = false) difference() {
 module screws_fan(socket = false) head_at() for (p = fan_holes()) translate([p[0], head_y[2], p[1]]) orient([0, 1, 0]) screw(len_fan, socket);
 module screws_back(socket = false) head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) orient([0, -1, 0]) screw(len_back, socket);
 module screws_head(socket = false) head_at() for (p = rim_bosses()) translate([p[0], p[1], base_h + wall]) orient([0, 0, -1]) screw(len_head, socket);
+module screws_lid(socket = false) for (q = ball_posts())
+    translate([q[0], q[1], ball[3] + ball_lid_t - lid_pocket]) orient([0, 0, -1]) screw(len_lid, socket);
 module screws_feet(socket = false) for (p = foot_xy) translate([p[0], p[1], -foot[2] + foot_head_recess + screw_head_h]) orient([0, 0, 1]) screw(len_foot, socket);
 
 // ---------- driver access ----------
@@ -907,7 +924,7 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["magnet_pocket", mag], ["pot_mount_t", pot_mount_t], ["front_rim_z", base_top(0)],
     ["knob_top_z", pot_z + knob_d / 2], ["fan_axis_pitch", fan_pitch],
     ["foot_x", [foot_xy[0][0], foot_xy[1][0]]], ["foot_y", [foot_xy[0][1], foot_xy[2][1]]],
-    ["foot_size", foot], ["insert_depth", insert_depth], ["insert_hole_d", insert_hole_d],
+    ["foot_size", foot], ["foot_chamfer", foot_c], ["insert_depth", insert_depth], ["insert_hole_d", insert_hole_d],
     ["insert_w_min", insert_w_min], ["opening_sq", open_sq], ["fan_post", [fan_post_d, head_y[4] - head_y[3]]],
     ["base_h", base_h], ["joint_y", joint_y],
     ["foot_peg", foot_peg], ["ballast", ball], ["ballast_posts", ball_posts()], ["pt_core", pt_core], ["seat_y", head_y[2]], ["back_y", head_y[4]],

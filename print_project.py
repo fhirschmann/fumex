@@ -47,6 +47,7 @@ ASSEMBLY = {
     "screws_fan": "screws_fan();",
     "screws_back": "screws_back();",
     "screws_head": "screws_head();",
+    "screws_lid": "screws_lid();",
     "screws_feet": "screws_feet();",
     # A bit and its holder on every screw head. These must not touch anything, which is the whole check.
     "driver_fan": "drivers_fan();",
@@ -58,7 +59,6 @@ ASSEMBLY = {
 # the fan and the pot are solid envelopes, their screws and shaft run through them
 ALLOWED_OVERLAPS = [("fan", "screws_fan"),      # screws run through the holes of the solid fan envelope
                     ("knob", "pot"),           # the slotted sleeve is a press fit on the knurled shaft
-                    ("filter", "head"),        # the fleece mat is pressed into the corner gussets, checked below
                     # The drivers are checked against the state of the build at the moment that screw is
                     # driven, not against the finished assembly: the head screws go in through the open
                     # back before the cover, and the ballast lid is closed before the head goes on at all.
@@ -67,7 +67,10 @@ ALLOWED_OVERLAPS = [("fan", "screws_fan"),      # screws run through the holes o
                     # and the fan is screwed to the cover on the bench, where its front face is reachable,
                     # before either of them goes into the head
                     ("head", "driver_fan"), ("cassette", "driver_fan"), ("filter", "driver_fan"),
-                    ("screws_back", "driver_lid"), ("driver_back", "driver_lid")]
+                    ("screws_back", "driver_lid"), ("driver_back", "driver_lid"),
+                    # the lid screws form their own thread: the shank is wider than the core hole, and that
+                    # hole is a void in the base, so the trough envelope contains it
+                    ("base", "screws_lid"), ("ballast", "screws_lid")]
 
 # Multicolour: part -> inlay names. Black and grey are whole parts here, no inlays and no prime tower.
 COLOR_PARTS = {}
@@ -94,7 +97,7 @@ MAT = (120, 120, 17)      # the mat the user cut from a cooker hood filter
 DENSITY = {"PETG": 0.90e-3, "TPU": 1.20e-3, "iron-loose": 4.7e-3}
 MASSES_G = {"fan": 185, "battery": 150, "filter": 15, "pwm_board": 12, "chg_module": 3, "chg_sink": 5,
             "usbc": 2, "switch": 5, "led": 0.3, "magnets": 18, "pot": 6, "pot_nut": 2,
-            "screws_fan": 6, "screws_back": 4, "screws_head": 3, "screws_feet": 3}
+            "screws_fan": 6, "screws_back": 4, "screws_head": 3, "screws_feet": 3, "screws_lid": 3}
 # bodies whose mass comes from their volume rather than a data sheet
 BY_VOLUME = {"base": "PETG", "head": "PETG", "head_back": "PETG", "cassette": "PETG", "knob": "PETG",
              "feet": "TPU", "ball_lid": "PETG", "ballast": "iron-loose"}
@@ -139,7 +142,9 @@ def checks(ctx):
     ])
     # Stops: the fan cannot move sideways in its corner guides, the head is located by its screws
     # There is no register between head and base: the four screws locate it, so that is what is checked
+    # usbc_in: pushing a cable into the socket must not push the board into the bay
     stops = ctx.stops([("fan_sideways", "fan", "head", [1, 0, 0], 1.5),
+                       ("usbc_in", "usbc", "base", [0, -1, 0], 0.6),
                        ("head_on_screws", "head", "screws_head", [1, 0, 0], 0.6)])
     # The cell is held in open saddles by foam tape, so it has clearance instead of contact
     # 0.2 for the heatsink: nominal 0.3 in its wall cut-out, less the facets of the rounded corners
@@ -150,18 +155,19 @@ def checks(ctx):
     out = [0, -math.cos(tilt), -math.sin(tilt)]       # out of the intake face, normal to it
     paths = ctx.paths([
         ("cassette_off", "cassette", ["head", "base", "fan", "filter"], out, 30, 0.5),
-        ("cover_off", "head_back", ["head", "base", "fan", "screws_fan", "chg_module", "chg_sink"],
+        # the fan is bolted to the cover, so it comes off with it
+        ("cover_off", ["head_back", "fan", "screws_fan"], ["head", "base", "chg_module", "chg_sink"],
          [-o for o in out], 30, 0.5),
         # the board lifts out of its grooves once the cover is off; it has to, because it stands in the
         # way of the fan
-        ("chg_off", ["chg_module", "chg_sink"], ["base", "battery", "pwm_board"], [0, 0, 1], 30, 0.5),
+        ("chg_off", ["chg_module", "chg_sink"], ["base", "ball_lid", "battery", "pwm_board"], [0, 0, 1], 30, 0.5),
         # the rear head screw bosses hang over the trough, so the lid slides forward first; the cell
         # is out by then anyway
         # 10 mm up: clear of the trough walls, its posts, the USB-C channel above it and the run-outs of
         # the rear head screw bosses. Out of the bay it comes at an angle, past the switch well box on the
         # right - a tilt, which a rigid axis-aligned path cannot express.
         ("lid_off", "ball_lid", ["base", "ballast", "pwm_board", "usbc", "switch"], [0, 0, 1], 10, 0.5),
-        ("fan_out", "fan", ["head", "base"], [-o for o in out], 40, 0.5),      # back cover off first
+        ("fan_out", ["fan", "screws_fan"], ["head", "base"], [-o for o in out], 40, 0.5),   # cover off first
         ("head_off", ["head", "head_back", "cassette", "fan", "filter", "magnets"],
          ["base", "battery", "pwm_board", "usbc", "switch", "pot", "led", "ball_lid", "ballast",
           "chg_module", "chg_sink"], up, 60, 1),
@@ -198,12 +204,16 @@ def checks(ctx):
         total += grams
         moment = [moment[i] + grams * mesh.center_mass[i] for i in range(3)]
     com = [moment[i] / total for i in range(3)]
+    # The pads are chamfered at the bottom, so the undeformed contact patch is foot_chamfer smaller all
+    # round than the pad outline - and the floor is at -foot height, not at z = 0. Both were missing, which
+    # flattered the tip angle by about two degrees (audit 2026-09-23, S1).
     fx, fy = m["foot_x"], m["foot_y"]
-    pad = [m["foot_size"][0] / 2, m["foot_size"][1] / 2]
+    c = m["foot_chamfer"]
+    pad = [m["foot_size"][0] / 2 - c, m["foot_size"][1] / 2 - c]
     poly = [fx[0] - pad[0], fx[1] + pad[0], fy[0] - pad[1], fy[1] + pad[1]]
     margins = dict(front=com[1] - poly[2], back=poly[3] - com[1], left=com[0] - poly[0], right=poly[1] - com[0])
     assert min(margins.values()) >= 15, f"Centre of mass too close to a foot edge: {margins}"
-    tip_angle = math.degrees(math.atan(min(margins.values()) / com[2]))
+    tip_angle = math.degrees(math.atan(min(margins.values()) / (com[2] + m["foot_size"][2])))
     ctx.summary.append(f"{len(paths)} paths, tips at {tip_angle:.1f} degrees")
     ctx.open_items.append("Masses of the bought parts are data-sheet or estimated values, not weighed")
     return dict(contact_volumes_mm3=contacts, stops=stops, clearances_mm=gaps, sampled_paths=paths, insert_probes=probes,
