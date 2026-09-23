@@ -246,8 +246,8 @@ head_pocket = [6.4, 1.9];
 // One row in the plenum behind the fan: the only place inside the head where a driver reaches the rim.
 // Everywhere else the filter tube, the fan or the lower back cover boss stands over the screw, and the
 // 5.75 mm channel beside the tube takes no bit at all (user, 2026-09-23). Mechanically that is also the
-// right row - the head leans forward, so its centre of mass sits 19 mm in front of the joint centre and
-// presses the front of the joint together while lifting the back.
+// right row - the head leans forward, so the head group (523 g with fan and mat) has its centre of
+// mass 22 mm in front of the joint centre, pressing the front of the joint together and lifting the back.
 rim_screws = [[25, 66], [120, 66]];
 rim_boss_len = 9;
 rim_boss_d = 10;     // 13 bulged 12.5 mm into the bay and read as a random step (user, 2026-09-22)

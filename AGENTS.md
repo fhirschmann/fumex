@@ -67,7 +67,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   actually be reached - four of four could not). Vertical access inside the head exists only in the plenum
   behind the fan: further forward the filter tube or the fan stands over the rim, and the 5.75 mm channel
   beside the tube takes no bit. y 66 is the minimum that lets the Ø10 base boss reach the back wall it hangs
-  from. Mechanically it is also the right row - the head's centre of mass is 19 mm in front of the joint, so
+  from. Mechanically it is also the right row - the head group's centre of mass is 22 mm in front of the joint, so
   the front of the joint is in compression and only the back needs holding down. The back cover's lip is
   notched over the screw heads. `rim_boss_bodies()` is clipped to `base_outline()`: tilted, the 45 degree
   run-out towards the back wall reached 2.4 mm past the back face.
