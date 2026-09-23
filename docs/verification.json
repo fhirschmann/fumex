@@ -1,5 +1,5 @@
 {
-  "source_sha256": "79f209acfdfb707f1766b8e4cdad31197906330cbb473d05da0cec372901f45b",
+  "source_sha256": "1faf1aec9e7b72b97bc3df5194a4243ce4bc0179786882d474c94ea91af653c0",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -29,17 +29,17 @@
           57.6462
         ]
       ],
-      "volume_mm3": 101558.0011,
-      "triangles": 6212,
+      "volume_mm3": 105280.0601,
+      "triangles": 5984,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "bf3aad6de2aad06d2f390c3c00b196232cb632ea0ab9447bfca90eee1177a594",
+      "sha256": "db58a073ac59571080d55fcd95042d4b9c6c5e7e06a3b0ac4a2a8d61c917d762",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "bf3aad6de2aad06d2f390c3c00b196232cb632ea0ab9447bfca90eee1177a594"
+      "committed_sha256": "db58a073ac59571080d55fcd95042d4b9c6c5e7e06a3b0ac4a2a8d61c917d762"
     },
     "head": {
       "size_mm": [
@@ -66,10 +66,10 @@
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "f777291379d9470733380629a608bdc4afa43c622754e9a96eb4a624f4ee04d5",
+      "sha256": "0df0630f2a05859507eb97a954d2fee48c3848a5d24a3bee028449e58217d91b",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "f777291379d9470733380629a608bdc4afa43c622754e9a96eb4a624f4ee04d5"
+      "committed_sha256": "0df0630f2a05859507eb97a954d2fee48c3848a5d24a3bee028449e58217d91b"
     },
     "head_back": {
       "size_mm": [
@@ -194,8 +194,8 @@
   },
   "color_meshes": {},
   "color_parts": {},
-  "assembly_bodies": 22,
-  "assembly_pairs": 231,
+  "assembly_bodies": 23,
+  "assembly_pairs": 253,
   "metrics": {
     "wall": 3,
     "tilt": 15,
@@ -225,7 +225,7 @@
       135
     ],
     "foot_y": [
-      10,
+      5,
       62
     ],
     "foot_size": [
@@ -245,6 +245,19 @@
       3,
       2,
       7
+    ],
+    "ballast": [
+      [
+        3,
+        50,
+        24
+      ],
+      [
+        114,
+        142,
+        20
+      ],
+      1.5
     ],
     "seat_y": 30.7,
     "back_y": 68,
@@ -313,8 +326,15 @@
   },
   "intersections": [],
   "alignment": {
-    "features": 135,
+    "features": 163,
     "coaxial_pairs": {
+      "ballast|base": 42,
+      "ballast|feet": 24,
+      "ballast|head": 4,
+      "ballast|knob": 1,
+      "ballast|led": 2,
+      "ballast|pot_nut": 2,
+      "ballast|screws_feet": 16,
       "base|battery": 3,
       "base|feet": 20,
       "base|head": 4,
@@ -344,7 +364,7 @@
     "head@base": 36.4705,
     "cassette@head": 295.4148,
     "fan@head": 132.6504,
-    "feet@base": 53.8103,
+    "feet@base": 46.1379,
     "pwm_board@base": 3.473,
     "chg_module@base": 4.107
   },
@@ -600,7 +620,7 @@
       "body": "base",
       "at": [
         10.0,
-        10.0,
+        5.0,
         0.0
       ],
       "empty_mm3": 0.0,
@@ -611,7 +631,7 @@
       "body": "base",
       "at": [
         135.0,
-        10.0,
+        5.0,
         0.0
       ],
       "empty_mm3": 0.0,
@@ -643,25 +663,25 @@
   ],
   "intake_lip_mm": 2.25,
   "mat_squashed_percent": 2.3,
-  "mass_g": 817.8,
+  "mass_g": 890.0,
   "centre_of_mass_mm": [
-    68.2,
-    22.5,
-    82.8
+    67.4,
+    25.8,
+    77.1
   ],
   "foot_polygon_mm": [
     1.0,
     144.0,
-    2.0,
+    -3.0,
     70.0
   ],
   "tip_margins_mm": {
-    "front": 20.5,
-    "back": 47.5,
-    "left": 67.2,
-    "right": 75.8
+    "front": 28.8,
+    "back": 44.2,
+    "left": 66.4,
+    "right": 76.6
   },
-  "tip_angle_deg": 13.9,
+  "tip_angle_deg": 20.5,
   "stl_difference_mm3": {
     "base": 0.0,
     "head": 0.0,

@@ -41,6 +41,7 @@ ASSEMBLY = {
     "usbc": "usbc_env();",
     "switch": "sw_env();",
     "led": "led_env();",
+    "ballast": "ballast_env();",
     "screws_fan": "screws_fan();",
     "screws_back": "screws_back();",
     "screws_head": "screws_head();",
@@ -70,12 +71,14 @@ SLICER_SUMMARY = "docs/slicer-summary.json"
 
 # Masses used only for the tipping check: printed parts from their mesh volume, bought parts measured
 # or from the data sheet. The effective print density covers walls plus 20 % gyroid.
-DENSITY = {"PETG": 0.90e-3, "TPU": 1.20e-3}    # g/mm3
+# g/mm3; the ballast is iron offcuts potted in epoxy, about 60 % metal by volume
+DENSITY = {"PETG": 0.90e-3, "TPU": 1.20e-3, "iron-epoxy": 5.2e-3}
 MASSES_G = {"fan": 185, "battery": 150, "filter": 15, "pwm_board": 12, "chg_module": 3, "chg_sink": 5,
             "usbc": 2, "switch": 5, "led": 0.3, "magnets": 18, "pot": 6, "pot_nut": 2,
             "screws_fan": 6, "screws_back": 4, "screws_head": 3, "screws_feet": 3}
-PRINTED = {"base": "PETG", "head": "PETG", "head_back": "PETG", "cassette": "PETG", "knob": "PETG",
-           "feet": "TPU"}
+# bodies whose mass comes from their volume rather than a data sheet
+BY_VOLUME = {"base": "PETG", "head": "PETG", "head_back": "PETG", "cassette": "PETG", "knob": "PETG",
+             "feet": "TPU", "ballast": "iron-epoxy"}
 
 LIMITATIONS = ["Hardware envelopes, not detailed vendor CAD",
                "Sampled motion, no continuous swept-volume proof",
@@ -156,7 +159,7 @@ def checks(ctx):
     # Tipping: the head leans forward, so the centre of mass must stay well inside the foot polygon
     total, moment = 0.0, [0.0, 0.0, 0.0]
     for name, mesh in ctx.meshes.items():
-        grams = (mesh.volume * DENSITY[PRINTED[name]] if name in PRINTED else MASSES_G.get(name, 0.0))
+        grams = (mesh.volume * DENSITY[BY_VOLUME[name]] if name in BY_VOLUME else MASSES_G.get(name, 0.0))
         total += grams
         moment = [moment[i] + grams * mesh.center_mass[i] for i in range(3)]
     com = [moment[i] / total for i in range(3)]
@@ -214,7 +217,8 @@ VIEWER = dict(
            ("screws_fan", "Screws M3 x 30", "bought", "#9aa0a6", "4x", [0, 0.9, 1.35]),
            ("screws_back", "Screws M3 x 8", "bought", "#9aa0a6", "6x", [0, 2.8, 0.6]),
            ("screws_head", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, -0.3, 1.6]),
-           ("screws_feet", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, 0, -1.0])],
+           ("screws_feet", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, 0, -1.0]),
+           ("ballast", "Ballast, iron in epoxy", "bought", "#6b6f74", "2x", [0, 0, -0.3])],
     bodies={"fan_visual": "fan_visual();"},
     output="build/viewer.html",
 )
