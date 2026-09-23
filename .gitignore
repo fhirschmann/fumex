@@ -1,0 +1,8 @@
+.DS_Store
+# derived working files, reproducible from the model
+build/
+asm/
+.venv/
+__pycache__/
+# vendor CAD (licence), only for the viewer
+vendor/

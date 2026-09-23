@@ -1,0 +1,15 @@
+LEO-AC1
+Copyright (c) 2026 Fabian Hirschmann
+
+Model, printable files, images and documentation (everything in this repository except scripts/) are
+licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International licence
+(CC BY-NC-SA 4.0). You may share and adapt them for non-commercial purposes if you give appropriate
+credit and distribute your contributions under the same licence.
+
+  Summary:    https://creativecommons.org/licenses/by-nc-sa/4.0/
+  Legal code: https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
+
+The scripts in scripts/ are licensed under the MIT licence, see LICENSE-MIT.
+
+Third-party names and products (Noctua, Mitsubishi, Ruthex, Bambu Lab and the linked shops) belong to
+their owners. The Noctua CAD model is not part of this repository.
