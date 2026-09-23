@@ -90,8 +90,17 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     it is not tangent to the outer face of the side wall, and the cut reaches 1 mm above the joint plane so
     its top face is not coplanar with the one `joint_halfspace()` leaves. Either coincidence left a
     zero-volume four-triangle shell and a second body in the export.
-  - Still open: the head's footprint is a sharp 145 x 74 rectangle in plan, the base's the same rectangle
-    with R6 vertical edges, so the head stands about 2.5 mm proud at the four corners of the joint.
+- **The four vertical edges: `plan_r` = 3.5, shared.** `plan_prism()` is `base_outline()` extruded over the
+  head's height and intersected with the head, the back cover and the cassette, so the head's footprint is
+  the base's and the vertical edges run through the joint without a step. Before this the head was a sharp
+  145 x 74 rectangle in plan against the base's R6 and stood 2.5 mm proud at all four corners (user,
+  2026-09-23: "die rundungen sind immer noch falsch").
+  - 3.5 is capped by the magnet pockets in the intake face, not chosen freely. The pocket has to clear the
+    rounded plan corner by 1.2 mm and the intake opening by 1.2 mm, which at R6 leaves an empty window
+    (inset >= 12.35 and <= 10.39). At 3.5 the window is 9.85 to 10.39 and `mag_off` 62.5 puts the magnets
+    at inset 10: 1.3 mm to the corner, 1.8 mm to the opening.
+  - The cassette stands `cass_t` in front of the footprint, so `cass_prism()` runs the prism on forward at
+    the width the footprint has at y = 0 rather than rounding a second time in the wrong place.
 - The back cover runs the full height of the head (user, 2026-09-22); the head floor stops at its inner face. Its lower edge keeps `cover_gap` = 0.3 mm off the joint plane, otherwise the two coplanar faces grind along each other on the way off and `cover_off` fails on facet-level overlap. Four screws, not six (user).
 - Feet: four TPU pads, one M3 × 8 each plus a Ø3 peg against turning. A keying pocket in the bottom face was 275 mm² of flat overhang per foot, so it went.
 - Tipping: `checks()` computes the centre of mass from mesh volumes and part masses and requires ≥ 15 mm to every foot edge. Currently 30.6 mm at the front, 23.3°, 1.02 kg (13.8° when this started).
