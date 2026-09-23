@@ -329,7 +329,14 @@ module head_at() translate([0, joint_y, base_h]) rotate([tilt, 0, 0]) translate(
 module joint_halfspace() head_at() translate([-40, -40, base_h]) cube([body_w + 80, body_d + 80, 400]);
 
 module base_outline(inset = 0) translate([body_w / 2, body_d / 2]) rrect([body_w - 2 * inset, body_d - 2 * inset], max(corner_r - inset, 0.5));
-module head_outline(inset = 0) translate([body_w / 2, head_cz]) rrect([body_w - 2 * inset, head_h - 2 * inset], max(corner_r - inset, 0.5));
+// Rounded at the top, square at the bottom: the two bottom corners sit on the joint plane, and a radius
+// there pulls the head 6 mm in from the base rim - the step the user pointed at (2026-09-23). Squared,
+// the side walls of head and base run into each other without an offset.
+module head_outline(inset = 0) let (w = body_w - 2 * inset, h = head_h - 2 * inset)
+    translate([body_w / 2, head_cz]) union() {
+        rrect([w, h], max(corner_r - inset, 0.5));
+        translate([0, -h / 4]) square([w, h / 2], center = true);
+    }
 module head_centre_sq(size, r) translate([body_w / 2, head_cz]) rrect([size, size], r);
 
 // Square grid of rounded cells, centred on the origin and trimmed to a square area
