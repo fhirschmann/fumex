@@ -52,12 +52,12 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "a94a1c8be14d2e427b7de167a28e221e83d239f13fa9a34876ef3131312d23fe",
+      "source_sha256": "9451a916094860177502fcaa842276f34b89aa3c9e98539e93a5dedb9f0221b9",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.507,
-      "grams": 57.07,
+      "hours": 2.501,
+      "grams": 57.003,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -75,12 +75,12 @@
       "quantity": 1,
       "material": "PETG-grey",
       "passed": true,
-      "source_sha256": "adc79b6ac92733ba5866f3da7fce293f9c6dc03dc645630b4c38849e5ddcc012",
+      "source_sha256": "ecdae6627528421b0be45d9e4472935429e48abb32db54033637c845b3b8d840",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.466,
-      "grams": 51.884,
+      "hours": 2.473,
+      "grams": 51.526,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -164,7 +164,7 @@
     }
   ],
   "total_parts": 10,
-  "total_grams_individual_plates": 477.2,
+  "total_grams_individual_plates": 476.7,
   "total_hours_individual_plates": 16.4,
   "production_gcode": false,
   "project_3mf": {
@@ -224,7 +224,7 @@
       }
     ],
     "total_hours_plates": 15.8,
-    "total_grams_plates": 476.8,
+    "total_grams_plates": 476.4,
     "multicolour_parts": {},
     "multicolour_slices": {},
     "pause_slices": {},
@@ -241,15 +241,15 @@
         "plate": 2,
         "hours": 6.16,
         "grams_by_filament": {
-          "1": 175.99
+          "1": 175.92
         },
         "warnings": "It seems object base_1 has floating cantilever. Please re-orient the object or enable support generation."
       },
       "Grey parts": {
         "plate": 3,
-        "hours": 2.83,
+        "hours": 2.84,
         "grams_by_filament": {
-          "2": 58.25
+          "2": 57.9
         },
         "warnings": ""
       },
@@ -263,6 +263,6 @@
       }
     },
     "own_infill_parts": 4,
-    "sha256": "4ba35f3adbd101052a7d455144f85a990e68d3a004acb7ffc085672a3c95ff03"
+    "sha256": "5c8234d2145b917da12f1886f95bd8cc8dd910b7eb3289ebf58bb453e31b6c26"
   }
 }

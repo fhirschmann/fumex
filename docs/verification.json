@@ -1,5 +1,5 @@
 {
-  "source_sha256": "e932d930c7f67d22154291fecebf03164361e349c14b982933b6a18034997b58",
+  "source_sha256": "480aad5059feb2940662b75dc6bce5cff9c9665334bcc359e3819f356bb56d48",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -89,17 +89,17 @@
           8.0
         ]
       ],
-      "volume_mm3": 57382.1233,
-      "triangles": 10014,
+      "volume_mm3": 57318.4721,
+      "triangles": 10270,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "a94a1c8be14d2e427b7de167a28e221e83d239f13fa9a34876ef3131312d23fe",
+      "sha256": "9451a916094860177502fcaa842276f34b89aa3c9e98539e93a5dedb9f0221b9",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "a94a1c8be14d2e427b7de167a28e221e83d239f13fa9a34876ef3131312d23fe"
+      "committed_sha256": "9451a916094860177502fcaa842276f34b89aa3c9e98539e93a5dedb9f0221b9"
     },
     "cassette": {
       "size_mm": [
@@ -119,17 +119,17 @@
           4.5
         ]
       ],
-      "volume_mm3": 54751.0612,
-      "triangles": 9590,
+      "volume_mm3": 54078.8889,
+      "triangles": 9566,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "adc79b6ac92733ba5866f3da7fce293f9c6dc03dc645630b4c38849e5ddcc012",
+      "sha256": "ecdae6627528421b0be45d9e4472935429e48abb32db54033637c845b3b8d840",
       "quantity": 1,
       "material": "PETG-grey",
-      "committed_sha256": "adc79b6ac92733ba5866f3da7fce293f9c6dc03dc645630b4c38849e5ddcc012"
+      "committed_sha256": "ecdae6627528421b0be45d9e4472935429e48abb32db54033637c845b3b8d840"
     },
     "knob": {
       "size_mm": [
@@ -685,11 +685,11 @@
   ],
   "intake_lip_mm": 2.25,
   "mat_squashed_percent": 2.3,
-  "mass_g": 1028.9,
+  "mass_g": 1028.3,
   "centre_of_mass_mm": [
     68.5,
     30.5,
-    68.8
+    68.7
   ],
   "foot_polygon_mm": [
     9.0,
