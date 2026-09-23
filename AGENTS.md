@@ -78,13 +78,20 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 - Ballast lid posts moved to x 45/90 (from 30/115): the rim bosses now hang over the trough left and right,
   and the USB-C channel and the tie loops block everything right of x 90. Vent slots 14 mm instead of 16,
   so the rim bosses clear them.
-- `head_outline()` is rounded at the top and **square at the bottom** (user, 2026-09-23). With a radius on the two bottom corners the head measured only 133 mm across at the joint plane while the base rim is 145, so its side walls curved away from the base and left a 6 mm step. Squared, the side walls of head and base run into each other.
-  - Carrying the radius through the joint instead - which the user asked for on 2026-09-23 - does not work at
-    `corner_r` 6 and `wall` 3, and this was built and measured before it was dropped: necking the base rim to
-    133 mm removes the whole 3 mm side wall for the top 3 mm (the export came back with 7 bodies), and the
-    head's bottom face would be 133 mm wide against a 139 mm bay opening, so it would bear on the front and
-    back rim only. It needs side walls of 7 mm over the top 12 mm and the cell moved 4 mm right.
-  - What is left is the plan corners: the head's footprint is a sharp 145 x 74 rectangle, the base's is the same rectangle with R6 vertical edges, so the head stands about 2.5 mm proud at the four corners of the joint. A 3.5 mm 45 degree chamfer on the head's plan corners would track that R6 arc to within a few tenths (checked), but it also cuts into the magnet pockets unless `mag_off` drops from 64.2 to about 63. Not done; raise it with the user before touching it.
+- `head_outline()` is rounded `corner_r` = 6 at the top and `corner_rb` = **2** at the two corners on the
+  joint plane, and `joint_neck()` cuts the same 2 mm into the base rim with a 45 degree run-out, so head
+  and base meet without a step and nothing stands proud behind the back cover or the cassette.
+  - The radius at the joint is limited by the wall, and this was built and measured before it was dropped.
+    At `corner_r` 6 the neck removes the whole 3 mm side wall of the base over its top 3 mm - the export
+    came back with 7 bodies - and the head's bottom face would be 133 mm wide against a 139 mm bay opening,
+    so it would bear on the front and back rim only. R6 needs side walls of 7 mm over the top 12 mm and the
+    cell moved 4 mm right. The user chose R2 instead (2026-09-23).
+  - Two details in `joint_neck()` are about the export, not the shape: the run-out ends `body_w + 2` wide so
+    it is not tangent to the outer face of the side wall, and the cut reaches 1 mm above the joint plane so
+    its top face is not coplanar with the one `joint_halfspace()` leaves. Either coincidence left a
+    zero-volume four-triangle shell and a second body in the export.
+  - Still open: the head's footprint is a sharp 145 x 74 rectangle in plan, the base's the same rectangle
+    with R6 vertical edges, so the head stands about 2.5 mm proud at the four corners of the joint.
 - The back cover runs the full height of the head (user, 2026-09-22); the head floor stops at its inner face. Its lower edge keeps `cover_gap` = 0.3 mm off the joint plane, otherwise the two coplanar faces grind along each other on the way off and `cover_off` fails on facet-level overlap. Four screws, not six (user).
 - Feet: four TPU pads, one M3 × 8 each plus a Ø3 peg against turning. A keying pocket in the bottom face was 275 mm² of flat overhang per foot, so it went.
 - Tipping: `checks()` computes the centre of mass from mesh volumes and part masses and requires ≥ 15 mm to every foot edge. Currently 30.6 mm at the front, 23.3°, 1.02 kg (13.8° when this started).

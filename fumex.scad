@@ -21,6 +21,7 @@ body_d = 74;         // outer depth (y): base and head share one footprint, so t
 wall = 3;            // walls, at least seven 0.4 mm lines
 floor_t = 3.2;       // base floor
 corner_r = 6;
+corner_rb = 2;       // at the joint: small enough that the base rim can follow it, see head_outline()
 edge_c = 1.2;        // 45 degree chamfer on the bed edges
 tilt = 15;           // forward lean of the head (user: the housing itself makes the bend)
 base_h = 48;         // joint plane height at mid-depth; the plane rises towards the back
@@ -346,17 +347,31 @@ module head_at() translate([0, joint_y, base_h]) rotate([tilt, 0, 0]) translate(
 module joint_halfspace() head_at() translate([-40, -40, base_h]) cube([body_w + 80, body_d + 80, 400]);
 
 module base_outline(inset = 0) translate([body_w / 2, body_d / 2]) rrect([body_w - 2 * inset, body_d - 2 * inset], max(corner_r - inset, 0.5));
-// Rounded at the top, square at the bottom: with a radius there the head measures only 133 mm across at
-// the joint plane while the base rim is 145, so its side walls curve away from the base (user, 2026-09-23).
-// Carrying the radius through the joint is not possible at corner_r 6 and wall 3: the neck would eat the
-// whole 3 mm side wall of the base and the head's bottom face would be narrower than the bay opening.
-// square_bottom = false gives the back cover and the cassette their radius on all four corners - neither
-// of them lands on the rim.
-module head_outline(inset = 0, square_bottom = true) let (w = body_w - 2 * inset, h = head_h - 2 * inset)
+// corner_r at the top, corner_rb at the two corners that sit on the joint plane. They have to be smaller:
+// whatever radius the head has there, the base rim has to follow it or the head's side walls curve away
+// from the base and leave a step. At corner_r = 6 that neck would remove the whole 3 mm side wall of the
+// base over its top 3 mm - built and measured, the export came back as 7 separate bodies - and the head's
+// bottom face would be 133 mm wide against a 139 mm bay opening, bearing on the front and back rim only.
+// At 2 the rim keeps 1 mm of wall and the head still overlaps it by 1 mm (user chose R2, 2026-09-23).
+module head_outline(inset = 0)
+    let (w = body_w - 2 * inset, h = head_h - 2 * inset,
+         rt = max(corner_r - inset, 0.5), rb = max(corner_rb - inset, 0.5))
     translate([body_w / 2, head_cz]) union() {
-        rrect([w, h], max(corner_r - inset, 0.5));
-        if (square_bottom) translate([0, -h / 4]) square([w, h / 2], center = true);
+        intersection() { rrect([w, h], rt); translate([0,  h / 4]) square([w, h / 2], center = true); }
+        intersection() { rrect([w, h], rb); translate([0, -h / 4]) square([w, h / 2], center = true); }
     }
+// The base rim follows the head's bottom corners down: corner_rb narrower at the joint plane, back to the
+// full width over corner_rb below it. A mirrored copy of the arc would meet the side wall tangentially and
+// leave a zero-volume sliver in the export, so the run-out is a straight 45 degrees.
+module joint_neck() head_at() along_y(-1, body_d + 1) difference() {
+    translate([body_w / 2, base_h - corner_rb / 2 + 0.5]) square([body_w + 40, corner_rb + 1], center = true);
+    hull() { translate([body_w / 2, base_h + 0.5]) square([body_w - 2 * corner_rb, 1 + tip], center = true);
+             translate([body_w / 2, base_h - corner_rb + tip / 2]) square([body_w + 2, tip], center = true); }
+    // Two things here are about the export, not the shape: the run-out ends 1 mm wider than the housing, so
+    // it is not tangent to the outer face of the side wall, and the cut reaches 1 mm above the joint plane,
+    // so its top face is not coplanar with the one joint_halfspace() leaves. Either coincidence left a
+    // zero-volume four-triangle shell beside the base and a second body in the export.
+}
 module head_centre_sq(size, r) translate([body_w / 2, head_cz]) rrect([size, size], r);
 
 // Square grid of rounded cells, centred on the origin and trimmed to a square area
@@ -461,10 +476,10 @@ module head_back_raw() intersection() {
     translate([-1, head_y[4] - lip_h - 1, base_h + cover_gap]) cube([body_w + 2, back_t + lip_h + 2, head_h]);
     difference() {
     union() {
-        along_y(head_y[4], body_d) head_outline(0, false);
+        along_y(head_y[4], body_d) head_outline();
         along_y(head_y[4] - lip_h, head_y[4] + eps) difference() {
-            head_outline(wall + lip_cl, false);
-            head_outline(wall + lip_cl + lip_t, false);
+            head_outline(wall + lip_cl);
+            head_outline(wall + lip_cl + lip_t);
             for (p = head_bosses()) offset(r = 0.8) translate([p[0], p[1]]) circle(d = boss_d);
             // and clear of the head screw heads sitting in the floor below it
             for (p = rim_bosses()) offset(r = 0.8) translate([p[0], base_h + wall]) circle(d = head_pocket[0]);
@@ -476,9 +491,9 @@ module head_back_raw() intersection() {
         cyl_y(p, body_d - head_pocket[1], body_d + 1, head_pocket[0] / 2);
     }
     difference() {                                                      // chamfer on the outer bed face
-        along_y(body_d - edge_c, body_d + eps) head_outline(-1, false);
-        hull() { along_y(body_d - edge_c, body_d - edge_c + tip) head_outline(0, false);
-                 along_y(body_d - tip, body_d) head_outline(edge_c, false); }
+        along_y(body_d - edge_c, body_d + eps) head_outline(-1);
+        hull() { along_y(body_d - edge_c, body_d - edge_c + tip) head_outline();
+                 along_y(body_d - tip, body_d) head_outline(edge_c); }
     }
     // The joint plane cuts the plate square again along its lower edge, which left the one sharp edge on the
     // part, right where it lands on the base (user, 2026-09-23). Same 45 degree chamfer as the rest of the
@@ -495,13 +510,13 @@ module head_back_print_pose() translate([0, -base_h, body_d]) rotate([-90, 0, 0]
 // The cassette lies on the intake face and touches no rim, so like the back cover it keeps the radius
 // on all four corners rather than the shell's square bottom (user, 2026-09-23).
 module cassette_raw() difference() {
-    along_y(-cass_t, 0) head_outline(cass_inset, false);
+    along_y(-cass_t, 0) head_outline(cass_inset);
     translate([body_w / 2, 0, head_cz]) along_y(-cass_t - 1, 1) grid_2d(open_sq);
     for (p = mag_xz()) cyl_y(p, -mag[1], eps, mag[0] / 2);              // pockets open towards the head
     difference() {                                                      // chamfer on the outer bed face
-        along_y(-cass_t - eps, -cass_t + cass_c) head_outline(-1, false);
-        hull() { along_y(-cass_t - eps, -cass_t + tip) head_outline(cass_inset + cass_c, false);
-                 along_y(-cass_t + cass_c - tip, -cass_t + cass_c) head_outline(cass_inset, false); }
+        along_y(-cass_t - eps, -cass_t + cass_c) head_outline(-1);
+        hull() { along_y(-cass_t - eps, -cass_t + tip) head_outline(cass_inset + cass_c);
+                 along_y(-cass_t + cass_c - tip, -cass_t + cass_c) head_outline(cass_inset); }
     }
 }
 module cassette() head_at() cassette_raw();
@@ -526,6 +541,7 @@ module base() difference() {
         ballast_walls();
     }
     joint_halfspace();                                   // the tilted joint plane cuts the rim
+    joint_neck();                                        // whose corners follow the head's bottom radius
     // That plane rises 15 degrees towards the back, so it meets the vertical back face at 75 degrees and
     // leaves an acute edge across the full width - the sharp edge under the back cover (user, 2026-09-23).
     // Cut at 45 degrees to the joint plane, so it mirrors the chamfer on the cover's lower edge and the two
