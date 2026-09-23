@@ -113,15 +113,21 @@ pwm_pins = 3;        // solder pins below the PCB (measured 2-3)
 pwm_edge_free = 1.5; // pin-free strips along both long edges (measured)
 pwm_pad = 1.2;       // rib pads under those strips
 pwm_rib = 3;
+pwm_hole_d = 3.2;   // measured PCB holes, user 2026-09-23
+pwm_hole_edge = 3;  // hole centres from the front and each side edge
+pwm_boss_d = 6;     // user confirmed clear bearing area on both PCB faces
+pwm_core_d = 2.0;   // starting pilot for 2.5 mm plastic-forming screws; verify on printed PETG
+pwm_core_depth = 7.4;
+pwm_install_lift = 3.5; // concealed vertical travel for lifting the board off its screw bosses
+pwm_core_entry = [2.7, 0.7]; // relieved mouth: diameter, depth
+pwm_screw = [2.5, 8, 4.5, 2.5]; // shank, under-head length, measured head diameter, conservative head-height envelope
 pot_x = 116;         // potentiometer axis in the front panel (user, 2026-09-23: further right)
 pot_z = 21;          // above the front foot bosses, low enough that the knob clears the front rim
 pot_axis_h = 6.3;    // PCB top to shaft centre
 pot_shaft_d = 5.8;   // measured outside the knurling
 pot_shaft_free = 9.5;
 pot_bush = [6.73, 5];       // bushing outside diameter, thread length from the housing shoulder (measured)
-pot_nut = [11.6, 2.15];     // across corners (10 across flats), thickness (measured)
-pot_washer = [11, 0.85];
-pot_thread_reserve = 0.2;
+pot_shoulder_y = 1.8; // preserve the fitted PCB position; the switch limits rearward movement
 pot_bush_cl = 0.4;
 pot_housing = 13;    // potentiometer housing on the PCB edge (12 mm pot assumed)
 pot_recess_r = 10;
@@ -130,14 +136,13 @@ pot_tab_cl = 0.4;    // clearance per side around the anti-rotation tab
 pot_pcb_cl = 0.3;
 
 /* [Speed knob] */
-knob_d = 26;
+knob_d = 24;
 knob_skin = 2;       // solid above the shaft end; knob_len follows the pot shaft, not the other way
 
 knob_gap = 1.5;      // underside off the wall face
 knob_bore_over = 0.3;
 knob_cavity_d = 13;
 knob_stem_d = 10;
-knob_stem_cl = 0.5;
 knob_bore_cl = 0;    // nominal 5.8 bore; validate the push fit on the real knurled shaft
 knob_slit = [1, 6];
 knob_flutes = 18;
@@ -274,7 +279,7 @@ head_cz = base_h + head_h / 2;
 head_y = [front_t, front_t + chamber_d, front_t + chamber_d + lug_d,
           front_t + chamber_d + lug_d + fan_t, body_d - back_t];   // chamber, mat end, fan, plenum, cover
 tube_sq = chamber_sq + 2 * tube_w;
-pot_mount_t = pot_bush[1] - pot_nut[1] - pot_washer[1] - pot_thread_reserve;
+pot_mount_t = pot_shoulder_y; // housing shoulder depth, independent of front fastening hardware
 pot_nose_len = pwm_total_len - pwm_pcb[0] - pot_shaft_free - pot_bush[1];
 pwm_wall_gap = pot_mount_t + pot_nose_len - wall;    // negative: the PCB edge reaches into the wall slot
 pot_recess = wall - pot_mount_t;
@@ -282,7 +287,7 @@ pwm_pcb_slot = max(0, -pwm_wall_gap) + pot_pcb_cl;
 pwm_y0 = wall + pwm_wall_gap;
 pwm_z0 = pot_z - pot_axis_h - pwm_pcb[2];
 pwm_x = [pot_x - pwm_pcb[1] / 2, pot_x + pwm_pcb[1] / 2];
-knob_sleeve_z = pot_washer[1] + pot_nut[1] - knob_gap + knob_stem_cl;
+knob_sleeve_z = max(0, pot_bush[1] - pot_mount_t - knob_gap + 0.3); // clear the threaded bushing
 knob_bore_top = pot_bush[1] - pot_mount_t + pot_shaft_free - knob_gap + knob_bore_over;
 knob_len = knob_bore_top + knob_skin;   // 15.0 mm proud of the front face, and all of it is the 9.5 mm
                                         // shaft: the knob cannot get flatter without cutting it (user
@@ -324,7 +329,11 @@ assert(fan_post_d / 2 >= insert_hole_d / 2 + insert_w_min, "Fan posts too thin f
 assert(guide_c > 0 && guide[0] - guide_c >= 1.2, "Fan guide lead-in leaves less than three perimeters");
 assert(head_y[4] - head_y[3] >= insert_depth + 1, "Fan posts too short for the inserts");
 assert(open_sq < chamber_sq - 2, "Intake lip does not hold the mat");
-assert(pot_mount_t > 1.2, "Wall under washer and nut too thin");
+assert(pot_mount_t > 1.2, "Front wall around the bushing too thin");
+assert(pwm_screw[1] - pwm_pcb[2] <= pwm_core_depth - 1, "PWM screw bottoms in its pilot hole");
+assert(pwm_z0 - pwm_core_depth - floor_t >= 2, "PWM pilot leaves too little material over the floor");
+assert(pwm_boss_d >= pwm_screw[2] + 1.2, "PWM boss too narrow for the screw bearing");
+assert(pwm_boss_d <= 2 * pwm_hole_edge, "PWM bosses project beyond the confirmed mounting pads");
 assert(base_top(0) > pot_z + knob_d / 2 + 2, "Knob reaches over the front rim");
 assert(chg_sink_z > ball[3] + ball_lid_t + 1.2, "Heatsink too close to the ballast lid");
 assert(chg_y0 - chg_comp_h > ball[2] + 1 && chg_y0 + chg_pcb[2] + chg_sink[3] + chg_sink[2] < body_d - wall - 1,
@@ -762,6 +771,7 @@ module base() difference() {
         }
         battery_cradle();
         pwm_ribs();
+        pwm_bosses();
         led_boss_body();
         usbc_channel();
         rim_boss_bodies();
@@ -778,6 +788,10 @@ module base() difference() {
     head_at() along_x(-1, body_w + 1)
         polygon([[body_d - edge_c, base_h], [body_d + 3, base_h - edge_c - 3], [body_d + 3, base_h + 3]]);
     pot_cuts();
+    pwm_pilots();
+    // The inward-curving upper rim needs shallow relief for the slim driver shafts.
+    for (p = pwm_holes()) translate([p[0], p[1], pwm_z0 + pwm_pcb[2] + pwm_screw[3]])
+        cylinder(d = 4.6, h = base_h);
     led_cut();
     usbc_cuts();
     sw_cuts();
@@ -806,13 +820,34 @@ module pwm_ribs() for (sx = [-1, 1]) let (edge = pot_x + sx * pwm_pcb[1] / 2,   
     translate([r0, pwm_y0, floor_t - eps]) cube([pwm_rib, pwm_pcb[0] - 2, pwm_z0 - pwm_pad - floor_t + eps]);
     translate([p0, pwm_y0, pwm_z0 - pwm_pad - eps]) cube([pwm_edge_free - 0.6, pwm_pcb[0] - 2, pwm_pad + eps]);
 }
+function pwm_holes() = [for (x = [pwm_x[0] + pwm_hole_edge, pwm_x[1] - pwm_hole_edge])
+    [x, pwm_y0 + pwm_hole_edge]];
+module pwm_bosses() for (p = pwm_holes()) translate([p[0], p[1], floor_t - eps])
+    cylinder(d = pwm_boss_d, h = pwm_z0 - floor_t + eps);
+module pwm_pilots() for (p = pwm_holes()) {
+    translate([p[0], p[1], pwm_z0 - pwm_core_depth]) cylinder(d = pwm_core_d, h = pwm_core_depth + eps);
+    translate([p[0], p[1], pwm_z0 - pwm_core_entry[1]])
+        cylinder(d1 = pwm_core_d, d2 = pwm_core_entry[0], h = pwm_core_entry[1] + eps);
+}
 module pot_cuts() {
-    cyl_y([pot_x, pot_z], -1, pot_mount_t, (pot_bush[0] + pot_bush_cl) / 2);          // bushing through the flat outer face
-    cyl_y([pot_x, pot_z], pot_mount_t, wall + eps, pot_recess_r);                     // round housing pocket from inside
+    // The PCB is screwed to the floor; this covered slot lets it lift before tipping out.
+    hull() for (z = [pot_z, pot_z + pwm_install_lift])
+        cyl_y([pot_x, z], -1, pot_mount_t, (pot_bush[0] + pot_bush_cl) / 2);
+    // Stop below the curved upper rim and run fully into the bay: a short cutter
+    // ending at nominal wall would leave a thin isolated skin behind the loft.
+    intersection() {
+        hull() for (z = [pot_z, pot_z + pwm_install_lift])
+            cyl_y([pot_x, z], pot_mount_t, wall + 3, pot_recess_r);
+        translate([pot_x - pot_recess_r - 1, -1, 0])
+            cube([2 * pot_recess_r + 2, wall + 5, pot_z + pot_housing / 2 + pwm_install_lift + 1]);
+    }
     translate([pot_x - (pot_tab[0] + 2 * pot_tab_cl) / 2, -1, pot_z - pot_tab_z()[1]])
-        cube([pot_tab[0] + 2 * pot_tab_cl, pot_mount_t + 1, pot_tab_z()[1] - pot_tab_z()[0]]);
-    if (pwm_pcb_slot > 0.01) translate([pwm_x[0] - pot_pcb_cl, wall - pwm_pcb_slot, pwm_z0 - pot_pcb_cl])
-        cube([pwm_pcb[1] + 2 * pot_pcb_cl, pwm_pcb_slot + eps, pwm_pcb[2] + 2 * pot_pcb_cl]);
+        cube([pot_tab[0] + 2 * pot_tab_cl, pot_mount_t + 1, pot_tab_z()[1] - pot_tab_z()[0] + pwm_install_lift]);
+    if (pwm_pcb_slot > 0.01) difference() {
+        translate([pwm_x[0] - pot_pcb_cl, wall - pwm_pcb_slot, pwm_z0 - pot_pcb_cl])
+            cube([pwm_pcb[1] + 2 * pot_pcb_cl, pwm_pcb_slot + eps, pwm_pcb[2] + 2 * pot_pcb_cl + pwm_install_lift]);
+        pwm_bosses(); // preserve each complete bearing face below the PCB
+    }
 }
 module led_boss_body() for (p = led_xz) cyl_y(p, wall - eps, led_boss[1], led_boss[0] / 2);
 module led_cut() for (p = led_xz) {
@@ -1004,28 +1039,37 @@ module battery_env() {
     translate([bat_x0, bat_cy, bat_cz]) rotate([0, 90, 0]) cylinder(d = bat_d, h = bat_l);
     translate([bat_x0, bat_cy - bat_bms[0] / 2, bat_cz + bat_d / 4]) cube([bat_l, bat_bms[0], bat_d / 4 + bat_bms[1]]);
 }
-module pwm_board_env() translate([pwm_x[0], pwm_y0, pwm_z0]) {
-    cube([pwm_pcb[1], pwm_pcb[0], pwm_pcb[2]]);
-    translate([0, 1, pwm_pcb[2] - eps]) cube([pwm_pcb[1], pwm_pcb[0] - 1, pwm_comp_h + eps]);
-    translate([pwm_edge_free, 1, -pwm_pins]) cube([pwm_pcb[1] - 2 * pwm_edge_free, pwm_pcb[0] - 1, pwm_pins + eps]);
+// Separate the real PCB holes from the coarse component/pin envelopes. The user
+// confirmed clear mounting pads for the 6 mm bosses and 4.5 mm flat-underhead screws.
+module pwm_board_env() {
+    difference() {
+        translate([pwm_x[0], pwm_y0, pwm_z0]) cube([pwm_pcb[1], pwm_pcb[0], pwm_pcb[2]]);
+        for (p = pwm_holes()) translate([p[0], p[1], pwm_z0 - 1]) cylinder(d = pwm_hole_d, h = pwm_pcb[2] + 2);
+    }
+    difference() {
+        translate([pwm_x[0], pwm_y0 + 1, pwm_z0 + pwm_pcb[2] - eps])
+            cube([pwm_pcb[1], pwm_pcb[0] - 1, pwm_comp_h + eps]);
+        for (p = pwm_holes()) translate([p[0], p[1], pwm_z0 + pwm_pcb[2] - 2 * eps])
+            cylinder(d = pwm_screw[2] + 0.5, h = pwm_comp_h + 1);
+    }
+    difference() {
+        translate([pwm_x[0] + pwm_edge_free, pwm_y0 + 1, pwm_z0 - pwm_pins])
+            cube([pwm_pcb[1] - 2 * pwm_edge_free, pwm_pcb[0] - 1, pwm_pins + eps]);
+        for (p = pwm_holes()) translate([p[0], p[1], pwm_z0 - pwm_pins - 1])
+            cylinder(d = pwm_boss_d + 0.4, h = pwm_pins + 2);
+    }
 }
-module pot_local(nut = true) {       // local z along the shaft, z = 0 at the outer wall face; local -y is the board side
+module pot_local() { // local z along the shaft; no nut or washer, PCB screws retain the controller
     translate([-pot_housing / 2, -pot_housing / 2, -pot_mount_t - pot_nose_len - 1])
         cube([pot_housing / 2 + pot_axis_h, pot_housing, pot_nose_len + 1]);
     translate([0, 0, -pot_mount_t - eps]) cylinder(d = pot_bush[0], h = pot_bush[1] + eps);
-    if (nut) {
-        cylinder(d = pot_washer[0], h = pot_washer[1]);
-        translate([0, 0, pot_washer[1] - eps]) cylinder(d = pot_nut[0], h = pot_nut[1] + eps);
-    }
     translate([0, 0, -pot_mount_t + pot_bush[1] - eps]) cylinder(d = pot_shaft_d, h = pot_shaft_free + eps);
 }
-module pot_env(nut = true) translate([pot_x, 0, pot_z]) axis_orient([0, -1, 0]) rotate([0, 0, -90]) pot_local(nut);
-module pot_nut_env() translate([pot_x, 0, pot_z]) axis_orient([0, -1, 0]) difference() {
-    union() {
-        cylinder(d = pot_washer[0], h = pot_washer[1]);
-        translate([0, 0, pot_washer[1] - eps]) cylinder(d = pot_nut[0], h = pot_nut[1] + eps);
-    }
-    translate([0, 0, -1]) cylinder(d = pot_bush[0] + 0.1, h = pot_washer[1] + pot_nut[1] + 2);
+module pot_env() {
+    translate([pot_x, 0, pot_z]) axis_orient([0, -1, 0]) rotate([0, 0, -90]) pot_local();
+    translate([pot_x - pot_tab[0] / 2, pot_mount_t - pot_tab[2],
+               pot_z - pot_shaft_d / 2 - pot_tab[3] - pot_tab[1]])
+        cube([pot_tab[0], pot_tab[2] + eps, pot_tab[1]]);
 }
 module chg_module_env() translate([chg_x0, chg_y0, chg_z0]) {
     cube([chg_pcb[0], chg_pcb[2], chg_pcb[1]]);       // PCB upright, normal along y
@@ -1065,6 +1109,12 @@ module screws_lid(socket = false) for (q = ball_posts())
     translate([q[0], q[1], ball[3] + ball_lid_t - lid_pocket]) axis_orient([0, 0, -1]) screw(len_lid, socket);
 module screws_feet(socket = false) for (p = foot_xy) translate([p[0], p[1], -foot[2] + foot_head_recess + screw_head_h]) axis_orient([0, 0, 1]) screw(len_foot, socket);
 
+// User's two 2.5 x 8 thermoplastic screws; cylindrical major diameter represents
+// the formed thread. Its deliberate pilot interference is checked separately.
+module screws_pwm() for (p = pwm_holes()) translate([p[0], p[1], pwm_z0 + pwm_pcb[2]]) {
+    cylinder(d = pwm_screw[2], h = pwm_screw[3]);
+    translate([0, 0, -pwm_screw[1]]) cylinder(d = pwm_screw[0], h = pwm_screw[1] + eps);
+}
 // ---------- driver access ----------
 // A Torx bit in a 1/4 inch holder, on the head of every screw and pointing away from it: 7 mm for the
 // first 25 mm, then 13 mm of holder. Checked for overlap like any other assembly body, so a screw that
@@ -1080,6 +1130,15 @@ module drivers_back() head_at() for (p = head_bosses()) translate([p[0], body_d 
 module drivers_head() head_at() for (p = rim_bosses())  translate([p[0], p[1], base_h + wall - rim_recess]) axis_orient([0, 0, -1]) driver_at();
 module drivers_feet() for (p = foot_xy) translate([p[0], p[1], -foot[2] + foot_head_recess + screw_head_h]) axis_orient([0, 0, 1]) driver_at();
 module drivers_lid()  for (q = ball_posts()) translate([q[0], q[1], ball[3] + ball_lid_t - lid_pocket]) axis_orient([0, 0, -1]) driver_at();
+
+// A slim 4 mm shaft reaches the PCB screws beside the front wall. Its 25 mm
+// exposed shaft clears the board components; the wider handle starts above the rim.
+module drivers_pwm() for (p = pwm_holes())
+    translate([p[0], p[1], pwm_z0 + pwm_pcb[2] + pwm_screw[3]]) {
+        cylinder(d = 4, h = 25);
+        translate([0, 0, 25 - eps]) cylinder(d = driver[2], h = driver[3] + eps);
+        translate([0, 0, 25 + driver[3] - eps]) cylinder(d = driver[4], h = driver[5] + eps);
+    }
 
 // ---------- assembly ----------
 module assembly(explode = 0) {
@@ -1106,6 +1165,10 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["head_thread", len_head - wall + rim_recess], ["head_screw", [rim_recess, len_head, rim_seat_d]], ["chamber", [chamber_sq, chamber_d]], ["open_sq", open_sq],
     ["head_y", head_y], ["mat_stop", mat_stop_y()], ["mat_support", mat_support],
     ["magnet_pocket", mag], ["pot_mount_t", pot_mount_t], ["front_rim_z", base_top(0)],
+    ["pwm_front", [pot_x, pot_z, pot_shoulder_y, pwm_install_lift]], ["pwm_pcb", pwm_pcb], ["pwm_origin", [pwm_x[0], pwm_y0, pwm_z0]],
+    ["pwm_holes", pwm_holes()], ["pwm_hole_d", pwm_hole_d], ["pwm_boss_d", pwm_boss_d],
+    ["pwm_core", [pwm_core_d, pwm_core_depth, pwm_core_entry[0], pwm_core_entry[1]]],
+    ["pwm_screw", pwm_screw], ["floor_t", floor_t], ["knob_d", knob_d],
     ["knob_top_z", pot_z + knob_d / 2], ["fan_axis_pitch", fan_pitch],
     ["foot_x", [foot_xy[0][0], foot_xy[1][0]]], ["foot_y", [foot_xy[0][1], foot_xy[2][1]]],
     ["foot_size", foot], ["foot_chamfer", foot_c], ["insert_depth", insert_depth], ["insert_hole_d", insert_hole_d],

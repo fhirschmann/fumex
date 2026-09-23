@@ -6,12 +6,12 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "05c2a9c740531a245e60181d85ba5de88beba3bb355ece1f7d13e60157381339",
+      "source_sha256": "8483476a5263d1ecf8870796efc198b8802694bc0e7c9cab318b077d2d5eb9e8",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 3.644,
-      "grams": 118.643,
+      "hours": 3.711,
+      "grams": 118.799,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -56,7 +56,7 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.73,
+      "hours": 2.731,
       "grams": 59.538,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -98,12 +98,12 @@
       "quantity": 1,
       "material": "PETG-grey",
       "passed": true,
-      "source_sha256": "7f766db2306731d9a9476feeb149f6a59ce7f2323475bccb4b7979c4e09e4c63",
+      "source_sha256": "c406eb2e289007354041ca9da392f83dd45b9691a9835808848bf2bef06dd463",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 0.417,
-      "grams": 5.533,
+      "hours": 0.425,
+      "grams": 4.94,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -187,8 +187,8 @@
     }
   ],
   "total_parts": 11,
-  "total_grams_individual_plates": 472.8,
-  "total_hours_individual_plates": 16.5,
+  "total_grams_individual_plates": 472.3,
+  "total_hours_individual_plates": 16.6,
   "production_gcode": false,
   "project_3mf": {
     "file": "stl/fumex_all_parts.3mf",
@@ -228,7 +228,7 @@
           "knob"
         ],
         "size_mm": [
-          166.0,
+          164.0,
           143.0
         ]
       },
@@ -247,8 +247,8 @@
         ]
       }
     ],
-    "total_hours_plates": 15.5,
-    "total_grams_plates": 472.3,
+    "total_hours_plates": 15.6,
+    "total_grams_plates": 471.9,
     "multicolour_parts": {},
     "multicolour_slices": {},
     "pause_slices": {},
@@ -263,17 +263,17 @@
       },
       "Base and back cover": {
         "plate": 2,
-        "hours": 6.18,
+        "hours": 6.25,
         "grams_by_filament": {
-          "1": 178.12
+          "1": 178.27
         },
         "warnings": ""
       },
       "Grey parts": {
         "plate": 3,
-        "hours": 2.7,
+        "hours": 2.71,
         "grams_by_filament": {
-          "2": 55.16
+          "2": 54.57
         },
         "warnings": ""
       },
@@ -287,6 +287,6 @@
       }
     },
     "own_infill_parts": 4,
-    "sha256": "96222cd8e30e4c25eaad62901457bcd9ab2eb51433c44c63cdde92a5c34bf67f"
+    "sha256": "d3d9d8962c551327f11dff6f41e301dced816fbfd13a5130bc75f9da63c00782"
   }
 }

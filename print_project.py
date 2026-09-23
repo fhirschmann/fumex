@@ -41,8 +41,7 @@ ASSEMBLY = {
     "magnets": "magnets_env();",
     "battery": "battery_env();",
     "pwm_board": "pwm_board_env();",
-    "pot": "pot_env(nut = false);",
-    "pot_nut": "pot_nut_env();",
+    "pot": "pot_env();",
     "chg_module": "chg_module_env();",
     "chg_sink": "chg_sink_env();",
     "chg_tie": "chg_tie_env();",
@@ -55,15 +54,22 @@ ASSEMBLY = {
     "screws_head": "screws_head();",
     "screws_lid": "screws_lid();",
     "screws_feet": "screws_feet();",
+    "screws_pwm": "screws_pwm();",
     # A bit and its holder on every screw head. These must not touch anything, which is the whole check.
     "driver_fan": "drivers_fan();",
     "driver_back": "drivers_back();",
     "driver_head": "drivers_head();",
     "driver_feet": "drivers_feet();",
     "driver_lid": "drivers_lid();",
+    "driver_pwm": "drivers_pwm();",
 }
 # the fan and the pot are solid envelopes, their screws and shaft run through them
-ALLOWED_OVERLAPS = [("fan", "screws_fan"),      # screws run through the holes of the solid fan envelope
+ALLOWED_OVERLAPS = [("base", "screws_pwm"),     # thread forms into the pilot; independently bounded by check_pwm_mount
+                    # PCB is fastened before the head, filter and cover assembly is installed.
+                    ("head", "driver_pwm"), ("filter", "driver_pwm"), ("cassette", "driver_pwm"),
+                    ("filter_support", "driver_pwm"), ("fan", "driver_pwm"),
+                    ("driver_fan", "driver_pwm"), ("driver_back", "driver_pwm"),
+                    ("fan", "screws_fan"),      # screws run through the holes of the solid fan envelope
                     ("knob", "pot"),           # the slotted sleeve is a press fit on the knurled shaft
                     # The drivers are checked against the state of the build at the moment that screw is
                     # driven, not against the finished assembly: the head screws go in through the open
@@ -99,7 +105,7 @@ SLICER_SUMMARY = "docs/slicer-summary.json"
 MAT = (120, 120, 17)      # the mat the user cut from a cooker hood filter
 DENSITY = {"PETG": 0.90e-3, "TPU": 1.20e-3, "nylon": 1.14e-3, "iron-loose": 4.7e-3}
 MASSES_G = {"fan": 185, "battery": 150, "filter": 15, "pwm_board": 12, "chg_module": 3, "chg_sink": 5,
-            "usbc": 2, "switch": 5, "led": 0.6, "magnets": 18, "pot": 6, "pot_nut": 2,
+            "usbc": 2, "switch": 5, "led": 0.6, "magnets": 18, "pot": 6, "screws_pwm": 0.7,
             "screws_fan": 6, "screws_back": 4, "screws_head": 6, "screws_feet": 3, "screws_lid": 1.5}
 # bodies whose mass comes from their volume rather than a data sheet
 BY_VOLUME = {"base": "PETG", "head": "PETG", "head_back": "PETG", "cassette": "PETG", "knob": "PETG",
@@ -726,6 +732,174 @@ def check_filter_support(ctx):
         remaining_area_mm2=round(open_area - blocked, 3)))
 
 
+def check_pwm_mount(ctx):
+    """Measured PCB holes, solid boss seats, blind pilots and two floor-mount screws."""
+    m, solids = ctx.metrics, ctx.solids
+    assert np.allclose(m['pwm_pcb'], [41.05, 32, 1.6], atol=.001), 'PWM PCB differs from the measured 32 x 41.05 x 1.6 mm'
+    assert abs(m['pwm_hole_d'] - 3.2) < .001, 'PWM PCB mounting holes must be 3.2 mm'
+    assert abs(m['pwm_boss_d'] - 6) < .001, 'PWM boss exceeds or loses the confirmed 6-mm bearing pad'
+    assert np.allclose(m['pwm_core'], [2, 7.4, 2.7, .7], atol=.001), 'PWM pilot or relieved mouth changed'
+    assert np.allclose(m['pwm_screw'], [2.5, 8, 4.5, 2.5], atol=.001), 'PWM screw differs from the reviewed 2.5 x 8 / 4.5-mm head envelope'
+    x0, y0, z0 = m['pwm_origin']
+    axes = np.asarray(m['pwm_holes'], float)
+    expected = [[x0 + 3, y0 + 3], [x0 + 29, y0 + 3]]
+    assert axes.shape == (2, 2) and np.allclose(axes, expected, atol=.01), \
+        f'PWM holes must lie 3 mm from the front/sides, 26 mm apart: {axes.tolist()}'
+    pcb, base, screws, drivers = (solids[n] for n in ('pwm_board', 'base', 'screws_pwm', 'driver_pwm'))
+    assert len(screws.decompose()) == 2, 'PWM mount requires two separate screws'
+    # The section crosses the real PCB, not the component or solder-pin envelopes.
+    section = pcb.slice(z0 + .8)
+    assert np.allclose(section.bounds(), [x0, y0, x0 + 32, y0 + 41.05], atol=.02), \
+        f'PWM PCB mesh bounds differ from the measured board: {section.bounds()}'
+    expected_area = 32 * 41.05 - 2 * math.pi * 1.6**2
+    assert abs(section.area() - expected_area) < .5, 'PWM PCB section has missing material or extra openings'
+    floor_reserve = z0 - 7.4 - m['floor_t']
+    assert floor_reserve >= 2, f'PWM pilot leaves only {floor_reserve:.3f} mm above the floor'
+    rows, allowed_thread_regions = [], []
+    for x, y in axes:
+        def cyl(z, height, radius):
+            return ctx.cylinder([x, y, z], [0, 0, 1], height, radius, 120)
+        def fill(probe, solid):
+            return (probe ^ solid).volume() / probe.volume()
+        # Test the complete mounting annulus independently on both sides of the PCB.
+        board_ring = cyl(z0 + .02, 1.56, 2.95) - cyl(z0, 1.6, 1.63)
+        boss_seat = cyl(z0 - .10, .08, 2.95) - cyl(z0 - .12, .12, 1.40)
+        board_fill, seat_fill = fill(board_ring, pcb), fill(boss_seat, base)
+        assert board_fill > .995 and seat_fill > .995, f'Incomplete PWM bearing ring at {x,y}: {board_fill}, {seat_fill}'
+        pcb_hole = cyl(z0 + .01, 1.58, 1.57)
+        assert (pcb_hole ^ pcb).volume() < .01, f'PWM PCB hole is not open at {x,y}'
+        pilot = cyl(z0 - 7.4 + .02, 7.36, .94)
+        assert (pilot ^ base).volume() < .01, f'PWM pilot is obstructed or too shallow at {x,y}'
+        # The 2-mm core wall below the conical mouth and the full-depth outer wall must both exist.
+        core_wall = cyl(z0 - 7.4 + .02, 6.66, 2.95) - cyl(z0 - 7.4, 6.72, 1.05)
+        outer_wall = cyl(z0 - 7.4 + .02, 7.36, 2.95) - cyl(z0 - 7.4, 7.4, 1.40)
+        bottom = cyl(m['floor_t'] + .02, floor_reserve - .04, .94)
+        wall_fill, outer_fill, bottom_fill = fill(core_wall, base), fill(outer_wall, base), fill(bottom, base)
+        assert min(wall_fill, outer_fill, bottom_fill) > .995, \
+            f'PWM pilot wall or blind floor missing at {x,y}: {wall_fill}, {outer_fill}, {bottom_fill}'
+        roi = _air_box([x-3.1, y-3.1, z0-9], [x+3.1, y+3.1, z0+5])
+        screw = screws ^ roi
+        sb = np.asarray(screw.bounding_box())
+        assert screw.volume() > 50 and np.allclose(sb, [x-2.25, y-2.25, z0-6.4, x+2.25, y+2.25, z0+4.1], atol=.02), \
+            f'Incorrect PWM screw length, head or seat at {x,y}: {sb.tolist()}'
+        assert (screw ^ pcb).volume() < .01, f'PWM screw overlaps the PCB at {x,y}'
+        head_contact = (screw.translate([0, 0, -.05]) ^ pcb).volume()
+        board_contact = ((pcb.translate([0, 0, -.05]) ^ base) ^ roi).volume()
+        assert head_contact > .2 and board_contact > .5, \
+            f'PWM screw head or PCB floats above its bearing at {x,y}: {head_contact}, {board_contact}'
+        # Only the shank's 6.4-mm engagement may form a thread in the undersized pilot.
+        allowed = cyl(z0 - 6.42, 6.44, 1.27)
+        allowed_thread_regions.append(allowed)
+        thread = screw ^ base
+        excess = (thread - allowed).volume()
+        upper_volume = math.pi * (1.25**2 - .97**2) * 6.4
+        assert excess < .01 and .5 < thread.volume() < upper_volume, \
+            f'PWM screw/base overlap exceeds the intentional pilot thread at {x,y}: {thread.volume()}, excess {excess}'
+        # A real slim shaft reaches 25 mm above the conservative screw-head envelope.
+        tool_start = z0 + 4.1
+        slim = cyl(tool_start + .02, 24.94, 1.97)
+        fat = cyl(tool_start + .02, 24.94, 3.3) - cyl(tool_start, 25, 2.04)
+        assert fill(slim, drivers) > .995 and (fat ^ drivers).volume() < .01, \
+            f'PWM screwdriver lacks the required slim 4-mm / 25-mm exposed shaft at {x,y}'
+        for name in ('base', 'pwm_board', 'pot', 'screws_pwm'):
+            assert (slim ^ solids[name]).volume() < .01, f'PWM screwdriver blocked by {name} at {x,y}'
+        rows.append(dict(axis_mm=[float(x), float(y)], pcb_bearing_fill=round(board_fill, 5), boss_bearing_fill=round(seat_fill, 5),
+                         pilot_wall_fill=round(min(wall_fill, outer_fill), 5), blind_floor_fill=round(bottom_fill, 5),
+                         head_contact_mm3=round(head_contact, 5), pcb_contact_mm3=round(board_contact, 5),
+                         intentional_thread_overlap_mm3=round(thread.volume(), 5), excess_overlap_mm3=round(excess, 5)))
+    allowed_all = md.Manifold.batch_boolean(allowed_thread_regions, md.OpType.Add)
+    assert ((screws ^ base) - allowed_all).volume() < .01, 'PWM/base collision outside the two intentional thread regions'
+    ctx.open_items.append('PWM mounting: verify the 2.0 mm PETG pilot fit with the real 2.5 x 8 screws and measure their head height '
+                          '(4.5 mm head diameter confirmed; 2.5 mm height is a conservative envelope). '
+                          'Assembly requires a slim 4 mm screwdriver shaft exposed for at least 25 mm.')
+    return dict(pwm_mount=dict(pcb_mm=[32, 41.05, 1.6], hole_diameter_mm=3.2, hole_pitch_mm=26,
+                screw_length_mm=8, penetration_mm=6.4, pilot_depth_mm=7.4, bottom_clearance_mm=1,
+                floor_reserve_mm=round(floor_reserve, 3), driver_shaft_mm=[4, 25], seats=rows))
+
+
+def check_pwm_removal(ctx):
+    """Sample the complete service motion with the real tab and both screws.
+
+    Remove the head, knob, PCB screws and rocker switch first. The battery,
+    loaded ballast lid, USB-C board and LEDs remain fitted. The reverse motion
+    installs the controller before the switch; wiring flexibility is unmodelled.
+    """
+    m, s = ctx.metrics, ctx.solids
+    assert np.allclose(m['pwm_origin'], [100, 2.55, 13.1], atol=.01), 'Revalidate PWM service path for changed PCB placement'
+    tab_probe = _air_box([114.97, .62, 15.22], [117.03, 1.78, 15.98])
+    assert (tab_probe ^ s['pot']).volume() / tab_probe.volume() > .995, 'PWM service path lacks the real potentiometer tab'
+    fixed_names = ['base', 'battery', 'ballast', 'ball_lid', 'usbc', 'led',
+                   'chg_module', 'chg_sink', 'chg_tie', 'screws_lid', 'feet']
+    fixed = md.Manifold.batch_boolean([s[n] for n in fixed_names], md.OpType.Add)
+    board = s['pwm_board'] + s['pot']
+    pivot = np.array([116, .9, 24.4])
+
+    def pose(lift=3.4, rear=8, angle=0, postrear=0, postup=0):
+        return (board.translate([0, rear, lift]).translate(-pivot)
+                .rotate([angle, 0, 0]).translate(pivot + [0, postrear, postup]))
+
+    # Keep intermediate poses: checking only endpoints misses both the front
+    # boss/pin crescents and the upper-front loft. Angles raise the PCB's rear.
+    segments = [
+        ('lift_first', [pose(lift=d, rear=0) for d in np.linspace(0, 2, 21)]),
+        ('lift_clear', [pose(lift=2 + 1.4*u, rear=.5*u) for u in np.linspace(0, 1, 29)]),
+        ('retract', [pose(rear=d) for d in np.linspace(.5, 8, 76)]),
+        ('pitch', [pose(rear=8 + max(0, a-15)/20*.6, angle=a, postup=-.6*a/35)
+                   for a in np.linspace(0, 35, 71)]),
+        ('withdraw', [pose(rear=8.6, angle=35, postrear=d, postup=-.6)
+                      for d in np.linspace(0, 7.9, 80)]),
+        ('lift_rear', [pose(rear=8.6, angle=35, postrear=7.9, postup=-.6+d)
+                      for d in np.linspace(0, 4.5, 46)]),
+        ('clear_rim', [pose(rear=8.6, angle=35, postrear=7.9+d, postup=3.9)
+                      for d in np.linspace(0, 2, 21)]),
+        ('up', [pose(rear=8.6, angle=35, postrear=9.9, postup=3.9+d)
+                for d in np.linspace(0, 60, 121)]),
+    ]
+    rows = []
+    for name, poses in segments:
+        peak = 0.
+        for index, q in enumerate(poses):
+            volume = (q ^ fixed).volume()
+            assert volume < .01, f'PWM removal blocked during {name}/{index}: {volume:.5f} mm3'
+            peak = max(peak, volume)
+        rows.append(dict(stage=name, samples=len(poses), maximum_overlap_mm3=round(peak, 6)))
+
+    # Both fasteners leave vertically. While unscrewing, only the already
+    # reviewed pilot-thread region may overlap the base; no broad exemption.
+    allowed_thread = md.Manifold.batch_boolean([
+        ctx.cylinder([x, 5.55, 6.6], [0, 0, 1], 6.51, 1.3, 120)
+        for x in (103, 129)], md.OpType.Add)
+    fastener_fixed_names = fixed_names + ['pwm_board', 'pot', 'switch']
+    screw_rows = []
+    for index, screw in enumerate(s['screws_pwm'].decompose()):
+        peak = 0.
+        for d in np.linspace(0, 60, 241):
+            q = screw.translate([0, 0, float(d)])
+            for name in fastener_fixed_names:
+                collision = q ^ s[name]
+                if name == 'base':
+                    collision -= allowed_thread
+                volume = collision.volume()
+                assert volume < .01, f'PWM screw {index} removal blocked by {name} at {d:.2f} mm: {volume:.5f} mm3'
+                peak = max(peak, volume)
+        screw_rows.append(dict(screw=index, distance_mm=60, step_mm=.25,
+                               maximum_unintended_overlap_mm3=round(peak, 6)))
+
+    # Shaft/sleeve contact is the intended push fit. Other fitted parts cannot
+    # interfere while pulling the knob straight forwards with the head removed.
+    knob_fixed = md.Manifold.batch_boolean([s[n] for n in fixed_names + ['pwm_board', 'switch']], md.OpType.Add)
+    knob_peak = 0.
+    for d in np.linspace(0, 20, 81):
+        volume = (s['knob'].translate([0, -float(d), 0]) ^ knob_fixed).volume()
+        assert volume < .01, f'PWM knob removal obstructed at {d:.2f} mm: {volume:.5f} mm3'
+        knob_peak = max(knob_peak, volume)
+    ctx.open_items.append('PWM service motion is sampled at 0.1 mm / 0.5 degrees (final lift 0.5 mm); '
+                          'remove the head, knob, PCB screws and rocker switch first. The real wiring and flexible leads are not modelled.')
+    return dict(pwm_removal=dict(removed_first=['head_group', 'knob', 'screws_pwm', 'switch'],
+                pivot_mm=pivot.tolist(), stages=rows, screws=screw_rows,
+                knob_distance_mm=20, knob_step_mm=.25, knob_maximum_overlap_mm3=round(knob_peak, 6)))
+
+
 def checks(ctx):
     """Project-specific checks after export."""
     m = ctx.metrics
@@ -752,7 +926,7 @@ def checks(ctx):
         ("fan", "head", [-i for i in into]),          # fan frame on the end face of the filter tube
         ("fan", "head_back", into),                   # and on the spacer posts of the cover
         ("feet", "base", [0, 0, 1]),
-        ("pwm_board", "base", [0, 0, -1]),            # board on the rib pads
+        ("pwm_board", "base", [0, 0, -1]),            # board on the bosses and rear rib pads
         ("chg_module", "ball_lid", [0, 0, -1]),       # lower cut edge at the cool OUT end
         ("ball_lid", "base", [0, 0, -1]),             # lid on its posts and walls
         ("usbc", "base", [0, 0, -1]),                 # PCB on the gusset-supported rear seat
@@ -795,7 +969,7 @@ def checks(ctx):
          ["base", "battery", "pwm_board", "usbc", "switch", "pot", "led", "ball_lid", "ballast",
           "chg_module", "chg_sink", "chg_tie"], up, 60, 1),
         ("battery_out", "battery", ["base", "pwm_board", "usbc", "switch", "ball_lid"], [0, 0, 1], 40, 0.5),
-        ("knob_off", "knob", ["base", "pot_nut"], [0, -1, 0], 20, 0.5),
+        ("knob_off", "knob", ["base"], [0, -1, 0], 20, 0.5),
     ])
     # Heat-set insert pockets: core open, datasheet wall and floor ring material. Everything in the head
     # is pressed in along its own axis, so the probes use the tilted frame.
@@ -848,7 +1022,7 @@ def checks(ctx):
                 foot_polygon_mm=poly, tip_margins_mm={k: round(v, 1) for k, v in margins.items()},
                 tip_angle_deg=round(tip_angle, 1), **check_top_corners(ctx), **check_joint_profile(ctx),
                 **check_rim_chamfers(ctx), **check_charger_air(ctx), **check_charger_holder(ctx),
-                **check_lid_fasteners(ctx), **check_head_fasteners(ctx), **check_usb_wire_access(ctx), **check_ballast_cover(ctx),
+                **check_lid_fasteners(ctx), **check_head_fasteners(ctx), **check_pwm_mount(ctx), **check_pwm_removal(ctx), **check_usb_wire_access(ctx), **check_ballast_cover(ctx),
                 **check_switch_trough_clearance(ctx), **check_filter_support(ctx), **check_led_window(ctx), **check_usb_support(ctx))
 
 
@@ -896,6 +1070,7 @@ VIEWER = dict(
            ("screws_back", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, 2.8, 0.6]),
            ("screws_head", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, -0.3, 1.6]),
            ("screws_feet", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, 0, -1.0]),
+           ("screws_pwm", "PCB screws 2.5 x 8", "bought", "#9aa0a6", "2x", [0, 0, 0.9]),
            ("screws_lid", "Lid screws M3 x 8", "bought", "#9aa0a6", "2x", [0, 0, 1.1]),
            ("ballast", "Ballast, loose iron", "bought", "#6b6f74", "1x", [0, 0, -0.3]),
            ("ball_lid", "Ballast lid", "black", "#7c8288", "1x", [0, 0, 0.8]),
@@ -927,4 +1102,11 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
                            "cube([body_w + 2, body_d - head_y[3] + 1, 12]); } "
                            "color(\"#414950\") translate([0, -5*sin(tilt), 5*cos(tilt)]) "
                            "screws_head(socket = true);",
-                           "105,-165,230,72.5,63,55")}
+                           "105,-165,230,72.5,63,55"),
+         "10_pwm_mount": ("color(\"#8a9096\") intersection() { base(); "
+                          "translate([96, 1, 0]) cube([41, 45, pwm_z0 + 0.1]); } "
+                          "color(\"#2f5d3a\") translate([0, 0, 5]) intersection() { pwm_board_env(); "
+                          "translate([pwm_x[0]-1, pwm_y0-1, pwm_z0]) cube([pwm_pcb[1]+2, pwm_pcb[0]+2, pwm_pcb[2]]); } "
+                          "color(\"#aeb5bb\") translate([0, 0, 5]) pot_env(); "
+                          "color(\"#414950\") translate([0, 0, 12]) screws_pwm();",
+                          "180,-90,110,116,21,14")}
