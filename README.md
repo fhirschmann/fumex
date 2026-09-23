@@ -20,7 +20,7 @@ Designed for a Bambu Lab H2S with AMS in Bambu PETG black and grey. The electron
 grid of the cassette ─► mat 17 mm ─► support cross / throat 117 ─► fan 120 × 25 ─► plenum ─► slots in the back cover
 ```
 
-The mat sits on the intake side, so flux resin settles in the fleece and the impeller stays clean. It is held by a continuous 2.25 mm lip around the 117 mm intake opening. A rear lip catches its edges, and a separate thin **support cross** behind the mat limits bowing towards the fan. Its two 2.4 mm wide bars leave four open fields about 57.3 mm across and cover about 4.1 % of the opening. The cross starts 2.3 mm behind the nominal mat rear face and is 3.2 mm deep, leaving 5 mm between its central bars and the fan frame's front plane. The soft mat and printed bars can still flex; check for rubbing at full speed with the actual mat fitted.
+The mat sits on the intake side, so flux resin settles in the fleece and the impeller stays clean. It is held by a continuous 2.25 mm lip around the 117 mm intake opening. A rear lip catches its edges, and a separate **support cross** behind the mat limits bowing towards the fan. Its solid 4 mm wide, 5 mm deep bars have a rounded centre and smooth transitions to wider end pads. The cross covers about 7.2 % of the opening, leaving 92.8 % open. It starts 0.5 mm behind the nominal mat rear face and leaves 5 mm between its central bars and the fan frame's front plane. The soft mat and printed bars can still flex; check for rubbing at full speed with the actual mat fitted.
 
 ![Filter support cross behind the mat](img/06_filter_support.png)
 
@@ -44,14 +44,14 @@ Eight part types, eleven printed pieces including the four feet.
 | `base` electronics bay | 1 | PETG black | 145 × 74 × 57.3 | bottom on the bed, open at the top along the 15° joint plane |
 | `head_back` back cover | 1 | PETG black | 145 × 144.7 × 18.3 | outside on the bed |
 | `ball_lid` ballast lid | 1 | PETG black | 138.6 × 17.8 × 13.7 | flat on the bed |
-| `filter_support` support cross | 1 | PETG black | 122 × 122 × 8 | mat-facing side on the bed, four posts upwards |
+| `filter_support` support cross | 1 | PETG black | 123 × 123 × 9.8 | mat-facing side on the bed, four posts upwards |
 | `cassette` filter cassette | 1 | PETG grey | 138 × 143 × 4.5 | grid face on the bed |
 | `knob` speed knob | 1 | PETG grey | Ø 24 × 13.5 | top on the bed |
 | `foot` foot | 4 | TPU | 18 × 16 × 6.5 | ground face on the bed, 100 % infill |
 
-All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head, ballast lid and support cross, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.47 kg and 15.6 hours** for the four arranged plates (16.6 hours as individual part jobs; head 223 g, base 119 g, back cover 60 g, cassette 50 g, ballast lid 8 g, support cross 3 g, knob 4.9 g, feet 4 × 1.5 g).
+All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head, ballast lid and support cross, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.48 kg and 15.7 hours** for the four arranged plates (16.7 hours as individual part jobs; head 222 g, base 119 g, back cover 60 g, cassette 50 g, ballast lid 8 g, support cross 7 g, knob 4.9 g, feet 4 × 1.5 g).
 
-Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid (feet 100 %).
+Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid; support cross and TPU feet at 100 % infill.
 
 ## Bought parts
 
@@ -124,7 +124,7 @@ To change the mat: pull the cassette off using its side scoops, pinch the flexib
 ## Design notes
 
 - The base has a 145 × 74 mm footprint. Its upper 8 mm curve inwards to meet the projected outline of the head at the 15° joint, so the head closes the electronics bay without a separate cover or a projecting base lip. The 145 mm width comes from the magnet pockets in the intake face.
-- The head leans forward, so the centre of mass moves towards the front feet. The model computes it from the part masses and checks that it stays at least 15 mm inside the foot polygon: 29.0 mm at the front, which is 21.7° of tip angle at 1.02 kg. That angle is measured from the sole of the feet and against the contact patch the pads' bottom chamfer actually leaves, not against their full outline. The ballast does most of that work — the cell sits well forward so everything behind it is one trough across the full width, 42.4 cm³ or about 199 g of iron offcuts under a screwed lid, with the USB-C socket above it.
+- The head leans forward, so the centre of mass moves towards the front feet. The model computes it from the part masses and checks that it stays at least 15 mm inside the foot polygon: 28.9 mm at the front, which is 21.6° of tip angle at 1.02 kg. That angle is measured from the sole of the feet and against the contact patch the pads' bottom chamfer actually leaves, not against their full outline. The ballast does most of that work — the cell sits well forward so everything behind it is one trough across the full width, 42.4 cm³ or about 199 g of iron offcuts under a screwed lid, with the USB-C socket above it.
 - **Filling the ballast:** only behind the cell, never in front of it — mass ahead of the centre of mass makes tipping worse, and the large free space at the front is exactly the wrong place. The screwed lid keeps the loose pieces away from the wiring. Two M3 × 8 screws at the left and right ends engage heat-set inserts in the printed posts.
 - Walls 3 mm, base floor 3.2 mm, back cover 4 mm. Corner radius 6 mm at the top of the head, 3.5 mm on the four vertical edges, and 0.5 mm where head and base meet — the joint is a straight parting line that runs into the rounded vertical edge, and that edge carries the corner. A larger radius there put two different arcs plus the chamfers around the joint into the same corner, which looked like a jumble. The plan and elevation radii blend smoothly at the four upper corners. The base rim follows the tilted head contour around the joint; the deliberate 15° bend and rear edge chamfers remain. 3.5 mm is the most the magnet pockets in the intake face allow: at 6 they would fall outside the rounded corner, and they cannot move further in without reaching the intake opening.
 - The joint plane rises 15° towards the back, so it meets the vertical back face of the base at 75°. That edge — the one the back cover lands on — is chamfered at 45°, as is the lower edge of the cover itself, and the two form one groove instead of a sharp rim.

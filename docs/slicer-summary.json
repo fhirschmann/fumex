@@ -1,16 +1,16 @@
 {
-  "profile": "Bambu Lab H2S 0.4 nozzle / 0.20mm Standard @BBL H2S, 4 walls, 5/5 top/bottom, no supports; 20 % gyroid, 100 % zig-zag: foot",
+  "profile": "Bambu Lab H2S 0.4 nozzle / 0.20mm Standard @BBL H2S, 4 walls, 5/5 top/bottom, no supports; 20 % gyroid, 100 % zig-zag: filter_support, foot",
   "parts": [
     {
       "part": "base",
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "e8a802f7c1add0880fcb5c36e008eca999fd9d819ca4e4c2b32fff48b6d2ef99",
+      "source_sha256": "9652b6af69af30c735e486d2e9107752eb9821b451007850cdbeeb00c4a59b09",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 3.709,
+      "hours": 3.711,
       "grams": 118.799,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -29,12 +29,12 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "3199d5a503553e7227f929e930edfd0949226681f713ddfdc1749871f110e656",
+      "source_sha256": "2dfae6c95cb3d4dbd1df0c2bcb3f7f3e555daab6d79cf7d8e1443ef6ca0ad8a8",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 5.657,
-      "grams": 222.558,
+      "hours": 5.641,
+      "grams": 222.087,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -79,7 +79,7 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.4,
+      "hours": 2.399,
       "grams": 49.705,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -167,17 +167,17 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "9c4941a4343adc6f9d4d9aa3d58ed48788c2349948664a018f118088555d5926",
+      "source_sha256": "4fed78fc4f48182c16cb8f2ae265359a287b3989dd675cd5e6722c26b16dba9e",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 0.23,
-      "grams": 2.562,
+      "hours": 0.38,
+      "grams": 7.047,
       "wall_loops": 4,
-      "infill_percent": 20.0,
+      "infill_percent": 100.0,
       "layer_height": 0.20000000298023224,
       "effective_settings": {
-        "sparse_infill_pattern": "gyroid",
+        "sparse_infill_pattern": "zig-zag",
         "enable_support": "0",
         "curr_bed_type": "Textured PEI Plate",
         "top_shell_layers": "5",
@@ -187,8 +187,8 @@
     }
   ],
   "total_parts": 11,
-  "total_grams_individual_plates": 472.3,
-  "total_hours_individual_plates": 16.6,
+  "total_grams_individual_plates": 476.3,
+  "total_hours_individual_plates": 16.7,
   "production_gcode": false,
   "project_3mf": {
     "file": "stl/fumex_all_parts.3mf",
@@ -204,8 +204,8 @@
           "head"
         ],
         "size_mm": [
-          236.8,
-          195.0
+          239.6,
+          197.9
         ]
       },
       {
@@ -247,17 +247,17 @@
         ]
       }
     ],
-    "total_hours_plates": 15.6,
-    "total_grams_plates": 471.9,
+    "total_hours_plates": 15.7,
+    "total_grams_plates": 475.9,
     "multicolour_parts": {},
     "multicolour_slices": {},
     "pause_slices": {},
     "plate_slices": {
       "Head": {
         "plate": 1,
-        "hours": 6.03,
+        "hours": 6.14,
         "grams_by_filament": {
-          "1": 233.05
+          "1": 237.07
         },
         "warnings": ""
       },
@@ -286,7 +286,7 @@
         "warnings": ""
       }
     },
-    "own_infill_parts": 4,
-    "sha256": "bfc179dfce07eec1e342cd737cd6a5c3a27fb68412ee98312540da7ee908d4ed"
+    "own_infill_parts": 5,
+    "sha256": "83ebb40b540a5413ae35931a7e60667ac9737d1b87295d69230d90f39361220f"
   }
 }

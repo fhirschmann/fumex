@@ -44,7 +44,7 @@ front_t = 3.2;       // intake face
 open_sq = 117;       // square opening in the intake face; its lip holds the mat in the chamber
 open_r = 3;
 mat_stop_rise = 1.5;  // flank of the rear lip: 1.5 mm of depth per mm inwards, so it is not an overhang
-mat_support = [2.4, 3.2, 122, 22.5, 30.5, 5, 58.5, 0.2];
+mat_support = [4, 5, 123, 20.7, 30.5, 8, 58.5, 0.2];
 // Cross: bar width/depth, outer span, front/rear y, end-pad width, post inner radius, pocket clearance.
 // Printed separately, mat-facing side down; four end posts are trapped between the head and fan frame.
 chamber_sq = 121.5;  // filter chamber, 0.75 mm wider than the hand-cut mat all round
@@ -318,11 +318,11 @@ function pot_tab_z() = [pot_shaft_d / 2 + pot_tab[3] - pot_tab_cl, pot_bush[0] /
 assert(head_y[4] + back_t == body_d, "Head depth must fill the shared footprint");
 assert(wall >= 3 * 0.4, "Walls below three perimeters");
 assert(lug_d - insert_depth >= 3, "Less than 3 mm of gusset in front of the fan insert pockets");
-assert(mat_support[0] >= 2.4 && mat_support[1] >= 3.2, "Filter cross is too slender");
+assert(mat_support[0] >= 4 && mat_support[1] >= 5, "Filter cross is too slender");
 assert(mat_support[3] > front_t + 17 && mat_support[3] + mat_support[1] <= head_y[2] - 5,
        "Filter cross leaves insufficient clearance to the mat or fan");
 assert(mat_support[4] <= head_y[2] - mat_support[7], "Filter support posts collide with the fan");
-assert(tube_sq / 2 - mat_support[2] / 2 - mat_support[7] >= 2.4,
+assert(tube_sq / 2 - mat_support[2] / 2 - mat_support[7] >= 2,
        "Filter support pockets leave too little tube wall");
 // where the insert pocket starts, the gusset flank must still clear the insert by the datasheet wall
 assert(fan_post_d / 2 >= insert_hole_d / 2 + insert_w_min, "Fan posts too thin for the inserts");
@@ -571,11 +571,19 @@ module mat_stop() let (y0 = mat_stop_y()[0], y1 = mat_stop_y()[1])
 
 // A removable cross supports the fleece centre without bridging the chamber during the head print.
 // The widened ends sit in rear-open pockets. Their posts stop against the fan's outer frame; the
-// middle stays 5 mm in front of the fan front plane. Both faces of the cross have small edge chamfers.
-function filter_support_profile() = let (w = mat_support[0], span = mat_support[2], pad = mat_support[5])
-    move([body_w / 2, head_cz], p = union(concat(
-        [rect([span, w]), rect([w, span])],
-        [for (a = [0:90:270]) rot(a, p = move([span / 2 - 1.5, 0], p = rect([3, pad])))]))[0]);
+// middle stays 5 mm in front of the fan front plane. R4 concave corners strengthen the centre;
+// a tangent 6-mm flare blends each arm into its wider end pad. Both faces have 0.4-mm chamfers.
+function filter_support_arm() = let (
+    w = mat_support[0], span = mat_support[2], pad = mat_support[5], flare = 6,
+    edge = [for (i = [0:16]) let (q = i / 16)
+        [span / 2 - 3 - flare + flare * q, w / 2 + (pad - w) / 2 * q * q * (3 - 2 * q)]])
+    concat([[0, -w / 2]], [for (p = edge) [p.x, -p.y]],
+           [[span / 2, -pad / 2], [span / 2, pad / 2]], reverse(edge), [[0, w / 2]]);
+function filter_support_profile() = let (
+    w = mat_support[0],
+    outline = union([for (a = [0:90:270]) rot(a, p = filter_support_arm())])[0],
+    radii = [for (p = outline) abs(abs(p.x) - w / 2) < eps && abs(abs(p.y) - w / 2) < eps ? 4 : 0])
+    move([body_w / 2, head_cz], p = round_corners(outline, radius = radii));
 module filter_support_raw() {
     profile_sweep_y(filter_support_profile(), mat_support[3], mat_support[3] + mat_support[1],
                     front_c = 0.4, back_c = 0.4);

@@ -92,20 +92,24 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     approximation to the actual hull/tessellation. At that revision the central 117 x 117 mm opening had
     no backing grid. The current support cross below supersedes that geometric finding; bowing and loose
     fibres remain unmodelled, and `fan_visual()` is not a measured blade envelope.
-- **A separate support cross now backs the mat** (`filter_support`, user, 2026-09-23). It is the eighth
-  print type, making eleven physical printed pieces including the four feet: black PETG, 122 x 122 x 8 mm,
-  printed with the mat-facing side flat on the bed and the four end posts upright. Integrating the cross
-  into the intake-face-down head would create long unsupported bridges across the chamber.
-  - `mat_support` defines 2.4 mm wide, 3.2 mm deep central bars. In the untilted head frame their front
-    is y 22.5, 2.3 mm behind the nominal mat rear face at y 20.2; their back is y 25.7, 5 mm before the
-    fan frame front at y 30.7. Both cross faces have 0.4 mm edge chamfers. The four remaining open
-    fields are about 57.3 x 57.3 mm; this is sparse support, not a full backing grid.
-    Its measured projected obstruction is 561.039 mm² out of the rounded opening's 13,681.093 mm²,
-    or 4.101 %, leaving 13,120.054 mm² open. This is an area measurement, not a pressure-drop prediction.
-  - Four widened end pads are 5 mm across and 3 mm long radially. Their pockets open to the rear:
-    front y 22.3, radial extent 57.8..61.2, width 5.4 mm. The posts extend to y 30.5, so the pocket
-    fronts and fan frame allow 0.2 mm nominal movement in each axial direction. The outer tube wall
-    beyond each pocket remains 2.55 mm thick. There are no added fasteners or snap tabs.
+- **A separate reinforced support cross backs the mat** (`filter_support`, user, 2026-09-23). It is the eighth
+  print type, making eleven physical printed pieces including the four feet: black PETG, 123 x 123 x 9.8 mm,
+  printed with the mat-facing side flat on the bed and the four end posts upright, at 100% infill.
+  Integrating the cross into the intake-face-down head would create long unsupported bridges.
+  - `mat_support` defines 4 mm wide, 5 mm deep bars (formerly 2.4 x 3.2). Four concave R4 corners
+    round the centre; a 6 mm smoothstep flare meets each 8 mm end pad tangentially. Both cross faces
+    retain 0.4 mm chamfers. The front is y20.7, 0.5 mm behind the nominal mat rear face at y20.2;
+    the back is y25.7, 5 mm before the fan frame at y30.7. With 0.2 mm axial play, the worst nominal
+    clearances are 0.3 mm to the mat and 4.8 mm to the fan. The checker tests both reserves.
+  - Actual projected obstruction is 981.941 mm² of the rounded throat's 13,681.093 mm², or 7.177%,
+    leaving 12,699.152 mm² open. The strengthened profile intentionally raises the area gate from
+    5% to 8%. This is an area measurement, not a pressure-drop prediction.
+  - The end pads are 8 mm across and 3 mm long radially. Rear-open pockets start at y20.5,
+    extend radially 58.3..61.7 and are 8.4 mm wide; 2.05 mm of tube wall remains outside them.
+    The cross span grew from 122 to 123 mm: with the earlier front plane, the old chamfered ends
+    missed the tube's front seat. At the new span, each pad has a 0.35 mm radial flat bearing on it.
+    Four separate contact probes verify the head and fan stops, and 0.1 mm shifts remain free.
+    The posts end at y30.5, giving 0.2 mm axial clearance to both stops. No glue or screws are needed.
   - Insert it from the rear before the fan-and-cover assembly, mat-facing cross forwards and posts
     backwards. The fan frame traps the posts; verify actual frame contact at radial positions
     58.5..60 mm on all four sides. The full fan envelope cannot prove that these local surfaces exist.
@@ -391,3 +395,12 @@ Not checked: flexible deformation (the mat and the TPU feet are rigid bodies her
 - The second LED holder moves from x80 to x78, and the charge LED from x88 to x90, both at z21. The pair remains centred at x84. A one-sided move to x76 was rejected because its 15 mm inside insertion path intersected the battery. Centre spacing is now 12 mm instead of 8 mm (user requested more space). Both closed 0.8 mm skins and inside flange seats remain.
 - The project licence header and third-party notice now name FUMEX and ARCTIC; BOSL2 is explicitly excluded from the project's CC BY-NC-SA grant and retains its BSD-2-Clause licence. This corrects leftover LEO-AC1 names without changing the intended project or tool licences.
 - Final publication model SHA `b6aff7a9f9fa3554201d193ca9fee87963f8a676dbf34cea3bda2e38d5a54595`: eight valid print types / eleven pieces, 443 coaxial pairs, 528 assembly pairs, standard and PWM service paths all pass. Islands, overhangs and fins are CLEAN; thickness finds only the two authorised 0.8 mm LED skins (sampled areas 18/10 mm²). All eight parts and four plates slice without supports or warnings; arranged totals remain 471.9 g / 15.6 h. The viewer and all ten documentation views are rebuilt for this revision.
+
+
+## Reinforced filter cross (2026-09-23)
+
+- User found the original cross too flimsy. Arms are now 4 x 5 mm with R4 centre blends, smooth 6 mm end flares and 8 mm pads. `FULL_INFILL` includes `filter_support`; both individual slicing and the arranged 3MF use 100% zig-zag infill for it. Total support mass is 7.047 g in the slicer. The tipping estimate now uses solid PETG at 1.27 g/cm³ from the actual Generic PETG @BBL H2S profile, giving 7.333 g from the mesh volume, rather than the effective 20%-infill density of 0.90 g/cm³.
+- Eight straight-arm sections from the old and new print STL, including the 0.4 mm bevels, give 7.3594 -> 19.6794 mm² area and 5.8612 -> 39.8682 mm⁴ second moment for bending normal to the mat (6.80 times). This compares solid geometry only, not measured printed stiffness or breaking load. No physical load or creep test was performed.
+- The earlier front position required the span increase to 123 mm; at 122 mm the chamfer missed the front stop and export correctly failed. The accepted geometry passes all four head/fan stop probes, all 528 assembly pairs, 443 coaxial pairs and the existing service paths, including the complete sampled PWM path. Nominal fan gap remains 5 mm; air blockage is 7.177%.
+- Final model SHA `8034ad1cff9f06f27993dd120a1819eda7b857e5f79558baf87808050042fc5a`. Eight watertight print types / eleven pieces. Islands, overhangs and fins are CLEAN. Thickness returns only the two deliberate 0.8 mm LED skins (18/16 mm²); head sampling retains 65,223/65,399 valid rays with the known Trimesh numerical warnings.
+- All eight types and four plates slice with supports disabled and no geometry warnings. Arranged plates: 475.9 g / 15.7 h; individual jobs: 476.3 g / 16.7 h. Estimated assembled mass: 1022.2 g; front margin 28.9 mm, tipping angle 21.6 degrees. Ten documentation views and the public viewer are rebuilt.
