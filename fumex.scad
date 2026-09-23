@@ -25,8 +25,8 @@ plan_r = 3.5;        // the four vertical edges of the housing. The head has to 
                      // the base or its corners stand proud of the base's, and it is the magnet pockets in
                      // the intake face that cap it: at 6 they would fall outside the rounded corner, and
                      // they cannot move further in without reaching the intake opening (user, 2026-09-23)
-corner_rb = 2;       // at the joint: small enough that the base rim can follow it, see head_outline()
-neck_r = 2.5;        // the same arc mirrored into the base rim, half a millimetre wider - see joint_neck()
+corner_rb = 0.5;       // at the joint: small enough that the base rim can follow it, see head_outline()
+neck_r = 1;        // the same arc mirrored into the base rim, half a millimetre wider - see joint_neck()
 edge_c = 1.2;        // 45 degree chamfer on the bed edges
 tilt = 15;           // forward lean of the head (user: the housing itself makes the bend)
 base_h = 48;         // joint plane height at mid-depth; the plane rises towards the back
@@ -366,7 +366,10 @@ module cass_prism() translate([0, 0, base_h - 1]) linear_extrude(head_h + 2) uni
 // from the base and leave a step. At corner_r = 6 that neck would remove the whole 3 mm side wall of the
 // base over its top 3 mm - built and measured, the export came back as 7 separate bodies - and the head's
 // bottom face would be 133 mm wide against a 139 mm bay opening, bearing on the front and back rim only.
-// At 2 the rim keeps 1 mm of wall and the head still overlaps it by 1 mm (user chose R2, 2026-09-23).
+// It is down at 0.5 for a second reason: at 2 the elevation arc met the 3.5 mm arc of the vertical edge in
+// the same corner, and the two different radii plus the chamfers around the joint made a visible jumble
+// there (user, 2026-09-23: "diese rundungen hinten sehen einfach beschissen aus"). At 0.5 the joint is a
+// straight parting line that runs into the rounded vertical edge, and that edge carries the corner.
 module head_outline(inset = 0)
     let (w = body_w - 2 * inset, h = head_h - 2 * inset,
          rt = max(corner_r - inset, 0.5), rb = max(corner_rb - inset, 0.5))
