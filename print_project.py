@@ -140,10 +140,10 @@ def checks(ctx):
         ("chg_off", ["chg_module", "chg_sink"], ["base", "battery", "pwm_board"], [0, 0, 1], 30, 0.5),
         # the rear head screw bosses hang over the trough, so the lid slides forward first; the cell
         # is out by then anyway
-        # up past the trough walls, posts and the USB-C channel, then forward off the switch well. Getting
-        # it out of the bay after that is a tilt, which a rigid axis-aligned path cannot express.
-        ("lid_off", "ball_lid", ["base", "ballast", "pwm_board", "usbc", "switch"],
-         [([0, 0, 1], 10, 0.5), ([0, -1, 0], 8, 0.5)]),
+        # 10 mm up: clear of the trough walls, its posts, the USB-C channel above it and the run-outs of
+        # the rear head screw bosses. Out of the bay it comes at an angle, past the switch well box on the
+        # right - a tilt, which a rigid axis-aligned path cannot express.
+        ("lid_off", "ball_lid", ["base", "ballast", "pwm_board", "usbc", "switch"], [0, 0, 1], 10, 0.5),
         ("fan_out", "fan", ["head", "base"], [-o for o in out], 40, 0.5),      # back cover off first
         ("head_off", ["head", "head_back", "cassette", "fan", "filter", "magnets"],
          ["base", "battery", "pwm_board", "usbc", "switch", "pot", "led", "ball_lid", "ballast",

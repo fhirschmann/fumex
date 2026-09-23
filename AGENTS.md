@@ -75,6 +75,16 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 
    Still available if it is not enough: swapping the ISET resistor (marked 122, 1.2 kΩ) for 2.4 kΩ halves the charge current to 0.5 A and the heat to about 0.85 W, at 12–13 h for a full charge. The user chose the heatsink route alone for now.
 
+## Support-free printability (reviewed 2026-09-23 on the user's request)
+
+All seven parts print without supports. Evidence and the remaining soft spots:
+
+- `analyze.py islands`, `overhangs` (100 mm²), `fins` and `thickness` are all CLEAN on all seven parts.
+- `analyze.py overhangs --min-area 5` lists 27 small downward faces, all of them understood: four Ø3.3 foot peg holes and four Ø4 insert pockets in the bay floor (circular bridges, 6–10 mm²), the six vent slots in the head floor (10.8 mm² each), the two finger scoops in the intake face (45 mm² flat cone ends 2 mm above the bed), the USB-C channel floor (85 mm², a 5.8 mm ledge off the back wall) and the two cable tie loops (28 mm² each, 6 mm off the back wall). None is a floating island; every one of them grows out of a wall or bridges a hole under 15 mm.
+- The Bambu CLI slices all seven parts and all four plates without support and reports exactly one NON_CRITICAL warning, on `base`: "floating cantilever". The candidates are the USB-C channel ledge and the two tie loops — the same three features above. An A/B slice of the base with and without the loops was inconclusive because the standalone CLI run re-orients the part, so this is not pinned down further.
+- Deliberately **not** fixed: a 45° gusset under the USB-C channel floor or under the tie loops would reach 6 mm down and eat exactly the clearance the ballast lid needs to lift out (`lid_off`). A 6 mm ledge in PETG is routine; the lid coming out is not negotiable.
+- The two tall bridges in the design are the rocker switch panel cut-out (12.2 mm, which is why the switch stands upright) and the magnet pockets in the intake face (Ø10.3, in the bed face).
+
 ## Open items
 
 - Magnets Ø10 × 3 not measured; holding force through the printed faces not tested. Print the fit test before committing to the full print.
