@@ -41,14 +41,19 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 - The head floor runs the full depth and the back cover ends `cover_gap` above it. Without that the cover's lower edge was flush with the joint plane and scraped along the base rim on its way off (`cover_off` path).
 - Feet: four TPU pads, one M3 × 8 each plus a Ø3 peg against turning. A keying pocket in the bottom face was 275 mm² of flat overhang per foot, so it went.
 - Tipping: the head leans forward, so `checks()` computes the centre of mass from mesh volumes and part masses and requires ≥ 15 mm to every foot edge. Currently 20.4 mm at the front, 13.8° of tip angle. The front feet sit at y = 10 for that reason.
-- The convection slots beside the charge module climb 1.5 mm per slot. Aligned, their corners were collinear in the back face and every backend (Manifold and two CGAL attempts) left a degenerate triangle there.
+- Charge module flat on the back wall, heatsink through a cut-out whose corner radius equals the print clearance so the gap stays uniform (0.3 mm nominal, 0.24 mm on the faceted mesh). It is located by that heatsink, sits on a 45° ledge while it is fitted and is held by one cable tie through loops above and below it — the same loop geometry as the wiring strain relief. The ledge stops 0.5 mm short of the cut-out because the heatsink hangs 1.5 mm below the board and has to come forward with it; `chg_out` therefore is a two-stage path, 8 mm forward and then up past the cell.
+- The convection slots moved left of the module and climb 1.5 mm per slot. Aligned, their corners were collinear in the back face and every backend (Manifold and two CGAL attempts) left a degenerate triangle there.
 - The switch well flanks rise 1.25 mm per mm instead of 1.0: at exactly 45° `analyze.py overhangs` counted them.
 - The rocker switch stands upright in the right wall (long side vertical): the base prints bottom down, so its panel cut-out is a sideways hole and the bridge over it is 12.2 mm instead of 19.2 mm.
 
 ## Electrics — two things that belong in the README and in the build
 
 1. **0.32 A against 0.33 A.** The LFUPSMA charge/boost module is specified for 0–0.32 A at 12 V, the P12 Pro draws 0.33 A at full speed. The top of the knob range is therefore at the module's limit: it gets warm and starting at 100 % may brown out. Start slow, then turn up.
-2. **Charger heat.** The CN3058E is a linear charger; at 1 A from 5 V it turns about 1.7 W into heat, and here it sits in a closed bay instead of a fan's intake as in LEO-AC1. The user's 14 × 14 × 6 heatsink sits on the metal pad behind the IC, the holder plate keeps it off the housing, and two rows of slots in the back wall let the bay breathe. Swapping the ISET resistor (marked 122, 1.2 kΩ) for 2.4 kΩ halves the charge current to 0.5 A and the heat to about 0.85 W; a full charge then takes 12–13 h.
+2. **Charger heat — solved by taking it outside.** The CN3058E is a linear charger; at 1 A from 5 V it turns about 1.6 W into heat, and in LEO-AC1 it stood in the fan's intake. The first layout here put it upright in the middle of a closed bay, 4.4 mm from the cell, which the user rejected on 2026-09-22 ("wird recht warm und kriegt schlecht Luft") — and rightly so: charging a LiFePO4 cell above 45 °C costs life, and the heat appears exactly while charging.
+
+   Now the board lies flat against the inside of the back wall and its 14 × 14 × 6 heatsink reaches through a cut-out into ambient air, 4 mm proud of the back face. The heat leaves the housing instead of entering the bay, and the cell sits 16 mm away behind the cradle instead of beside the IC. The insulating silicone pad under the heatsink keeps the fins dead, so a bare metal block on the outside is safe to touch. Rough figures: heatsink in free air about 20 K/W plus about 5 K/W through the pad, so roughly 40 K over ambient at 1 A instead of a hot box.
+
+   Still available if it is not enough: swapping the ISET resistor (marked 122, 1.2 kΩ) for 2.4 kΩ halves the charge current to 0.5 A and the heat to about 0.85 W, at 12–13 h for a full charge. The user chose the heatsink route alone for now.
 
 ## Open items
 

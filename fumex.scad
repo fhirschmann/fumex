@@ -122,18 +122,20 @@ knob_flute = [2, 1.2];
 knob_c = 1.2;
 knob_mark = [1.6, 7.5, 0.8];   // pointer groove in the top face (single colour, no inlay)
 
-/* [Charge/boost module: eletechsup LFUPSMA, 12 V variant, upright on a pedestal] */
-chg_pcb = [32.2, 11, 1.0];  // measured length (upright, z), width (y), thickness (x)
+/* [Charge/boost module: eletechsup LFUPSMA, 12 V variant, flat on the back wall] */
+// The CN3058E is a linear charger: at 1 A from 5 V it turns about 1.6 W into heat, and in a closed bay
+// that heat ends up in the cell (user, 2026-09-22: it gets warm and has no air). So the board lies flat
+// against the inside of the back wall and its heatsink reaches through a cut-out into ambient air. The
+// insulating pad keeps the fins dead, and the heat never enters the bay.
+chg_pcb = [32.2, 11, 1.0];  // measured length (here along x), width (z), thickness (y)
 chg_comp_h = 2.7;    // parts above the PCB (3.7 total, measured)
-chg_x = 80;          // working face of the holder plate
-chg_cy = 52;
-chg_z0 = 6;          // OUT end of the board above the floor
-chg_plate = 2.4;
-chg_lip = [3, 1.6];  // wall in front of the board on the pedestal: height above it, thickness
+chg_x0 = 52;         // OUT end of the board; behind the cell, clear of the USB-C channel
+chg_cz = 26;         // board centre height
 chg_sink = [14, 14, 6, 1];  // user's heatsink behind the IC: length, width, height, insulating pad
-chg_sink_end = 9.5;  // lower heatsink end from the IN (upper) end
-chg_gap = 1;         // heatsink to holder plate
-chg_tie = [2.5, 1.2, 0.3, 12.5];   // cable tie round board and plate: width, thickness, slot clearance, centre from the OUT end
+chg_sink_end = 9.5;  // near end of the heatsink from the IN end; it overhangs that end by 4.5 mm
+chg_cut_cl = 0.3;    // heatsink clearance in the wall cut-out
+chg_rest = 4;        // 45 degree ledge the board sits on: how far it stands off the wall
+chg_tie_x = 12.5;    // cable tie across the board, from the OUT end: over the ends of inductor and diode
 
 /* [USB-C charging socket: PD trigger module (pads 1-4 open = 5 V) in the back wall] */
 usbc_board = [12.88, 10.35, 4.30];  // measured: length without the receptacle (y), width (x), height (z)
@@ -166,7 +168,7 @@ led_boss = [7, 5];   // boss inside the wall: diameter, length
 
 /* [Cable tie loops on the inside of the back wall (strain relief)] */
 tie_loop = [8, 6, 6, 5, 2.5];   // width (x), height (z), stand-off (y), tunnel width, tunnel depth
-tie_loop_xz = [[124, 22], [124, 34]];
+tie_loop_xz = [[124, 22], [124, 34], [chg_x0 + chg_tie_x, chg_cz - 10], [chg_x0 + chg_tie_x, chg_cz + 10]];
 
 /* [Convection slots beside the charge module, upright so they need no bridges] */
 vent = [1.6, 3.2, 5, 12, 1.5];   // width, pitch, count per row, height, rise per slot
@@ -221,10 +223,9 @@ pwm_x = [pot_x - pwm_pcb[1] / 2, pot_x + pwm_pcb[1] / 2];
 knob_sleeve_z = pot_washer[1] + pot_nut[1] - knob_gap + knob_stem_cl;
 knob_bore_top = pot_bush[1] - pot_mount_t + pot_shaft_free - knob_gap + knob_bore_over;
 usbc_y0 = body_d - wall - usbc_board[0] + usbc_plate;
-chg_bx = chg_x + chg_gap + chg_sink[2] + chg_sink[3];   // back face of the charge PCB
-chg_front = chg_bx + chg_pcb[2] + chg_comp_h;           // front of its parts
-chg_top = chg_z0 + chg_pcb[0];
-chg_ped = chg_front + 0.4 + chg_lip[1];                 // pedestal reaches past the retaining wall
+chg_y = body_d - wall;                                  // board back face on the inner face of the back wall
+chg_sink_cx = chg_x0 + chg_pcb[0] - chg_sink_end + chg_sink[0] / 2;   // heatsink centre along x
+chg_z = [chg_cz - chg_pcb[1] / 2, chg_cz + chg_pcb[1] / 2];
 
 function base_top(y) = base_h + (y - joint_y) * tan(tilt);
 function fan_holes() = [for (sx = [-1, 1], sz = [-1, 1]) [body_w / 2 + sx * fan_pitch / 2, head_cz + sz * fan_pitch / 2]];
@@ -246,8 +247,10 @@ assert(lug_flank(head_y[2] - insert_depth) >= insert_hole_d / 2 + insert_w_min,
 assert(open_sq < chamber_sq - 2, "Intake lip does not hold the mat");
 assert(pot_mount_t > 1.2, "Wall under washer and nut too thin");
 assert(base_top(0) > pot_z + knob_d / 2 + 2, "Knob reaches over the front rim");
-assert(bat_x0 + bat_l < chg_x - chg_plate, "Battery and charge module overlap");
-assert(pwm_x[0] > chg_ped, "PWM board overlaps the charge module pedestal");
+// the heatsink cut-out must stay clear of the USB-C channel beside it
+assert(chg_sink_cx + chg_sink[0] / 2 + chg_cut_cl + 2 < usbc_xz[0] - usbc[1] / 2 - usbc_cl - usbc_wall,
+       "Heatsink cut-out runs into the USB-C channel");
+assert(chg_y - chg_pcb[2] - chg_comp_h > bat_cy + bat_d / 2 + cradle_t, "Charge module sits over the cell");
 assert(mag[1] < cass_t - 1, "Cassette too thin for the magnet pockets");
 assert(len_fan - fan_t >= 5, "Fan screws reach less than 5 mm into the insert");
 assert(min([for (p = foot_xy) bat_low(p[1])]) > foot_boss[1], "Foot boss reaches into the battery");
@@ -405,7 +408,7 @@ module base() difference() {
     usbc_cuts();
     sw_cuts();
     vent_slots();
-    chg_tie_slots();
+    chg_cut();
     for (p = rim_bosses()) head_at() translate([p[0], p[1], base_h - insert_depth]) cylinder(d = insert_hole_d, h = insert_depth + 2);
     for (p = foot_xy) translate([p[0], p[1], -1]) cylinder(d = insert_hole_d, h = insert_depth + 1);
     for (p = foot_xy) translate([p[0] + foot_peg[2], p[1], -eps])
@@ -429,19 +432,17 @@ module pwm_ribs() for (sx = [-1, 1]) let (edge = pot_x + sx * pwm_pcb[1] / 2,   
     translate([r0, pwm_y0, floor_t - eps]) cube([pwm_rib, pwm_pcb[0] - 2, pwm_z0 - pwm_pad - floor_t + eps]);
     translate([p0, pwm_y0, pwm_z0 - pwm_pad - eps]) cube([pwm_edge_free - 0.6, pwm_pcb[0] - 2, pwm_pad + eps]);
 }
-// pedestal from the floor, upright plate behind the heatsink, retaining wall in front; a cable tie clamps the board
-module chg_holder() {
-    translate([chg_x - chg_plate, chg_cy - chg_pcb[1] / 2 - 2, floor_t - eps])
-        cube([chg_ped - chg_x + chg_plate, chg_pcb[1] + 4, chg_z0 - floor_t + eps]);          // pedestal
-    translate([chg_x - chg_plate, chg_cy - chg_pcb[1] / 2 - 2, chg_z0 - eps])
-        cube([chg_plate, chg_pcb[1] + 4, chg_top + 3 - chg_z0 + eps]);                        // plate
-    translate([chg_ped - chg_lip[1], chg_cy - chg_pcb[1] / 2 - 2, chg_z0 - eps])
-        cube([chg_lip[1], chg_pcb[1] + 4, chg_lip[0] + eps]);                                 // retaining wall
-}
-module chg_tie_slots() for (sy = [-1, 1])
-    translate([chg_x - chg_plate - 1, chg_cy + sy * (chg_pcb[1] / 2 + 0.8) - (chg_tie[0] + 2 * chg_tie[2]) / 2,
-               chg_z0 + chg_tie[3] - (chg_tie[1] + 2 * chg_tie[2]) / 2])
-        cube([chg_plate + 2, chg_tie[0] + 2 * chg_tie[2], chg_tie[1] + 2 * chg_tie[2]]);
+// A 45 degree ledge sets the height of the board while it is fitted; the heatsink in its cut-out locates
+// it sideways (0.3 mm of play), and one cable tie through the loops above and below presses it flat
+// against the wall. The ledge stops short of the heatsink, which hangs 1.5 mm below the board and has
+// to come forward out of the wall with it.
+module chg_holder() translate([chg_x0 - 2, 0, 0])
+    along_x(0, chg_sink_cx - chg_sink[0] / 2 - 0.5 - (chg_x0 - 2))   // ledge, 1 mm into the wall
+        polygon([[chg_y - chg_rest, chg_z[0]], [chg_y + 1, chg_z[0]], [chg_y + 1, chg_z[0] - chg_rest]]);
+// the heatsink reaches through the wall and closes the opening to within the print clearance
+module chg_cut() translate([chg_sink_cx, 0, chg_cz])
+    along_y(chg_y - 0.5, body_d + 1)   // corner radius = the clearance, so the gap stays uniform all round
+        rrect([chg_sink[0] + 2 * chg_cut_cl, chg_sink[1] + 2 * chg_cut_cl], chg_cut_cl);
 module pot_cuts() {
     cyl_y([pot_x, pot_z], -1, pot_mount_t, (pot_bush[0] + pot_bush_cl) / 2);          // bushing through the flat outer face
     cyl_y([pot_x, pot_z], pot_mount_t, wall + eps, pot_recess_r);                     // round housing pocket from inside
@@ -486,7 +487,7 @@ module sw_cuts() {
 // the slots climb by vent[4] from left to right: without that stagger their corners are collinear in the
 // back face and the triangulation of that one plane leaves a degenerate triangle in every backend
 module vent_slots() for (row = [0, 1], i = [0:vent[2] - 1])
-    translate([chg_x - 6 + i * vent[1], body_d - wall - 1, (row == 0 ? 8 : chg_top - vent[3] + 2) + i * vent[4]])
+    translate([20 + i * vent[1], body_d - wall - 1, (row == 0 ? 8 : 34) + i * vent[4]])
         cube([vent[0], wall + 2, vent[3]]);
 module tie_loops() for (p = tie_loop_xz) difference() {
     translate([p[0] - tie_loop[0] / 2, body_d - wall - tie_loop[2], p[1] - tie_loop[1] / 2])
@@ -590,12 +591,13 @@ module pot_nut_env() translate([pot_x, 0, pot_z]) orient([0, -1, 0]) difference(
     }
     translate([0, 0, -1]) cylinder(d = pot_bush[0] + 0.1, h = pot_washer[1] + pot_nut[1] + 2);
 }
-module chg_module_env() {
-    translate([chg_bx, chg_cy - chg_pcb[1] / 2, chg_z0]) cube([chg_pcb[2], chg_pcb[1], chg_pcb[0]]);
-    translate([chg_bx + chg_pcb[2] - eps, chg_cy - chg_pcb[1] / 2, chg_z0]) cube([chg_comp_h + eps, chg_pcb[1], chg_pcb[0]]);
+module chg_module_env() translate([chg_x0, chg_y - chg_pcb[2] - chg_comp_h, chg_z[0]]) {
+    translate([0, chg_comp_h, 0]) cube([chg_pcb[0], chg_pcb[2], chg_pcb[1]]);
+    cube([chg_pcb[0], chg_comp_h + eps, chg_pcb[1]]);          // parts towards the bay
 }
-module chg_sink_env() translate([chg_x + chg_gap, chg_cy - chg_sink[1] / 2, chg_top - chg_sink_end - chg_sink[0] / 2])
-    cube([chg_sink[2] + chg_sink[3], chg_sink[1], chg_sink[0]]);
+// insulating pad and heatsink, through the wall and proud of the back face
+module chg_sink_env() translate([chg_sink_cx - chg_sink[0] / 2, chg_y, chg_cz - chg_sink[1] / 2])
+    cube([chg_sink[0], chg_sink[3] + chg_sink[2], chg_sink[1]]);
 module usbc_env() {
     translate([usbc_xz[0] - usbc[1] / 2, usbc_y0, usbc_xz[1] - usbc[2] / 2]) cube([usbc[1], usbc_board[0], usbc[2]]);
     usbc_stadium(body_d - usbc_protrusion - eps, body_d, 0);

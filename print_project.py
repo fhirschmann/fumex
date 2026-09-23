@@ -118,8 +118,9 @@ def checks(ctx):
     stops = ctx.stops([("fan_sideways", "fan", "head", [1, 0, 0], 1.5),
                        ("head_on_screws", "head", "screws_head", [1, 0, 0], 0.6)])
     # The cell is held in open saddles by foam tape, so it has clearance instead of contact
+    # 0.2 for the heatsink: nominal 0.3 in its wall cut-out, less the facets of the rounded corners
     gaps = ctx.clearances([("battery", "base", 0.3), ("battery", "head", 1.0),
-                           ("chg_sink", "base", 0.8), ("fan", "head_back", 5.0)])
+                           ("chg_sink", "base", 0.2), ("fan", "head_back", 5.0)])
     # Assembly paths, not only end positions. The head is pulled off along the tilted normal.
     up = [0, -math.sin(tilt), math.cos(tilt)]
     out = [0, -math.cos(tilt), -math.sin(tilt)]       # out of the intake face, normal to it
@@ -131,6 +132,9 @@ def checks(ctx):
          ["base", "battery", "pwm_board", "chg_module", "chg_sink", "usbc", "switch", "pot", "led"], up, 60, 1),
         ("battery_out", "battery", ["base", "pwm_board", "chg_module", "chg_sink", "usbc", "switch"], [0, 0, 1], 40, 0.5),
         ("knob_off", "knob", ["base", "pot_nut"], [0, -1, 0], 20, 0.5),
+        # the heatsink is 7 mm deep in the wall: forward until it is clear, then up past the cell
+        ("chg_out", ["chg_module", "chg_sink"], ["base", "battery", "usbc", "pwm_board"],
+         [([0, -1, 0], 8, 0.5), ([0, 0, 1], 30, 0.5)]),
     ])
     # Heat-set insert pockets: core open, datasheet wall and floor ring material. Everything in the head
     # is pressed in along its own axis, so the probes use the tilted frame.

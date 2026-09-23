@@ -25,13 +25,13 @@ The filter cassette is held by four magnet pairs and comes off by hand; two fing
 | Part | Qty | Material | Size (mm) | Print orientation |
 |---|---|---|---|---|
 | `head` fan and filter housing | 1 | PETG black | 145 × 145 × 72 | intake face on the bed |
-| `base` electronics bay | 1 | PETG black | 145 × 72 × 57.6 | bottom on the bed, open at the top along the 15° joint plane |
+| `base` electronics bay | 1 | PETG black | 145 × 72 × 57.6 | bottom on the bed, open at the top along the 15° joint plane; heatsink cut-out in the back wall |
 | `head_back` back cover | 1 | PETG black | 145 × 141.7 × 8 | outside on the bed |
 | `cassette` filter cassette | 1 | PETG grey | 143 × 143 × 4.5 | grid face on the bed |
 | `knob` speed knob | 1 | PETG grey | Ø 28 × 14 | top on the bed |
 | `foot` foot | 4 | TPU | 18 × 16 × 6.5 | ground face on the bed, 100 % infill |
 
-All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.46 kg and 15.8 hours** in total (head 231 g, base 110 g, back cover 56 g, cassette 52 g, knob 6 g, feet 4 × 1.5 g).
+All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.46 kg and 15.8 hours** in total (head 231 g, base 108 g, back cover 56 g, cassette 52 g, knob 6 g, feet 4 × 1.5 g).
 
 Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid (feet 100 %).
 
@@ -43,7 +43,7 @@ Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid (feet 1
 | Filter mat, 120 × 120 × 17 | 1 | – | cut from a cooker hood mat: white fleece plus a carbon layer. **Fleece side to the front**, carbon behind it |
 | Battery 3.2 V 6000 mAh LiFePO4 pack with protection board (BMS), JST-PH 2.0 | 1 | [eremit.de](https://www.eremit.de/p/3-2v-6000mah-pack-mit-schutz-arduino-aio-jst-ph-2-0-stecker) | cell Ø 32.5 × 71.6 mm, lying across the bay, protection board up; charge only with a LiFePO4 charger (3.65 V), **no** TP4056 |
 | Charge/boost module "2-in-1 3.2 V LiFePO4", **12 V variant** | 1 | [AliExpress](https://de.aliexpress.com/item/1005008094801881.html) | eletechsup LFUPSMA, board 32.2 × 11 × 1.0 mm; IN± 5 V charging, B± battery, O± 12 V. See the note on its 0.32 A rating below |
-| Aluminium heatsink 14 × 14 × 6 mm with an insulating silicone thermal pad | 1 | – | on the metal pad behind the charger IC; the pad must cover the whole heatsink face |
+| Aluminium heatsink 14 × 14 × 6 mm with an insulating silicone thermal pad | 1 | – | on the metal pad behind the charger IC, reaching through the back wall into open air; the pad must cover the whole heatsink face, it is what makes the fins safe to touch |
 | PWM fan controller CNY-FA5-PRO, DC 8–24 V, with potentiometer and switch | 1 | [AliExpress](https://de.aliexpress.com/item/1005010113177510.html) | 41 × 32 × 15 mm, flat in the bay, shaft through the front panel |
 | USB-C PD trigger module, Type A (default 5 V) | 1 | [AliExpress](https://de.aliexpress.com/item/1005010610660644.html) | charging socket in the back wall. **Leave pads 1–4 open** (they select 9/12/15/20 V); the charge module only takes 4–6 V, check 5 V with a multimeter before connecting |
 | ON-OFF rocker switch, snap-in, 21 × 15 mm (cut-out 19.2 × 12.2 mm) | 1 | [AliExpress](https://de.aliexpress.com/item/1005008871215158.html) | in the right side wall, long side upright |
@@ -55,7 +55,7 @@ Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid (feet 1
 | M3 × 30, ISO 7380 Torx | 4 | – | fan; the frame alone is 25 mm thick, so nothing shorter reaches a thread |
 | M3 × 8, ISO 7380 Torx | 14 | – | back cover (6), head onto the base (4), feet (4) |
 | JST-PH 2.0 cable, 2-pin, mating the battery plug | 1 | – | battery to the switch and B+ / B− |
-| Small cable ties, 2.5–3.6 mm wide | 3 | – | one holds the charge module against its plate, two for strain relief on the back wall |
+| Small cable ties, 2.5–3.6 mm wide | 3 | – | one presses the charge module against the back wall, two for strain relief |
 | Silicone wire 24 AWG, red and black | about 1 m | – | USB-C module, switch, LED, 12 V to the PWM controller |
 | Heat-shrink tubing 2–3 mm | – | – | every solder joint |
 | Foam tape, self-adhesive, 1–2 mm | – | – | a strip above and below the cell keeps it from rattling |
@@ -72,19 +72,21 @@ battery (JST-PH, built-in BMS) ──► (PTC) ──► rocker switch ──►
 - With the switch in the battery line, off really disconnects the battery, and the battery only charges with the switch on. To charge without the fan running, turn the knob down until it clicks.
 - The LED shows that the charging cable is plugged in, not the charge state.
 - **Start slow.** The module is specified for 0–0.32 A at 12 V and the P12 Pro draws 0.33 A at full speed, so the top of the knob range sits right at its limit: it gets warm there, and switching on at 100 % may brown out. Turn the knob up once the fan is running. At half speed the pack lasts far longer than the roughly four hours it manages flat out.
-- The CN3058E on the module is a linear charger: at 1 A from 5 V it turns about 1.7 W into heat. The heatsink on its back, the holder plate that keeps it off the housing and two rows of slots in the back wall deal with that. Replacing the ISET resistor (marked 122, 1.2 kΩ) with 2.4 kΩ halves the current to 0.5 A and the heat to about 0.85 W; a full charge then takes 12–13 hours.
+- The CN3058E on the module is a linear charger: at 1 A from 5 V it turns about 1.6 W into heat, and it does that exactly while the battery is charging — which is when a LiFePO4 cell least wants to be warm. So the board lies flat against the inside of the back wall and its heatsink reaches through a cut-out into open air, 4 mm proud of the back face: the heat leaves the housing instead of heating the bay, and the cell sits 16 mm away behind its cradle. The little metal block on the back gets warm; the insulating pad under it means it is dead, not live.
+- If that is still not cool enough for your taste, replace the ISET resistor (marked 122, 1.2 kΩ) with 2.4 kΩ: half the charge current, half the heat, and 12–13 hours for a full charge.
 
 ## Assembly
 
 1. Press in the heat-set inserts: 4 into the corner gussets of the head from the fan side, 6 into the bosses along its side walls from the back, 4 into the bosses under the base rim, 4 into the base floor from below.
 2. Glue the magnets: four into the pockets of the intake face first, then put the other four on top of them, drop the cassette on and glue those into the cassette. The polarity then cannot be wrong.
 3. Screw the fan into the corner gussets with M3 × 30, blowing towards the back, and route its cable through the notch in the head floor.
-4. Fit the electronics in the base: PWM controller flat on its rib pads with the potentiometer through the front wall, washer and nut from outside; charge module upright on its pedestal with the heatsink against the holder plate, held by a cable tie through the two slots; LED glued in beside the knob with its resistor; USB-C module into its channel in the back wall; rocker switch snapped into the right wall. Fix the USB-C and switch wires with a cable tie through the loops beside them.
-5. Lay the battery into its three saddles, protection board up, cable end to the right, a strip of foam tape above and below.
-6. Put a drop of CA gel into the knob bore and push the knob onto the shaft until it bottoms; it then stands 1.2 mm off the wall and turns freely.
-7. Set the head onto the base and screw it down with 4 × M3 × 8 from inside, reaching in through the open back. Then screw on the back cover with 6 × M3 × 8.
-8. Screw the four TPU feet on from below with M3 × 8; the small peg beside each screw stops them turning.
-9. Push the mat in fleece side first, past the lip, and put the cassette on.
+4. Fit the electronics in the base: PWM controller flat on its rib pads with the potentiometer through the front wall, washer and nut from outside; LED glued in beside the knob with its resistor; USB-C module into its channel in the back wall; rocker switch snapped into the right wall. Fix the USB-C and switch wires with a cable tie through the loops beside them.
+5. Stick the insulating pad onto the metal pad on the back of the charge module, the heatsink onto the pad, then push the heatsink from inside into the cut-out of the back wall until the board lies flat on its ledge, parts towards the bay. One cable tie through the loops above and below it presses it home. The fins then stand 4 mm out of the back face.
+6. Lay the battery into its three saddles, protection board up, cable end to the right, a strip of foam tape above and below.
+7. Put a drop of CA gel into the knob bore and push the knob onto the shaft until it bottoms; it then stands 1.2 mm off the wall and turns freely.
+8. Set the head onto the base and screw it down with 4 × M3 × 8 from inside, reaching in through the open back. Then screw on the back cover with 6 × M3 × 8.
+9. Screw the four TPU feet on from below with M3 × 8; the small peg beside each screw stops them turning.
+10. Push the mat in fleece side first, past the lip, and put the cassette on.
 
 To change the mat: pull the cassette off, hook a finger into one of the notches in the lip, pull the mat out, push the new one in.
 
