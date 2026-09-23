@@ -118,7 +118,8 @@ pot_pcb_cl = 0.3;
 
 /* [Speed knob] */
 knob_d = 28;
-knob_len = 14;
+knob_skin = 2;       // solid above the shaft end; knob_len follows the pot shaft, not the other way
+
 knob_gap = 1.5;      // underside off the wall face
 knob_bore_over = 0.3;
 knob_cavity_d = 13;
@@ -152,7 +153,7 @@ chg_br = [3.6, 1.4, 2, 2.5];  // end brackets: thickness (x; 3 left only 1 mm be
 chg_vent = [4, 6.4, 6, 14, 0.5];   // slot width (x), pitch, count, depth (y), stagger per slot
 
 /* [Ventilation slots in the back wall (user, 2026-09-22), above the ballast lid] */
-vent = [2, 5, 12, 16, 0];     // slot width, pitch, count, height, rise per slot (user: not staggered)
+vent = [2, 5, 12, 14, 0];     // slot width, pitch, count, height, rise per slot (user: not staggered)
 vent_xz = [22, 32];  // left end and lower edge of the row
 
 /* [USB-C charging socket: PD trigger module (pads 1-4 open = 5 V) in the back wall] */
@@ -203,7 +204,8 @@ ball = [3, 142, 53, 26];    // interior x from / to (both housing walls), front 
                      // (user, 2026-09-22); the rim stays below the run-outs of the rear head screw bosses
 ball_wall = 2;
 ball_post = 10;      // screw posts for the lid, standing free on the trough floor
-ball_post_x = [30, 115];
+ball_post_x = [45, 90];     // driver access: the rim bosses now hang over the trough left and right,
+                            // and the USB-C channel and the tie loops block the right end (2026-09-23)
 ball_lid_t = 3;
 ball_lip = 0;        // no lip over the front wall: the cell has to lift past it (battery_out)
 ball_dish = [16, 1.5];   // finger dish in the lid instead: diameter, depth
@@ -241,7 +243,12 @@ screw_head_h = 1.65;
 head_pocket = [6.4, 1.9];
 // Head screws along the side walls: their bosses merge into those walls, so they hang from the rim on
 // solid material. y stays clear of the back cover lip inside the head, x of the electronics below.
-rim_screws = [[7.5, 9], [137.5, 9], [7.5, 62], [137.5, 62]];
+// One row in the plenum behind the fan: the only place inside the head where a driver reaches the rim.
+// Everywhere else the filter tube, the fan or the lower back cover boss stands over the screw, and the
+// 5.75 mm channel beside the tube takes no bit at all (user, 2026-09-23). Mechanically that is also the
+// right row - the head leans forward, so its centre of mass sits 19 mm in front of the joint centre and
+// presses the front of the joint together while lifting the back.
+rim_screws = [[25, 66], [120, 66]];
 rim_boss_len = 9;
 rim_boss_d = 10;     // 13 bulged 12.5 mm into the bay and read as a random step (user, 2026-09-22)
 // ISO 7380 button head Torx from the user's set (M3 x 6, 8, 10, 12, 16, 25) except the fan screws
@@ -265,6 +272,10 @@ pwm_z0 = pot_z - pot_axis_h - pwm_pcb[2];
 pwm_x = [pot_x - pwm_pcb[1] / 2, pot_x + pwm_pcb[1] / 2];
 knob_sleeve_z = pot_washer[1] + pot_nut[1] - knob_gap + knob_stem_cl;
 knob_bore_top = pot_bush[1] - pot_mount_t + pot_shaft_free - knob_gap + knob_bore_over;
+knob_len = knob_bore_top + knob_skin;   // 15.0 mm proud of the front face, and all of it is the 9.5 mm
+                                        // shaft: the knob cannot get flatter without cutting it (user
+                                        // asked 2026-09-23, chose not to cut). knob_gap stays at 1.5 -
+                                        // LEO-AC1 measured that 0.5 rubbed when the knob was pressed home.
 usbc_y0 = body_d - wall - usbc_board[0] + usbc_plate;
 chg_cz = chg_z0 + chg_pcb[1] / 2;
 chg_y = chg_y0 + chg_comp_h;                            // PCB face towards the front wall
@@ -335,10 +346,12 @@ module head_at() translate([0, joint_y, base_h]) rotate([tilt, 0, 0]) translate(
 module joint_halfspace() head_at() translate([-40, -40, base_h]) cube([body_w + 80, body_d + 80, 400]);
 
 module base_outline(inset = 0) translate([body_w / 2, body_d / 2]) rrect([body_w - 2 * inset, body_d - 2 * inset], max(corner_r - inset, 0.5));
-// Rounded at the top, square at the bottom: the two bottom corners sit on the joint plane, and a radius
-// there pulls the head 6 mm in from the base rim - the step the user pointed at (2026-09-23). Squared,
-// the side walls of head and base run into each other without an offset. square_bottom = false gives the
-// back cover its radius on all four corners (user, 2026-09-23).
+// Rounded at the top, square at the bottom: with a radius there the head measures only 133 mm across at
+// the joint plane while the base rim is 145, so its side walls curve away from the base (user, 2026-09-23).
+// Carrying the radius through the joint is not possible at corner_r 6 and wall 3: the neck would eat the
+// whole 3 mm side wall of the base and the head's bottom face would be narrower than the bay opening.
+// square_bottom = false gives the back cover and the cassette their radius on all four corners - neither
+// of them lands on the rim.
 module head_outline(inset = 0, square_bottom = true) let (w = body_w - 2 * inset, h = head_h - 2 * inset)
     translate([body_w / 2, head_cz]) union() {
         rrect([w, h], max(corner_r - inset, 0.5));
@@ -389,7 +402,7 @@ module head_raw() difference() {
             cube([chg_vent[0], chg_vent[3], wall + 2]);
     difference() {                                                      // chamfer on the intake bed face
         along_y(-eps, edge_c) head_outline(-1);
-        hull() { along_y(-eps, -eps + tip) head_outline(edge_c); along_y(edge_c - tip, edge_c) head_outline(0); }
+        hull() { along_y(-eps, -eps + tip) head_outline(edge_c); along_y(edge_c - tip, edge_c) head_outline(); }
     }
 }
 // Rear lip of the filter chamber, the counterpart of the intake lip. Without it the mat is held at the
@@ -453,6 +466,8 @@ module head_back_raw() intersection() {
             head_outline(wall + lip_cl, false);
             head_outline(wall + lip_cl + lip_t, false);
             for (p = head_bosses()) offset(r = 0.8) translate([p[0], p[1]]) circle(d = boss_d);
+            // and clear of the head screw heads sitting in the floor below it
+            for (p = rim_bosses()) offset(r = 0.8) translate([p[0], base_h + wall]) circle(d = head_pocket[0]);
         }
     }
     translate([body_w / 2, 0, head_cz]) along_y(head_y[4] - 1, body_d + 1) grid_2d(exhaust_sq);
@@ -640,14 +655,18 @@ module tie_loops() for (p = tie_loop_xz) difference() {
 // with a 45 degree run-out below so they print without support
 // The boss hangs under the rim where there is no wall, so it runs out to the nearest wall (p[2]) and its
 // underside drops 45 degrees towards that wall: no island, nothing to support.
-// The boss hangs under the rim: it merges into the nearest side wall and its underside drops 45 degrees
-// towards that wall, so nothing starts in the air. The ramp runs along x, the axis the housing bends about.
-module rim_boss_bodies() for (p = rim_bosses()) head_at()
-    let (left = p[0] < body_w / 2, xw = left ? 0 : body_w - wall, dx = left ? p[0] - wall : body_w - wall - p[0])
+// The boss hangs under the rim: it merges into the back wall and its underside drops 45 degrees towards
+// that wall, so nothing starts in the air. It stays well above the ballast trough, so it costs no ballast.
+module rim_boss_bodies() intersection() {
+    linear_extrude(base_top(body_d) + 1) base_outline();   // tilted, the ramp would reach past the back face
+    for (p = rim_bosses()) head_at()
+    let (dy = body_d - wall - p[1])
     hull() {
         translate([p[0], p[1], base_h - rim_boss_len]) cylinder(d = rim_boss_d, h = rim_boss_len + 1);
-        translate([xw, p[1] - rim_boss_d / 2, base_h - rim_boss_len - dx]) cube([wall, rim_boss_d, rim_boss_len + 1 + dx]);
+        translate([p[0] - rim_boss_d / 2, body_d - wall, base_h - rim_boss_len - dy])
+            cube([rim_boss_d, wall, rim_boss_len + 1 + dy]);
     }
+}
 module foot_bosses() for (p = foot_xy) translate([p[0], p[1], 0]) cylinder(d = foot_boss[0], h = foot_boss[1]);
 
 // ---------- knob ----------
@@ -764,6 +783,22 @@ module screws_fan(socket = false) head_at() for (p = fan_holes()) translate([p[0
 module screws_back(socket = false) head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) orient([0, -1, 0]) screw(len_back, socket);
 module screws_head(socket = false) head_at() for (p = rim_bosses()) translate([p[0], p[1], base_h + wall]) orient([0, 0, -1]) screw(len_head, socket);
 module screws_feet(socket = false) for (p = foot_xy) translate([p[0], p[1], -foot[2] + foot_head_recess + screw_head_h]) orient([0, 0, 1]) screw(len_foot, socket);
+
+// ---------- driver access ----------
+// A Torx bit in a 1/4 inch holder, on the head of every screw and pointing away from it: 7 mm for the
+// first 25 mm, then 13 mm of holder. Checked for overlap like any other assembly body, so a screw that
+// cannot be reached shows up as a collision (user, 2026-09-23: "viele kann man nicht nutzen").
+driver = [4, 6, 6.35, 25, 13, 55];   // tip, 1/4 inch shank, holder: diameter and length of each
+module driver_at() translate([0, 0, -screw_head_h]) mirror([0, 0, 1]) {
+    cylinder(d = driver[0], h = driver[1]);
+    translate([0, 0, driver[1] - eps]) cylinder(d = driver[2], h = driver[3] + eps);
+    translate([0, 0, driver[1] + driver[3] - eps]) cylinder(d = driver[4], h = driver[5] + eps);
+}
+module drivers_fan()  head_at() for (p = fan_holes())   translate([p[0], head_y[3], p[1]]) orient([0, -1, 0]) driver_at();
+module drivers_back() head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) orient([0, -1, 0]) driver_at();
+module drivers_head() head_at() for (p = rim_bosses())  translate([p[0], p[1], base_h + wall]) orient([0, 0, -1]) driver_at();
+module drivers_feet() for (p = foot_xy) translate([p[0], p[1], -foot[2] + foot_head_recess + screw_head_h]) orient([0, 0, 1]) driver_at();
+module drivers_lid()  for (q = ball_posts()) translate([q[0], q[1], ball[3] + ball_lid_t]) orient([0, 0, -1]) driver_at();
 
 // ---------- assembly ----------
 module assembly(explode = 0) {

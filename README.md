@@ -34,7 +34,7 @@ The charge module is the part that gets warm, so it gets a draught of its own. I
 | `knob` speed knob | 1 | PETG grey | Ø 28 × 14 | top on the bed |
 | `foot` foot | 4 | TPU | 18 × 16 × 6.5 | ground face on the bed, 100 % infill |
 
-All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head and ballast lid, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.48 kg and 16.4 hours** in total (head 231 g, base 118 g, back cover 57 g, cassette 52 g, ballast lid 7 g, knob 6 g, feet 4 × 1.5 g).
+All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head and ballast lid, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.48 kg and 16.2 hours** in total (head 231 g, base 117 g, back cover 57 g, cassette 52 g, ballast lid 7 g, knob 6 g, feet 4 × 1.5 g).
 
 Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid (feet 100 %).
 
@@ -56,7 +56,7 @@ Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid (feet 1
 | Resettable PTC fuse Bourns MF-R160 or RXEF160 (1.6 A hold) | 1 | – | optional, between battery plus and the switch, in heat shrink |
 | Heat-set inserts Ruthex RX-M3x5.7 | 16 | [ruthex.de](https://www.ruthex.de) | 4 fan, 4 back cover, 4 head screws, 4 feet |
 | M3 × 30, ISO 7380 Torx | 4 | – | fan; the frame alone is 25 mm thick, so nothing shorter reaches a thread |
-| M3 × 8, ISO 7380 Torx | 12 | – | back cover (4), head onto the base (4), feet (4) |
+| M3 × 8, ISO 7380 Torx | 10 | – | back cover (4), head onto the base (2), feet (4) |
 | M3 × 12 plastic-forming screw (Delta PT, Plastite or similar) | 4 | – | ballast lid, straight into the printed posts — no inserts there |
 | Iron offcuts for the ballast | – | – | up to 44 cm³, about 210 g, loose in the trough under its lid |
 | JST-PH 2.0 cable, 2-pin, mating the battery plug | 1 | – | battery to the switch and B+ / B− |
@@ -90,7 +90,7 @@ battery (JST-PH, built-in BMS) ──► (PTC) ──► rocker switch ──►
 6. Fill the ballast trough behind the battery with iron offcuts — up to about 210 g — and screw its lid down with four M3 × 12 plastic-forming screws. Fill it properly or pack the rest with foam; loose pieces under a half-empty lid rattle.
 7. Lay the battery into its three saddles, protection board up, cable end to the right, a strip of foam tape above and below.
 8. Put a drop of CA gel into the knob bore and push the knob onto the shaft until it bottoms; it then stands 1.2 mm off the wall and turns freely.
-9. Set the head onto the base and screw it down with 4 × M3 × 8 from inside, reaching in through the open back. Then screw on the back cover with 4 × M3 × 8.
+9. Set the head onto the base and screw it down with 2 × M3 × 8, reaching in through the open back: they sit in the head floor just behind the fan, the one place inside the head where a driver gets to the rim. Then screw on the back cover with 4 × M3 × 8.
 10. Screw the four TPU feet on from below with M3 × 8; the small peg beside each screw stops them turning.
 11. Push the mat in fleece side first, past the lip, and put the cassette on.
 
@@ -103,7 +103,7 @@ To change the mat: pull the cassette off, hook a finger into one of the notches 
 - **Filling the ballast:** only behind the cell, never in front of it — mass ahead of the centre of mass makes tipping worse, and the large free space at the front is exactly the wrong place. The lid keeps the pieces away from the wiring and comes off again, so the offcuts stay reusable. Its four screws form their own thread in the printed posts; a plastic-forming screw tolerates a handful of refits, so do not open it every week.
 - Walls 3 mm, base floor 3.2 mm, back cover 4 mm, corner radius 6 mm.
 - The joint plane rises 15° towards the back, so it meets the vertical back face of the base at 75°. That edge — the one the back cover lands on — is chamfered at 45°, as is the lower edge of the cover itself, and the two form one groove instead of a sharp rim.
-- The head is located on the base by its four screws; there is no register, and the outer contours match. The head outline is square at its two bottom corners so its side walls run straight into the base rim; the back cover and the cassette keep the 6 mm radius on all four of their own corners, because neither of them lands on that rim.
+- The head is located on the base by two screws in one row behind the fan; there is no register, and the outer contours match. That row is also where the load is: the head leans forward, so its centre of mass sits 19 mm in front of the joint, pressing the front of the joint together and lifting the back. Every screw in the design is checked for driver access — a bit and its holder are modelled on each screw head and must not touch anything. The head outline is square at its two bottom corners so its side walls run straight into the base rim; the back cover and the cassette keep the 6 mm radius on all four of their own corners, because neither of them lands on that rim.
 - The mat is 17 mm of soft fleece, so it seals against the chamber walls: everything downstream of it is filtered air.
 - PETG softens well below a soldering iron. Keep the tip away from the housing.
 
