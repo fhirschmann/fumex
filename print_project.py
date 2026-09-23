@@ -18,6 +18,7 @@ PARTS = {
     "knob": (1, "PETG-grey", 1),
     "foot": (4, "TPU", 1),
     "ball_lid": (1, "PETG-black", 1),
+    "chg_holder": (1, "PETG-black", 1),
 }
 FULL_INFILL = set()
 FULL_INFILL_MATERIALS = {"TPU"}
@@ -31,6 +32,7 @@ ASSEMBLY = {
     "knob": "knob();",
     "feet": "place_feet();",
     "ball_lid": "ball_lid();",
+    "chg_holder": "chg_holder_at();",
     "fan": "fan_env();",
     "filter": "filter_env();",
     "magnets": "magnets_env();",
@@ -47,6 +49,7 @@ ASSEMBLY = {
     "screws_fan": "screws_fan();",
     "screws_back": "screws_back();",
     "screws_head": "screws_head();",
+    "screws_chg": "screws_chg();",
     "screws_feet": "screws_feet();",
 }
 # the fan and the pot are solid envelopes, their screws and shaft run through them
@@ -64,7 +67,7 @@ PROCESS = dict(wall_loops=4, top_shell_layers=5, bottom_shell_layers=5, infill=2
 FILAMENTS = [dict(material="PETG-black", profile="Generic PETG @BBL H2S", colour="#1A1B1D"),
              dict(material="PETG-grey", profile="Generic PETG @BBL H2S", colour="#8C9196"),
              dict(material="TPU", profile="Generic TPU @BBL H2S", colour="#1A1B1D")]
-PLATES = [("Head", ["head", "ball_lid"]),
+PLATES = [("Head", ["head", "ball_lid", "chg_holder"]),
           ("Base and back cover", ["base", "head_back"]),
           ("Grey parts", ["cassette", "knob"]),
           ("TPU feet", ["foot"])]
@@ -78,10 +81,10 @@ SLICER_SUMMARY = "docs/slicer-summary.json"
 DENSITY = {"PETG": 0.90e-3, "TPU": 1.20e-3, "iron-loose": 4.7e-3}
 MASSES_G = {"fan": 185, "battery": 150, "filter": 15, "pwm_board": 12, "chg_module": 3, "chg_sink": 5,
             "usbc": 2, "switch": 5, "led": 0.3, "magnets": 18, "pot": 6, "pot_nut": 2,
-            "screws_fan": 6, "screws_back": 4, "screws_head": 3, "screws_feet": 3}
+            "screws_fan": 6, "screws_back": 4, "screws_head": 3, "screws_feet": 3, "screws_chg": 2}
 # bodies whose mass comes from their volume rather than a data sheet
 BY_VOLUME = {"base": "PETG", "head": "PETG", "head_back": "PETG", "cassette": "PETG", "knob": "PETG",
-             "feet": "TPU", "ball_lid": "PETG", "ballast": "iron-loose"}
+             "feet": "TPU", "ball_lid": "PETG", "chg_holder": "PETG", "ballast": "iron-loose"}
 
 LIMITATIONS = ["Hardware envelopes, not detailed vendor CAD",
                "Sampled motion, no continuous swept-volume proof",
@@ -117,7 +120,8 @@ def checks(ctx):
         ("fan", "head", [0, -1, 0]),                  # fan frame on the seat plate
         ("feet", "base", [0, 0, 1]),
         ("pwm_board", "base", [0, 0, -1]),            # board on the rib pads
-        ("chg_module", "head_back", into),            # module pulled onto its ledges by the tie
+        ("chg_module", "chg_holder", [0, math.sin(tilt), -math.cos(tilt)]),   # board down in its groove
+        ("chg_holder", "head", [0, math.sin(tilt), -math.cos(tilt)]),          # holder flat on the head floor
         ("ball_lid", "base", [0, 0, -1]),             # lid on its posts and walls
     ])
     # Stops: the fan cannot move sideways in its corner guides, the head is located by its screws
@@ -133,14 +137,19 @@ def checks(ctx):
     out = [0, -math.cos(tilt), -math.sin(tilt)]       # out of the intake face, normal to it
     paths = ctx.paths([
         ("cassette_off", "cassette", ["head", "base", "fan", "filter"], out, 30, 0.5),
-        ("cover_off", ["head_back", "chg_module", "chg_sink"], ["head", "base", "fan", "screws_fan"],
+        ("cover_off", "head_back", ["head", "base", "fan", "screws_fan", "chg_module", "chg_sink"],
          [-o for o in out], 30, 0.5),
-        ("chg_off", ["chg_module", "chg_sink"], ["head_back"], out, 20, 0.5),   # off its ledges once the cover is out
+        # the board lifts out of its grooves once the cover is off; it has to, because it stands in the
+        # way of the fan
+        ("chg_off", ["chg_module", "chg_sink", "chg_holder"], ["head", "fan"], up, 30, 0.5),
         # the rear head screw bosses hang over the trough, so the lid slides forward first; the cell
         # is out by then anyway
-        ("lid_off", "ball_lid", ["base", "ballast"], [([0, -1, 0], 25, 0.5), ([0, 0, 1], 30, 0.5)]),
+        # up past the trough walls, posts and the USB-C channel, then forward off the switch well. Getting
+        # it out of the bay after that is a tilt, which a rigid axis-aligned path cannot express.
+        ("lid_off", "ball_lid", ["base", "ballast", "pwm_board", "usbc", "switch"],
+         [([0, 0, 1], 10, 0.5), ([0, -1, 0], 8, 0.5)]),
         ("fan_out", "fan", ["head", "base"], [-o for o in out], 40, 0.5),      # back cover off first
-        ("head_off", ["head", "head_back", "cassette", "fan", "filter", "magnets", "chg_module", "chg_sink"],
+        ("head_off", ["head", "head_back", "cassette", "fan", "filter", "magnets", "chg_module", "chg_sink", "chg_holder"],
          ["base", "battery", "pwm_board", "usbc", "switch", "pot", "led", "ball_lid", "ballast"], up, 60, 1),
         ("battery_out", "battery", ["base", "pwm_board", "usbc", "switch", "ball_lid"], [0, 0, 1], 40, 0.5),
         ("knob_off", "knob", ["base", "pot_nut"], [0, -1, 0], 20, 0.5),
@@ -227,7 +236,9 @@ VIEWER = dict(
            ("screws_head", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, -0.3, 1.6]),
            ("screws_feet", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, 0, -1.0]),
            ("ballast", "Ballast, loose iron", "bought", "#6b6f74", "1x", [0, 0, -0.3]),
-           ("ball_lid", "Ballast lid", "black", "#7c8288", "1x", [0, 0, 0.8])],
+           ("ball_lid", "Ballast lid", "black", "#7c8288", "1x", [0, 0, 0.8]),
+           ("chg_holder", "Charge module holder", "black", "#7c8288", "1x", [0, -0.4, 1.5]),
+           ("screws_chg", "Screws M3 x 8", "bought", "#9aa0a6", "2x", [0, -0.4, 1.7])],
     bodies={"fan_visual": "fan_visual();"},
     output="build/viewer.html",
 )
