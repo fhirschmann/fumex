@@ -6,6 +6,7 @@ Internal notes for coding agents (Claude, Codex). The README is public and stays
 
 - Talk to the user in German. README, AGENTS.md, code comments, viewer labels, slicer plate/material names, check messages **and all commit messages** are English (user, 2026-09-21).
 - The project follows the skill `openscad-print-project` (`~/.claude/skills/openscad-print-project`). After every model change run the full loop: `print_tools.py export` → `analyze.py islands/overhangs/thickness/fins` → `slice_check.py` → update README numbers → `build_viewer.py --copy-to docs/index.html` → commit.
+- Always rebuild the viewer after every model or layout change, before reporting completion (user, 2026-09-23). Regenerate `build/viewer.html` and `docs/index.html` from the current assembly exports; updating only the STLs is not enough. If the open browser tab cannot be refreshed, say so explicitly rather than implying that its displayed state has updated.
 - `scripts/` must stay identical to the skill (`python3 ~/.claude/skills/openscad-print-project/scripts/skill_sync.py status -C .`). Improve tools in the skill and adopt/install them; no project-local forks.
 - No painted or scripted supports. Every part prints without them; `analyze.py overhangs` is CLEAN and must stay that way.
 - No vendor CAD in the repo or the viewer. The fan is the simple `fan_visual()` placeholder.
@@ -84,6 +85,13 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   degrees `analyze.py overhangs` counts it, the head prints intake-face-down and the lip hangs inwards. It
   merges into the chamber tube so it grows out of the bore wall instead of starting as a knife edge.
   `checks()` reports `mat_free_travel_mm` = 1.62 and asserts it stays under a quarter of the way to the fan.
+  - This is a rigid-envelope check, not proof that the flexible mat cannot reach the rotor. A direct
+    mesh measurement on source SHA `544894c9fc4dc5176798e87bd9ad6000a1cbd028eab20a550ffad9b17326cd1d`
+    (2026-09-23) gives 10.50 mm from the nominal mat rear face to the fan frame's front plane; first rear-lip
+    contact after about 1.76 mm of rigid translation leaves 8.74 mm. The simple 1.62 mm formula is an
+    approximation to the actual hull/tessellation. The central 117 x 117 mm opening has no backing grid:
+    bowing and loose fibres are not modelled, and `fan_visual()` is not a measured blade envelope. A rear
+    support grid or a physical maximum-speed test is needed before claiming that rubbing is excluded.
 - The mat is held by the intake lip (opening 117 in a 121.5 chamber, 2.25 mm per side). It is pressed in and pulled out past that lip — a rigid-body path check cannot show this, so `filter_out` is not a checked path but a documented limitation.
 - **Head screws: 2 × M3 × 8 in one row at x 25/120, y 66** (user asked 2026-09-23 whether every screw can
   actually be reached - four of four could not). Vertical access inside the head exists only in the plenum
