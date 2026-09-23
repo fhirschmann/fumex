@@ -17,6 +17,7 @@ PARTS = {
     "cassette": (1, "PETG-grey", 1),
     "knob": (1, "PETG-grey", 1),
     "foot": (4, "TPU", 1),
+    "ball_lid": (1, "PETG-black", 1),
 }
 FULL_INFILL = set()
 FULL_INFILL_MATERIALS = {"TPU"}
@@ -29,6 +30,7 @@ ASSEMBLY = {
     "cassette": "cassette();",
     "knob": "knob();",
     "feet": "place_feet();",
+    "ball_lid": "ball_lid();",
     "fan": "fan_env();",
     "filter": "filter_env();",
     "magnets": "magnets_env();",
@@ -62,7 +64,7 @@ PROCESS = dict(wall_loops=4, top_shell_layers=5, bottom_shell_layers=5, infill=2
 FILAMENTS = [dict(material="PETG-black", profile="Generic PETG @BBL H2S", colour="#1A1B1D"),
              dict(material="PETG-grey", profile="Generic PETG @BBL H2S", colour="#8C9196"),
              dict(material="TPU", profile="Generic TPU @BBL H2S", colour="#1A1B1D")]
-PLATES = [("Head", ["head"]),
+PLATES = [("Head", ["head", "ball_lid"]),
           ("Base and back cover", ["base", "head_back"]),
           ("Grey parts", ["cassette", "knob"]),
           ("TPU feet", ["foot"])]
@@ -72,13 +74,14 @@ SLICER_SUMMARY = "docs/slicer-summary.json"
 # Masses used only for the tipping check: printed parts from their mesh volume, bought parts measured
 # or from the data sheet. The effective print density covers walls plus 20 % gyroid.
 # g/mm3; the ballast is iron offcuts potted in epoxy, about 60 % metal by volume
-DENSITY = {"PETG": 0.90e-3, "TPU": 1.20e-3, "iron-epoxy": 5.2e-3}
+# loose iron offcuts under a lid, roughly 60 % of the volume actually metal
+DENSITY = {"PETG": 0.90e-3, "TPU": 1.20e-3, "iron-loose": 4.7e-3}
 MASSES_G = {"fan": 185, "battery": 150, "filter": 15, "pwm_board": 12, "chg_module": 3, "chg_sink": 5,
             "usbc": 2, "switch": 5, "led": 0.3, "magnets": 18, "pot": 6, "pot_nut": 2,
             "screws_fan": 6, "screws_back": 4, "screws_head": 3, "screws_feet": 3}
 # bodies whose mass comes from their volume rather than a data sheet
 BY_VOLUME = {"base": "PETG", "head": "PETG", "head_back": "PETG", "cassette": "PETG", "knob": "PETG",
-             "feet": "TPU", "ballast": "iron-epoxy"}
+             "feet": "TPU", "ball_lid": "PETG", "ballast": "iron-loose"}
 
 LIMITATIONS = ["Hardware envelopes, not detailed vendor CAD",
                "Sampled motion, no continuous swept-volume proof",
@@ -114,7 +117,8 @@ def checks(ctx):
         ("fan", "head", [0, -1, 0]),                  # fan frame on the seat plate
         ("feet", "base", [0, 0, 1]),
         ("pwm_board", "base", [0, 0, -1]),            # board on the rib pads
-        ("chg_module", "base", [0, 0, -1]),           # charge module on its pedestal
+        ("chg_module", "head_back", into),            # module pulled onto its ledges by the tie
+        ("ball_lid", "base", [0, 0, -1]),             # lid on its posts and walls
     ])
     # Stops: the fan cannot move sideways in its corner guides, the head is located by its screws
     # There is no register between head and base: the four screws locate it, so that is what is checked
@@ -123,21 +127,23 @@ def checks(ctx):
     # The cell is held in open saddles by foam tape, so it has clearance instead of contact
     # 0.2 for the heatsink: nominal 0.3 in its wall cut-out, less the facets of the rounded corners
     gaps = ctx.clearances([("battery", "base", 0.3), ("battery", "head", 1.0),
-                           ("chg_sink", "base", 0.2), ("fan", "head_back", 5.0)])
+                           ("chg_sink", "fan", 1.5), ("fan", "head_back", 5.0)])
     # Assembly paths, not only end positions. The head is pulled off along the tilted normal.
     up = [0, -math.sin(tilt), math.cos(tilt)]
     out = [0, -math.cos(tilt), -math.sin(tilt)]       # out of the intake face, normal to it
     paths = ctx.paths([
         ("cassette_off", "cassette", ["head", "base", "fan", "filter"], out, 30, 0.5),
-        ("cover_off", "head_back", ["head", "base", "fan", "screws_fan"], [-o for o in out], 30, 0.5),
+        ("cover_off", ["head_back", "chg_module", "chg_sink"], ["head", "base", "fan", "screws_fan"],
+         [-o for o in out], 30, 0.5),
+        ("chg_off", ["chg_module", "chg_sink"], ["head_back"], out, 20, 0.5),   # off its ledges once the cover is out
+        # the rear head screw bosses hang over the trough, so the lid slides forward first; the cell
+        # is out by then anyway
+        ("lid_off", "ball_lid", ["base", "ballast"], [([0, -1, 0], 25, 0.5), ([0, 0, 1], 30, 0.5)]),
         ("fan_out", "fan", ["head", "base"], [-o for o in out], 40, 0.5),      # back cover off first
-        ("head_off", ["head", "head_back", "cassette", "fan", "filter", "magnets"],
-         ["base", "battery", "pwm_board", "chg_module", "chg_sink", "usbc", "switch", "pot", "led"], up, 60, 1),
-        ("battery_out", "battery", ["base", "pwm_board", "chg_module", "chg_sink", "usbc", "switch"], [0, 0, 1], 40, 0.5),
+        ("head_off", ["head", "head_back", "cassette", "fan", "filter", "magnets", "chg_module", "chg_sink"],
+         ["base", "battery", "pwm_board", "usbc", "switch", "pot", "led", "ball_lid", "ballast"], up, 60, 1),
+        ("battery_out", "battery", ["base", "pwm_board", "usbc", "switch", "ball_lid"], [0, 0, 1], 40, 0.5),
         ("knob_off", "knob", ["base", "pot_nut"], [0, -1, 0], 20, 0.5),
-        # the heatsink is 7 mm deep in the wall: forward until it is clear, then up past the cell
-        ("chg_out", ["chg_module", "chg_sink"], ["base", "battery", "usbc", "pwm_board"],
-         [([0, -1, 0], 8, 0.5), ([0, 0, 1], 30, 0.5)]),
     ])
     # Heat-set insert pockets: core open, datasheet wall and floor ring material. Everything in the head
     # is pressed in along its own axis, so the probes use the tilted frame.
@@ -220,7 +226,8 @@ VIEWER = dict(
            ("screws_back", "Screws M3 x 8", "bought", "#9aa0a6", "6x", [0, 2.8, 0.6]),
            ("screws_head", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, -0.3, 1.6]),
            ("screws_feet", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, 0, -1.0]),
-           ("ballast", "Ballast, iron in epoxy", "bought", "#6b6f74", "2x", [0, 0, -0.3])],
+           ("ballast", "Ballast, loose iron", "bought", "#6b6f74", "1x", [0, 0, -0.3]),
+           ("ball_lid", "Ballast lid", "black", "#7c8288", "1x", [0, 0, 0.8])],
     bodies={"fan_visual": "fan_visual();"},
     output="build/viewer.html",
 )
