@@ -15,6 +15,9 @@ Internal notes for coding agents (Claude, Codex). The README is public and stays
 
 - Bench tool, no child-safety requirement. Plain and functional: no logo, no QR code, no decorative grooves (user, 2026-09-21).
 - Two colours, part by part: housing parts in Bambu PETG black, the parts you touch (cassette, knob) in grey. No inlays inside a part, so no prime tower.
+- **The viewer colours are deliberately not the filament colours** (user, 2026-09-22): black PETG renders as a
+  silhouette on screen and the geometry disappears, so `VIEWER["parts"]` uses lifted greys. Do not "correct"
+  them back to #1a1b1d; the real colours live in `FILAMENTS`, the plate names and the README.
 - Screws only ISO 7380 button head Torx from the user's set (M3 × 6/8/10/12/16/25). The four fan screws M3 × 30 are a deliberate extra purchase — a 25 mm fan frame cannot be screwed with anything shorter, whichever side the screw comes from (the user first chose M3 × 25 from the set, which is geometrically impossible; corrected 2026-09-21).
 - Ruthex RX-M3x5.7 per datasheet: hole 4.0, pocket depth ≥ 6.7, wall ≥ 1.6, pressable from an accessible side.
 - Printer Bambu Lab H2S with AMS.
