@@ -152,9 +152,20 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 ## Electrics — two things that belong in the README and in the build
 
 1. **0.32 A against 0.33 A.** The LFUPSMA charge/boost module is specified for 0–0.32 A at 12 V, the P12 Pro draws 0.33 A at full speed. The top of the knob range is therefore at the module's limit: it gets warm and starting at 100 % may brown out. Start slow, then turn up.
-2. **Charger heat — solved by taking it outside.** The CN3058E is a linear charger; at 1 A from 5 V it turns about 1.6 W into heat, and in LEO-AC1 it stood in the fan's intake. The first layout here put it upright in the middle of a closed bay, 4.4 mm from the cell, which the user rejected on 2026-09-22 ("wird recht warm und kriegt schlecht Luft") — and rightly so: charging a LiFePO4 cell above 45 °C costs life, and the heat appears exactly while charging.
+2. **Charger heat — solved by a draught, not by leaving the housing.** The CN3058E is a linear charger; at
+   1 A from 5 V it turns about 1.6 W into heat, and in LEO-AC1 it stood in the fan's intake. The first
+   layout here put it upright in the middle of a closed bay, 4.4 mm from the cell, which the user rejected
+   on 2026-09-22 ("wird recht warm und kriegt schlecht Luft") — rightly, because charging a LiFePO4 cell
+   above 45 °C costs life and the heat appears exactly while charging. A second layout put the heatsink
+   through a cut-out in the back wall into ambient air; that is **no longer what is built**, and any text
+   claiming a heatsink proud of the back face is stale.
 
-   Now the board lies flat against the inside of the back wall and its 14 × 14 × 6 heatsink reaches through a cut-out into ambient air, 4 mm proud of the back face. The heat leaves the housing instead of entering the bay, and the cell sits 16 mm away behind the cradle instead of beside the IC. The insulating silicone pad under the heatsink keeps the fins dead, so a bare metal block on the outside is safe to touch. Rough figures: heatsink in free air about 20 K/W plus about 5 K/W through the pad, so roughly 40 K over ambient at 1 A instead of a hot box.
+   What is built: the board stands upright against the inside of the front wall at x 24–56, z 5–16, low in
+   the bay, parts towards the wall and the 14 × 14 × 6 heatsink on its back facing into the bay. Six slots
+   in the head floor directly above it open into the 5.75 mm channel around the filter tube, so the fan
+   pushes filtered air down over the heatsink and out of the back wall slots; with the fan off the same
+   path is a chimney. The cell sits 10 mm behind it. The insulating silicone pad under the heatsink keeps
+   the fins off the board's metal pad.
 
    Still available if it is not enough: swapping the ISET resistor (marked 122, 1.2 kΩ) for 2.4 kΩ halves the charge current to 0.5 A and the heat to about 0.85 W, at 12–13 h for a full charge. The user chose the heatsink route alone for now.
 
