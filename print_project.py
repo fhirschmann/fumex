@@ -4,6 +4,8 @@ Everything project-specific lives here, the scripts stay identical to the skill 
 (python3 ~/.claude/skills/openscad-print-project/scripts/skill_sync.py status).
 """
 import math
+import numpy as np
+import trimesh
 
 SOURCE = "fumex.scad"
 METRICS_TAG = "PROJECT_METRICS"       # part="metrics" echoes this tag with [key, value] pairs
@@ -108,6 +110,125 @@ LIMITATIONS = ["Hardware envelopes, not detailed vendor CAD",
                "Tipping margin uses estimated part masses and the static centre of mass only",
                "Filter pressure drop and capture distance are not modelled",
                "The mat is compressible: it is pressed in and pulled out past the intake lip, which a\n                rigid-body path check cannot show"]
+
+
+def corner_jumps(local_meshes, width, depth, top, plan_r=3.5, corner_r=6.0,
+                 edge_c=1.2, max_jump=15.0):
+    rows = []
+    for name, rear in (("head", False), ("head_back", True)):
+        mesh = local_meshes[name]
+        adj = mesh.face_adjacency
+        edges = mesh.vertices[mesh.face_adjacency_edges]
+        mid = edges.mean(axis=1)
+        length = np.linalg.norm(edges[:, 0] - edges[:, 1], axis=1)
+        angle = np.degrees(mesh.face_adjacency_angles)
+        normals = mesh.face_normals[adj]
+        longest = np.linalg.norm(mesh.triangles - np.roll(mesh.triangles, 1, axis=1), axis=2).max(axis=1)
+        altitude = 2 * mesh.area_faces / np.maximum(longest, 1e-20)
+        # Micron-thin triangles from CSG intersections have numerically unstable
+        # normals even when their area is nonzero. Reject by altitude, not area.
+        stable = altitude[adj].min(axis=1) > 0.001
+        for right in (False, True):
+            x = width - mid[:, 0] if right else mid[:, 0]
+            y = depth - mid[:, 1] if rear else mid[:, 1]
+            nx = normals[:, :, 0] * (1 if right else -1)
+            ny = normals[:, :, 1] * (1 if rear else -1)
+            # Deliberate bed-edge chamfer, cavity faces and numerical slivers
+            # are outside this regression's scope. Mesh validity stays a
+            # separate, mandatory prerequisite in the normal export checks.
+            keep = ((x < plan_r) & (y > edge_c + 0.1) & (y < plan_r - 0.05)
+                    & (mid[:, 2] > top - corner_r + 0.15)
+                    & (mid[:, 2] < top - 0.15)
+                    & (length > 0.03) & stable
+                    & (nx.min(axis=1) > 0.05)
+                    & (ny.min(axis=1) > -0.02)
+                    & (normals[:, :, 2].min(axis=1) > -0.02))
+            count = int(keep.sum())
+            assert count >= 5, f"G2 {name}/{right}: corner ROI has insufficient coverage"
+            peak = float(angle[keep].max())
+            row = dict(part=name, side="right" if right else "left", edges=count,
+                       max_jump_deg=round(peak, 3),
+                       over_limit_length_mm=round(float(length[keep & (angle > max_jump)].sum()), 5))
+            rows.append(row)
+    # Return rows on failure too when using this function as a diagnostic.
+    return rows
+
+
+def magnet_skin(local_head, cylinder, manifold, axes, depth=3.2, radius=5.15):
+    solid = manifold(local_head)
+    rows = []
+    for x, z in axes:
+        # 1.21 rather than 1.20 covers the <0.001-mm sag of this 360-sided
+        # inscribed probe. Exclude only 0.001 mm at the open pocket end faces.
+        outer = cylinder([x, 0.001, z], [0, 1, 0], depth - 0.002, radius + 1.21, 360)
+        inner = cylinder([x, 0.001, z], [0, 1, 0], depth - 0.002, radius + 0.01, 360)
+        missing = float(((outer - inner) - solid).volume())
+        rows.append(dict(axis_xz=[x, z], tested_radial_skin_mm=1.21,
+                         missing_mm3=round(missing, 8)))
+    return rows
+
+
+def check_top_corners(ctx):
+    """checks(ctx) adapter for installed-position assembly meshes."""
+    m = ctx.metrics
+    plan_r, corner_r, edge_c, mag_off = (m[k] for k in ("plan_r", "corner_r", "edge_c", "mag_off"))
+    width, depth = m["body"]
+    top = m["base_h"] + m["head_h"]
+    local = {name: head_frame(ctx.meshes[name], m) for name in ("head", "head_back")}
+    corners = corner_jumps(local, width, depth, top, plan_r, corner_r, edge_c)
+    centre_z = m["base_h"] + m["head_h"] / 2
+    axes = [(width / 2 + sx * mag_off, centre_z + sz * mag_off)
+            for sx in (-1, 1) for sz in (-1, 1)]
+    pockets = magnet_skin(local["head"], ctx.cylinder, ctx.manifold, axes,
+                          depth=m["magnet_pocket"][1], radius=m["magnet_pocket"][0] / 2)
+    assert all(r["max_jump_deg"] <= 15 for r in corners), f"corner crease: {corners}"
+    assert all(r["missing_mm3"] < 1e-5 for r in pockets), f"magnet skin missing: {pockets}"
+    return dict(top_corner_normals=corners, magnet_radial_skin=pockets)
+
+
+def head_frame(mesh, metrics):
+    out = mesh.copy()
+    v = out.vertices.copy()
+    t = math.radians(metrics["tilt"])
+    dy, dz = v[:, 1] - metrics["joint_y"], v[:, 2] - metrics["base_h"]
+    v[:, 1] = metrics["joint_y"] + math.cos(t) * dy + math.sin(t) * dz
+    v[:, 2] = metrics["base_h"] - math.sin(t) * dy + math.cos(t) * dz
+    out.vertices = v
+    return out
+
+
+def silhouette_span(mesh, x, z):
+    start_y = float(mesh.bounds[0, 1]) - 10
+    points, _, _ = mesh.ray.intersects_location([[x, start_y, z]], [[0, 1, 0]], multiple_hits=True)
+    assert len(points) >= 2, f"silhouette probe misses mesh at x={x}, z={z}"
+    return [float(points[:, 1].min()), float(points[:, 1].max())]
+
+
+def joint_profile_rows(base_local, head_local, width, joint_z, plan_r=3.5):
+    # At 2 mm from the joint both the R0.5 neck and the 1.2-mm rear chamfer
+    # are behind us. Compare exported silhouettes; no loft formula is repeated.
+    xs = [plan_r / 2, plan_r + 1, width / 2, width - plan_r - 1, width - plan_r / 2]
+    rows = []
+    for x in xs:
+        base = silhouette_span(base_local, x, joint_z - 2)
+        head = silhouette_span(head_local, x, joint_z + 2)
+        delta = (base[1] - base[0]) - (head[1] - head[0])
+        rows.append(dict(x_mm=x, base_front_back_mm=base, head_front_back_mm=head,
+                         base_excess_span_mm=round(delta, 5)))
+    return rows
+
+
+def check_joint_profile(ctx):
+    m = ctx.metrics
+    base = head_frame(ctx.meshes["base"], m)
+    head = trimesh.util.concatenate([head_frame(ctx.meshes[n], m) for n in ("head", "head_back")])
+    rows = joint_profile_rows(base, head, m["body"][0], m["base_h"], m["plan_r"])
+    # The reviewed 8-mm transition retains about 0.20 mm per side 2 mm below
+    # the joint. Allow 0.30 mm per side; reject both the old 1.30-mm shoulder
+    # and an inward overcut of the upper base. These are design tolerances,
+    # not a second evaluation of the SCAD loft function.
+    assert all(-0.1 <= r["base_excess_span_mm"] <= 0.6 for r in rows), f"upper-base shoulder: {rows}"
+    return dict(upper_base_silhouette=rows)
 
 
 def checks(ctx):
@@ -220,7 +341,7 @@ def checks(ctx):
                 intake_lip_mm=lip, mat_free_travel_mm=round(mat_free, 2), mat_squashed_percent=round(100 * squashed / mat, 2), mass_g=round(total, 1),
                 centre_of_mass_mm=[round(c, 1) for c in com],
                 foot_polygon_mm=poly, tip_margins_mm={k: round(v, 1) for k, v in margins.items()},
-                tip_angle_deg=round(tip_angle, 1))
+                tip_angle_deg=round(tip_angle, 1), **check_top_corners(ctx), **check_joint_profile(ctx))
 
 
 def _tilt(m, point):

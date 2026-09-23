@@ -55,8 +55,8 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     pressed 6.6 cm3 out of the mat; `mat_squashed_percent` is now 0.0.
 - The cassette stands 4.5 mm proud of the intake face and cannot be let into it: the head prints intake-face-down,
   so a recess for it would be a 5687 mm2 horizontal ceiling over the chamber. It cannot get thinner either - the
-  magnet pockets are 3.2 deep and `analyze.py thickness` wants 1.2. What is left is the rim bevel, `cass_c` = 2.0;
-  at `cass_inset + cass_c` it stops 0.15 mm short of the pockets, so 2.0 is the limit. Visible step 2.5 mm.
+  magnet pockets are 3.2 deep and `analyze.py thickness` wants 1.2. The final-contour rim bevel is `cass_c` = 1.2 after the G1 audit fix; the narrow side contour
+  limits it at the magnet pockets. Straight rim depth is 3.3 mm.
   At the joint the cassette therefore reaches 3.9 mm in front of the base face - reported to the user 2026-09-23;
   the only way to close that is a plinth on the base front, which has not been built.
 - `head_outline(inset, square_bottom)`: the head shell keeps the square bottom corners so its side walls meet the
@@ -181,7 +181,7 @@ All seven parts print without supports. Evidence and the remaining soft spots:
 
 - `analyze.py islands`, `overhangs` (100 mm²), `fins` and `thickness` are all CLEAN on all seven parts.
 - `analyze.py overhangs --min-area 5` lists 27 small downward faces, all of them understood: four Ø3.3 foot peg holes and four Ø4 insert pockets in the bay floor (circular bridges, 6–10 mm²), the six vent slots in the head floor (10.8 mm² each), the two finger scoops in the intake face (45 mm² flat cone ends 2 mm above the bed), the USB-C channel floor (85 mm², a 5.8 mm ledge off the back wall) and the two cable tie loops (28 mm² each, 6 mm off the back wall). None is a floating island; every one of them grows out of a wall or bridges a hole under 15 mm.
-- The Bambu CLI slices all seven parts and all four plates without support and reports exactly one NON_CRITICAL warning, on `base`: "floating cantilever". The candidates are the USB-C channel ledge and the two tie loops — the same three features above. An A/B slice of the base with and without the loops was inconclusive because the standalone CLI run re-orients the part, so this is not pinned down further.
+- The current Bambu CLI slices all seven parts and all four plates without support. The individual `base` and `head` slices each report "floating cantilever", also present before the G2/G3 changes. The base candidates are the USB-C channel ledge and the tie loops. The warning locations have not been conclusively isolated; keep these warnings visible in the report and inspect the small bridges on the first print.
 - Deliberately **not** fixed: a 45° gusset under the USB-C channel floor or under the tie loops would reach 6 mm down and eat exactly the clearance the ballast lid needs to lift out (`lid_off`). A 6 mm ledge in PETG is routine; the lid coming out is not negotiable.
 - The two tall bridges in the design are the rocker switch panel cut-out (12.2 mm, which is why the switch stands upright) and the magnet pockets in the intake face (Ø10.3, in the bed face).
 
@@ -200,8 +200,20 @@ An external audit of commit `a90c581`. What it found and what happened to it:
 | S1 | Tip angle ignored the foot height and used the full pad outline | fixed: lever arm from the sole, contact patch inset by `foot_chamfer`. 23.5 -> 21.4 degrees |
 | V1 | `cover_off` left the fan behind although it is bolted to the cover; `filter/head` exception was left over from the gussets | fixed: `cover_off` and `fan_out` move fan and screws with the cover; exception dropped, mat displacement is 0.0 anyway |
 | D1 | README and AGENTS carried stale numbers | fixed: part sizes, insert count, ballast volume, masses, tip angle, footprint |
-| G2 | The top head corners are the intersection of an R3.5 plan radius and an R6 elevation radius, which is not a tangential 3D corner - about 38 degrees of normal jump | **not fixed.** A real corner blend needs a swept fillet, and the radii are already capped by the magnet pockets and the wall. Accepted as a form edge |
-| G3 | `plan_prism()` uses the base footprint in the head's own frame, so after the 15 degree tilt the two footprints are not identical at the joint: about 1.26 mm of base lip front and back | **not fixed.** The side edges - the ones the user pointed at - do run through. Closing the front and back would mean deriving both parts from one contour defined in world coordinates |
+| G2 | Intersecting R3.5 plan and R6 elevation arcs left a 38–46 degree crease | fixed: local compact C1 blends at the four upper corners; unchanged radii and magnet positions, 1.21 mm radial pocket skin verified |
+| G3 | The tilted footprint left a 1.26 mm base lip front and back | fixed: outer and inner upper-base contours loft onto the projected head footprint over 8 mm; the intentional 15 degree housing bend remains |
+
+### G2/G3 implementation and regression checks
+
+- `top_corner_blends()` removes about 1.8 mm³ from each of the head and back cover. For the plan/elevation circle insets `a,b`, the old boundary was `max(a,b)`. The new boundary tends to `sqrt(a*a+b*b)` where both contribute, with a smooth cutoff from a 5% to 15% secondary contribution. The analytic patch is C1; the STL is its faceted approximation. Intentional rim bevels remain sharp.
+- The 28-step corner grid, compact cutoff and 0.001 mm CSG overlap avoid float32 zero-volume shells at tangencies. Do not replace this with an unregularized norm without validating both exported meshes. No mesh repair is applied.
+- `base_joint_envelope()` uses 32 loft intervals over 8 mm measured normal to the joint. The outer contour moves inward by `body_d/2 * (1-cos(tilt))` at front and back. It joins the original vertical wall smoothly below the joint and meets the tilted head in position; it deliberately does not erase the 15 degree housing bend.
+- The inner transition starts `wall*sin(tilt)` earlier, with up to 0.15 mm extra wall reserve. Front-wall normal samples stay at 2.999 mm or more (numerical tolerance around nominal 3 mm). The loft vertex count is fixed from the nominal inset, even when its intermediate inner radius changes.
+- The rear ballast-lid screws and posts move from y 67.5 to 66.2, preserving access for the existing 6.35 mm driver. Adjacent head pockets retain a 1.3 mm web. Base, lid and screw bodies all derive these positions from `ball_posts()`.
+- The base uses the export tool's existing CGAL fallback; the resulting binary STL is closed, one body and has zero degenerate faces. Do not force an invalid fast-backend result or repair it after export.
+- `check_top_corners()` rejects the previous crease in all four outer corner regions and probes a complete 1.21 mm radial material ring around each head magnet pocket. Face-normal comparisons exclude numerical triangles below 0.001 mm altitude; full mesh validity remains independently mandatory. This is a targeted mesh regression, not a global C1 proof.
+- `check_joint_profile()` compares actual base/head silhouette spans in five cross sections, 2 mm either side of the joint. Old excess: 2.58–2.61 mm; new: 0.403–0.408 mm, reflecting the remaining transition below the joint. The accepted band is -0.1 to +0.6 mm. This guards the shoulder; it does not certify every surface tangent or erase the intentional seam chamfers.
+- Follow-up evidence and images: `docs/rounding-2026-09-23.md`. Fresh full checks: seven mesh types, ten physical parts, 394 coaxial feature pairs, eight paths, 435 assembly pairs; all four analyses CLEAN. Estimated assembled mass 1008.4 g and tip angle 21.4 degrees. Slicer: 470.5 g / 15.4 h across four plates; 470.9 g / 16.1 h as individual part jobs.
 
 Everything the audit lists as "verify on the real part" stays open: magnet force, knob press fit, switch body depth, the charge module's actual pad layout against the tray's end ledges, insert pull-out, bridge quality on the small overhangs, and every thermal and airflow figure.
 
@@ -215,6 +227,6 @@ Everything the audit lists as "verify on the real part" stays open: magnet force
 
 ## Verification and known limits
 
-`docs/verification.json` holds the full report. Checked: closed meshes and body counts, bed placement and build envelope, all 231 assembly pairs free of overlap (three documented exceptions), coaxial round features, contacts, stops, six assembly paths, heat-set insert pockets, the intake lip, mat displacement, and the centre of mass over the foot polygon.
+`docs/verification.json` holds the full report. Checked: closed meshes and body counts, bed placement and build envelope, all 435 assembly pairs checked (14 documented assembly-stage or intentional-fit exceptions), coaxial round features, contacts, stops, eight assembly paths, heat-set insert pockets, the intake lip, mat displacement, and the centre of mass over the foot polygon.
 
 Not checked: flexible deformation (the mat and the TPU feet are rigid bodies here), strength, thermal behaviour, airflow, and anything about the real hardware that has not been measured.

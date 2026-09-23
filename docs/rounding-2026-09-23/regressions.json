@@ -1,0 +1,192 @@
+{
+  "baseline_commit": "3f53a15",
+  "source_sha256": "2ee71d3e391d893c87b16388e7a91ab0cb0bb93b17c226c91c1aef14e64e940a",
+  "top_corners": {
+    "before": [
+      {
+        "part": "head",
+        "side": "left",
+        "edges": 9,
+        "max_jump_deg": 44.151,
+        "over_limit_length_mm": 2.86241
+      },
+      {
+        "part": "head",
+        "side": "right",
+        "edges": 8,
+        "max_jump_deg": 43.582,
+        "over_limit_length_mm": 2.49402
+      },
+      {
+        "part": "head_back",
+        "side": "left",
+        "edges": 36,
+        "max_jump_deg": 45.87,
+        "over_limit_length_mm": 2.8124
+      },
+      {
+        "part": "head_back",
+        "side": "right",
+        "edges": 36,
+        "max_jump_deg": 45.012,
+        "over_limit_length_mm": 2.85258
+      }
+    ],
+    "after": [
+      {
+        "part": "head",
+        "side": "left",
+        "edges": 847,
+        "max_jump_deg": 6.546,
+        "over_limit_length_mm": 0.0
+      },
+      {
+        "part": "head",
+        "side": "right",
+        "edges": 866,
+        "max_jump_deg": 7.833,
+        "over_limit_length_mm": 0.0
+      },
+      {
+        "part": "head_back",
+        "side": "left",
+        "edges": 878,
+        "max_jump_deg": 6.112,
+        "over_limit_length_mm": 0.0
+      },
+      {
+        "part": "head_back",
+        "side": "right",
+        "edges": 880,
+        "max_jump_deg": 6.541,
+        "over_limit_length_mm": 0.0
+      }
+    ]
+  },
+  "joint_silhouette": {
+    "before": [
+      {
+        "x_mm": 1.75,
+        "base_front_back_mm": [
+          -1.3475451541361245,
+          74.27905554248355
+        ],
+        "head_front_back_mm": [
+          0.4767539085898189,
+          73.5264388759186
+        ],
+        "base_excess_span_mm": 2.57692
+      },
+      {
+        "x_mm": 4.5,
+        "base_front_back_mm": [
+          -1.8411170600353195,
+          74.76932029031082
+        ],
+        "head_front_back_mm": [
+          1.7985183298208085e-07,
+          74.00000073935223
+        ],
+        "base_excess_span_mm": 2.61044
+      },
+      {
+        "x_mm": 72.5,
+        "base_front_back_mm": [
+          -1.841117060035316,
+          74.76932029031082
+        ],
+        "head_front_back_mm": [
+          2.0952225554538018e-07,
+          74.00000108340916
+        ],
+        "base_excess_span_mm": 2.61044
+      },
+      {
+        "x_mm": 140.5,
+        "base_front_back_mm": [
+          -1.8411170600353195,
+          74.76932029031082
+        ],
+        "head_front_back_mm": [
+          1.7985181344215562e-07,
+          74.00000101431135
+        ],
+        "base_excess_span_mm": 2.61044
+      },
+      {
+        "x_mm": 143.25,
+        "base_front_back_mm": [
+          -1.350857504410083,
+          74.2757533421875
+        ],
+        "head_front_back_mm": [
+          0.47355479475101525,
+          73.52324967629093
+        ],
+        "base_excess_span_mm": 2.57692
+      }
+    ],
+    "after": [
+      {
+        "x_mm": 1.75,
+        "base_front_back_mm": [
+          -0.2604579629899071,
+          73.19187644982557
+        ],
+        "head_front_back_mm": [
+          0.4767539085898189,
+          73.5264388759186
+        ],
+        "base_excess_span_mm": 0.40265
+      },
+      {
+        "x_mm": 4.5,
+        "base_front_back_mm": [
+          -0.739839562302052,
+          73.66804399902665
+        ],
+        "head_front_back_mm": [
+          1.7985183298208085e-07,
+          74.00000073935223
+        ],
+        "base_excess_span_mm": 0.40788
+      },
+      {
+        "x_mm": 72.5,
+        "base_front_back_mm": [
+          -0.739839562302052,
+          73.66804399902665
+        ],
+        "head_front_back_mm": [
+          2.0952225554538018e-07,
+          74.00000108340916
+        ],
+        "base_excess_span_mm": 0.40788
+      },
+      {
+        "x_mm": 140.5,
+        "base_front_back_mm": [
+          -0.739839562302052,
+          73.66804399902665
+        ],
+        "head_front_back_mm": [
+          1.7985181344215562e-07,
+          74.00000101431135
+        ],
+        "base_excess_span_mm": 0.40788
+      },
+      {
+        "x_mm": 143.25,
+        "base_front_back_mm": [
+          -0.2636743917308806,
+          73.18866583385608
+        ],
+        "head_front_back_mm": [
+          0.47355479475101525,
+          73.52324967629093
+        ],
+        "base_excess_span_mm": 0.40265
+      }
+    ]
+  }
+}

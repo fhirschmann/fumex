@@ -1,0 +1,51 @@
+{
+  "baseline_commit": "3f53a15",
+  "source_sha256": "2ee71d3e391d893c87b16388e7a91ab0cb0bb93b17c226c91c1aef14e64e940a",
+  "print_project_sha256": "ea43f8c99b414d44ff5306e2f876824cd419dec927b3596eaf743274ecd4c5e3",
+  "export": {
+    "result": "PASS",
+    "log": "export.log"
+  },
+  "analyses": {
+    "islands": {
+      "result": "CLEAN",
+      "meshes": 7,
+      "log": "islands.log"
+    },
+    "overhangs": {
+      "result": "CLEAN",
+      "meshes": 7,
+      "log": "overhangs.log"
+    },
+    "thickness": {
+      "result": "CLEAN",
+      "meshes": 7,
+      "log": "thickness.log"
+    },
+    "fins": {
+      "result": "CLEAN",
+      "meshes": 7,
+      "log": "fins.log"
+    }
+  },
+  "slicer": {
+    "result": "PASS",
+    "log": "slicer.log",
+    "parts": 7,
+    "plates": 4,
+    "supports": false,
+    "warnings_unchanged_from_baseline": [
+      {
+        "part": "base",
+        "warning": "It seems object base.stl has floating cantilever. Please re-orient the object or enable support generation."
+      },
+      {
+        "part": "head",
+        "warning": "It seems object head.stl has floating cantilever. Please re-orient the object or enable support generation."
+      }
+    ]
+  },
+  "sliced_stl_hashes_match_final_export": true,
+  "viewer_matches_built_file": true,
+  "physical_print_performed": false
+}

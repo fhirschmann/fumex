@@ -1,0 +1,85 @@
+{
+  "prototype_source_sha256": "b670f30c2730d808d509350a32961f9616ba32e1dc82254633d0152a79be33c1",
+  "base_mesh_sha256": "e7084ff0118625dc29bdd6dadfbf90d6920cda32fc4fdbb545488bc5e7779bba",
+  "mesh": {
+    "size_mm": [
+      145.0,
+      74.0,
+      57.2657
+    ],
+    "bounds_mm": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        145.0,
+        74.0,
+        57.2657
+      ]
+    ],
+    "volume_mm3": 110923.7388,
+    "triangles": 9796,
+    "watertight": true,
+    "consistent_winding": true,
+    "degenerate_faces": 0,
+    "components": 1
+  },
+  "seam_projection_inset_mm": 1.2607444273044726,
+  "transition_normal_depth_mm": 8,
+  "transition_sections": 32,
+  "rear_lid_screw_y_mm": 66.2,
+  "rear_lid_pocket_web_mm": 1.3000000000000025,
+  "overlaps_mm3": {
+    "battery": 0.0,
+    "pwm_board": 0.0,
+    "pot": 0.0,
+    "pot_nut": 0.0,
+    "head": 1.71e-05,
+    "head_back": 0.0,
+    "cassette": 0.0,
+    "usbc": -0.0,
+    "switch": 0.0,
+    "led": 0.0,
+    "ball_lid": 0.0,
+    "chg_module": 0.0,
+    "chg_sink": 0.0,
+    "screws_head": 0.0,
+    "driver_head": 0.0,
+    "driver_lid": 0.0
+  },
+  "lid_and_electronics_lift_10mm": [
+    0,
+    null,
+    0
+  ],
+  "islands": [],
+  "overhangs": [],
+  "fins": [],
+  "thickness": {
+    "stats": {
+      "samples": 37174,
+      "measured": 37174,
+      "mm2_per_sample": 2.0,
+      "p01": 1.374,
+      "p05": 2.0,
+      "median": 3.011
+    },
+    "regions": []
+  },
+  "transition_wall_samples_mm": {
+    "front": {
+      "count": 760,
+      "min": 2.9991,
+      "p01": 2.9999,
+      "median": 3.0348
+    },
+    "back": {
+      "count": 170,
+      "min": 3.188,
+      "p01": 3.1941,
+      "median": 3.3593
+    }
+  }
+}

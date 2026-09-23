@@ -21,6 +21,7 @@ body_d = 74;         // outer depth (y): base and head share one footprint, so t
 wall = 3;            // walls, at least seven 0.4 mm lines
 floor_t = 3.2;       // base floor
 corner_r = 6;
+top_corner_steps = 28; // angular subdivisions of the tangent corner blend
 plan_r = 3.5;        // the four vertical edges of the housing. The head has to carry the same radius as
                      // the base or its corners stand proud of the base's, and it is the magnet pockets in
                      // the intake face that cap it: at 6 they would fall outside the rounded corner, and
@@ -31,6 +32,9 @@ edge_c = 1.2;        // 45 degree chamfer on the bed edges
 tilt = 15;           // forward lean of the head (user: the housing itself makes the bend)
 base_h = 48;         // joint plane height at mid-depth; the plane rises towards the back
 joint_y = 37;        // the joint plane turns about this line (mid-depth)
+base_joint_h = 8;    // smooth transition to the tilted head footprint, measured normal to the joint
+base_joint_steps = 32;
+base_joint_wall_extra = 0.15; // extra material inside the transition keeps normal wall thickness >= 3 mm
 
 /* [Head: fan and filter] */
 head_h = 145;        // head height (z) in the untilted frame
@@ -78,8 +82,8 @@ fan_cl = 0.4;        // clearance per side in the corner guides
 cass_t = 4.5;        // magnet pocket 3.2 plus 1.3 mm skin - the minimum wall is 1.2, so this is as thin
                      // as the cassette gets. It cannot be let into the intake face either: that recess
                      // would be a 5687 mm2 flat overhang in print (user asked, 2026-09-23)
-cass_c = 1.2;        // 45 degree bevel round its rim instead, so the step is 2.5 mm of wall, not 4.5.
-                     // 2.0 is the limit: at 1 + 2.0 the bevel stops 0.15 mm short of the magnet pockets
+cass_c = 1.2;        // 45 degree bevel on the finished contour; 3.3 mm of the 4.5 mm rim stays straight.
+                     // The narrowed side contour and the magnet pockets limit the bevel to 1.2 mm.
 cass_inset = 1;      // flange inside the head outline, leaves a ledge beside the finger scoops
 mag = [10.3, 3.2];   // pocket for a 10 x 3 neodymium disc (skill: +0.3 diameter, +0.2 depth)
 mag_off = 62.5;      // magnet axes from the head centre, on both diagonals. 10 mm inset: 1.3 mm of material
@@ -308,8 +312,9 @@ function bat_low(y) = abs(y - bat_cy) >= bat_d / 2 + bat_clear ? 1e6
 // x of the two charge-module brackets; the back cover's lip is notched over exactly these
 // well inside, not in the corners: in the corners the head screw bosses sit right over them and you
 // cannot get a driver down to the lid screws (user, 2026-09-23)
+// The rear row clears a 6.35 mm driver past the curved upper back wall.
 function ball_posts() = [for (x = ball_post_x,
-                             y = [ball[2] + ball_wall + 3.5, body_d - wall - 3.5]) [x, y]];
+                             y = [ball[2] + ball_wall + 3.5, body_d - wall - 4.8]) [x, y]];
 // both rear corners of the lid meet a rounded housing corner
 function pot_tab_z() = [pot_shaft_d / 2 + pot_tab[3] - pot_tab_cl, pot_bush[0] / 2 + pot_tab[3] + pot_tab[1] + pot_tab_cl];
 
@@ -365,6 +370,43 @@ module base_outline(inset = 0) translate([body_w / 2, body_d / 2]) rrect([body_w
 // The same footprint as a prism, to give the head the base's vertical edges. The cassette stands cass_t in
 // front of it, so its own prism runs on forward at the width the footprint has at y = 0.
 module plan_prism() translate([0, 0, base_h - 1]) linear_extrude(head_h + 2) base_outline();
+// Local, tangent blend of the plan and elevation corner profiles.
+// A compact smooth cutoff avoids vanishingly small cuts beside the original arcs.
+// 0.001 mm of cutter overlap keeps coincident tangencies out of the STL boolean.
+// The regular profiles stay unchanged outside the plan_r x corner_r corner field.
+function blend_index(i, j, n) = i * (n + 1) + j;
+function blend_smooth(t) = t * t * (3 - 2 * t);
+function blend_x(a, b) = let (hi = max(a,b), lo = min(a,b),
+    t = hi > 0 ? min(1,max(0,(lo / hi - 0.05) / 0.10)) : 0)
+    hi + blend_smooth(t) * (sqrt(a * a + b * b) - hi);
+module top_corner_cut(steps = top_corner_steps) {
+    n = steps + 2;
+    ring = (n + 1) * (n + 1);
+    surface = [for (i = [0:n], j = [0:n])
+        let (a = plan_r * (1 - cos(90 * min(steps,max(0,i-1)) / steps)),
+             b = corner_r * (1 - cos(90 * min(steps,max(0,j-1)) / steps)))
+        [blend_x(a, b) + 0.001, i == 0 ? plan_r + eps : i == n ? -eps : plan_r * (1 - sin(90 * (i-1) / steps)),
+         base_h + head_h - corner_r + (j == 0 ? -eps : j == n ? corner_r + eps : corner_r * sin(90 * (j-1) / steps))]];
+    rear = [for (p = surface) [-1, p[1], p[2]]];
+    faces = concat(
+        [for (i = [0:n - 1], j = [0:n - 1])
+            let (a = blend_index(i,j,n), b = blend_index(i,j+1,n),
+                 c = blend_index(i+1,j+1,n), d = blend_index(i+1,j,n))
+            each [[a,b,c], [a,c,d], [ring+a,ring+c,ring+b], [ring+a,ring+d,ring+c]]],
+        [for (j = [0:n - 1]) let (a = blend_index(0,j,n), b = blend_index(0,j+1,n))
+            [a,ring+a,ring+b,b]],
+        [for (j = [0:n - 1]) let (a = blend_index(n,j,n), b = blend_index(n,j+1,n))
+            [a,b,ring+b,ring+a]],
+        [for (i = [0:n - 1]) let (a = blend_index(i,0,n), b = blend_index(i+1,0,n))
+            [a,b,ring+b,ring+a]],
+        [for (i = [0:n - 1]) let (a = blend_index(i,n,n), b = blend_index(i+1,n,n))
+            [a,ring+a,ring+b,b]]);
+    polyhedron(points = concat(surface, rear), faces = [for (f = faces) [for (i = [len(f)-1:-1:0]) f[i]]], convexity = 4);
+}
+module top_corner_blends() for (side = [0,1], back = [0,1])
+    translate([side * body_w, back * body_d, 0])
+        scale([side ? -1 : 1, back ? -1 : 1, 1]) top_corner_cut();
+
 // corner_r at the top, corner_rb at the two corners that sit on the joint plane. They have to be smaller:
 // whatever radius the head has there, the base rim has to follow it or the head's side walls curve away
 // from the base and leave a step. At corner_r = 6 that neck would remove the whole 3 mm side wall of the
@@ -410,7 +452,10 @@ module grid_2d(area, bar = grid_bar, gap = grid_gap) let (n = max(1, floor((area
     }
 
 // ---------- head: shell, filter chamber, fan seat (untilted frame) ----------
-module head_raw() intersection() { plan_prism(); head_body(); }
+module head_raw() difference() {
+    intersection() { plan_prism(); head_body(); }
+    top_corner_blends();
+}
 module head_body() difference() {
     union() {
         difference() {
@@ -513,7 +558,11 @@ module head_print_pose() translate([0, base_h + head_h, 0]) rotate([90, 0, 0]) c
 
 // ---------- head back cover (untilted frame) ----------
 module grid_2d_at() translate([body_w / 2, head_cz]) grid_2d(exhaust_sq);
-module head_back_raw() intersection() {
+module head_back_raw() difference() {
+    head_back_body();
+    top_corner_blends();
+}
+module head_back_body() intersection() {
     plan_prism();
     translate([-1, head_y[3] - 1, base_h + cover_gap])            // reaches forward for the fan posts
         cube([body_w + 2, body_d - head_y[3] + 2, head_h]);
@@ -583,12 +632,52 @@ module cassette_raw() difference() {
 module cassette() head_at() cassette_raw();
 module cassette_print_pose() translate([0, base_h + head_h, cass_t]) rotate([90, 0, 0]) children();   // grid face on the bed
 
+// The upper base follows the head's exact projected footprint over a smooth transition.
+function joint_smooth(q) = q * q * (3 - 2 * q);
+// The same quarter-circle sampling used by offset(r) in base_outline().
+function joint_plan_points(inset, sampling_inset = undef) = let (
+    w = body_w - 2 * inset, h = body_d - 2 * inset,
+    r = max(plan_r - inset, 0.5),
+    sample_r = max(plan_r - (is_undef(sampling_inset) ? inset : sampling_inset), 0.5),
+    nf = max(5, ceil(min(360 / $fa, 2 * PI * sample_r / $fs))),
+    da = 360 / nf, n = ceil(90 / da))
+    [for (c = [0:3], k = [0:n]) let (
+        a = -90 + c * 90 + min(k * da, 90),
+        cx = c < 2 ? w / 2 - r : -w / 2 + r,
+        cy = c == 0 || c == 3 ? -h / 2 + r : h / 2 - r)
+        [body_w / 2 + cx + r * cos(a), body_d / 2 + cy + r * sin(a)]];
+function joint_profile_points(inset, d) = let (
+    q = min(1, max(0, 1 - (d - inset * sin(tilt)) / base_joint_h)), s = joint_smooth(q),
+    i = inset > 0 ? inset + base_joint_wall_extra * pow(sin(180 * q), 2) : 0,
+    delta = body_d / 2 * (1 - cos(tilt)) * s,
+    sy = (body_d - 2 * i - 2 * delta) / (body_d - 2 * i) / cos(tilt))
+    // Keep the vertex count fixed while the inner contour thickens through the loft.
+    [for (p = joint_plan_points(i, inset))
+        [p[0], joint_y + (p[1] - joint_y) * (1 - 2 * delta / (body_d - 2 * i)),
+         base_h + (p[1] - joint_y) * sy * sin(tilt) - d / cos(tilt)]];
+module base_joint_loft(inset) let (
+    ds = concat([base_h + body_d], [for (k = [base_joint_steps:-1:0]) (base_joint_h + inset * sin(tilt)) * k / base_joint_steps], [-0.1]),
+    n = len(joint_plan_points(inset)), nr = len(ds),
+    pts = [for (d = ds) each joint_profile_points(inset, d)])
+    polyhedron(points = pts, faces = [for (f = concat(
+        [for (j = [1:n-2]) [0, j+1, j]],
+        [for (i = [0:nr-2], j = [0:n-1]) each
+            [[i*n+j, i*n+(j+1)%n, (i+1)*n+(j+1)%n], [i*n+j, (i+1)*n+(j+1)%n, (i+1)*n+j]]],
+        [for (j = [1:n-2]) [(nr-1)*n, (nr-1)*n+j, (nr-1)*n+j+1]])) [for (j = [len(f)-1:-1:0]) f[j]]]);
+module base_joint_envelope(inset = 0) intersection() {
+    base_joint_loft(inset);
+    translate([-1, -1, 0]) cube([body_w + 2, body_d + 2, 200]);
+}
+
 // ---------- base ----------
 module base() difference() {
     union() {
         difference() {
-            linear_extrude(base_top(body_d) + 1) base_outline();
-            translate([0, 0, floor_t]) linear_extrude(base_top(body_d) + 2) base_outline(wall);
+            base_joint_envelope();
+            intersection() {
+                base_joint_envelope(wall);
+                translate([-1, -1, floor_t]) cube([body_w + 2, body_d + 2, 200]);
+            }
         }
         battery_cradle();
         pwm_ribs();
@@ -753,7 +842,7 @@ module tie_loops() for (p = tie_loop_xz) difference() {
 // The boss hangs under the rim: it merges into the back wall and its underside drops 45 degrees towards
 // that wall, so nothing starts in the air. It stays well above the ballast trough, so it costs no ballast.
 module rim_boss_bodies() intersection() {
-    linear_extrude(base_top(body_d) + 1) base_outline();   // tilted, the ramp would reach past the back face
+    base_joint_envelope();   // clip the rim bosses to the shared upper-base profile
     for (p = rim_bosses()) head_at()
     let (dy = body_d - wall - p[1])
     hull() {
@@ -917,6 +1006,7 @@ module assembly(explode = 0) {
 if      (part == "assembly") assembly();
 else if (part == "exploded") assembly(18);
 else if (part == "metrics") echo("PROJECT_METRICS", [
+    ["corner_r", corner_r], ["plan_r", plan_r], ["edge_c", edge_c], ["mag_off", mag_off],
     ["wall", wall], ["tilt", tilt], ["body", [body_w, body_d]], ["head_h", head_h],
     ["fan_insert_front", lug_d - insert_depth], ["fan_thread", len_fan - fan_t],
     ["head_thread", len_head - wall], ["chamber", [chamber_sq, chamber_d]], ["open_sq", open_sq],
@@ -926,7 +1016,7 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["foot_x", [foot_xy[0][0], foot_xy[1][0]]], ["foot_y", [foot_xy[0][1], foot_xy[2][1]]],
     ["foot_size", foot], ["foot_chamfer", foot_c], ["insert_depth", insert_depth], ["insert_hole_d", insert_hole_d],
     ["insert_w_min", insert_w_min], ["opening_sq", open_sq], ["fan_post", [fan_post_d, head_y[4] - head_y[3]]],
-    ["base_h", base_h], ["joint_y", joint_y],
+    ["base_h", base_h], ["joint_y", joint_y], ["base_joint_h", base_joint_h],
     ["foot_peg", foot_peg], ["ballast", ball], ["ballast_posts", ball_posts()], ["pt_core", pt_core], ["seat_y", head_y[2]], ["back_y", head_y[4]],
     ["fan_holes", fan_holes()], ["head_bosses", head_bosses()], ["rim_screws", rim_screws]]);
 else if (part == "none") {}
