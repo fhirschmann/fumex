@@ -29,12 +29,12 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "d0a70f04c0279099ab93ede09e9eb3dc27e095905970646439039e96dfaf91f6",
+      "source_sha256": "2f833f922c1d82f4bc9cbc69751ac424613335cf8704a35a1be354e5ca75cb32",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 5.942,
-      "grams": 229.895,
+      "hours": 5.978,
+      "grams": 230.972,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -79,7 +79,7 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.474,
+      "hours": 2.473,
       "grams": 51.481,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -164,7 +164,7 @@
     }
   ],
   "total_parts": 10,
-  "total_grams_individual_plates": 476.3,
+  "total_grams_individual_plates": 477.4,
   "total_hours_individual_plates": 16.4,
   "production_gcode": false,
   "project_3mf": {
@@ -224,16 +224,16 @@
       }
     ],
     "total_hours_plates": 15.8,
-    "total_grams_plates": 475.9,
+    "total_grams_plates": 477.0,
     "multicolour_parts": {},
     "multicolour_slices": {},
     "pause_slices": {},
     "plate_slices": {
       "Head": {
         "plate": 1,
-        "hours": 6.17,
+        "hours": 6.21,
         "grams_by_filament": {
-          "1": 236.61
+          "1": 237.68
         },
         "warnings": ""
       },
@@ -263,6 +263,6 @@
       }
     },
     "own_infill_parts": 4,
-    "sha256": "8e2c4e436157fc5e9cbd79033e0cffc4eb67435e61c8dbb5210ac253c34e9e27"
+    "sha256": "2b433889ebd227cc4cc8da5ec183556d02dab456d54dac6f2a96897051b2c46d"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "source_sha256": "ff94b68541c342fb00502e646b245d210fb332127f297ace0cc8176e5ffb09e1",
+  "source_sha256": "6e4b7aef6ef9d7a2ccf4dc04d03d16d38945748c1882328879175de2ff7a339b",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -59,17 +59,17 @@
           70.0
         ]
       ],
-      "volume_mm3": 215892.9696,
-      "triangles": 4976,
+      "volume_mm3": 216835.9121,
+      "triangles": 5200,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "d0a70f04c0279099ab93ede09e9eb3dc27e095905970646439039e96dfaf91f6",
+      "sha256": "2f833f922c1d82f4bc9cbc69751ac424613335cf8704a35a1be354e5ca75cb32",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "d0a70f04c0279099ab93ede09e9eb3dc27e095905970646439039e96dfaf91f6"
+      "committed_sha256": "2f833f922c1d82f4bc9cbc69751ac424613335cf8704a35a1be354e5ca75cb32"
     },
     "head_back": {
       "size_mm": [
@@ -242,6 +242,17 @@
       17.5
     ],
     "open_sq": 117,
+    "head_y": [
+      3.2,
+      20.7,
+      30.7,
+      55.7,
+      70
+    ],
+    "mat_stop": [
+      20.7,
+      24.075
+    ],
     "magnet_pocket": [
       10.3,
       3.2
@@ -684,8 +695,9 @@
     }
   ],
   "intake_lip_mm": 2.25,
+  "mat_free_travel_mm": 1.62,
   "mat_squashed_percent": 2.3,
-  "mass_g": 1027.9,
+  "mass_g": 1028.7,
   "centre_of_mass_mm": [
     68.5,
     30.5,
