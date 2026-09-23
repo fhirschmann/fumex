@@ -37,7 +37,22 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 
 - The housing bends: `base` stands upright, `head` leans `tilt` = 15° forward above it, so the intake looks down at the work (user: "erst senkrecht nach oben, und dann nach vorne im Winkel"). Head modules are written in an untilted frame and placed by `head_at()`; `print_project.py` mirrors that transform in `_tilt()` for the probes.
 - Base and head share one 145 × 72 footprint, so the head's floor closes the electronics bay exactly — no extra cover, and the joint is one flat plane cut by `joint_halfspace()`. 145 mm width is set by the Ø10 magnet pockets in the corners of the intake face, not by the fan.
-- **No fan seat plate.** A flat plate with a round bore would have been a 4453 mm² flat overhang over the filter chamber (found by `analyze.py overhangs`). Instead four corner gussets grow at 45° from the intake face back to the fan (`fan_lugs()`): nothing overhangs, the remaining opening (11 700 mm²) is wider than the fan's swept annulus (8 800 mm²), the fan bears on their back faces and its four inserts sit in them. The fleece mat is pressed into the gussets; `checks()` bounds that at 5 % of the mat volume (currently 2.3 %).
+- **The fan is screwed to the back cover, not to the head** (user asked 2026-09-23: "kann man den luefter
+  nich mit der rueckwand verschrauben?"). Four `fan_post_d` = 8 spacer posts on the cover bridge the plenum
+  to the fan's back face and hold its inserts; the M3 x 30 go in from the *front* of the fan. Fan and cover
+  are screwed together on the bench, where that face is reachable, and the pair goes into the head as one -
+  which is why `ALLOWED_OVERLAPS` lets `driver_fan` pass through the head, the cassette and the mat.
+  The cover prints outer-face-down, so the posts grow straight up and their insert pockets open at the top.
+  The exhaust grid gets a solid pad of `fan_post_d + 6` under each post, and the cover's clip cube now
+  reaches forward to `head_y[3]` or the posts get cut off at the lip.
+  - The fan bears on the end face of the filter tube: `mat_stop()` runs the rear lip on to `head_y[2]`, so
+    the tube ends as a ring the frame sits on. No flat plate, no overhang - the ring's end face points up
+    in print.
+  - What this replaced: four 45 degree corner gussets in the chamber, carrying the inserts in the head. The
+    fan's mounting holes are 52.5 mm from the axis, inside the 60.75 mm bore, so a boss for them has to
+    stand in the filter chamber, and printed intake-face-down it has to grow from the intake face at 45
+    degrees - 38.9 mm legs over 27.5 mm of depth, no smaller (21.6 would have held the insert). They
+    pressed 6.6 cm3 out of the mat; `mat_squashed_percent` is now 0.0.
 - The cassette stands 4.5 mm proud of the intake face and cannot be let into it: the head prints intake-face-down,
   so a recess for it would be a 5687 mm2 horizontal ceiling over the chamber. It cannot get thinner either - the
   magnet pockets are 3.2 deep and `analyze.py thickness` wants 1.2. What is left is the rim bevel, `cass_c` = 2.0;

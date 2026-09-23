@@ -64,6 +64,7 @@ grid_r = 1.2;
 exhaust_sq = 121;
 scoop = [16, 2];     // finger scoops at both side edges of the intake face: diameter, depth (45 degree cone)
 guide = [2.4, 16];   // L-ribs guiding the fan onto its seat: thickness, leg length
+fan_post_d = 8;      // spacer posts on the back cover, carrying the fan and its inserts
 
 /* [Fan: Arctic P12 Pro, 120 x 120 x 25 mm PWM, 0.33 A at 12 V] */
 fan_size = 120;
@@ -313,8 +314,8 @@ assert(head_y[4] + back_t == body_d, "Head depth must fill the shared footprint"
 assert(wall >= 3 * 0.4, "Walls below three perimeters");
 assert(lug_d - insert_depth >= 3, "Less than 3 mm of gusset in front of the fan insert pockets");
 // where the insert pocket starts, the gusset flank must still clear the insert by the datasheet wall
-assert(lug_flank(head_y[2] - insert_depth) >= insert_hole_d / 2 + insert_w_min,
-       "Fan insert too close to the gusset flank");
+assert(fan_post_d / 2 >= insert_hole_d / 2 + insert_w_min, "Fan posts too thin for the inserts");
+assert(head_y[4] - head_y[3] >= insert_depth + 1, "Fan posts too short for the inserts");
 assert(open_sq < chamber_sq - 2, "Intake lip does not hold the mat");
 assert(pot_mount_t > 1.2, "Wall under washer and nut too thin");
 assert(base_top(0) > pot_z + knob_d / 2 + 2, "Knob reaches over the front rim");
@@ -413,13 +414,11 @@ module head_body() difference() {
             head_centre_sq(tube_sq, open_r + tube_w);
             head_centre_sq(chamber_sq, open_r);
         }
-        fan_lugs();
         mat_stop();
         for (p = head_bosses()) cyl_y(p, head_y[2], head_y[4], boss_d / 2);
         fan_guides();
     }
     along_y(-eps, front_t + eps) head_centre_sq(open_sq, open_r);       // intake opening; its lip holds the mat
-    for (p = fan_holes()) cyl_y(p, head_y[2] - insert_depth, head_y[2] + eps, insert_hole_d / 2);   // into the gussets
     for (p = head_bosses()) cyl_y(p, head_y[4] - insert_depth, head_y[4] + eps, insert_hole_d / 2);
     for (p = mag_xz()) cyl_y(p, -eps, mag[1], mag[0] / 2);              // magnet pockets, open at the intake face
     for (sx = [-1, 1]) cyl_y([body_w / 2 + sx * body_w / 2, head_cz], -eps, scoop[1],
@@ -449,20 +448,21 @@ module head_body() difference() {
 function mat_stop_y() = [head_y[1], head_y[1] + (chamber_sq - open_sq) / 2 * mat_stop_rise];
 module mat_stop() let (y0 = mat_stop_y()[0], y1 = mat_stop_y()[1])
     translate([body_w / 2, 0, head_cz]) difference() {
-        along_y(y0, y1) rrect([tube_sq, tube_sq], open_r + tube_w);
-        hull() { along_y(y0 - eps, y0 + tip) rrect([chamber_sq, chamber_sq], open_r);
-                 along_y(y1 - tip, y1 + eps) rrect([open_sq, open_sq], open_r); }
+        along_y(y0, head_y[2]) rrect([tube_sq, tube_sq], open_r + tube_w);
+        union() {
+            hull() { along_y(y0 - eps, y0 + tip) rrect([chamber_sq, chamber_sq], open_r);
+                     along_y(y1 - tip, y1 + eps) rrect([open_sq, open_sq], open_r); }
+            along_y(y1, head_y[2] + eps) rrect([open_sq, open_sq], open_r);
+        }
     }
-// Corner gussets from the intake face back to the fan: 45 degree flanks, so they print without support.
-// The fan bears on their back faces and its heat-set inserts sit in them; the mat presses into them.
-module fan_lugs() for (sx = [-1, 1], sz = [-1, 1]) translate([body_w / 2, 0, head_cz]) scale([sx, 1, sz]) hull() {
-    along_y(front_t, front_t + tip) corner_tri(0.6);
-    along_y(head_y[2] - tip, head_y[2]) corner_tri(lug_leg());
-}
-function lug_leg(y = -1) = sqrt(2) * ((y < 0 ? head_y[2] : y) - front_t);   // 45 degrees: 1 mm per mm of depth
-// distance from a fan insert axis to the gusset flank at depth y
-function lug_flank(y) = (lug_leg(y) - 2 * (chamber_sq / 2 - fan_pitch / 2)) / sqrt(2);
-module corner_tri(l) let (c = chamber_sq / 2) polygon([[c, c], [c - l, c], [c, c - l]]);
+// The fan bears on the end face of the filter tube: the rear lip closes the bore to open_sq, so the tube
+// ends as a ring the fan frame sits on. Four 45 degree corner gussets used to carry the fan's inserts
+// instead, and they had to - the fan's mounting holes are 52.5 mm from the axis, inside the 60.75 mm bore,
+// so any boss for them stands in the filter chamber, and printed intake-face-down it has to grow from the
+// intake face at 45 degrees: 38.9 mm legs over 27.5 mm of depth, pressing 6.6 cm3 out of the mat. The user
+// asked whether the fan can be screwed to the back cover instead (2026-09-23) - it can, and the same
+// M3 x 30 do it: fan and cover are screwed together on the bench, where the fan's front face is reachable,
+// and the pair goes into the head as one.
 // Holder for the charge module: a plate that screws to the head floor and two grooved end brackets that
 // take the short edges of the board. One cable tie through the tunnels above it stops the board lifting
 // out. Printed with the plate on the bed, so the brackets and their grooves are plain vertical walls.
@@ -491,9 +491,11 @@ module head() head_at() head_raw();
 module head_print_pose() translate([0, base_h + head_h, 0]) rotate([90, 0, 0]) children();   // intake face on the bed
 
 // ---------- head back cover (untilted frame) ----------
+module grid_2d_at() translate([body_w / 2, head_cz]) grid_2d(exhaust_sq);
 module head_back_raw() intersection() {
     plan_prism();
-    translate([-1, head_y[4] - lip_h - 1, base_h + cover_gap]) cube([body_w + 2, back_t + lip_h + 2, head_h]);
+    translate([-1, head_y[3] - 1, base_h + cover_gap])            // reaches forward for the fan posts
+        cube([body_w + 2, body_d - head_y[3] + 2, head_h]);
     difference() {
     union() {
         along_y(head_y[4], body_d) head_outline();
@@ -504,8 +506,12 @@ module head_back_raw() intersection() {
             // and clear of the head screw heads sitting in the floor below it
             for (p = rim_bosses()) offset(r = 0.8) translate([p[0], base_h + wall]) circle(d = head_pocket[0]);
         }
+        fan_posts();
     }
-    translate([body_w / 2, 0, head_cz]) along_y(head_y[4] - 1, body_d + 1) grid_2d(exhaust_sq);
+    along_y(head_y[4] - 1, body_d + 1) difference() {                   // exhaust grid, pad under each post
+        grid_2d_at();
+        for (p = fan_holes()) translate([p[0], p[1]]) circle(d = fan_post_d + 6);
+    }
     for (p = head_bosses()) {
         cyl_y(p, head_y[4] - 1, body_d + 1, screw_clear_d / 2);
         cyl_y(p, body_d - head_pocket[1], body_d + 1, head_pocket[0] / 2);
@@ -524,6 +530,12 @@ module head_back_raw() intersection() {
     }
 }
 module head_back() head_at() head_back_raw();
+// Spacer posts carrying the fan: they bridge the plenum to the fan's back face and hold its inserts. The
+// cover prints outer-face-down, so they grow straight up and their insert pockets open at the top.
+module fan_posts() for (p = fan_holes()) difference() {
+    cyl_y(p, head_y[3], head_y[4] + eps, fan_post_d / 2);
+    cyl_y(p, head_y[3] - eps, head_y[3] + insert_depth, insert_hole_d / 2);
+}
 module head_back_print_pose() translate([0, -base_h, body_d]) rotate([-90, 0, 0]) children();   // outer face on the bed
 
 // ---------- filter cassette (untilted frame, in front of the intake face) ----------
@@ -816,7 +828,9 @@ module screw(len, socket = false) difference() {
     }
     if (socket) translate([0, 0, -screw_head_h - eps]) cylinder(d = 2.5 / cos(30), h = 1, $fn = 6);
 }
-module screws_fan(socket = false) head_at() for (p = fan_holes()) translate([p[0], head_y[3], p[1]]) orient([0, -1, 0]) screw(len_fan, socket);
+// From the front of the fan into the inserts in the cover's posts: the pair is screwed together on the
+// bench, before it goes into the head
+module screws_fan(socket = false) head_at() for (p = fan_holes()) translate([p[0], head_y[2], p[1]]) orient([0, 1, 0]) screw(len_fan, socket);
 module screws_back(socket = false) head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) orient([0, -1, 0]) screw(len_back, socket);
 module screws_head(socket = false) head_at() for (p = rim_bosses()) translate([p[0], p[1], base_h + wall]) orient([0, 0, -1]) screw(len_head, socket);
 module screws_feet(socket = false) for (p = foot_xy) translate([p[0], p[1], -foot[2] + foot_head_recess + screw_head_h]) orient([0, 0, 1]) screw(len_foot, socket);
@@ -831,7 +845,7 @@ module driver_at() translate([0, 0, -screw_head_h]) mirror([0, 0, 1]) {
     translate([0, 0, driver[1] - eps]) cylinder(d = driver[2], h = driver[3] + eps);
     translate([0, 0, driver[1] + driver[3] - eps]) cylinder(d = driver[4], h = driver[5] + eps);
 }
-module drivers_fan()  head_at() for (p = fan_holes())   translate([p[0], head_y[3], p[1]]) orient([0, -1, 0]) driver_at();
+module drivers_fan()  head_at() for (p = fan_holes())   translate([p[0], head_y[2], p[1]]) orient([0, 1, 0]) driver_at();
 module drivers_back() head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) orient([0, -1, 0]) driver_at();
 module drivers_head() head_at() for (p = rim_bosses())  translate([p[0], p[1], base_h + wall]) orient([0, 0, -1]) driver_at();
 module drivers_feet() for (p = foot_xy) translate([p[0], p[1], -foot[2] + foot_head_recess + screw_head_h]) orient([0, 0, 1]) driver_at();
@@ -862,8 +876,7 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["knob_top_z", pot_z + knob_d / 2], ["fan_axis_pitch", fan_pitch],
     ["foot_x", [foot_xy[0][0], foot_xy[1][0]]], ["foot_y", [foot_xy[0][1], foot_xy[2][1]]],
     ["foot_size", foot], ["insert_depth", insert_depth], ["insert_hole_d", insert_hole_d],
-    ["insert_w_min", insert_w_min], ["opening_sq", chamber_sq], ["lug_leg", lug_leg()],
-    ["lug_flank", lug_flank(head_y[2] - insert_depth)],
+    ["insert_w_min", insert_w_min], ["opening_sq", open_sq], ["fan_post", [fan_post_d, head_y[4] - head_y[3]]],
     ["base_h", base_h], ["joint_y", joint_y],
     ["foot_peg", foot_peg], ["ballast", ball], ["ballast_posts", ball_posts()], ["pt_core", pt_core], ["seat_y", head_y[2]], ["back_y", head_y[4]],
     ["fan_holes", fan_holes()], ["head_bosses", head_bosses()], ["rim_screws", rim_screws]]);
