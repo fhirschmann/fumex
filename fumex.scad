@@ -44,6 +44,9 @@ front_t = 3.2;       // intake face
 open_sq = 117;       // square opening in the intake face; its lip holds the mat in the chamber
 open_r = 3;
 mat_stop_rise = 1.5;  // flank of the rear lip: 1.5 mm of depth per mm inwards, so it is not an overhang
+mat_support = [2.4, 3.2, 122, 22.5, 30.5, 5, 58.5, 0.2];
+// Cross: bar width/depth, outer span, front/rear y, end-pad width, post inner radius, pocket clearance.
+// Printed separately, mat-facing side down; four end posts are trapped between the head and fan frame.
 chamber_sq = 121.5;  // filter chamber, 0.75 mm wider than the hand-cut mat all round
 chamber_d = 17.5;    // the mat is 17 mm (user, cut from a cooker hood mat)
 tube_w = 3;          // wall of the filter chamber inside the shell
@@ -144,18 +147,22 @@ knob_mark = [1.6, 7.5, 0.8];   // pointer groove in the top face (single colour,
 
 /* [Charge/boost module: eletechsup LFUPSMA, 12 V variant, in the bay under a vent] */
 // The board stands on its long edge above the ballast lid, components towards the front and
-// heatsink towards the back. Two narrow end supports leave both broad faces exposed below the
-// plenum slots. Air can pass the component side and the heatsink before leaving the back vents.
+// heatsink towards the back. The cool OUT end is held like LEO-AC1; the hot IN end hangs free.
+// Plenum air can pass the component side and the heatsink before leaving the back vents.
 chg_pcb = [32.2, 11, 1.0];  // measured length (here along x), width (z), thickness (y)
 chg_comp_h = 2.7;    // parts above the PCB (3.7 total, measured)
-chg_cx = 70;         // board centre on the ballast lid, right of its two screws
+chg_comp_end = 2;    // component envelope leaves the PCB end pads exposed
+chg_cx = 70;         // board centre on the ballast lid, between its two screws
 chg_cy = 60;         // PCB mid-plane across the lid; both board faces are exposed to air
 chg_stand = 3.2;     // lower PCB edge above the lid; the heatsink extends 1.5 mm below it
 chg_sink = [14, 14, 6, 1];  // user's heatsink behind the IC: length, width, height, insulating pad
 chg_sink_end = 9.5;  // near end of the heatsink from the IN end; it overhangs that end by 4.5 mm
-chg_cl = 0.2;        // end clearance; the 1.4 mm guide groove leaves 0.2 mm per PCB face
-chg_br = [2, 1.4, 2, 2.5];  // backbone thickness, guide width, edge engagement, gusset rise
-chg_grip = [3, 3.2];       // guide starts above the PCB lower edge, then grips its central width
+// The LEO-AC1 tie position misses the output wires, solder jumpers and hot IC end.
+chg_tie = [2.5, 1.2, 0.3, 12.5, 2]; // width, thickness, tunnel clearance, distance from OUT, front web skin
+chg_web_gap = 1.5;
+chg_web_touch = [9, 18];             // board-back bearing measured from the cool OUT end
+chg_web_w = 4;                      // central bearing width, clear of both long-edge solder pads
+chg_web_back = 1.6;                 // wall behind the tie tunnel
 // The vent over the board is a row of slots, not one opening: printed with the intake face on the bed
 // the head floor is a vertical wall, so one 38 mm opening leaves a 113 mm2 flat bridge at its far edge.
 chg_vent = [6, 9, 6, 10];    // slot width (x), pitch, count, depth (y) in the head floor over the board
@@ -178,6 +185,7 @@ usbc_floor = 6;      // The channel floor reaches only this far from the back wa
                      // reach down to z 32 and take away the lift the ballast lid needs (lid_off).
 usbc_cl = 0.2;
 usbc_wall = 2;
+usbc_stop_w = 2.7;   // one side of the inner PCB end takes insertion force; cable centre stays open
 
 /* [Power switch: measured 14.7 x 20.9 mm rocker, snap-in, in the right side wall] */
 // Behind the PWM board, not above it: that is what lets the board move right and the switch move down
@@ -199,31 +207,25 @@ led_xz = [88, 21];
 led_cl = 0.2;
 led_boss = [7, 5];   // boss inside the wall: diameter, length
 
-/* [Cable tie loops on the inside of the back wall (strain relief)] */
-tie_loop = [8, 6, 6, 5, 2.5];   // width (x), height (z), stand-off (y), tunnel width, tunnel depth
-tie_loop_xz = [[118, 45], [128, 45]];   // high enough that the ballast lid lifts out under them
-
 /* [Ballast trough with a screwed lid (user, 2026-09-22): loose iron offcuts, no resin] */
 // Only mass behind the centre of mass helps against tipping, so the cell moved forward and everything
 // behind it is one trough. A lid instead of potting keeps it serviceable and stops the offcuts from
-// reaching the wiring; it screws straight into printed posts with M3 plastic-forming screws.
+// reaching the wiring; two side screws fasten it to Ruthex M3 inserts.
 ball = [3, 142, 53, 26];    // interior x from / to (both housing walls), front wall outer face (y),
                      // rim and lid underside (z). Full width and lower, with the USB-C socket above it
                      // (user, 2026-09-22); the rim stays below the run-outs of the rear head screw bosses
 ball_wall = 2;
 ball_post = 10;      // screw posts for the lid, standing free on the trough floor
-ball_post_x = [12, 40];     // driver access: the rim bosses now hang over the trough left and right,
-                            // and the USB-C channel and the tie loops block the right end (2026-09-23)
+ball_post_x = [10, 135];    // one centred fastener at each end, with straight driver access
+ball_post_y = 63;
 ball_lid_t = 3;
 lid_pocket = 1.2;    // counterbore in the lid: at head_pocket's 1.9 the head bore on 1.1 mm (audit A5)
 ball_lip = 0;        // no lip over the front wall: the cell has to lift past it (battery_out)
 ball_dish = [16, 1.5];   // finger dish in the lid instead: diameter, depth
-ball_step = [126, 57];  // the front wall steps back to y = 57 from this x on, around the switch body
-ball_rim = 0.4;      // trough walls end this far below the posts, so the lid bears on the four posts
+ball_step = [122.5, 58.5]; // 1.5 mm before the switch terminals, then follow the widening well
+ball_switch_corner = [137, 142, 65]; // start of diagonal, housing inner face, rear end of diagonal
+ball_rim = 0.4;      // trough walls end this far below the posts, so the lid bears on the two posts
                      // alone and no two faces of the base share the plane z = ball[3]
-// M3 plastic-forming screws straight into the posts, no heat-set inserts (user, 2026-09-22)
-pt_core = 2.5;       // core hole, about 0.8 x d; check the holding torque on a test print
-pt_depth = 10;
 
 /* [Feet: four TPU pads, each screwed with one M3 x 8 from below] */
 foot = [18, 16, 4.5];   // length (x), width (y), height
@@ -261,8 +263,7 @@ rim_screws = [[25, 66], [120, 66]];
 rim_boss_len = 9;
 rim_boss_d = 10;     // 13 bulged 12.5 mm into the bay and read as a random step (user, 2026-09-22)
 // ISO 7380 button head Torx from the user's set (M3 x 6, 8, 10, 12, 16, 25) except the fan screws
-len_lid = 10;        // M3 x 10 plastic-forming into the lid posts: at 12 the tip reached 0.9 mm past the
-                     // 10 mm core hole before the head was seated (audit 2026-09-23, A5)
+len_lid = 8;         // 1.8 mm lid bearing plus 6.2 mm into the 7 mm insert pocket
 len_fan = 30;        // M3 x 30, bought: through the 25 mm frame, 5 mm of thread in the insert
 len_back = 8;
 len_head = 8;
@@ -304,18 +305,20 @@ function rim_bosses() = rim_screws;
 // lowest point of the cell over y, or clear of it altogether
 function bat_low(y) = abs(y - bat_cy) >= bat_d / 2 + bat_clear ? 1e6
                     : bat_cz - sqrt(pow(bat_d / 2 + bat_clear, 2) - pow(y - bat_cy, 2));
-// x of the two charge-module brackets; the back cover's lip is notched over exactly these
-// well inside, not in the corners: in the corners the head screw bosses sit right over them and you
-// cannot get a driver down to the lid screws (user, 2026-09-23)
-// The rear row clears a 6.35 mm driver past the curved upper back wall.
-function ball_posts() = [for (x = ball_post_x,
-                             y = [ball[2] + ball_wall + 3.5, body_d - wall - 4.8]) [x, y]];
+// Two side fasteners share the centre line of the trough and clear the curved upper rim.
+function ball_posts() = [for (x = ball_post_x) [x, ball_post_y]];
 // both rear corners of the lid meet a rounded housing corner
 function pot_tab_z() = [pot_shaft_d / 2 + pot_tab[3] - pot_tab_cl, pot_bush[0] / 2 + pot_tab[3] + pot_tab[1] + pot_tab_cl];
 
 assert(head_y[4] + back_t == body_d, "Head depth must fill the shared footprint");
 assert(wall >= 3 * 0.4, "Walls below three perimeters");
 assert(lug_d - insert_depth >= 3, "Less than 3 mm of gusset in front of the fan insert pockets");
+assert(mat_support[0] >= 2.4 && mat_support[1] >= 3.2, "Filter cross is too slender");
+assert(mat_support[3] > front_t + 17 && mat_support[3] + mat_support[1] <= head_y[2] - 5,
+       "Filter cross leaves insufficient clearance to the mat or fan");
+assert(mat_support[4] <= head_y[2] - mat_support[7], "Filter support posts collide with the fan");
+assert(tube_sq / 2 - mat_support[2] / 2 - mat_support[7] >= 2.4,
+       "Filter support pockets leave too little tube wall");
 // where the insert pocket starts, the gusset flank must still clear the insert by the datasheet wall
 assert(fan_post_d / 2 >= insert_hole_d / 2 + insert_w_min, "Fan posts too thin for the inserts");
 assert(head_y[4] - head_y[3] >= insert_depth + 1, "Fan posts too short for the inserts");
@@ -325,7 +328,7 @@ assert(base_top(0) > pot_z + knob_d / 2 + 2, "Knob reaches over the front rim");
 assert(chg_sink_z > ball[3] + ball_lid_t + 1.2, "Heatsink too close to the ballast lid");
 assert(chg_y0 - chg_comp_h > ball[2] + 1 && chg_y0 + chg_pcb[2] + chg_sink[3] + chg_sink[2] < body_d - wall - 1,
        "Charge module leaves no air passage around its two faces");
-assert(min([for (q = ball_posts()) abs(q[0] - chg_cx) - chg_pcb[0] / 2 - chg_br[0]]) > 2,
+assert(min([for (q = ball_posts()) abs(q[0] - chg_cx) - chg_pcb[0] / 2 - 2]) > 2,
        "Charge module holder sits on a ballast lid screw");
 assert(max(chg_z0 + chg_pcb[1], chg_sink_z + chg_sink[1]) + 5 < base_top(chg_y0 - chg_comp_h),
        "Less than 5 mm over the charge module to the head floor");
@@ -333,7 +336,9 @@ assert(vent_xz[1] > ball[3] + ball_lid_t, "Back wall slots would let the ballast
 assert(mag[1] < cass_t - 1.2, "Cassette too thin for the magnet pockets");
 assert(plan_r + cass_c < body_w / 2 - mag_off - mag[0] / 2, "Cassette bevel cuts into the magnet pockets");
 assert(len_fan - fan_t >= 5, "Fan screws reach less than 5 mm into the insert");
-assert(len_lid - (ball_lid_t - lid_pocket) < pt_depth, "Ballast lid screws are longer than their core hole");
+assert(len_lid - (ball_lid_t - lid_pocket) < insert_depth, "Ballast lid screws reach the pocket floor");
+assert(len_lid - (ball_lid_t - lid_pocket) >= insert_len, "Ballast lid screws miss full insert engagement");
+assert(ball_post / 2 >= insert_hole_d / 2 + insert_w_min, "Ballast insert posts are too thin");
 assert(min([for (p = foot_xy) bat_low(p[1])]) > foot_boss[1], "Foot boss reaches into the battery");
 assert(foot_boss[1] - insert_depth >= 1.2, "Foot insert pocket floor thinner than three perimeters");
 assert(floor_t - foot_peg[1] >= 3 * 0.4, "Floor under the foot peg holes thinner than three perimeters");
@@ -505,6 +510,7 @@ module head_body() difference() {
         fan_guides();
     }
     along_y(-eps, front_t + eps) head_centre_sq(open_sq, open_r);       // intake opening; its lip holds the mat
+    filter_support_pockets();
     for (p = head_bosses()) cyl_y(p, head_y[4] - insert_depth, head_y[4] + eps, insert_hole_d / 2);
     for (p = mag_xz()) cyl_y(p, -eps, mag[1], mag[0] / 2);              // magnet pockets, open at the intake face
     for (sx = [-1, 1]) cyl_y([body_w / 2 + sx * body_w / 2, head_cz], -eps, scoop[1],
@@ -542,6 +548,29 @@ module mat_stop() let (y0 = mat_stop_y()[0], y1 = mat_stop_y()[1])
             along_y(y1, head_y[2] + eps) rrect([open_sq, open_sq], open_r);
         }
     }
+
+// A removable cross supports the fleece centre without bridging the chamber during the head print.
+// The widened ends sit in rear-open pockets. Their posts stop against the fan's outer frame; the
+// middle stays 5 mm in front of the fan front plane. Both faces of the cross have small edge chamfers.
+function filter_support_profile() = let (w = mat_support[0], span = mat_support[2], pad = mat_support[5])
+    move([body_w / 2, head_cz], p = union(concat(
+        [rect([span, w]), rect([w, span])],
+        [for (a = [0:90:270]) rot(a, p = move([span / 2 - 1.5, 0], p = rect([3, pad])))]))[0]);
+module filter_support_raw() {
+    profile_sweep_y(filter_support_profile(), mat_support[3], mat_support[3] + mat_support[1],
+                    front_c = 0.4, back_c = 0.4);
+    for (a = [0:90:270]) translate([body_w / 2, 0, head_cz]) rotate([0, a, 0])
+        translate([mat_support[6], mat_support[3] + mat_support[1] - 0.6, -mat_support[5] / 2])
+            cube([mat_support[2] / 2 - mat_support[6],
+                  mat_support[4] - mat_support[3] - mat_support[1] + 0.6, mat_support[5]]);
+}
+module filter_support_pockets() let (c = mat_support[7])
+    for (a = [0:90:270]) translate([body_w / 2, 0, head_cz]) rotate([0, a, 0])
+        translate([mat_support[2] / 2 - 3 - c, mat_support[3] - c, -mat_support[5] / 2 - c])
+            cube([3 + 2 * c, head_y[2] - mat_support[3] + c + eps, mat_support[5] + 2 * c]);
+module filter_support() head_at() filter_support_raw();
+module filter_support_print() translate([-body_w / 2, head_cz, -mat_support[3]])
+    rotate([90, 0, 0]) filter_support_raw();
 // The fan bears on the end face of the filter tube: the rear lip closes the bore to open_sq, so the tube
 // ends as a ring the fan frame sits on. Four 45 degree corner gussets used to carry the fan's inserts
 // instead, and they had to - the fan's mounting holes are 52.5 mm from the axis, inside the 60.75 mm bore,
@@ -550,29 +579,49 @@ module mat_stop() let (y0 = mat_stop_y()[0], y1 = mat_stop_y()[1])
 // asked whether the fan can be screwed to the back cover instead (2026-09-23) - it can, and the same
 // M3 x 30 do it: fan and cover are screwed together on the bench, where the fan's front face is reachable,
 // and the pair goes into the head as one.
-// Two end supports hold the board upright with both broad faces exposed to air. The central
-// guides miss the OUT pads at the upper and lower corners. Their lower flanks grow from the
-// end backbones, so no unsupported shelf is printed. The right rear cheek is deliberately open:
-// the heatsink and its insulating pad overhang that end. A narrow seat bears on the PCB cut edge.
-module chg_brackets() let (w = chg_br[0], g = chg_br[1], e = chg_br[2],
-                       z0 = ball[3] + ball_lid_t,
-                       za = chg_z0 + chg_grip[0], zb = za + chg_grip[1],
-                       yf = chg_cy - g / 2 - 1.8, yr = chg_cy + g / 2) {
-    for (side = [0, 1]) let (edge = side == 0 ? chg_x0 - chg_cl : chg_x0 + chg_pcb[0] + chg_cl,
-                            xr = side == 0 ? edge - w : edge,
-                            xs = side == 0 ? edge : edge - e) {
-        // Full end backbone; the right one stops before the insulating pad.
-        translate([xr, yf, z0 - eps])
-            cube([w, side == 0 ? g + 3.6 : chg_y0 + chg_pcb[2] - 0.2 - yf, zb - z0 + eps]);
-        translate([xs - eps, chg_y0 - 0.4, z0 - eps])
-            cube([e + 2 * eps, 1.2, chg_z0 - z0 + eps]);
-        for (rear = [0:side == 0 ? 1 : 0]) let (y = rear == 0 ? yf : yr)
-            hull() {
-                translate([xr, y, za - chg_br[3]]) cube([w, 1.8, zb - za + chg_br[3]]);
-                translate([min(xr, xs), y, za]) cube([w + e, 1.8, zb - za]);
-            }
+// One-sided cool-end holder, based on LEO-AC1. The hot IN end and heatsink stand free.
+// The cable tie retains the board; the lower seat, central end stop and rear bearing locate it.
+function chg_tie_y() = chg_y0 + chg_pcb[2] + chg_web_gap + chg_tie[4] + chg_tie[2];
+module chg_brackets() let (
+    z0 = ball[3] + ball_lid_t,
+    za = chg_z0 + (chg_pcb[1] - chg_web_w) / 2, zb = za + chg_web_w,
+    yb = chg_y0 + chg_pcb[2], yw = yb + chg_web_gap,
+    yr = chg_tie_y() + chg_tie[1] + chg_tie[2] + chg_web_back,
+    tx = chg_x0 + chg_tie[3], tc = chg_tie[0] / 2 + chg_tie[2],
+    tz = chg_z0 - chg_tie[1] - chg_tie[2]) difference() {
+    union() {
+        // Rear pedestal stays 1.5 mm off the jumpers and ends before the thermal metal pad.
+        translate([chg_x0 - 2, yw, z0 - eps])
+            cube([chg_web_touch[1] + 2, yr - yw, zb - z0 + eps]);
+        // PCB lower cut edge, beyond the OUT wire pads. No support below the hot half.
+        translate([chg_x0 + 3, chg_y0 - 0.4, z0 - eps])
+            cube([8, chg_pcb[2] + 0.8, chg_z0 - z0 + eps]);
+        // A steep underside grows the central bearing into the PCB back without a shelf.
+        // Recess the hidden top seam by eps instead of joining coplanar cap faces.
+        along_x(chg_x0 + chg_web_touch[0], chg_x0 + chg_web_touch[1])
+            polygon([[yw + eps, za - 1.25 * chg_web_gap], [yb, za], [yb, zb], [yw + eps, zb - eps]]);
+        // Central OUT-end stop leaves the two corner wire pads open. Its underside is a ramp.
+        along_x(chg_x0 - 2, chg_x0)
+            polygon([[yw + eps, za - 1.25 * (yw - chg_y0)], [chg_y0, za],
+                     [chg_y0, zb], [yw + eps, zb - eps]]);
     }
+    // Rotate the LEO web tunnel with the horizontal PCB. Its lower opening joins a
+    // passage under the board; the pedestal bridges only the 3.1 mm tunnel width.
+    translate([tx - tc, chg_tie_y() - chg_tie[2], tz])
+        cube([2 * tc, chg_tie[1] + 2 * chg_tie[2], zb - tz + 1]);
+    translate([tx - tc, chg_y0 - chg_comp_h - chg_tie[1] - 1, tz])
+        cube([2 * tc, yr - (chg_y0 - chg_comp_h - chg_tie[1]) + 2,
+              chg_tie[1] + 2 * chg_tie[2]]);
 }
+// Bought cable tie: the closed band follows the measured LEO contact position.
+// Its buckle and elastic tightening are not represented by this collision envelope.
+module chg_tie_env() let (
+    t = chg_tie[1], yf = chg_y0 - chg_comp_h, yr = chg_tie_y())
+    along_x(chg_x0 + chg_tie[3] - chg_tie[0] / 2, chg_x0 + chg_tie[3] + chg_tie[0] / 2)
+        difference() {
+            bounds_rect([yf - t, chg_z0 - t], [yr + t, chg_z0 + chg_pcb[1] + t]);
+            bounds_rect([yf, chg_z0], [yr, chg_z0 + chg_pcb[1]]);
+        }
 // ventilation slots in the back wall, above the ballast lid: the outlet of the draught through the bay
 module vent_slots() for (i = [0:vent[2] - 1])
     translate([vent_xz[0] + i * vent[1], body_d - wall - 1, vent_xz[1] + i * vent[4]])
@@ -700,10 +749,8 @@ module base() difference() {
         usbc_channel();
         rim_boss_bodies();
         foot_bosses();
-        tie_loops();
         sw_wall_box();
         ballast_walls();
-        ball_switch_fill();
     }
     joint_halfspace();                                   // the tilted joint plane cuts the rim
     joint_neck();                                        // whose corners follow the head's bottom radius
@@ -755,21 +802,21 @@ module led_cut() {
     cyl_y(led_xz, -1, wall + eps, (led_d + led_cl) / 2);
     cyl_y(led_xz, wall, led_boss[1] + 1, (led_d + led_cl) / 2 + 0.5);                 // seat for the LED flange
 }
-// channel on the inside of the back wall, open at the top for the wires, on a 45 degree gusset
+// Open-top channel, also open at the inner cable end. A short side stop takes plug insertion force.
 module usbc_channel() {
     difference() {
         translate([usbc_xz[0] - usbc[1] / 2 - usbc_cl - usbc_wall, usbc_y0 - 2, usbc_xz[1] - usbc[2] / 2 - usbc_cl - usbc_wall])
             cube([usbc[1] + 2 * (usbc_cl + usbc_wall), body_d - wall - usbc_y0 + 2, usbc[2] + 2 * usbc_cl + usbc_wall]);
-        // Starts at the board, not 3 mm in front of it: what is left is a 2 mm end wall the board bears on
-        // when a cable is pushed into the socket. Without it the board had 15 mm of free travel into the bay
-        // (audit 2026-09-23, A2). It drops in from above, so the wall is in its way at no point.
-        translate([usbc_xz[0] - usbc[1] / 2 - usbc_cl, usbc_y0, usbc_xz[1] - usbc[2] / 2 - usbc_cl])
-            cube([usbc[1] + 2 * usbc_cl, body_d - usbc_y0 + 4, usbc[2] + 2 * usbc_cl + 2]);
-        translate([usbc_xz[0] - 4, usbc_y0 - 3, usbc_xz[1] + 1])      // notch in it for the wires
-            cube([8, 4, usbc[2]]);
+        translate([usbc_xz[0] - usbc[1] / 2 - usbc_cl, usbc_y0 - 3, usbc_xz[1] - usbc[2] / 2 - usbc_cl])
+            cube([usbc[1] + 2 * usbc_cl, body_d - usbc_y0 + 7, usbc[2] + 2 * usbc_cl + 2]);
         translate([usbc_xz[0] - usbc[1], body_d - wall - usbc[0] - 1, usbc_xz[1] - usbc[2] / 2 - usbc_cl - usbc_wall - 1])
             cube([2 * usbc[1], usbc[0] + 1 - usbc_floor, usbc_wall + 1]);   // floor only near the wall
     }
+    // LEO-style end retention on one side only. It grows from the right channel wall.
+    translate([usbc_xz[0] + usbc[1] / 2 - usbc_stop_w, usbc_y0 - 2,
+               usbc_xz[1] - usbc[2] / 2 - usbc_cl])
+        cube([usbc_stop_w + usbc_cl + usbc_wall, 2 - usbc_cl,
+              usbc[2] + 2 * usbc_cl]);
 }
 module usbc_cuts() {
     translate([usbc_xz[0] - usbc[1] / 2 - usbc_cl, body_d - wall - 1, usbc_xz[1] - usbc[2] / 2 - usbc_cl])
@@ -788,23 +835,25 @@ module sw_cuts() {
     let (h = sw_cut + [1, 1] * 2 * sw_cut_cl)
         translate([body_w - sw_well[0] - sw_panel - 1, sw_yz[0] - h[0] / 2, sw_yz[1] - h[1] / 2]) cube([sw_panel + 2, h[0], h[1]]);
 }
-// front and right wall of the trough (left and back are the housing walls), the four screw posts, and a
-// ledge along the back wall for the lid
+// Front wall follows the switch well with room for its body, terminals and lid removal.
+module ball_switch_front(extra = 0) polygon([
+    [ball_step[0] - ball_wall, ball_step[1] + extra],
+    [ball_switch_corner[0], ball_step[1] + extra],
+    [ball_switch_corner[1], ball_switch_corner[2] + extra],
+    [ball_switch_corner[1], ball_switch_corner[2] + ball_wall + extra],
+    [ball_switch_corner[0], ball_step[1] + ball_wall + extra],
+    [ball_step[0] - ball_wall, ball_step[1] + ball_wall + extra]]);
 module ballast_walls() {
     translate([ball[0], ball[2], floor_t - eps]) cube([ball_step[0] - ball[0], ball_wall, ball[3] - ball_rim - floor_t + eps]);
-    translate([ball_step[0] - ball_wall, ball_step[1], floor_t - eps])   // stepped back around the switch
-        cube([ball[1] - ball_step[0] + ball_wall, ball_wall, ball[3] - ball_rim - floor_t + eps]);
+    translate([0, 0, floor_t - eps]) linear_extrude(ball[3] - ball_rim - floor_t + eps)
+        ball_switch_front();
     translate([ball_step[0] - ball_wall, ball[2], floor_t - eps])
         cube([ball_wall, ball_step[1] - ball[2] + ball_wall, ball[3] - ball_rim - floor_t + eps]);
     for (q = ball_posts()) translate([q[0], q[1], floor_t - eps]) cylinder(d = ball_post, h = ball[3] - floor_t + eps);
 }
 module ballast_screw_holes() for (q = ball_posts())
-    translate([q[0], q[1], ball[3] - pt_depth]) cylinder(d = pt_core, h = pt_depth + 1);
-// lid: it rests on the two walls, the ledge and the four posts, and reaches ball_lip over the front wall
-// The lid is notched round the switch body, and that notch sat over live trough volume: a 9 x 3.5 mm hole
-// from the iron into the electronics (audit 2026-09-23, A1). This block fills the trough underneath it.
-module ball_switch_fill() translate([ball[1] - 15, ball[2] + 3.2, floor_t - eps])
-    cube([15, 8.3, ball[3] - floor_t + eps]);   // starts behind the switch body, which reaches y 56
+    translate([q[0], q[1], ball[3] - insert_depth]) cylinder(d = insert_hole_d, h = insert_depth + 1);
+// Lid bears on two insert posts. Its switch notch stays ahead of the entire trough wall.
 module ball_lid() difference() {
     union() { ball_lid_plate(); chg_brackets(); }
     for (q = ball_posts()) translate([q[0], q[1], ball[3] - 1]) {
@@ -819,9 +868,11 @@ module ball_lid_plate() difference() {
     translate([0, 0, ball[3]]) linear_extrude(ball_lid_t) difference() {
         translate([ball[0] + 0.2, ball[2] - ball_lip])
             square([ball[1] - ball[0] - 0.4, body_d - wall - 0.2 - ball[2] + ball_lip]);
-        translate([ball[0], body_d - wall]) polygon([[0, 0], [5, 0], [0, -5]]);
-        translate([ball[1], body_d - wall]) polygon([[0, 0], [-5, 0], [0, -5]]);
-        translate([ball[1] - 13, ball[2] - 1]) square([14, 11]);   // clear of the switch body and its well
+        translate([ball[0], body_d - wall]) polygon([[0, 0], [0.5, 0], [0, -0.5]]);
+        translate([ball[1], body_d - wall]) polygon([[0, 0], [-0.5, 0], [0, -0.5]]);
+        polygon([[ball_step[0], ball[2] - 1], [body_w + 1, ball[2] - 1],
+                 [body_w + 1, body_d], [ball_switch_corner[1], ball_switch_corner[2] - 1],
+                 [ball_switch_corner[0], ball_step[1] - 1], [ball_step[0], ball_step[1] - 1]]);
     }
     for (q = ball_posts()) translate([q[0], q[1], ball[3] - 1]) {
         cylinder(d = screw_clear_d, h = ball_lid_t + 2);
@@ -836,19 +887,16 @@ module ball_lid_print_pose() translate([-ball[0], -(ball[2] - ball_lip), -ball[3
 module ballast_env() difference() {
     translate([ball[0], ball[2] + ball_wall, floor_t])
         cube([ball[1] - ball[0], body_d - wall - ball[2] - ball_wall, ball[3] - floor_t]);
-    translate([ball_step[0] - ball_wall - 1, ball[2] - 1, floor_t - 1])   // the stepped-back corner
-        cube([ball[1] - ball_step[0] + ball_wall + 2, ball_step[1] + ball_wall - ball[2] + 1, ball[3] - floor_t + 2]);
+    translate([0, 0, floor_t - 1]) linear_extrude(ball[3] - floor_t + 2)
+        polygon([[ball_step[0] - ball_wall, ball[2] - 1], [ball[1] + 1, ball[2] - 1],
+                 [ball[1] + 1, ball_switch_corner[2] + ball_wall],
+                 [ball_switch_corner[1], ball_switch_corner[2] + ball_wall],
+                 [ball_switch_corner[0], ball_step[1] + ball_wall],
+                 [ball_step[0] - ball_wall, ball_step[1] + ball_wall]]);
     base();
+    ballast_screw_holes();   // installed inserts exclude these pockets from the loose-iron volume
     // the insert pockets of the rear feet are sealed voids under a 2 mm cap: no resin gets in there
     for (p = foot_xy) translate([p[0], p[1], -1]) cylinder(d = insert_hole_d + 0.4, h = insert_depth + 1);
-}
-module tie_loops() for (p = tie_loop_xz) difference() {
-    // no run-out underneath: a 45 degree gusset would reach 6 mm down and take away the lift the ballast
-    // lid needs (lid_off). A 8 x 6 mm ledge is what the slicer calls a floating cantilever here.
-    translate([p[0] - tie_loop[0] / 2, body_d - wall - tie_loop[2], p[1] - tie_loop[1] / 2])
-        cube([tie_loop[0], tie_loop[2] + eps, tie_loop[1]]);
-    translate([p[0] - tie_loop[3] / 2, body_d - wall - tie_loop[4], p[1] - tie_loop[1] / 2 - 1])
-        cube([tie_loop[3], tie_loop[4] + eps, tie_loop[1] + 2]);
 }
 // bosses for the head screws: columns under the tilted rim in the corners, merged into both walls,
 // with a 45 degree run-out below so they print without support
@@ -952,8 +1000,8 @@ module pot_nut_env() translate([pot_x, 0, pot_z]) axis_orient([0, -1, 0]) differ
 }
 module chg_module_env() translate([chg_x0, chg_y0, chg_z0]) {
     cube([chg_pcb[0], chg_pcb[2], chg_pcb[1]]);       // PCB upright, normal along y
-    translate([chg_br[2], -chg_comp_h, 0])
-        cube([chg_pcb[0] - 2 * chg_br[2], chg_comp_h + eps, chg_pcb[1]]);
+    translate([chg_comp_end, -chg_comp_h, 0])
+        cube([chg_pcb[0] - 2 * chg_comp_end, chg_comp_h + eps, chg_pcb[1]]);
 }
 // Insulating pad and heatsink on the rear PCB face; both remain clear of the lid.
 module chg_sink_env() translate([chg_sink_cx - chg_sink[0] / 2, chg_y0 + chg_pcb[2], chg_sink_z])
@@ -1002,7 +1050,7 @@ module drivers_fan()  head_at() for (p = fan_holes())   translate([p[0], head_y[
 module drivers_back() head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) axis_orient([0, -1, 0]) driver_at();
 module drivers_head() head_at() for (p = rim_bosses())  translate([p[0], p[1], base_h + wall]) axis_orient([0, 0, -1]) driver_at();
 module drivers_feet() for (p = foot_xy) translate([p[0], p[1], -foot[2] + foot_head_recess + screw_head_h]) axis_orient([0, 0, 1]) driver_at();
-module drivers_lid()  for (q = ball_posts()) translate([q[0], q[1], ball[3] + ball_lid_t]) axis_orient([0, 0, -1]) driver_at();
+module drivers_lid()  for (q = ball_posts()) translate([q[0], q[1], ball[3] + ball_lid_t - lid_pocket]) axis_orient([0, 0, -1]) driver_at();
 
 // ---------- assembly ----------
 module assembly(explode = 0) {
@@ -1010,6 +1058,7 @@ module assembly(explode = 0) {
     color("#2b2d30") head_at() translate([0, 0, explode * 1.4]) head_raw();
     color("#2b2d30") head_at() translate([0, explode * 2.4, explode * 1.4]) head_back_raw();
     color("#8c9196") head_at() translate([0, -explode * 1.6, explode * 1.4]) cassette_raw();
+    color("#70767c") head_at() translate([0, explode * 0.5, explode * 1.4]) filter_support_raw();
     color("#5a5f66") translate([0, -explode * 0.8, explode * 1.4]) filter_env();
     color("#8c9196") translate([0, -explode * 0.6, 0]) knob();
     color("#5a5f66") translate([0, 0, explode * 0.8]) ball_lid();
@@ -1026,7 +1075,7 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["wall", wall], ["tilt", tilt], ["body", [body_w, body_d]], ["head_h", head_h],
     ["fan_insert_front", lug_d - insert_depth], ["fan_thread", len_fan - fan_t],
     ["head_thread", len_head - wall], ["chamber", [chamber_sq, chamber_d]], ["open_sq", open_sq],
-    ["head_y", head_y], ["mat_stop", mat_stop_y()],
+    ["head_y", head_y], ["mat_stop", mat_stop_y()], ["mat_support", mat_support],
     ["magnet_pocket", mag], ["pot_mount_t", pot_mount_t], ["front_rim_z", base_top(0)],
     ["knob_top_z", pot_z + knob_d / 2], ["fan_axis_pitch", fan_pitch],
     ["foot_x", [foot_xy[0][0], foot_xy[1][0]]], ["foot_y", [foot_xy[0][1], foot_xy[2][1]]],
@@ -1034,8 +1083,11 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["insert_w_min", insert_w_min], ["opening_sq", open_sq], ["fan_post", [fan_post_d, head_y[4] - head_y[3]]],
     ["charge_pcb", chg_pcb], ["charge_origin", [chg_x0, chg_y0, chg_z0]],
     ["charge_components", chg_comp_h], ["charge_sink", chg_sink],
+    ["charge_tie", chg_tie], ["charge_web", [chg_web_gap, chg_web_touch, chg_web_w, chg_web_back]],
+    ["lid_screw", [ball_lid_t, lid_pocket, len_lid]],
+    ["usb_origin", [usbc_xz[0], usbc_y0, usbc_xz[1]]], ["usb_board", usbc_board],
     ["base_h", base_h], ["joint_y", joint_y], ["base_joint_h", base_joint_h],
-    ["foot_peg", foot_peg], ["ballast", ball], ["ballast_posts", ball_posts()], ["pt_core", pt_core], ["seat_y", head_y[2]], ["back_y", head_y[4]],
+    ["foot_peg", foot_peg], ["ballast", ball], ["ballast_posts", ball_posts()], ["lid_screw_length", len_lid], ["seat_y", head_y[2]], ["back_y", head_y[4]],
     ["fan_holes", fan_holes()], ["head_bosses", head_bosses()], ["rim_screws", rim_screws]]);
 else if (part == "none") {}
 else if (part == "base") base();
@@ -1045,3 +1097,4 @@ else if (part == "cassette") cassette_print_pose() cassette_raw();
 else if (part == "knob") knob_print_pose() knob_local();
 else if (part == "foot") foot_print_pose() foot_local();
 else if (part == "ball_lid") ball_lid_print_pose() ball_lid();
+else if (part == "filter_support") filter_support_print();

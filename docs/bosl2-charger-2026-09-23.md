@@ -2,6 +2,8 @@
 
 Stand: 23. September 2026. Ergänzung zum [Projekt-Audit](audit-2026-09-23.md) und zur [Nachprüfung der Rundungen G2/G3](rounding-2026-09-23.md).
 
+Nachtrag: Die hier beschriebene beidseitige Platinenhalterung und die frühere Deckelverschraubung wurden inzwischen ersetzt; siehe [aktueller Hardware-Aufbau](hardware-2026-09-23.md). Die verlinkten README-Bilder zeigen den aktuellen Stand, die folgenden Messwerte den damaligen Prüfstand.
+
 ## Umgesetzte Änderungen
 
 **Die vorgesehenen Randfasen werden mit BOSL2 aus ihren tatsächlichen Endkonturen erzeugt.** `profile_sweep_y()` verwendet `offset_sweep()` und `os_chamfer()` für Kopf, Rückwand und Kassette; die Bodenfase der Basis folgt demselben Verfahren. Die Fasenhöhe hängt damit nicht mehr von dünnen Hilfskörpern einer Hülloperation ab. BOSL2 ist als Git-Submodul auf `989cc33b56313238f3ffeafcbd2876b71a0a593a` festgelegt.

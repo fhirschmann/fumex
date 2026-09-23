@@ -1,0 +1,106 @@
+{
+  "islands": {
+    "base": [],
+    "head": [],
+    "head_back": [],
+    "cassette": [],
+    "knob": [],
+    "foot": [],
+    "ball_lid": [],
+    "filter_support": []
+  },
+  "overhangs": {
+    "base": [],
+    "head": [],
+    "head_back": [],
+    "cassette": [],
+    "knob": [],
+    "foot": [],
+    "ball_lid": [],
+    "filter_support": []
+  },
+  "thickness": {
+    "base": {
+      "samples": 36873,
+      "measured": 36873,
+      "mm2_per_sample": 2.0,
+      "p01": 1.374,
+      "p05": 2.0,
+      "median": 3.0,
+      "regions": []
+    },
+    "head": {
+      "samples": 65128,
+      "measured": 64941,
+      "mm2_per_sample": 2.0,
+      "p01": 2.4,
+      "p05": 2.4,
+      "median": 3.0,
+      "regions": []
+    },
+    "head_back": {
+      "samples": 23678,
+      "measured": 23678,
+      "mm2_per_sample": 2.0,
+      "p01": 2.002,
+      "p05": 2.5,
+      "median": 4.0,
+      "regions": []
+    },
+    "cassette": {
+      "samples": 20664,
+      "measured": 20664,
+      "mm2_per_sample": 2.0,
+      "p01": 1.3,
+      "p05": 2.5,
+      "median": 4.5,
+      "regions": []
+    },
+    "knob": {
+      "samples": 2000,
+      "measured": 2000,
+      "mm2_per_sample": 1.821,
+      "p01": 0.217,
+      "p05": 1.0,
+      "median": 7.503,
+      "regions": []
+    },
+    "foot": {
+      "samples": 2000,
+      "measured": 2000,
+      "mm2_per_sample": 0.458,
+      "p01": 1.65,
+      "p05": 1.65,
+      "median": 4.5,
+      "regions": []
+    },
+    "ball_lid": {
+      "samples": 3263,
+      "measured": 3263,
+      "mm2_per_sample": 2.0,
+      "p01": 1.5,
+      "p05": 1.5,
+      "median": 3.0,
+      "regions": []
+    },
+    "filter_support": {
+      "samples": 2000,
+      "measured": 2000,
+      "mm2_per_sample": 1.455,
+      "p01": 2.4,
+      "p05": 2.4,
+      "median": 3.0,
+      "regions": []
+    }
+  },
+  "fins": {
+    "base": [],
+    "head": [],
+    "head_back": [],
+    "cassette": [],
+    "knob": [],
+    "foot": [],
+    "ball_lid": [],
+    "filter_support": []
+  }
+}
