@@ -42,10 +42,10 @@ Eight part types, eleven printed pieces including the four feet.
 | `ball_lid` ballast lid | 1 | PETG black | 138.6 × 17.8 × 13.7 | flat on the bed |
 | `filter_support` support cross | 1 | PETG black | 122 × 122 × 8 | mat-facing side on the bed, four posts upwards |
 | `cassette` filter cassette | 1 | PETG grey | 138 × 143 × 4.5 | grid face on the bed |
-| `knob` speed knob | 1 | PETG grey | Ø 28 × 13.5 | top on the bed |
+| `knob` speed knob | 1 | PETG grey | Ø 26 × 13.5 | top on the bed |
 | `foot` foot | 4 | TPU | 18 × 16 × 6.5 | ground face on the bed, 100 % infill |
 
-All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head, ballast lid and support cross, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.47 kg and 15.4 hours** for the four arranged plates (16.4 hours as individual part jobs; head 222 g, base 119 g, back cover 60 g, cassette 50 g, ballast lid 8 g, support cross 3 g, knob 6 g, feet 4 × 1.5 g).
+All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head, ballast lid and support cross, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.47 kg and 15.5 hours** for the four arranged plates (16.5 hours as individual part jobs; head 223 g, base 119 g, back cover 60 g, cassette 50 g, ballast lid 8 g, support cross 3 g, knob 5.5 g, feet 4 × 1.5 g).
 
 Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid (feet 100 %).
 
@@ -62,13 +62,14 @@ Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid (feet 1
 | USB-C PD trigger module, Type A (default 5 V) | 1 | [AliExpress](https://de.aliexpress.com/item/1005010610660644.html) | charging socket high in the back wall, above the ballast lid. **Leave pads 1–4 open** (they select 9/12/15/20 V); the charge module only takes 4–6 V, check 5 V with a multimeter before connecting |
 | ON-OFF rocker switch, snap-in, 21 × 15 mm (cut-out 19.2 × 12.2 mm) | 1 | [AliExpress](https://de.aliexpress.com/item/1005008871215158.html) | in the right side wall, long side upright |
 | LED 3 mm, breathing/fading, 3.3 V, water clear | 1 | [AliExpress](https://de.aliexpress.com/item/1005005336879647.html) | charge indicator beside the knob, fitted from inside behind a closed 0.8 mm front skin; check visibility through the chosen black PETG |
+| Additional Ø3 mm LED, optional | 1 | – | second closed-front pocket beside the charge indicator; select and wire it for the intended signal |
 | Resistor 220 Ω, 1/4 W | 1 | – | series resistor for the LED on the 5 V USB input |
 | Neodymium disc magnets Ø 10 × 3 | 8 | – | four pairs, glued into open pockets in the intake face and the cassette |
 | Resettable PTC fuse Bourns MF-R160 or RXEF160 (1.6 A hold) | 1 | – | optional, between battery plus and the switch, in heat shrink |
-| Heat-set inserts Ruthex RX-M3x5.7 | 16 | [ruthex.de](https://www.ruthex.de) | 4 fan, 4 back cover, 2 head screws, 4 feet, 2 ballast lid |
+| Heat-set inserts Ruthex RX-M3x5.7 | 18 | [ruthex.de](https://www.ruthex.de) | 4 fan, 4 back cover, 4 head screws, 4 feet, 2 ballast lid |
 | M3 × 30, ISO 7380 Torx | 4 | – | fan to the back cover; the frame alone is 25 mm thick, so nothing shorter reaches a thread |
-| M3 × 8, ISO 7380 Torx | 12 | – | back cover (4), head onto the base (2), feet (4), ballast lid (2) |
-| Iron offcuts for the ballast | – | – | up to 41.0 cm³, about 193 g, loose in the trough under its lid |
+| M3 × 8, ISO 7380 Torx | 14 | – | back cover (4), head onto the base (4), feet (4), ballast lid (2) |
+| Iron offcuts for the ballast | – | – | up to 42.4 cm³, about 199 g, loose in the trough under its lid |
 | JST-PH 2.0 cable, 2-pin, mating the battery plug | 1 | – | battery to the switch and B+ / B− |
 | Cable tie, 2.5 mm wide × 1.2 mm thick | 1 | – | secures the charge module at its cool OUT end |
 | Silicone wire 24 AWG, red and black | about 1 m | – | USB-C module, switch, LED, 12 V to the PWM controller |
@@ -92,35 +93,37 @@ battery (JST-PH, built-in BMS) ──► (PTC) ──► rocker switch ──►
 
 ## Assembly
 
-1. Press in the 16 heat-set inserts: 4 into the spacer posts of the back cover from the fan side, 4 into the bosses along the head's side walls from the back, 2 into the bosses under the base rim, 4 into the base floor from below, and 2 into the ballast-lid posts from above.
+1. Press in the 18 heat-set inserts: 4 into the spacer posts of the back cover from the fan side, 4 into the bosses along the head's side walls from the back, 4 into the bosses under the base rim, 4 into the base floor from below, and 2 into the ballast-lid posts from above.
 2. Glue the magnets: four into the pockets of the intake face first, then put the other four on top of them, drop the cassette on and glue those into the cassette. The polarity then cannot be wrong.
 3. Slide the support cross into the head from the open back, with its flat crossed face towards the mat and its four posts towards the fan. Its widened ends fit the four rear-open pockets in the filter tube. No screws or glue are needed.
 4. Lay the back cover on the bench, set the fan on its four posts **blowing towards the cover**, so it pushes the air out through its grid, and screw it down with M3 × 30 from the front of the fan. The cable comes out on the side that will face the head floor.
-5. Fit the electronics in the base: PWM controller flat on its rib pads with the potentiometer through the front wall, washer and nut from outside; LED glued into its blind pocket from inside, with its flange against the rear of the boss and the front skin intact; USB-C module into its channel in the back wall; rocker switch snapped into the right wall. The USB-C channel rests on two vertical ribs from the trough floor and opens into the bay at the wire end; seat the board against its side stop and route the wires through the open end. Keep wires clear of the lid and switch recess.
+5. Fit the electronics in the base: PWM controller flat on its rib pads with the potentiometer through the front wall, washer and nut from outside; LED glued into its blind pocket from inside, with its flange against the rear of the boss and the front skin intact; a second matching pocket sits 8 mm to its left; USB-C module into its channel in the back wall; rocker switch snapped into the right wall. The USB-C channel rests on two 45° gussets from the back wall and opens into the bay at the wire end; seat the board against its side stop and route the wires through the open end. Keep wires clear of the lid and switch recess.
 6. Stick the insulating pad onto the metal pad on the back of the charge module and the heatsink onto the pad. Set the board's cool OUT end into the holder on the ballast lid, against its end, bottom and rear supports; components face forwards and the heatsink faces the back wall. Secure it with one 2.5 × 1.2 mm cable tie through the holder and around the board, 11.25–13.75 mm from the OUT end. Check the tie against the actual components and solder joints before tightening. Leave the heatsink end free, leave slack in the wires and keep the air passages open. Cut and replace the tie when removing the board.
-7. Fill the ballast trough behind the battery with iron offcuts — up to about 193 g — and fit the lid around the USB support ribs using its rear-open slots. Fasten it with two M3 × 8, one at each end, into the heat-set inserts. The wider switch recess leaves 5.5 mm in front of the terminals, about 2 mm at the closest point of the switch body and 2.4 mm between the switch and lid. Fill it properly or pack the rest with foam; loose pieces under a half-empty lid rattle.
+7. Fill the ballast trough behind the battery with iron offcuts — up to about 199 g — and fit the lid around the USB support ribs using its rear-open slots. Fasten it with two M3 × 8, one at each end, into the heat-set inserts. The wider switch recess leaves 5.5 mm in front of the terminals, about 2 mm at the closest point of the switch body and 2.4 mm between the switch and lid. Fill it properly or pack the rest with foam; loose pieces under a half-empty lid rattle.
 8. Lay the battery into its three saddles, protection board up, cable end to the right, a strip of foam tape above and below.
 9. Put a drop of CA gel into the knob bore and push the knob onto the shaft until it bottoms; it then stands 1.2 mm off the wall and turns freely.
-10. Set the head onto the base and screw it down with 2 × M3 × 8, reaching in through the open back: they sit in the head floor just behind the fan, the one place inside the head where a driver gets to the rim. Then lower the fan-and-cover assembly in from the back — the corner guides in the head take it onto its seat — and check that the actual fan frame captures all four support-cross posts. Screw the cover down with 4 × M3 × 8.
+10. Set the head onto the base and screw it down with 4 × M3 × 8, reaching in through the open back: two pairs sit in the head floor behind the fan, where a driver can reach the rim. Then lower the fan-and-cover assembly in from the back — the corner guides in the head take it onto its seat — and check that the actual fan frame captures all four support-cross posts. Screw the cover down with 4 × M3 × 8.
 11. Screw the four TPU feet on from below with M3 × 8; the small peg beside each screw stops them turning.
 12. Push the mat in past the lip so the white fleece ends up facing **forwards**, towards the cassette, and the dark carbon layer faces the fan. Then put the cassette on.
 
 | Two lid screws, lifted for clarity | USB-C mount, cutaway |
 |:---:|:---:|
-| ![Two M3 screws into Ruthex insert posts](img/07_ballast_mount.png) | ![USB-C channel supported from the trough floor](img/08_usb_mount.png) |
+| ![Two M3 screws into Ruthex insert posts](img/07_ballast_mount.png) | ![USB-C channel supported by 45-degree back-wall gussets](img/08_usb_mount.png) |
+
+![Four head-to-base screws in two accessible pairs](img/09_head_mount.png)
 
 To change the mat: pull the cassette off using its side scoops, pinch the flexible mat and pull it past the retaining lip, then press the new one in.
 
 ## Design notes
 
 - The base has a 145 × 74 mm footprint. Its upper 8 mm curve inwards to meet the projected outline of the head at the 15° joint, so the head closes the electronics bay without a separate cover or a projecting base lip. The 145 mm width comes from the magnet pockets in the intake face.
-- The head leans forward, so the centre of mass moves towards the front feet. The model computes it from the part masses and checks that it stays at least 15 mm inside the foot polygon: 28.6 mm at the front, which is 21.3° of tip angle at 1.01 kg. That angle is measured from the sole of the feet and against the contact patch the pads' bottom chamfer actually leaves, not against their full outline. The ballast does most of that work — the cell sits well forward so everything behind it is one trough across the full width, 41.0 cm³ or about 193 g of iron offcuts under a screwed lid, with the USB-C socket above it.
+- The head leans forward, so the centre of mass moves towards the front feet. The model computes it from the part masses and checks that it stays at least 15 mm inside the foot polygon: 28.9 mm at the front, which is 21.7° of tip angle at 1.02 kg. That angle is measured from the sole of the feet and against the contact patch the pads' bottom chamfer actually leaves, not against their full outline. The ballast does most of that work — the cell sits well forward so everything behind it is one trough across the full width, 42.4 cm³ or about 199 g of iron offcuts under a screwed lid, with the USB-C socket above it.
 - **Filling the ballast:** only behind the cell, never in front of it — mass ahead of the centre of mass makes tipping worse, and the large free space at the front is exactly the wrong place. The screwed lid keeps the loose pieces away from the wiring. Two M3 × 8 screws at the left and right ends engage heat-set inserts in the printed posts.
 - Walls 3 mm, base floor 3.2 mm, back cover 4 mm. Corner radius 6 mm at the top of the head, 3.5 mm on the four vertical edges, and 0.5 mm where head and base meet — the joint is a straight parting line that runs into the rounded vertical edge, and that edge carries the corner. A larger radius there put two different arcs plus the chamfers around the joint into the same corner, which looked like a jumble. The plan and elevation radii blend smoothly at the four upper corners. The base rim follows the tilted head contour around the joint; the deliberate 15° bend and rear edge chamfers remain. 3.5 mm is the most the magnet pockets in the intake face allow: at 6 they would fall outside the rounded corner, and they cannot move further in without reaching the intake opening.
 - The joint plane rises 15° towards the back, so it meets the vertical back face of the base at 75°. That edge — the one the back cover lands on — is chamfered at 45°, as is the lower edge of the cover itself, and the two form one groove instead of a sharp rim.
-- The head is located on the base by two screws in one row behind the fan; there is no register, and the outer contours match. That row is also where the load is: the head leans forward, so its centre of mass sits 22 mm in front of the joint, pressing the front of the joint together and lifting the back. Every screw in the design is checked for driver access — a bit and its holder are modelled on each screw head and must not touch anything. 
+- The head is located on the base by four screws in one row behind the fan, two on each side; there is no register, and the outer contours match. That row is also where the load is: the head leans forward, so its centre of mass sits 22 mm in front of the joint, pressing the front of the joint together and lifting the back. Every screw in the design is checked for driver access — a bit and its holder are modelled on each screw head and must not touch anything.
 - The mat is 17 mm of soft fleece, so it seals against the chamber walls: everything downstream of it is filtered air.
-- The LED pocket is Ø3.2 mm and stops 0.8 mm behind the closed front surface. Its flange rests on the boss inside the housing. This thin light window is deliberate; leave it closed and check the LED's visibility through the printed material.
+- The two LED pockets are Ø3.2 mm, 8 mm apart, and stop 0.8 mm behind the closed front surface. Each LED flange rests on its boss inside the housing. These thin light windows are deliberate; leave them closed and check visibility through the printed material.
 - PETG softens well below a soldering iron. Keep the tip away from the housing.
 
 ## Build from source

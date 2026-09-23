@@ -1,0 +1,387 @@
+{
+  "source_sha256": "ef984926c92907ff6b44ab8dca544594ecc9b8692bdbae2d17ccce483a763e5b",
+  "print_project_sha256": "7dd7cc02bc4ac2a121c3436404ff3bbe9f7b46ae7aa4b1633768bf4492c758f6",
+  "verification_sha256": "f2e2ce5d3b425200006207c61ddfaccf967275c51cf9a9781f48cca24a0dd8c0",
+  "slicer_summary_sha256": "2be40d9b608ff7794dccda4846cdf51f56fc503546de0b0138d6a942eae81799",
+  "project_3mf_sha256": "96222cd8e30e4c25eaad62901457bcd9ab2eb51433c44c63cdde92a5c34bf67f",
+  "viewer_sha256": "844654a46c3a176e28ff74ff90a0a93877e7894de0b7eccd4e7a54cb9b1151a4",
+  "command_exit_codes": {
+    "export": 0,
+    "islands": 0,
+    "overhangs": 0,
+    "thickness": 1,
+    "fins": 0,
+    "slice": 0,
+    "views": 0,
+    "viewer": 0
+  },
+  "analyses": {
+    "islands": {
+      "base": [],
+      "head": [],
+      "head_back": [],
+      "cassette": [],
+      "knob": [],
+      "foot": [],
+      "ball_lid": [],
+      "filter_support": []
+    },
+    "overhangs": {
+      "base": [],
+      "head": [],
+      "head_back": [],
+      "cassette": [],
+      "knob": [],
+      "foot": [],
+      "ball_lid": [],
+      "filter_support": []
+    },
+    "thickness": {
+      "base": {
+        "samples": 37856,
+        "measured": 37856,
+        "mm2_per_sample": 2.0,
+        "p01": 1.374,
+        "p05": 2.0,
+        "median": 3.003,
+        "regions": [
+          {
+            "area_mm2": 16.0,
+            "min_mm": 0.8,
+            "median_mm": 0.8,
+            "bounds": [
+              [
+                86.8,
+                0.0,
+                20.1
+              ],
+              [
+                89.3,
+                0.8,
+                22.1
+              ]
+            ]
+          },
+          {
+            "area_mm2": 12.0,
+            "min_mm": 0.8,
+            "median_mm": 0.8,
+            "bounds": [
+              [
+                78.6,
+                0.0,
+                20.4
+              ],
+              [
+                81.1,
+                0.8,
+                21.4
+              ]
+            ]
+          }
+        ]
+      },
+      "head": {
+        "samples": 65404,
+        "measured": 65204,
+        "mm2_per_sample": 2.0,
+        "p01": 2.3,
+        "p05": 2.4,
+        "median": 3.0,
+        "regions": []
+      },
+      "head_back": {
+        "samples": 23656,
+        "measured": 23656,
+        "mm2_per_sample": 2.0,
+        "p01": 2.001,
+        "p05": 2.5,
+        "median": 4.0,
+        "regions": []
+      },
+      "cassette": {
+        "samples": 20664,
+        "measured": 20664,
+        "mm2_per_sample": 2.0,
+        "p01": 1.3,
+        "p05": 2.5,
+        "median": 4.5,
+        "regions": []
+      },
+      "knob": {
+        "samples": 2000,
+        "measured": 2000,
+        "mm2_per_sample": 1.695,
+        "p01": 0.268,
+        "p05": 1.0,
+        "median": 6.501,
+        "regions": []
+      },
+      "foot": {
+        "samples": 2000,
+        "measured": 2000,
+        "mm2_per_sample": 0.458,
+        "p01": 1.65,
+        "p05": 1.65,
+        "median": 4.5,
+        "regions": []
+      },
+      "ball_lid": {
+        "samples": 3173,
+        "measured": 3173,
+        "mm2_per_sample": 2.001,
+        "p01": 1.6,
+        "p05": 3.0,
+        "median": 3.0,
+        "regions": []
+      },
+      "filter_support": {
+        "samples": 2000,
+        "measured": 2000,
+        "mm2_per_sample": 1.455,
+        "p01": 2.4,
+        "p05": 2.4,
+        "median": 3.0,
+        "regions": []
+      }
+    },
+    "fins": {
+      "base": [],
+      "head": [],
+      "head_back": [],
+      "cassette": [],
+      "knob": [],
+      "foot": [],
+      "ball_lid": [],
+      "filter_support": []
+    }
+  },
+  "head_fasteners": {
+    "count": 4,
+    "screw_length_mm": 8,
+    "insert_penetration_mm": 5.6,
+    "bearing_thickness_mm": 2.4,
+    "hole_bottom_clearance_mm": 1.4,
+    "seats": [
+      {
+        "axis_mm": [
+          25.0,
+          66.0
+        ],
+        "bearing_fill": 1.0,
+        "enclosed_rim_fill": 1.0,
+        "screw_contact_mm3": 0.82178,
+        "insert_access_overlap_mm3": 0.0
+      },
+      {
+        "axis_mm": [
+          45.0,
+          66.0
+        ],
+        "bearing_fill": 1.0,
+        "enclosed_rim_fill": 1.0,
+        "screw_contact_mm3": 0.82178,
+        "insert_access_overlap_mm3": 0.0
+      },
+      {
+        "axis_mm": [
+          118.0,
+          66.0
+        ],
+        "bearing_fill": 1.0,
+        "enclosed_rim_fill": 1.0,
+        "screw_contact_mm3": 0.82178,
+        "insert_access_overlap_mm3": 0.0
+      },
+      {
+        "axis_mm": [
+          127.0,
+          66.0
+        ],
+        "bearing_fill": 1.0,
+        "enclosed_rim_fill": 1.0,
+        "screw_contact_mm3": 0.82178,
+        "insert_access_overlap_mm3": 0.0
+      }
+    ]
+  },
+  "usb_support": {
+    "gusset_undersides": {
+      "left": {
+        "y_mm": [
+          58.12,
+          64.31,
+          70.5
+        ],
+        "z_mm": [
+          25.1,
+          18.91,
+          12.72
+        ],
+        "slopes": [
+          -1.0,
+          -1.0
+        ],
+        "free_space_overlap_mm3": 0.0
+      },
+      "right": {
+        "y_mm": [
+          58.12,
+          64.31,
+          70.5
+        ],
+        "z_mm": [
+          25.1,
+          18.91,
+          12.72
+        ],
+        "slopes": [
+          -1.0,
+          -1.0
+        ],
+        "free_space_overlap_mm3": 0.0
+      }
+    },
+    "upper_material_fill": {
+      "left_wall": 1.0,
+      "right_gusset": 1.0,
+      "right_wall": 1.0,
+      "inner_stop": 1.0
+    },
+    "minimum_floor_clearance_mm": 9.02,
+    "slot_overlap_mm3": {
+      "left": 0.0,
+      "right": 0.0
+    },
+    "pcb_seat_z_mm": 42.85,
+    "seat_contact_mm3": 2.5875
+  },
+  "led_window": {
+    "windows": [
+      {
+        "centre_xz_mm": [
+          80,
+          21
+        ],
+        "skin_measurements_mm": [
+          0.8,
+          0.8,
+          0.8,
+          0.8,
+          0.8
+        ],
+        "skin_missing_mm3": 0.0,
+        "pocket_filled_mm3": 0.0,
+        "lens_to_skin_mm": 0.3,
+        "flange_ring_fill": 1.0,
+        "flange_contact_mm3": 0.16474
+      },
+      {
+        "centre_xz_mm": [
+          88,
+          21
+        ],
+        "skin_measurements_mm": [
+          0.8,
+          0.8,
+          0.8,
+          0.8,
+          0.8
+        ],
+        "skin_missing_mm3": 0.0,
+        "pocket_filled_mm3": 0.0,
+        "lens_to_skin_mm": 0.3,
+        "flange_ring_fill": 1.0,
+        "flange_contact_mm3": 0.16474
+      }
+    ],
+    "inside_access": [
+      {
+        "name": "led_inside_access",
+        "length_mm": 15.0,
+        "collisions": 0,
+        "first_mm": null,
+        "max_volume_mm3": 0.0
+      }
+    ],
+    "checked_fixed_bodies": [
+      "base",
+      "head",
+      "head_back",
+      "cassette",
+      "knob",
+      "feet",
+      "ball_lid",
+      "fan",
+      "filter",
+      "filter_support",
+      "magnets",
+      "battery",
+      "pwm_board",
+      "pot",
+      "pot_nut",
+      "chg_module",
+      "chg_sink",
+      "chg_tie",
+      "usbc",
+      "switch",
+      "ballast",
+      "screws_fan",
+      "screws_back",
+      "screws_head",
+      "screws_lid",
+      "screws_feet"
+    ],
+    "expected_thickness_findings": [
+      {
+        "part": "base",
+        "feature": "Closed LED optical skin at x=80, z=21",
+        "nominal_mm": 0.8,
+        "standard_threshold_mm": 1.2,
+        "bounds_mm": [
+          [
+            78.4,
+            0,
+            19.4
+          ],
+          [
+            81.6,
+            0.8,
+            22.6
+          ]
+        ],
+        "policy": "Report this intended thin optical area; retain the standard 1.2 mm check elsewhere"
+      },
+      {
+        "part": "base",
+        "feature": "Closed LED optical skin at x=88, z=21",
+        "nominal_mm": 0.8,
+        "standard_threshold_mm": 1.2,
+        "bounds_mm": [
+          [
+            86.4,
+            0,
+            19.4
+          ],
+          [
+            89.6,
+            0.8,
+            22.6
+          ]
+        ],
+        "policy": "Report this intended thin optical area; retain the standard 1.2 mm check elsewhere"
+      }
+    ]
+  },
+  "views": {
+    "01_assembly.png": "af8c1fa4581199ab4e99bb4665e8b369fa67ab7a0876d9bcb0483e11afeb659a",
+    "02_exploded.png": "fbae6997ad76a01548ee5370ef4f27727da374299a91dad863103b5ac773ee28",
+    "03_back.png": "f2ae74c4561db96b6acc0016f3b6ec29e7bba32048ec1d201c903c059620b88c",
+    "04_charger_front.png": "1a42c50adbe650d2382fceea8f2eff0676ce6d461fa69a4641bd7f66b0205c11",
+    "05_charger_back.png": "147015db836c7f207d830fc45a5d35f71c3275456b3c58a118fd4d095d7b73ca",
+    "06_filter_support.png": "01e18273a670eac03f6465db07b3afb680d071a302377cac5898c75577cad25f",
+    "07_ballast_mount.png": "b5d8d4e3831c49ed27bf97bd7398e8e678303f2b8d9253e69edd8548b9259b04",
+    "08_usb_mount.png": "7eb5408919f6a2831864e00966469fc13ecdf4e7dafd13737943df3b01c46aa7",
+    "09_head_mount.png": "d998407c236f9b6fb5d6daae3c3d6b31596c95a4dfecb1ef10f9ebd5c694a64f"
+  }
+}
