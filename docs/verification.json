@@ -1,5 +1,5 @@
 {
-  "source_sha256": "47935c841d1d7d91e6cdb5a4e94dadf971ac7c5ef4f5ee09070173f0ecf3adea",
+  "source_sha256": "be9bd6a8160ec6ac455de6141e1824875a4e8d615f6ecf4f354fff9a2865c471",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -29,17 +29,17 @@
           57.2657
         ]
       ],
-      "volume_mm3": 108649.4635,
-      "triangles": 6218,
+      "volume_mm3": 108325.0555,
+      "triangles": 6022,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "a5990221d945288df7b22d408523a9e2c05fec822c162f74f6dc3c0595f9af83",
+      "sha256": "d7aa2da478a6a2b5633c54a342c3eeec068d774162f90487beb55e5f244868cc",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "a5990221d945288df7b22d408523a9e2c05fec822c162f74f6dc3c0595f9af83"
+      "committed_sha256": "d7aa2da478a6a2b5633c54a342c3eeec068d774162f90487beb55e5f244868cc"
     },
     "head": {
       "size_mm": [
@@ -59,17 +59,17 @@
           70.0
         ]
       ],
-      "volume_mm3": 196258.2999,
-      "triangles": 4696,
+      "volume_mm3": 196223.4339,
+      "triangles": 4532,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "6e4fbe9c100103ff865c8ace929e112ae6ea1d3fe4dfdb264b1a4c9170c9a988",
+      "sha256": "e16a233328b2f6c52ffd247bd14afeac579831b23866974e9d8a8594282d02e4",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "6e4fbe9c100103ff865c8ace929e112ae6ea1d3fe4dfdb264b1a4c9170c9a988"
+      "committed_sha256": "e16a233328b2f6c52ffd247bd14afeac579831b23866974e9d8a8594282d02e4"
     },
     "head_back": {
       "size_mm": [
@@ -195,7 +195,7 @@
       "size_mm": [
         138.6,
         17.8,
-        3.0
+        8.4
       ],
       "bounds_mm": [
         [
@@ -206,20 +206,20 @@
         [
           138.8,
           17.8,
-          3.0
+          8.4
         ]
       ],
-      "volume_mm3": 6391.8976,
-      "triangles": 1144,
+      "volume_mm3": 7268.6774,
+      "triangles": 1326,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "902ee6e6cb7366752ba31f1c1fd75b85d9a7e062ca9f42ffe6dac351e7008f57",
+      "sha256": "5cd216fc2e6ee33a40d4b10d23f4d517fa921aaba2ce7b18fad3e927a3331533",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "902ee6e6cb7366752ba31f1c1fd75b85d9a7e062ca9f42ffe6dac351e7008f57"
+      "committed_sha256": "5cd216fc2e6ee33a40d4b10d23f4d517fa921aaba2ce7b18fad3e927a3331533"
     }
   },
   "color_meshes": {},
@@ -297,19 +297,19 @@
     ],
     "ballast_posts": [
       [
-        45,
+        12,
         58.5
       ],
       [
-        45,
+        12,
         67.5
       ],
       [
-        90,
+        40,
         58.5
       ],
       [
-        90,
+        40,
         67.5
       ]
     ],
@@ -365,11 +365,11 @@
   },
   "intersections": [],
   "alignment": {
-    "features": 230,
+    "features": 239,
     "coaxial_pairs": {
-      "ball_lid|ballast": 16,
-      "ball_lid|base": 16,
-      "ball_lid|driver_lid": 8,
+      "ball_lid|ballast": 32,
+      "ball_lid|base": 32,
+      "ball_lid|driver_lid": 16,
       "ballast|base": 52,
       "ballast|feet": 24,
       "ballast|head": 4,
@@ -406,13 +406,13 @@
     "allowed_misaligned": 0
   },
   "contact_volumes_mm3": {
-    "head@base": 28.8904,
+    "head@base": 26.7615,
     "cassette@head": 266.5163,
     "fan@head": 35.945,
     "fan@head_back": 7.5396,
     "feet@base": 54.8256,
     "pwm_board@base": 3.4731,
-    "chg_module@base": 0.738,
+    "chg_module@ball_lid": 2.1945,
     "ball_lid@base": 12.7233
   },
   "stops": [
@@ -667,11 +667,11 @@
   "intake_lip_mm": 2.25,
   "mat_free_travel_mm": 1.62,
   "mat_squashed_percent": 0.0,
-  "mass_g": 1009.8,
+  "mass_g": 1010.7,
   "centre_of_mass_mm": [
-    68.5,
-    31.3,
-    68.1
+    69.7,
+    31.7,
+    68.2
   ],
   "foot_polygon_mm": [
     9.0,
@@ -680,12 +680,12 @@
     69.0
   ],
   "tip_margins_mm": {
-    "front": 29.3,
-    "back": 37.7,
-    "left": 59.5,
-    "right": 67.5
+    "front": 29.7,
+    "back": 37.3,
+    "left": 60.7,
+    "right": 66.3
   },
-  "tip_angle_deg": 23.3,
+  "tip_angle_deg": 23.5,
   "stl_difference_mm3": {
     "base": 0.0,
     "head": -0.0,
