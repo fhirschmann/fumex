@@ -185,7 +185,7 @@ def _foot_xy(m):
 
 VIEWER = dict(
     title="FUMEX", page_title="FUMEX solder fume extractor", eyebrow="Assembly · installed position",
-    dims=[("Width", "145"), ("Depth", "108"), ("Height", "199")],
+    dims=[("Width", "145"), ("Depth", "112"), ("Height", "201")],
     groups=[("black", "Printed · PETG black"), ("grey", "Printed · PETG grey"),
             ("tpu", "Printed · TPU"), ("bought", "Bought parts")],
     hidden_groups=["bought"],
