@@ -1,5 +1,5 @@
 {
-  "source_sha256": "a05f927b9d51141d7d27e9c4f06de12cda11b39044b67b257b1b7135bd99a771",
+  "source_sha256": "edbaddc6a11a0139257ecf6defe52e571f14585859154e7e769e51c90340af35",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -29,22 +29,22 @@
           57.2657
         ]
       ],
-      "volume_mm3": 109495.5161,
-      "triangles": 10998,
+      "volume_mm3": 108861.1823,
+      "triangles": 11026,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "700c1eaf396f78a5a61a6b1349521acb165061013b1ca95c27d8047d0712d769",
+      "sha256": "b3d54faecca6733f4f662da854daf3d9fef51411cdc0164028e84e8313a4f81c",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "700c1eaf396f78a5a61a6b1349521acb165061013b1ca95c27d8047d0712d769"
+      "committed_sha256": "b3d54faecca6733f4f662da854daf3d9fef51411cdc0164028e84e8313a4f81c"
     },
     "head": {
       "size_mm": [
         145.0,
-        145.0,
+        156.5263,
         70.0
       ],
       "bounds_mm": [
@@ -55,21 +55,21 @@
         ],
         [
           145.0,
-          145.0,
+          156.5263,
           70.0
         ]
       ],
-      "volume_mm3": 196218.9039,
-      "triangles": 8130,
+      "volume_mm3": 197116.2688,
+      "triangles": 8330,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "2dfae6c95cb3d4dbd1df0c2bcb3f7f3e555daab6d79cf7d8e1443ef6ca0ad8a8",
+      "sha256": "f63eb711a9bcef8b45362eb149f270a7491ab6c2a36fbd0a01b5a014ffb85c8d",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "2dfae6c95cb3d4dbd1df0c2bcb3f7f3e555daab6d79cf7d8e1443ef6ca0ad8a8"
+      "committed_sha256": "f63eb711a9bcef8b45362eb149f270a7491ab6c2a36fbd0a01b5a014ffb85c8d"
     },
     "head_back": {
       "size_mm": [
@@ -193,33 +193,33 @@
     },
     "ball_lid": {
       "size_mm": [
-        138.58,
-        40.8,
+        132.58,
+        18.5976,
         21.35
       ],
       "bounds_mm": [
         [
           0.22,
-          -23.0,
+          -0.7976,
           0.0
         ],
         [
-          138.8,
+          132.8,
           17.8,
           21.35
         ]
       ],
-      "volume_mm3": 8857.1172,
-      "triangles": 824,
+      "volume_mm3": 7997.4857,
+      "triangles": 692,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "8677bf8b32b2405ba5648910a5457f7df92328b2ca12df4ee5980cad9654b94d",
+      "sha256": "0475c54bf45ffb87148c14583c45e66572f1b79fe7d75acd75fe15576d91224c",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "8677bf8b32b2405ba5648910a5457f7df92328b2ca12df4ee5980cad9654b94d"
+      "committed_sha256": "0475c54bf45ffb87148c14583c45e66572f1b79fe7d75acd75fe15576d91224c"
     },
     "filter_support": {
       "size_mm": [
@@ -269,17 +269,17 @@
           57.2657
         ]
       ],
-      "volume_mm3": 9052.1829,
-      "triangles": 700,
+      "volume_mm3": 7766.3306,
+      "triangles": 856,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "f9d3d4f3f2a8a35bcaa14c965efd3a24a5654b0b8dc7dad1fc680c648cb8f12e",
+      "sha256": "2dcc5d358f413f0621b2d79a67393cc0ec492e4f4c1591f6ef3ad0ab272b1196",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "f9d3d4f3f2a8a35bcaa14c965efd3a24a5654b0b8dc7dad1fc680c648cb8f12e"
+      "committed_sha256": "2dcc5d358f413f0621b2d79a67393cc0ec492e4f4c1591f6ef3ad0ab272b1196"
     },
     "usbc_fit_lid": {
       "size_mm": [
@@ -299,17 +299,17 @@
           21.35
         ]
       ],
-      "volume_mm3": 1369.2317,
-      "triangles": 112,
+      "volume_mm3": 1447.4139,
+      "triangles": 204,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "1e81947d16d92cfc883e22e9ddafd207cfbb01c8a5df161763c4a98aa78c475c",
+      "sha256": "7c2e08e6217abe6412279a2e8df074d29a884cf5560c023d3330ce78cc0af145",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "1e81947d16d92cfc883e22e9ddafd207cfbb01c8a5df161763c4a98aa78c475c"
+      "committed_sha256": "7c2e08e6217abe6412279a2e8df074d29a884cf5560c023d3330ce78cc0af145"
     }
   },
   "color_meshes": {},
@@ -489,8 +489,21 @@
     ],
     "battery_stop": [
       0.5,
-      8,
-      30,
+      3,
+      [
+        30,
+        51
+      ],
+      0.4,
+      29
+    ],
+    "battery_shoulders": [
+      [
+        12,
+        68
+      ],
+      4,
+      25,
       0.4
     ],
     "usb_origin": [
@@ -504,9 +517,13 @@
       4.3
     ],
     "usb_keeper": [
-      8,
+      4,
       0.4,
-      2.7
+      4
+    ],
+    "usb_guides": [
+      0.9,
+      4
     ],
     "led_pocket": [
       [
@@ -521,10 +538,10 @@
       ],
       3,
       0.2,
-      0.8,
+      1.8,
       [
         7,
-        5.8
+        6.8
       ]
     ],
     "base_h": 48,
@@ -547,8 +564,8 @@
         63
       ],
       [
-        135,
-        63
+        117,
+        56.8
       ]
     ],
     "lid_screw_length": 8,
@@ -611,7 +628,7 @@
   },
   "intersections": [],
   "alignment": {
-    "features": 271,
+    "features": 273,
     "coaxial_pairs": {
       "ball_lid|ballast": 26,
       "ball_lid|base": 17,
@@ -619,7 +636,7 @@
       "ball_lid|screws_lid": 16,
       "ballast|base": 63,
       "ballast|feet": 24,
-      "ballast|head": 8,
+      "ballast|head": 10,
       "ballast|led": 4,
       "ballast|pwm_board": 22,
       "ballast|screws_feet": 16,
@@ -628,13 +645,14 @@
       "base|battery": 3,
       "base|driver_pwm": 6,
       "base|feet": 20,
-      "base|head": 12,
+      "base|head": 14,
       "base|led": 4,
       "base|pwm_board": 22,
       "base|screws_feet": 8,
       "base|screws_head": 8,
       "base|screws_lid": 4,
       "base|screws_pwm": 6,
+      "battery|head": 2,
       "cassette|head": 4,
       "cassette|magnets": 8,
       "driver_back|head_back": 8,
@@ -657,12 +675,12 @@
   "contact_volumes_mm3": {
     "head@base": 41.7328,
     "cassette@head": 278.9567,
-    "fan@head": 33.4248,
+    "fan@head": 33.4249,
     "fan@head_back": 7.5396,
     "feet@base": 54.8257,
     "pwm_board@base": 5.1495,
     "chg_module@ball_lid": 0.5565,
-    "ball_lid@base": 6.42,
+    "ball_lid@base": 6.1373,
     "usbc@base": 2.5875
   },
   "stops": [
@@ -693,7 +711,7 @@
     },
     {
       "name": "battery_up_closed",
-      "first_contact_mm": 2.75,
+      "first_contact_mm": 1.0,
       "limit_mm": 3
     },
     {
@@ -733,9 +751,9 @@
     {
       "a": "battery",
       "b": "head",
-      "gap_mm": 2.0,
-      "min_mm": 1.0,
-      "capped": true
+      "gap_mm": 0.498,
+      "min_mm": 0.45,
+      "capped": false
     },
     {
       "a": "chg_sink",
@@ -782,8 +800,8 @@
       "max_volume_mm3": 0.0
     },
     {
-      "name": "lid_off",
-      "length_mm": 10.0,
+      "name": "switch_out",
+      "length_mm": 35.0,
       "collisions": 0,
       "first_mm": null,
       "max_volume_mm3": 0.0
@@ -1015,8 +1033,8 @@
     {
       "body": "base",
       "at": [
-        135.0,
-        63.0,
+        117.0,
+        56.8,
         26.0
       ],
       "empty_mm3": 0.0,
@@ -1027,11 +1045,11 @@
   "intake_lip_mm": 2.25,
   "mat_free_travel_mm": 1.62,
   "mat_squashed_percent": 0.0,
-  "mass_g": 1023.1,
+  "mass_g": 1012.6,
   "centre_of_mass_mm": [
-    68.1,
-    31.9,
-    68.5
+    67.3,
+    31.5,
+    69.0
   ],
   "foot_polygon_mm": [
     10.0,
@@ -1040,12 +1058,12 @@
     68.0
   ],
   "tip_margins_mm": {
-    "front": 28.9,
-    "back": 36.1,
-    "left": 58.1,
-    "right": 66.9
+    "front": 28.5,
+    "back": 36.5,
+    "left": 57.3,
+    "right": 67.7
   },
-  "tip_angle_deg": 21.6,
+  "tip_angle_deg": 21.2,
   "top_corner_normals": [
     {
       "part": "head",
@@ -1490,8 +1508,8 @@
       },
       {
         "axis_mm": [
-          135.0,
-          63.0
+          117.0,
+          56.8
         ],
         "bearing_fill": 1.0,
         "enclosed_rim_fill": 1.0,
@@ -1673,31 +1691,121 @@
     "knob_maximum_overlap_mm3": 0.0
   },
   "usb_wire_access": {
-    "inner_end": {
-      "width_mm": 4,
+    "left_inner_end": {
+      "bounds_mm": [
+        [
+          101.5,
+          54.12,
+          43.05
+        ],
+        [
+          103.5,
+          59.52,
+          46.9631
+        ]
+      ],
+      "width_mm": 2,
       "height_mm": 3.913,
-      "length_mm": 2.2,
+      "length_mm": 5.4,
       "collisions_mm3": {}
     },
-    "below": {
-      "width_mm": 4,
+    "left_below": {
+      "bounds_mm": [
+        [
+          101.5,
+          54.12,
+          40.45
+        ],
+        [
+          103.5,
+          60.92,
+          42.45
+        ]
+      ],
+      "width_mm": 2,
       "height_mm": 2.0,
       "length_mm": 6.8,
       "collisions_mm3": {}
     },
-    "above": {
-      "width_mm": 4,
+    "left_above": {
+      "bounds_mm": [
+        [
+          101.5,
+          54.12,
+          47.5631
+        ],
+        [
+          103.5,
+          60.92,
+          49.5631
+        ]
+      ],
+      "width_mm": 2,
+      "height_mm": 2.0,
+      "length_mm": 6.8,
+      "collisions_mm3": {}
+    },
+    "right_inner_end": {
+      "bounds_mm": [
+        [
+          108.5,
+          54.12,
+          43.05
+        ],
+        [
+          110.5,
+          59.52,
+          46.9631
+        ]
+      ],
+      "width_mm": 2,
+      "height_mm": 3.913,
+      "length_mm": 5.4,
+      "collisions_mm3": {}
+    },
+    "right_below": {
+      "bounds_mm": [
+        [
+          108.5,
+          54.12,
+          40.45
+        ],
+        [
+          110.5,
+          60.92,
+          42.45
+        ]
+      ],
+      "width_mm": 2,
+      "height_mm": 2.0,
+      "length_mm": 6.8,
+      "collisions_mm3": {}
+    },
+    "right_above": {
+      "bounds_mm": [
+        [
+          108.5,
+          54.12,
+          47.5631
+        ],
+        [
+          110.5,
+          60.92,
+          49.5631
+        ]
+      ],
+      "width_mm": 2,
       "height_mm": 2.0,
       "length_mm": 6.8,
       "collisions_mm3": {}
     }
   },
   "ballast_top_cover": {
-    "ballast_section_mm2": 1817.303,
-    "uncovered_beyond_seam_mm2": 0.00682,
-    "max_normal_seam_mm": 0.294
+    "ballast_section_mm2": 1782.578,
+    "uncovered_beyond_seam_mm2": 0.00048,
+    "max_normal_seam_mm": 0.253
   },
-  "switch_trough_clearance_mm": 2.002,
+  "switch_trough_clearance_mm": 2.969,
   "filter_support_checks": {
     "mat_centre_gap_mm": 0.5,
     "centre_to_fan_mm": 5.0,
@@ -1743,11 +1851,11 @@
           21
         ],
         "skin_measurements_mm": [
-          0.8,
-          0.8,
-          0.8,
-          0.8,
-          0.8
+          1.8,
+          1.8,
+          1.8,
+          1.8,
+          1.8
         ],
         "skin_missing_mm3": 0.0,
         "pocket_filled_mm3": 0.0,
@@ -1761,11 +1869,11 @@
           21
         ],
         "skin_measurements_mm": [
-          0.8,
-          0.8,
-          0.8,
-          0.8,
-          0.8
+          1.8,
+          1.8,
+          1.8,
+          1.8,
+          1.8
         ],
         "skin_missing_mm3": 0.0,
         "pocket_filled_mm3": 0.0,
@@ -1811,101 +1919,76 @@
       "screws_feet",
       "screws_pwm"
     ],
-    "expected_thickness_findings": [
-      {
-        "part": "base",
-        "feature": "Closed LED optical skin at x=78, z=21",
-        "nominal_mm": 0.8,
-        "standard_threshold_mm": 1.2,
-        "bounds_mm": [
-          [
-            76.4,
-            0,
-            19.4
-          ],
-          [
-            79.6,
-            0.8,
-            22.6
-          ]
-        ],
-        "policy": "Report this intended thin optical area; retain the standard 1.2 mm check elsewhere"
-      },
-      {
-        "part": "base",
-        "feature": "Closed LED optical skin at x=90, z=21",
-        "nominal_mm": 0.8,
-        "standard_threshold_mm": 1.2,
-        "bounds_mm": [
-          [
-            88.4,
-            0,
-            19.4
-          ],
-          [
-            91.6,
-            0.8,
-            22.6
-          ]
-        ],
-        "policy": "Report this intended thin optical area; retain the standard 1.2 mm check elsewhere"
-      }
-    ]
+    "expected_thickness_findings": []
   },
   "usb_support": {
     "gusset_undersides": {
       "left": {
         "y_mm": [
-          58.12,
-          64.31,
-          70.5
+          59.22,
+          64.86,
+          70.65
         ],
         "z_mm": [
-          25.1,
-          18.91,
-          12.72
+          44.78,
+          39.14,
+          33.35
         ],
         "slopes": [
           -1.0,
           -1.0
         ],
+        "rear_underside_mm": 33.0,
+        "measured_lid_top_mm": [
+          29.0,
+          29.0,
+          29.0
+        ],
+        "minimum_lid_gap_mm": 4.0,
         "free_space_overlap_mm3": 0.0
       },
       "right": {
         "y_mm": [
-          58.12,
-          64.31,
-          70.5
+          59.22,
+          64.86,
+          70.65
         ],
         "z_mm": [
-          25.1,
-          18.91,
-          12.72
+          44.78,
+          39.14,
+          33.35
         ],
         "slopes": [
           -1.0,
           -1.0
         ],
+        "rear_underside_mm": 33.0,
+        "measured_lid_top_mm": [
+          29.0,
+          29.0,
+          29.0
+        ],
+        "minimum_lid_gap_mm": 4.0,
         "free_space_overlap_mm3": 0.0
       }
     },
     "upper_material_fill": {
-      "left_wall": 1.0,
-      "right_gusset": 1.0,
-      "right_wall": 1.0
+      "left": 1.0,
+      "right": 1.0
     },
-    "removable_keeper_to_base_mm": 0.2,
-    "lower_pcb_edge_contact_mm3": 0.025,
-    "minimum_floor_clearance_mm": 9.02,
-    "slot_overlap_mm3": {
-      "left": 0.0,
-      "right": 0.0
-    },
+    "inner_support_overlap_mm3": 0.0,
+    "central_keeper_fill": 1.0,
+    "removable_keeper_to_base_mm": 3.0,
+    "keeper_clearance_search_cap_mm": 3,
+    "lower_pcb_edge_contact_mm3": 0.038,
+    "minimum_lid_gap_mm": 4.0,
     "pcb_seat_z_mm": 42.85,
     "seat_contact_mm3": 2.5875
   },
   "battery_retention": {
+    "retained_by": "base",
     "right_gap_mm": 0.5,
+    "floor_root_fill": 1.0,
     "shifted_axial_probes": [
       {
         "offset_yz_mm": [
@@ -1913,7 +1996,7 @@
           0
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 11.73184
+        "contact_at_075_mm3": 99.80902
       },
       {
         "offset_yz_mm": [
@@ -1921,7 +2004,7 @@
           1
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 11.93065
+        "contact_at_075_mm3": 95.08228
       },
       {
         "offset_yz_mm": [
@@ -1929,7 +2012,7 @@
           2
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 12.08678
+        "contact_at_075_mm3": 90.26131
       },
       {
         "offset_yz_mm": [
@@ -1937,7 +2020,7 @@
           0
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 11.97677
+        "contact_at_075_mm3": 101.09054
       },
       {
         "offset_yz_mm": [
@@ -1945,7 +2028,7 @@
           1
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 12.17557
+        "contact_at_075_mm3": 96.26426
       },
       {
         "offset_yz_mm": [
@@ -1953,7 +2036,7 @@
           2
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 12.33171
+        "contact_at_075_mm3": 91.37325
       },
       {
         "offset_yz_mm": [
@@ -1961,7 +2044,7 @@
           0
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 12.22169
+        "contact_at_075_mm3": 102.13062
       },
       {
         "offset_yz_mm": [
@@ -1969,7 +2052,7 @@
           1
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 12.4205
+        "contact_at_075_mm3": 97.23844
       },
       {
         "offset_yz_mm": [
@@ -1977,11 +2060,59 @@
           2
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 12.57663
+        "contact_at_075_mm3": 92.33755
       }
     ],
     "upper_cable_corridor_overlap_mm3": 0.0,
     "limitation": "Rigid translation probes; no foam friction, strength or physical-fit proof"
+  },
+  "battery_shoulders": {
+    "x_mm": [
+      12,
+      68
+    ],
+    "bms_opening_mm": 25,
+    "nominal_cell_gap_mm": 0.4974,
+    "nominal_bms_gap_mm": 2.4482,
+    "capture_paths": [
+      {
+        "path": "front",
+        "first_cell_contact_z_mm": [
+          0.325,
+          0.325
+        ],
+        "last_y_offset_mm": -0.4,
+        "minimum_bms_gap_mm": 2.0308
+      },
+      {
+        "path": "centre",
+        "first_cell_contact_z_mm": [
+          0.8,
+          0.8
+        ],
+        "last_y_offset_mm": 0.0,
+        "minimum_bms_gap_mm": 1.6755
+      },
+      {
+        "path": "rear",
+        "first_cell_contact_z_mm": [
+          1.325,
+          1.325
+        ],
+        "last_y_offset_mm": 0.4,
+        "minimum_bms_gap_mm": 1.2719
+      },
+      {
+        "path": "rear_wall",
+        "first_cell_contact_z_mm": [
+          1.525,
+          1.525
+        ],
+        "last_y_offset_mm": 0.5517,
+        "minimum_bms_gap_mm": 1.118
+      }
+    ],
+    "limitation": "Sampled rigid-body motions; no force or flexible-wrap model"
   },
   "usb_installation": {
     "assembly_stage": "Bare open base, before fitting the ballast lid and other components; install by reversing the path",
@@ -2050,6 +2181,82 @@
     "base_top_mm": 57.26572,
     "free_end_above_base_mm": 15.58428
   },
+  "usb_fit": {
+    "nominal_overlap_mm3": {
+      "base_lid": 0.0,
+      "base_usb": 0.0,
+      "lid_usb": 0.0
+    },
+    "supports": {
+      "front_pad": {
+        "top_z_mm": 26,
+        "material_fill": 1.0,
+        "contact_at_minus_0_05_mm3": 0.04
+      },
+      "step_pad": {
+        "top_z_mm": 26,
+        "material_fill": 1.0,
+        "contact_at_minus_0_05_mm3": 0.04
+      },
+      "cropped_post": {
+        "top_z_mm": 26,
+        "material_fill": 1.0,
+        "contact_at_minus_0_05_mm3": 0.157573
+      }
+    },
+    "pcb_edge_free_overlap_mm3": 0.0,
+    "pcb_edge_stop_contact_mm3": 0.038,
+    "pcb_seat_contact_mm3": 2.587502,
+    "assembly_stage": "Insert the bought USB board into the bare coupon, then seat the coupon lid at z26",
+    "method": "Continuous swept boundary-triangle prisms and starting body; lid removed for board insertion",
+    "extraction_segments": [
+      {
+        "from_offset_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "to_offset_mm": [
+          0.0,
+          -20.0,
+          0.0
+        ],
+        "swept_overlap_mm3": 0.0
+      },
+      {
+        "from_offset_mm": [
+          0.0,
+          -20.0,
+          0.0
+        ],
+        "to_offset_mm": [
+          0.0,
+          -20.0,
+          30.0
+        ],
+        "swept_overlap_mm3": 0.0
+      }
+    ],
+    "installation_offsets_mm": [
+      [
+        0.0,
+        -20.0,
+        30.0
+      ],
+      [
+        0.0,
+        -20.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "free_end_above_fixture_mm": 15.58428,
+    "limitation": "The cropped post is a lid support, not a screw or insert fit specimen"
+  },
   "loaded_lid_removal": {
     "moving": [
       "ball_lid",
@@ -2062,7 +2269,6 @@
       "pwm_board",
       "pot",
       "usbc",
-      "switch",
       "led",
       "ballast",
       "feet"
@@ -2070,53 +2276,122 @@
     "removed_first": [
       "head_group",
       "battery",
+      "switch",
       "screws_lid"
     ],
     "stages": [
       {
         "stage": "lift",
-        "samples": 115,
-        "maximum_overlap_mm3": 0.0,
-        "distance_mm": 11.4,
-        "step_mm": 0.1
-      },
-      {
-        "stage": "roll_right_edge_up",
-        "samples": 60,
-        "maximum_overlap_mm3": 0.0,
-        "angle_deg": -5.9,
-        "step_deg": 0.1,
-        "pivot_mm": [
-          106.0,
-          63.0,
-          37.0
+        "samples": 35,
+        "from_offset_mm": [
+          0.0,
+          0.0,
+          0.0
         ],
-        "minimum_clearance_mm": 0.15755
+        "to_offset_mm": [
+          0.0,
+          0.0,
+          3.4
+        ],
+        "step_mm": 0.1,
+        "maximum_overlap_mm3": 0.0
       },
       {
-        "stage": "forward",
-        "samples": 201,
-        "maximum_overlap_mm3": 0.0,
-        "distance_mm": 20.0,
+        "stage": "forward_first",
+        "samples": 41,
+        "from_offset_mm": [
+          0.0,
+          0.0,
+          3.4
+        ],
+        "to_offset_mm": [
+          0.0,
+          -4.0,
+          3.4
+        ],
         "step_mm": 0.1,
-        "minimum_clearance_mm": 0.15755
+        "maximum_overlap_mm3": 0.0,
+        "minimum_clearance_mm": 0.2
+      },
+      {
+        "stage": "lift_clear",
+        "samples": 31,
+        "from_offset_mm": [
+          0.0,
+          -4.0,
+          3.4
+        ],
+        "to_offset_mm": [
+          0.0,
+          -4.0,
+          6.4
+        ],
+        "step_mm": 0.1,
+        "maximum_overlap_mm3": 0.0,
+        "minimum_clearance_mm": 0.22
+      },
+      {
+        "stage": "forward_rest",
+        "samples": 161,
+        "from_offset_mm": [
+          0.0,
+          -4.0,
+          6.4
+        ],
+        "to_offset_mm": [
+          0.0,
+          -20.0,
+          6.4
+        ],
+        "step_mm": 0.1,
+        "maximum_overlap_mm3": 0.0,
+        "minimum_clearance_mm": 0.22
+      },
+      {
+        "stage": "center_for_lift",
+        "samples": 3,
+        "from_offset_mm": [
+          0.0,
+          -20.0,
+          6.4
+        ],
+        "to_offset_mm": [
+          0.2,
+          -20.0,
+          6.4
+        ],
+        "step_mm": 0.1,
+        "maximum_overlap_mm3": 0.0,
+        "minimum_clearance_mm": 0.22
       },
       {
         "stage": "out",
         "samples": 121,
-        "maximum_overlap_mm3": 0.0,
-        "distance_mm": 60.0,
+        "from_offset_mm": [
+          0.2,
+          -20.0,
+          6.4
+        ],
+        "to_offset_mm": [
+          0.2,
+          -20.0,
+          66.4
+        ],
         "step_mm": 0.5,
-        "minimum_clearance_mm": 0.16635
+        "maximum_overlap_mm3": 0.0,
+        "minimum_clearance_mm": 0.2703
       }
     ],
     "endpoint_clearance_mm": {
-      "lifted": 0.2,
-      "rolled": 0.15755,
-      "forward": 0.16635
+      "lift": 0.2,
+      "forward_first": 0.22,
+      "lift_clear": 0.22,
+      "forward_rest": 0.22,
+      "center_for_lift": 0.42,
+      "out": 2.0
     },
-    "clearance_search_cap_mm": 2.0,
-    "final_bottom_above_base_mm": 29.567
+    "clearance_search_cap_mm": 2,
+    "final_bottom_above_base_mm": 35.134
   },
   "stl_difference_mm3": {
     "base": 0.0,
@@ -2134,9 +2409,10 @@
     "Masses of the bought parts are data-sheet or estimated values, not weighed",
     "PWM mounting: verify the 2.0 mm PETG pilot fit with the real 2.5 x 8 screws and measure their head height (4.5 mm head diameter confirmed; 2.5 mm height is a conservative envelope). Assembly requires a slim 4 mm screwdriver shaft exposed for at least 25 mm.",
     "PWM service motion is sampled at 0.1 mm / 0.5 degrees (final lift 0.5 mm); remove the head, battery, loaded ballast lid, knob, PCB screws and rocker switch first. The real wiring and flexible leads are not modelled.",
-    "LEDs: test visibility through both 0.8 mm black PETG skins; nominal 3 mm body and 3.8 mm flange dimensions remain unmeasured, as in LEO-AC1",
-    "Battery: check the replacement lid's end-stop fit and actual cable exit; the open base intentionally permits upward battery removal",
-    "Loaded ballast lid: after removing the head, battery and lid screws, lift 11.4 mm, raise its right edge with a 5.9-degree roll, move 20 mm forwards and lift out. The sampled rigid path requires at least 0.15 mm clearance after the initial lift; real print tolerance, finger access and connected wiring are not validated."
+    "LEDs: test visibility through both 1.8 mm PETG skins with the actual filament; nominal 3 mm body and 3.8 mm flange dimensions remain unmeasured, as in LEO-AC1",
+    "Battery: check the base end-stop fit and actual cable exit; the open base intentionally permits upward battery removal",
+    "Battery retention is geometric: verify shrink-wrap, cushioning and wire fit; the head must be fitted to prevent upward removal. No load, creep or impact test was performed.",
+    "Loaded ballast lid: remove head, battery, rocker switch and lid screws; lift 3.4 mm, pull 4 mm forwards, lift another 3 mm, pull another 16 mm forwards, center 0.2 mm right and lift out. The sampled rigid path keeps at least 0.15 mm clearance after the initial lift; real print tolerance, finger access, switch clip release and connected wiring need a physical check."
   ],
   "limitations": [
     "Hardware envelopes, not detailed vendor CAD",
