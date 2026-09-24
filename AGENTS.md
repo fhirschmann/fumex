@@ -43,6 +43,44 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 
 ## Current design state
 
+- **Printed-fit corrections (user, 2026-09-24):** the battery slid lengthwise in the open printed base,
+  and the USB-C module could not be threaded into its holder. The battery saddles had no right axial
+  stop; collision and upward-removal checks did not establish retention. The USB board had been checked
+  only in its installed position: the fixed front stop blocked withdrawal after 0.2 mm, while its
+  receptacle still occupied the back-wall opening. Neither issue was a confirmed tolerance mismatch.
+  - The ballast lid now extends alongside the battery's right end: 8 mm wide, 3 mm thick, x76.1 at
+    the bearing face (0.5 mm from the nominal cell), y30 at the rounded free end, a wider root into
+    the lid, R1 plan corners and 0.4 mm face bevels. Its top z29 stays 1.125 mm below the BMS envelope.
+    The original base remains compatible with this battery-only correction. Foam is cushioning,
+    not the axial restraint. Upward removal with the head off remains intentional.
+  - The USB front stop moves from the base to the removable lid. Its stem is 8 x 4.02 mm in plan,
+    x108.475..116.475 and y53.2..57.22; the short 45-degree arm ends at y59.42, 0.2 mm before the board,
+    and stays on the rightmost 2.7 mm of its end. Its face begins at z42.75, 0.1 mm below the PCB
+    underside: a separate 0.1 mm thin edge probe prevents the component envelope from faking contact.
+    Both fixed guide walls, the rear seat and the lower
+    45-degree gussets remain. Fit the board before the lid, leaving the central wire exit free.
+    A base printed before this change still has the obstructing stop; merely replacing its lid
+    does not correct USB insertion. The new base and lid are supplied together with small fit coupons.
+  - USB extraction is 20 mm forwards into the bay, then 30 mm upwards after removing the head and
+    loaded ballast lid. Its reverse is the insertion sequence. Keep the real wires loose enough for
+    servicing. `usbc_fit_base` and `usbc_fit_lid` crop the actual parts, have quantity zero in the full
+    build, and share the separate `fumex_usb_fit.3mf` plate. The base crop includes the full trough
+    step to avoid a cut-created thin fin. Three fixture-only pads replace the omitted screw-post
+    bearing planes and seat the test lid at z26. Physical fit remains to be tested.
+  - Complete loaded-lid removal is now checked: head, battery and lid screws off, lift 11.4 mm,
+    roll the right edge up 5.9 degrees around [106,63,37], move 20 mm forwards and lift 60 mm out.
+    USB board, PWM controller and switch remain fitted. The lid has rear corner clips of 0.76 mm
+    and 0.22 mm left clearance, USB slots with a 0.27 mm lower seam and 45-degree lead-outs to
+    0.8 mm above z26.83, plus a 0.3 mm shallow relief under the fixed USB seat. These replace the
+    former nominal path with only 0.0057 mm clearance. The new check requires at least 0.15 mm
+    throughout roll/forward/final lift; the initial lift starts on intentional bearing surfaces.
+    The lid still closes the ballast within the existing 0.3 mm seam allowance. This supersedes
+    older notes below saying full extraction was unproven. Wiring and finger access remain unmodelled.
+    Remove the loaded lid before withdrawing the PWM controller; its new USB keeper blocks the
+    historical PWM path with the lid left in place.
+  - The battery checks now include both axial directions, the other four translation directions in
+    the closed assembly, and nine sideways/lifted poses against the lid tongue alone. The original
+    battery removal check remains. Geometric stops do not prove strength or wire fit.
 - The housing bends: `base` stands upright, `head` leans `tilt` = 15° forward above it, so the intake looks down at the work (user: "erst senkrecht nach oben, und dann nach vorne im Winkel"). Head modules are written in an untilted frame and placed by `head_at()`; `print_project.py` mirrors that transform in `_tilt()` for the probes.
 - The base has a nominal 145 × 74 footprint; its upper loft meets the projected head outline at the joint, so the head's floor closes the electronics bay without an extra cover. The joint is one flat plane cut by `joint_halfspace()`. The 145 mm width is set by the Ø10 magnet pockets in the corners of the intake face, not by the fan.
 - **The fan is screwed to the back cover, not to the head** (user asked 2026-09-23: "kann man den luefter
@@ -175,7 +213,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   - `bat_cy` is limited by the **tilted** run-outs of the front head screw bosses: built at y 4–14 they reach world y ≈ 18 at z ≈ 30 after the tilt, which is where the cell's shoulder is. 35 clears it, 34 does not (0.14 mm³).
   - Historical four-post layout: each Ø10 corner post lay 3.5 mm off the adjacent walls; at Ø8 it left a sealed sliver void and a second exported body. `ball_rim` = 0.4 kept the walls below the posts to avoid coplanar unions. The current lid instead uses the two insert posts listed above.
   - The 2026-09-22 choice of plastic-forming screws and Ø2.5 core holes was superseded by the user's two-screw, heat-set-insert mounting on 2026-09-23.
-  - The lid has a plain top without the former Ø16 mm finger dish (removed at the user's request, 2026-09-23). It has no lip over the front wall: the cell has to lift past it (`battery_out`). The current `lid_off` check moves the lid together with its charge module and heatsink 10 mm up after the head and battery have been removed; complete extraction still needs a tilt.
+  - The lid has a plain top without the former Ø16 mm finger dish (removed at the user's request, 2026-09-23). The battery end-stop tongue sits beside the cell; the cell still lifts past the lid (`battery_out`). `lid_off` checks the initial 10 mm lift, and `check_loaded_lid_removal()` now checks complete extraction with the charge module and heatsink attached, as detailed in the 2026-09-24 correction above.
   - The free space in front of the cell (about 50 cm³) is the wrong side of the centre of mass and is deliberately left empty.
 - Charge module upright on the ballast lid, directly below the plenum slots (user, 2026-09-23: both sides of the board should get air; subsequently, "Wie LEO: Seite mit Kühlkörper frei"). Components face forwards, heatsink backwards. A single holder and cable tie retain only the cool OUT end; the heatsink end stays free. See Electrics below for dimensions and physical-fit limits. The earlier pair of edge holders, flat tray and bay-floor brackets are no longer built.
   - **The air route starts in the plenum:** the six slots in the head floor connect the fan's filtered outlet side to the component and heatsink passages, which lead to the back-wall slots. The surrounding 5.75 mm channel between filter tube and shell also remains open to the plenum. Geometric corridors are checked; flow rate, natural convection and cooling performance are not measured.
@@ -186,11 +224,11 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     reappear, so `vent[4]` is 0. If it ever does come back, stagger before reaching for anything else.
 - Ballast trough over the full width, lower, with the USB-C socket above it (user, 2026-09-22): nominal x 3–142, y 53–71, rim 26. Its initial 44.5 cm³ / 209 g estimate and 24.5° tip angle at 1.04 kg predate later cut-outs, posts and tipping corrections; use current exports for the usable volume and stability results.
   - The USB-C channel remains at z 45 and now rests on two 45-degree gussets from the back wall (user, 2026-09-23). Their underside is z = 83.22 - y: z25.6 at the front, z12.22 at the inner back wall, at least 9.02 mm above the trough floor.
-    The right rib is wider and reaches inward to x 108.475, supporting the side stop as well as the
-    channel wall. The remaining floor bridge between the ribs spans 7.85 mm. The lid has matching
+    The right rib is wider and reaches inward to x 108.475; it originally carried the now-removed
+    fixed side stop as well as the channel wall. The remaining floor bridge between the ribs spans 7.85 mm. The lid has matching
     slots open to the back, so it can move around the fixed ribs; retain and recheck its 10 mm lift.
     The front of each gusset reaches 0.4 mm below the lid, filling its slot at the ballast rim. Shorter gussets ending above the lid would leave an escape opening through those slots. The unsupported ledge and the later floor-length ribs are superseded. The two former back-wall cable-tie loops remain removed.
-  - The USB-C channel stays open towards the board's wire end inside the bay. A side stop takes
+  - The USB-C channel stays open towards the board's wire end inside the bay. The removable lid's side stop takes
     insertion load, retaining `usbc_in` without the old continuous end wall across the wiring route.
     The ribs must not close that opening or the connected cable corridors. Do not restore the removed
     back-wall tie loops. The former shallow `usbc_floor` ledge was unsupported; the current gussets carry it from the back wall while the rear-open lid slots preserve the service lift.
@@ -205,8 +243,8 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   - Early switch positions at y 37 / z 34 were superseded. The current upright switch centre is
     y 50 / z 26, behind the PWM board; its body depth remains an inherited hardware assumption.
   - `lid_off` checks the loaded group (`ball_lid`, `chg_module`, `chg_sink`, `chg_tie`) 10 mm up.
-    Complete withdrawal and tilting remain unproven; the matching switch recess and rear-open USB
-    rib slots must stay clear throughout the checked lift.
+    `check_loaded_lid_removal()` additionally checks the complete tilted withdrawal; the matching
+    switch recess and rear-open USB rib slots must stay clear throughout both paths.
 - The switch well flanks rise 1.25 mm per mm instead of 1.0: at exactly 45° `analyze.py overhangs` counted them.
 - The rocker switch stands upright in the right wall (long side vertical): the base prints bottom down, so its panel cut-out is a sideways hole and the bridge over it is 12.2 mm instead of 19.2 mm.
 - **Both LED holders sit behind closed 0.8 mm front skins**, matching LEO-AC1 (user, 2026-09-23).
@@ -247,7 +285,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
    - Cut and replace the tie to remove the board. `chg_off` must include the actual one-sided holder
      and evaluate the board/heatsink path after releasing the tie; rigid envelopes cannot prove tie
      strength or clamping pressure. `lid_off` moves the loaded lid 10 mm up with the board attached;
-     subsequent withdrawal and tilting are not checked. Leave wire slack for service and remove the
+     `check_loaded_lid_removal()` checks the subsequent tilt and full withdrawal. Leave wire slack for service and remove the
      head and battery first.
    - `check_charger_air()` checks free volumes in front of the components and behind the heatsink, anchored
      to the actual mesh faces. Continuous Ø1.2 mm probe corridors connect each space through an existing
@@ -380,7 +418,7 @@ Not checked: flexible deformation (the mat and the TPU feet are rigid bodies her
 - PCB and component/pin envelopes now distinguish the real holes and the user-confirmed clear mounting pads. `base/screws_pwm` is an intentional thread-forming interference, bounded separately in the mounting check; it must not hide contact outside the pilot annuli. PCB fasteners are driven before installing the head.
 
 - The concealed front opening, tab slot and inner PCB edge slot allow 3.5 mm upward travel for installation. The inner housing recess is capped at z32 and reaches through the actual lofted inner wall; an uncapped R10 sweep left a thin region near z34. The outside remains covered by the Ø24 knob. The actual anti-rotation tab is now part of `pot_env()`, so the motion check includes it.
-- `check_pwm_removal()` checks a complete sampled lift/retract/pitch/extract sequence, with head group, knob, PCB screws and rocker switch removed. The battery, loaded lid, LEDs and USB board remain. Reverse the movement to install the PWM controller before fitting the rocker switch. Translation samples are 0.1 mm, rotation 0.5 degrees, final lift 0.5 mm; this remains a sampled rigid-body path with no wires. Both screws have independent 60 mm extraction checks in 0.25 mm steps. Only their intended thread-forming regions are exempted.
+- `check_pwm_removal()` checks a complete sampled lift/retract/pitch/extract sequence. Since the 2026-09-24 removable USB keeper, remove the head group, battery and loaded ballast lid before the knob, PCB screws and rocker switch; the LEDs and USB board remain. The older sequence with the loaded lid still fitted is superseded because the new keeper obstructs withdrawal. Reverse the movement to install the PWM controller before fitting the lid and rocker switch. Translation samples are 0.1 mm, rotation 0.5 degrees, final lift 0.5 mm; this remains a sampled rigid-body path with no wires. Both screws have independent 60 mm extraction checks in 0.25 mm steps. Only their intended thread-forming regions are exempted.
 - The shared skill records the loft/recess cutter pitfall in `PITFALLS.md`, commit `e72f129`; scripts are unchanged.
 
 - Final source SHA `b21de4cee404bf7ec0729d4387ee1f67255d2660a494efb6897dea5861848cb0`. Eight closed print types / eleven pieces, 443 coaxial pairs and 528 assembly pairs pass. Both PCB/boss bearing rings have full material; individual contacts and pilot/thread/tool checks pass. The complete 465-pose PCB service path passes with maximum 0.000052 mm³ numerical overlap.
@@ -404,3 +442,12 @@ Not checked: flexible deformation (the mat and the TPU feet are rigid bodies her
 - The earlier front position required the span increase to 123 mm; at 122 mm the chamfer missed the front stop and export correctly failed. The accepted geometry passes all four head/fan stop probes, all 528 assembly pairs, 443 coaxial pairs and the existing service paths, including the complete sampled PWM path. Nominal fan gap remains 5 mm; air blockage is 7.177%.
 - Final model SHA `8034ad1cff9f06f27993dd120a1819eda7b857e5f79558baf87808050042fc5a`. Eight watertight print types / eleven pieces. Islands, overhangs and fins are CLEAN. Thickness returns only the two deliberate 0.8 mm LED skins (18/16 mm²); head sampling retains 65,223/65,399 valid rays with the known Trimesh numerical warnings.
 - All eight types and four plates slice with supports disabled and no geometry warnings. Arranged plates: 475.9 g / 15.7 h; individual jobs: 476.3 g / 16.7 h. Estimated assembled mass: 1022.2 g; front margin 28.9 mm, tipping angle 21.6 degrees. Ten documentation views and the public viewer are rebuilt.
+
+
+## Printed battery and USB fit correction verification (2026-09-24)
+
+- Final model SHA256 `a05f927b9d51141d7d27e9c4f06de12cda11b39044b67b257b1b7135bd99a771`: ten closed meshes, eight production types / eleven pieces and two optional test pieces. All 528 assembly pairs, 443 coaxial pairs, ten standard paths, PWM service path and 497-pose loaded-lid removal pass. Minimum loaded-lid clearance after lifting is 0.15755 mm. Only base and lid production geometry changed; the other six production STLs are byte-identical.
+- Islands, overhangs and fins CLEAN on all ten meshes; thickness flags only the authorised two 0.8 mm LED skins. Estimated assembled mass 1023.1 g, front tipping margin 28.9 mm, angle 21.6 degrees.
+- Ten individual slices, four production plates and one fit plate pass without supports or warnings. Production: 477.1 g / 15.8 h as plates, 477.5 g / 16.8 h as individual jobs. USB test: 11.8 g / 1.2 h (plate 1.17 h), using the same four-wall, 20% gyroid profile.
+- Report and saved analyses: `docs/print-fit-2026-09-24.md`. The shared skill records positive battery retention, removable USB stops and lost bearing planes in cropped fit tests (`866f690`).
+- Shared slicer fix `70ce515` preserves real `_base`/numeric suffixes and resolves copy numbers only against known source names; five regression tests and the complete skill template pass. Installed project scripts match the shared skill. Both viewer files and all eleven views are rebuilt; browser policy blocked reloading the open local `file://` viewer tab.

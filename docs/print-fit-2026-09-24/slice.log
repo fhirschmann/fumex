@@ -1,0 +1,20 @@
+Slice head: PASS
+Slice base: PASS
+Slice head_back: PASS
+Slice cassette: PASS
+Slice foot: PASS
+Slice knob: PASS
+Slice ball_lid: PASS
+Slice filter_support: PASS
+Slice usbc_fit_lid: PASS
+Slice usbc_fit_base: PASS
+fumex_all_parts.3mf: 11 parts on 4 plates, slicing every plate before publishing
+Slice plate Head: PASS, filament use {1: 238.32} g
+Slice plate Base and back cover: PASS, filament use {1: 178.23} g
+Slice plate Grey parts: PASS, filament use {2: 54.57} g
+Slice plate TPU feet: PASS, filament use {3: 5.98} g
+Project 3MF published -> stl/fumex_all_parts.3mf
+fumex_usb_fit.3mf: 2 parts on 1 plates, slicing every plate before publishing
+Slice plate USB insertion fit: PASS, filament use {1: 11.76} g
+Project 3MF published -> stl/fumex_usb_fit.3mf
+PASS: 10 slices; 11 parts; 477.5 g; 16.8 h; project 3MF with 4 plates: 477.1 g; 15.8 h as plates; test 3MF with 1 plates: 11.8 g; 1.2 h

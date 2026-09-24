@@ -1,0 +1,27 @@
+base: wall thickness p01 1.374 / p05 2.0 / median 3.003 mm (37840 of 37840 points)
+thickness base: 2 found
+/Users/fabian/Projects/fumex/.venv/lib/python3.14/site-packages/trimesh/triangles.py:550: RuntimeWarning: divide by zero encountered in divide
+  inverse_denominator = 1.0 / (dot00 * dot11 - dot01 * dot01)
+/Users/fabian/Projects/fumex/.venv/lib/python3.14/site-packages/trimesh/triangles.py:555: RuntimeWarning: invalid value encountered in subtract
+  barycentric[:, 0] = 1 - barycentric[:, 1] - barycentric[:, 2]
+  {'area_mm2': 24.0, 'min_mm': 0.8, 'median_mm': 0.8, 'bounds': [[88.8, 0.0, 19.6], [91.2, 0.8, 22.1]]}
+  {'area_mm2': 12.0, 'min_mm': 0.8, 'median_mm': 0.8, 'bounds': [[77.5, 0.0, 19.4], [78.1, 0.8, 22.5]]}
+head: wall thickness p01 2.05 / p05 2.4 / median 3.0 mm (65223 of 65399 points)
+thickness head: 0 found
+head_back: wall thickness p01 2.001 / p05 2.5 / median 4.0 mm (23656 of 23656 points)
+thickness head_back: 0 found
+cassette: wall thickness p01 1.3 / p05 2.5 / median 4.5 mm (20664 of 20664 points)
+thickness cassette: 0 found
+knob: wall thickness p01 0.22 / p05 1.0 / median 5.5 mm (2000 of 2000 points)
+thickness knob: 0 found
+foot: wall thickness p01 1.65 / p05 1.65 / median 4.5 mm (2000 of 2000 points)
+thickness foot: 0 found
+ball_lid: wall thickness p01 1.484 / p05 2.7 / median 3.0 mm (3638 of 3638 points)
+thickness ball_lid: 0 found
+filter_support: wall thickness p01 3.0 / p05 3.0 / median 5.0 mm (2438 of 2438 points)
+thickness filter_support: 0 found
+usbc_fit_base: wall thickness p01 2.0 / p05 2.0 / median 3.014 mm (3579 of 3579 points)
+thickness usbc_fit_base: 0 found
+usbc_fit_lid: wall thickness p01 0.546 / p05 0.825 / median 4.02 mm (2000 of 2000 points)
+thickness usbc_fit_lid: 0 found
+FOUND: 2 thickness findings in 10 meshes -> /Users/fabian/Projects/fumex/build/analysis/thickness.json

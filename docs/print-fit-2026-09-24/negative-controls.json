@@ -1,0 +1,10 @@
+{
+  "base": {
+    "expected_failure": true,
+    "message": "USB installation sweep [0.0, 0.0, 0.0] to [0.0, -20.0, 0.0] blocked: 20.910724 mm3"
+  },
+  "ball_lid": {
+    "expected_failure": true,
+    "message": "Battery has no substantial right-hand lid stop"
+  }
+}
