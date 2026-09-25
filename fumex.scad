@@ -114,7 +114,7 @@ bat_tie_floor = 1.85; // solid floor remaining below the recessed tie tunnels
 bat_tie_roof = 1.6;
 bat_tie_span = 8;     // bridge length along the tie route (Y)
 bat_tie_wall = 2;
-bat_bridge = [8, 25, 1.6, 0.5, 0.1, 1.7]; // x width, BMS opening, roof, BMS gap, cell gap, head relief
+bat_tie_head_clearance = [8.8, 18, 13, 1.7]; // retained head relief: x width, y start, y span, depth
 bat_tie = [3.6, 1.2, 150];                // conservative band width/thickness, minimum nominal length
 
 /* [PWM fan controller CNY-FA5-PRO: board flat in the bay, potentiometer through the front wall] */
@@ -896,25 +896,12 @@ module battery_cradle() for (cx = cradle_x) translate([cx - cradle_t / 2, 0, 0])
     bounds_rect([bat_cy - bat_d / 2 - cradle_out, floor_t - eps], [bat_cy + bat_d / 2 + cradle_out, bat_cz]);
     translate([bat_cy, bat_cz]) circle(d = bat_d + 2 * bat_clear);
 }
-// Loose bridges transfer tie pressure into the cell shoulders, leaving the BMS free.
-// Print the flat roof down. The two feet grow upwards without a support structure.
-function bat_bridge_top() = bat_cz + bat_d / 2 + bat_bms[1] + bat_bridge[3] + bat_bridge[2];
-function bat_bridge_outline() = let (a = bat_cy - bat_bridge[1]/2, b = bat_cy + bat_bridge[1]/2,
-                                    z = bat_bridge_top())
-    [[a - 2, bat_cz + 4], [b + 2, bat_cz + 4], [b + 2, z - 1.05],
-     [b, z], [a, z], [a - 2, z - 1.05]];
-module battery_bridge_profile() difference() {
-    polygon(bat_bridge_outline());
-    translate([bat_cy, bat_cz]) circle(r = bat_d/2 + bat_bridge[4]);
-    translate([bat_cy - bat_bridge[1]/2, 0])
-        square([bat_bridge[1], bat_bridge_top() - bat_bridge[2]]);
-}
-module battery_bridge_local() along_x(-bat_bridge[0]/2, bat_bridge[0]/2) battery_bridge_profile();
-module battery_bridges() for (x = bat_tie_x) translate([x, 0, 0]) battery_bridge_local();
-module battery_bridge_print() translate([0, bat_cy, bat_bridge_top()]) rotate([180, 0, 0]) battery_bridge_local();
+// The cable ties follow the shrink-wrapped pack directly, including its side BMS.
+// This envelope checks fit; it does not establish a pressure-free path over the electronics.
 module battery_tie_outline() hull() {
     translate([bat_cy, bat_cz]) circle(r = bat_d/2 + 0.05);
-    polygon(bat_bridge_outline());
+    translate([bat_cy-bat_bms[0]/2, bat_cz+bat_d/4])
+        offset(delta = 0.05) square([bat_bms[0], bat_d/4+bat_bms[1]]);
     translate([bat_cy - bat_tie_span/2, bat_tie_floor + bat_tie_slot[1]])
         square([bat_tie_span, bat_tie_roof]);
 }
@@ -927,8 +914,8 @@ module battery_ties_env() for (x = bat_tie_x) union() {
     translate([x - 3, bat_cy - bat_d/2 - 4.75, bat_cz - 2.5]) cube([6, 4, 5]);
 }
 module battery_tie_head_relief() for (x = bat_tie_x)
-    translate([x - bat_bridge[0]/2 - 0.4, 18, base_h - eps])
-        cube([bat_bridge[0] + 0.8, 13, bat_bridge[5] + eps]);
+    translate([x-bat_tie_head_clearance[0]/2, bat_tie_head_clearance[1], base_h-eps])
+        cube([bat_tie_head_clearance[0], bat_tie_head_clearance[2], bat_tie_head_clearance[3]+eps]);
 
 // Recess the tunnel into the floor so its 1.6 mm roof clears the unraised cell.
 // Two shallow ramps expose the tunnel mouths for threading before fitting the battery.
@@ -1367,7 +1354,6 @@ module assembly(explode = 0) {
     color("#5a5f66") translate([0, -explode * 0.8, explode * 1.4]) filter_env();
     color("#8c9196") translate([0, -explode * 0.6, 0]) knob();
     color("#5a5f66") translate([0, 0, explode * 0.8]) ball_lid();
-    color("#90979d") translate([0, 0, explode * 0.8]) battery_bridges();
     color("#414950") translate([0, -explode * 0.3, explode * 0.4]) battery_ties_env();
     color("#1a1b1d") translate([0, 0, -explode * 0.6]) place_feet();
     color("#3f4247") fan_visual();
@@ -1401,7 +1387,7 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["charge_tie", chg_tie], ["charge_web", [chg_web_gap, chg_web_touch, chg_web_w, chg_web_back]],
     ["lid_screw", [ball_lid_t, lid_pocket, len_lid]],
     ["battery", [bat_x0, bat_cy, bat_cz, bat_d, bat_l, bat_bms]],
-    ["battery_bridge", bat_bridge], ["battery_ties", bat_tie],
+    ["battery_tie_head_clearance", bat_tie_head_clearance], ["battery_ties", bat_tie],
     ["battery_stop", [bat_stop_gap, bat_stop_w, bat_stop_y, bat_stop_c, bat_stop_top]],
     ["battery_tie_anchors", [bat_tie_x, bat_tie_slot, bat_tie_floor, bat_tie_roof, bat_tie_span, bat_tie_wall]],
     ["usb_origin", [usbc_xz[0], usbc_y0, usbc_xz[1]]], ["usb_board", usbc_board],
@@ -1421,6 +1407,5 @@ else if (part == "knob") knob_print_pose() knob_local();
 else if (part == "foot") foot_print_pose() foot_local();
 else if (part == "ball_lid") ball_lid_print_pose() ball_lid();
 else if (part == "filter_support") filter_support_print();
-else if (part == "battery_bridge") battery_bridge_print();
 else if (part == "usbc_fit_base") usbc_fit_base();
 else if (part == "usbc_fit_lid") usbc_fit_lid();

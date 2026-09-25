@@ -1,5 +1,5 @@
 {
-  "source_sha256": "7e90185f184b1b34f1a70f9b1028df8e681000716e65b3594a7d6f6cf688a46d",
+  "source_sha256": "b918a76215a4885e8c215c0fe97e16c3aa9fbab6748c803e2b0783f3ac3178f7",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -8,8 +8,8 @@
     "rtree": "1.4.1",
     "networkx": "3.6.1"
   },
-  "print_parts": 11,
-  "print_quantity": 13,
+  "print_parts": 10,
+  "print_quantity": 11,
   "print_meshes": {
     "base": {
       "size_mm": [
@@ -36,10 +36,10 @@
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "4f6f2c0bbcebe2b6eb569098c0bb6c54089f107e3a8fbab02ad5ff56f7cb946f",
+      "sha256": "a4ad29214642627d390432a3d9b37fe2b14fb573f8523fe89a70c8b8ad3bcd79",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "4f6f2c0bbcebe2b6eb569098c0bb6c54089f107e3a8fbab02ad5ff56f7cb946f"
+      "committed_sha256": "a4ad29214642627d390432a3d9b37fe2b14fb573f8523fe89a70c8b8ad3bcd79"
     },
     "head": {
       "size_mm": [
@@ -251,36 +251,6 @@
       "material": "PETG-black",
       "committed_sha256": "4fed78fc4f48182c16cb8f2ae265359a287b3989dd675cd5e6722c26b16dba9e"
     },
-    "battery_bridge": {
-      "size_mm": [
-        8.0,
-        29.0,
-        14.7983
-      ],
-      "bounds_mm": [
-        [
-          -4.0,
-          -14.5,
-          -0.0
-        ],
-        [
-          4.0,
-          14.5,
-          14.7983
-        ]
-      ],
-      "volume_mm3": 725.2097,
-      "triangles": 84,
-      "watertight": true,
-      "consistent_winding": true,
-      "degenerate_faces": 0,
-      "components": 1,
-      "backend": "Manifold",
-      "sha256": "83fc4079ba74868f5eba65a0bbfb6cdd9bd701a6b45c34121e43eebf6dfa8b03",
-      "quantity": 2,
-      "material": "PETG-black",
-      "committed_sha256": "83fc4079ba74868f5eba65a0bbfb6cdd9bd701a6b45c34121e43eebf6dfa8b03"
-    },
     "usbc_fit_base": {
       "size_mm": [
         21.5,
@@ -306,10 +276,10 @@
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "ec668a1ee489552cded63bf95ea779adfc5f94ddac6635c5f7a8c18f662b4dbd",
+      "sha256": "3a411a8cc0ce2b3828f29c7bbe1b1c46a2669a8282e02f789b32daad97341cee",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "ec668a1ee489552cded63bf95ea779adfc5f94ddac6635c5f7a8c18f662b4dbd"
+      "committed_sha256": "3a411a8cc0ce2b3828f29c7bbe1b1c46a2669a8282e02f789b32daad97341cee"
     },
     "usbc_fit_lid": {
       "size_mm": [
@@ -344,8 +314,8 @@
   },
   "color_meshes": {},
   "color_parts": {},
-  "assembly_bodies": 35,
-  "assembly_pairs": 595,
+  "assembly_bodies": 34,
+  "assembly_pairs": 561,
   "metrics": {
     "cass_t": 4.5,
     "cass_c": 1.2,
@@ -566,12 +536,10 @@
         4
       ]
     ],
-    "battery_bridge": [
-      8,
-      25,
-      1.6,
-      0.5,
-      0.1,
+    "battery_tie_head_clearance": [
+      8.8,
+      18,
+      13,
       1.7
     ],
     "battery_ties": [
@@ -736,7 +704,7 @@
   },
   "intersections": [],
   "alignment": {
-    "features": 275,
+    "features": 273,
     "coaxial_pairs": {
       "ball_lid|ballast": 26,
       "ball_lid|base": 17,
@@ -760,7 +728,6 @@
       "base|screws_head": 6,
       "base|screws_lid": 4,
       "base|screws_pwm": 6,
-      "battery|battery_bridges": 2,
       "cassette|head": 4,
       "cassette|magnets": 8,
       "driver_back|head_back": 8,
@@ -1148,7 +1115,7 @@
   "intake_lip_mm": 2.25,
   "mat_free_travel_mm": 1.62,
   "mat_squashed_percent": 0.11,
-  "mass_g": 1014.0,
+  "mass_g": 1012.6,
   "centre_of_mass_mm": [
     67.3,
     31.3,
@@ -1824,7 +1791,6 @@
           "filter_support": 0.0,
           "magnets": 0.0,
           "battery": 0.0,
-          "battery_bridges": 0.0,
           "battery_ties": 0.0,
           "pwm_board": 0.0,
           "pot": 0.0,
@@ -1853,7 +1819,6 @@
           "filter_support": 0.0,
           "magnets": 0.0,
           "battery": 0.0,
-          "battery_bridges": 0.0,
           "battery_ties": 0.0,
           "pwm_board": 0.0,
           "pot": 0.0,
@@ -1882,7 +1847,6 @@
           "filter_support": 0.0,
           "magnets": 0.0,
           "battery": 0.0,
-          "battery_bridges": 0.0,
           "battery_ties": 0.0,
           "pwm_board": 0.0,
           "pot": 0.0,
@@ -1933,7 +1897,6 @@
           "filter_support": 0.0,
           "magnets": 0.0,
           "battery": 0.0,
-          "battery_bridges": 0.0,
           "battery_ties": 0.0,
           "pwm_board": 0.0,
           "pot": 0.0,
@@ -1962,7 +1925,6 @@
           "filter_support": 0.0,
           "magnets": 0.0,
           "battery": 0.0,
-          "battery_bridges": 0.0,
           "battery_ties": 0.0,
           "pwm_board": 0.0,
           "pot": 0.0,
@@ -1991,7 +1953,6 @@
           "filter_support": 0.0,
           "magnets": 0.0,
           "battery": 0.0,
-          "battery_bridges": 0.0,
           "battery_ties": 0.0,
           "pwm_board": 0.0,
           "pot": 0.0,
@@ -2367,7 +2328,6 @@
       "filter_support",
       "magnets",
       "battery",
-      "battery_bridges",
       "battery_ties",
       "pwm_board",
       "pot",
@@ -2566,15 +2526,11 @@
     "limitation": "Rigid translation probes; no foam friction, strength or physical-fit proof"
   },
   "battery_ties": {
-    "bridges": 2,
     "ties": 2,
-    "bms_opening_mm": 25,
-    "bridge_roof_mm": 1.6,
-    "nominal_bridge_bms_gap_mm": 0.5,
-    "settled_bridge_bms_gap_mm": 0.3,
+    "route": "Directly around the complete shrink-wrapped cell and BMS envelope",
+    "nominal_tie_bms_gap_mm": 0.05,
     "head_clearances_mm": {
-      "battery_bridges": 0.4,
-      "battery_ties": 0.23707
+      "battery_ties": 2.70913
     },
     "head_floor_skins_mm": [
       1.3,
@@ -2590,18 +2546,26 @@
           "right_wall": 1.0
         },
         "maximum_mouth_overlap_mm3": 0.0,
-        "shoulder_contacts_at_settle_0_2_mm3": [
-          0.35874,
-          0.358752
+        "pack_lift_capture": [
+          {
+            "lift_mm": 0.1,
+            "pack_contact_mm3": 3.600053,
+            "cell_contact_mm3": 0.0,
+            "bms_contact_mm3": 3.600053
+          },
+          {
+            "lift_mm": 0.3,
+            "pack_contact_mm3": 18.886104,
+            "cell_contact_mm3": 0.929589,
+            "bms_contact_mm3": 18.000047
+          }
         ],
-        "bridge_capture_mm3": 31.319987,
         "anchor_capture_mm3": 8.64001,
-        "band_centre_length_mm": 129.964,
-        "buckle_and_tail_reserve_mm": 20.036,
+        "band_centre_length_mm": 120.448,
+        "buckle_and_tail_reserve_mm": 29.552,
         "nominal_overlap_mm3": {
-          "base": 1.37e-05,
+          "base": 9.2e-06,
           "battery": 0.0,
-          "battery_bridges": -0.0,
           "head": 0.0
         }
       },
@@ -2614,23 +2578,31 @@
           "right_wall": 1.0
         },
         "maximum_mouth_overlap_mm3": 0.0,
-        "shoulder_contacts_at_settle_0_2_mm3": [
-          0.35874,
-          0.358752
+        "pack_lift_capture": [
+          {
+            "lift_mm": 0.1,
+            "pack_contact_mm3": 3.600053,
+            "cell_contact_mm3": 0.0,
+            "bms_contact_mm3": 3.600053
+          },
+          {
+            "lift_mm": 0.3,
+            "pack_contact_mm3": 18.886104,
+            "cell_contact_mm3": 0.929589,
+            "bms_contact_mm3": 18.000047
+          }
         ],
-        "bridge_capture_mm3": 31.319987,
         "anchor_capture_mm3": 8.64001,
-        "band_centre_length_mm": 129.964,
-        "buckle_and_tail_reserve_mm": 20.036,
+        "band_centre_length_mm": 120.448,
+        "buckle_and_tail_reserve_mm": 29.552,
         "nominal_overlap_mm3": {
-          "base": 1.37e-05,
+          "base": 9.2e-06,
           "battery": 0.0,
-          "battery_bridges": -0.0,
           "head": 0.0
         }
       }
     ],
-    "limitation": "Rigid envelopes and geometric capture only; no force or deformation proof"
+    "limitation": "Rigid envelopes and geometric capture only; no BMS pressure isolation or force proof"
   },
   "usb_installation": {
     "assembly_stage": "Bare open base, before fitting the ballast lid and other components; install by reversing the path",
@@ -2920,7 +2892,6 @@
     "foot": 0.0,
     "ball_lid": 0.0,
     "filter_support": 0.0,
-    "battery_bridge": 0.0,
     "usbc_fit_base": 0.0,
     "usbc_fit_lid": 0.0
   },
@@ -2933,7 +2904,7 @@
     "LEDs: test visibility through both 1.8 mm PETG skins with the actual filament; nominal 3 mm body and 3.8 mm flange dimensions remain unmeasured, as in LEO-AC1",
     "USB upper return captures the measured module envelope; bare PCB thickness and component-free bearing area are unmeasured. Check contact and cable-lever resistance on the fit print.",
     "Battery: check the base end-stop fit and actual cable exit; release both ties before upward battery removal",
-    "Battery ties: fit two bands up to 3.6 x 1.2 mm, nominally at least 150 mm long; verify the actual buckle fits the 6 x 4 x 5 mm front envelope. Thread before inserting the battery, place both loose bridges over the BMS, and check clearance while tightening. Cut ties before service. This geometric check does not prove clamp force, PETG creep, wrap integrity or flexible strap behaviour.",
+    "Battery ties: fit two bands up to 3.6 x 1.2 mm, nominally at least 150 mm long; verify the actual buckle fits the 6 x 4 x 5 mm front envelope. Thread before inserting the pack. Tighten gently without crushing the wrapped electronics; there is no separate BMS pressure bridge. Cut ties before service. This geometric check does not prove clamp force, wrap integrity or flexible strap behaviour.",
     "Loaded ballast lid: remove head, battery, rocker switch and lid screws; lift 3.4 mm, pull 4 mm forwards, lift another 3 mm, pull another 16 mm forwards, center 0.2 mm right and lift out. The sampled rigid path keeps at least 0.15 mm clearance after the initial lift; real print tolerance, finger access, switch clip release and connected wiring need a physical check."
   ],
   "limitations": [

@@ -36,7 +36,7 @@ The charge module stands upright on the ballast lid at the back of the bay. A ho
 
 ## Printed parts
 
-Nine part types, thirteen printed pieces including the four feet and two battery bridges.
+Eight part types, eleven printed pieces including the four feet.
 
 | Part | Qty | Material | Size (mm) | Print orientation |
 |---|---|---|---|---|
@@ -45,20 +45,19 @@ Nine part types, thirteen printed pieces including the four feet and two battery
 | `head_back` back cover | 1 | PETG black | 145 × 144.7 × 18.3 | outside on the bed |
 | `ball_lid` ballast lid and USB keeper | 1 | PETG black | 132.6 × 18.6 × 24.2 | flat on the bed |
 | `filter_support` support cross | 1 | PETG black | 123 × 123 × 9.8 | mat-facing side on the bed, four posts upwards |
-| `battery_bridge` protection-board bridge | 2 | PETG black | 8 × 29 × 14.8 | broad top on the bed, both feet upwards |
 | `cassette` filter cassette | 1 | PETG grey | 138 × 143 × 4.5 | grid face on the bed |
 | `knob` speed knob | 1 | PETG grey | Ø 24 × 13.5 | top on the bed |
 | `foot` foot | 4 | TPU | 18 × 16 × 6.5 | ground face on the bed, 100 % infill |
 
-All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head, ballast lid, support cross and both battery bridges, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.48 kg and 15.9 hours** for the four arranged plates (17.2 hours as individual part jobs; head 221 g, base 119 g, back cover 60 g, cassette 50 g, ballast lid 8.4 g, support cross 7 g, battery bridges 2 × 0.9 g, knob 4.9 g, feet 4 × 1.5 g).
+All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head, ballast lid and support cross, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.48 kg and 15.8 hours** for the four arranged plates (16.8 hours as individual part jobs; head 221 g, base 119 g, back cover 60 g, cassette 50 g, ballast lid 8.4 g, support cross 7 g, knob 4.9 g, feet 4 × 1.5 g).
 
 Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid; support cross and TPU feet at 100 % infill.
 
 Before printing the base, use [`stl/fumex_usb_fit.3mf`](stl/fumex_usb_fit.3mf) to check the USB board in small sections of the real base and lid (about **10.0 g and 62 minutes**). With the lid section removed, lower the board in front of the channel and slide it towards the rear wall. Then place the lid section on its two small fixture pads and the retained screw-post seat: its central keeper secures the board from the front and above while leaving both side wire exits open. Two low triangular ribs brace the keeper against the lid. These two optional test pieces are not part of the full assembly.
 
-A rounded end wall in the base sits beside the battery’s right end with 0.5 mm axial clearance. The left housing wall and this stop prevent lengthwise sliding. Two cable ties through integrated loops under the cell hold it down in its three saddles, including while the base is open. Two small removable bridges under the ties bear on the round cell shoulders and leave the protection board under the shrink wrap free. Cut and replace the ties to remove the battery. Optional cushioning must not raise the cell from its designed seating height: clearance above the ties is only about 0.24 mm.
+A rounded end wall in the base sits beside the battery’s right end with 0.5 mm axial clearance. The left housing wall and this stop prevent lengthwise sliding. Two cable ties through integrated loops under the cell hold it down in its three saddles, including while the base is open. The ties run directly around the shrink-wrapped pack, without printed spacers. Tighten them gently by hand so the pack stays seated without crushing the wrap or electronics beneath it. Cut and replace the ties to remove the battery. Optional cushioning must not raise the cell from its designed seating height.
 
-![Battery cable ties, protection-board bridges and central removable USB-board keeper](img/11_battery_usb_stops.png)
+![Direct battery cable ties and central removable USB-board keeper](img/11_battery_usb_stops.png)
 
 ![Two floor loops with shallow threading ramps, battery removed](img/12_floor_tie_loops.png)
 
@@ -86,7 +85,7 @@ A rounded end wall in the base sits beside the battery’s right end with 0.5 mm
 | Iron offcuts for the ballast | – | – | up to 40.3 cm³, about 189 g, loose in the trough under its lid |
 | JST-PH 2.0 cable, 2-pin, mating the battery plug | 1 | – | battery to the switch and B+ / B− |
 | Cable tie, 2.5 mm wide × 1.2 mm thick | 1 | – | secures the charge module at its cool OUT end |
-| Cable tie, 3.6 mm wide × 1.2 mm thick, 150 mm long | 2 | – | battery restraint through the floor loops; use the two printed bridges to keep pressure off the protection board |
+| Cable tie, 3.6 mm wide × 1.2 mm thick, 150 mm long | 2 | – | battery restraint directly around the wrapped pack through the floor loops; tighten gently by hand |
 | Silicone wire 24 AWG, red and black | about 1 m | – | USB-C module, switch, LED, 12 V to the PWM controller |
 | Heat-shrink tubing 2–3 mm | – | – | every solder joint |
 | Thin cushioning, optional | – | – | only if it compresses without raising the cell; the ties provide retention. Leave the protection board free |
@@ -116,7 +115,7 @@ battery (JST-PH, built-in BMS) ──► (PTC) ──► rocker switch ──►
 6. Glue the LED into its blind pocket from inside, with its flange against the rear of the boss and the front skin intact. A second matching pocket sits 12 mm to its left. With the head and ballast lid removed, lower the USB-C board into the bay in front of its channel, then slide it straight towards the back wall until the receptacle sits in the opening. The channel’s two raised 45° gussets support the board; its front is open during insertion. Route the wires upwards on both sides of the central lid keeper and leave the rocker switch out until the ballast lid is secured. Keep wires clear of the lid and switch recess.
 7. Stick the insulating pad onto the metal pad on the back of the charge module and the heatsink onto the pad. Set the board's cool OUT end into the holder on the ballast lid, against its end, bottom and rear supports; components face forwards and the heatsink faces the back wall. Secure it with one 2.5 × 1.2 mm cable tie through the holder and around the board, 11.25–13.75 mm from the OUT end. Check the tie against the actual components and solder joints before tightening. Leave the heatsink end free, leave slack in the wires and keep the air passages open. Cut and replace the tie when removing the board.
 8. Fill the ballast trough behind the battery with iron offcuts — up to about 189 g. With the battery and rocker switch still out, lower the loaded lid into the bay in front of the USB channel. Slide it rearwards in two stages, lowering it between them, until it rests on its two screw posts. The central keeper sits just in front of the USB board and overlaps its upper edge, leaving both wire exits open. Two triangular ribs at its foot spread the load into the lid. The raised 45° supports stay above the plain lid. Fasten it with two M3 × 8 into the heat-set inserts; the right screw sits farther inwards and forwards so a straight driver clears the head-mounting bosses. Refit the rocker switch. Fill the trough properly or pack the rest with foam to prevent loose pieces rattling.
-9. Thread a cable tie through each floor loop before laying the battery into its three saddles, protection board up and cable end to the right. Its right end sits beside the base’s rounded end wall. Place one protective bridge under each tie, with its curved seats on the cell shoulders and the protection board clear underneath. Tighten gently by hand, with the tie heads in front of the cell, and trim the tails. Keep the battery cable above the end stop. The ties hold the battery even before the head is installed.
+9. Thread a cable tie through each floor loop before laying the battery into its three saddles, protection board up and cable end to the right. Its right end sits beside the base’s rounded end wall. Close each tie directly around the wrapped pack and tighten gently by hand, with the tie heads in front of the cell, and trim the tails. Keep the battery cable above the end stop. The ties hold the battery even before the head is installed.
 10. Push the knob onto the shaft until it bottoms; it then stands 1.2 mm off the wall and turns freely. Keep it as a removable press fit for access to the controller; check retention on the actual shaft.
 11. Lower the head onto the base rim. With the cassette and mat removed, fit two M3 × 8 straight down through the shallow front pockets into the raised base inserts, in the same direction as the rear pair. Reach them through the intake with the small Wera ratchet and a 25 mm TX10 bit fitted directly into the ratchet. Fit the rear pair of M3 × 8 down through the head floor before installing the fan-and-cover assembly. All four screws clamp directly against the base. Bend the lower edge of the soft mat over the two exposed front screw heads when refitting it; they extend about 2.8 mm into its nominal envelope. Then lower the fan-and-cover assembly in from the back — the corner guides in the head take it onto its seat — and check that the actual fan frame captures all four support-cross posts. Screw the cover down with 4 × M3 × 8.
 12. Screw the four TPU feet on from below with M3 × 8; the small peg beside each screw stops them turning.
@@ -132,7 +131,7 @@ battery (JST-PH, built-in BMS) ──► (PTC) ──► rocker switch ──►
 
 To change the mat: pull the cassette off using its side scoops, pinch the flexible mat and pull it past the retaining lip, then press the new one in.
 
-For electronics service, remove the head, cut the two battery ties and lift out the bridges and battery, release the rocker-switch clips and pull the switch out through the side. Unscrew the ballast lid, lift it about 3.4 mm, pull it 4 mm forwards, lift it another 3 mm, then pull it another 16 mm into the empty battery bay. Centre it slightly to the right (about 0.2 mm) and lift it out. Leave enough wire slack for this movement. The USB board then slides forwards out of the rear opening and lifts out. For PWM-controller removal, also remove the knob and its two PCB screws before tilting and withdrawing the PCB. Tilt its rear up partway, pull it farther backwards under the front insert boss, then continue tilting it upwards. Once the shaft clears the front rim, move the controller about 6.5 mm left before the final upward lift, clearing the rear mounting area.
+For electronics service, remove the head, cut the two battery ties and lift out the battery, release the rocker-switch clips and pull the switch out through the side. Unscrew the ballast lid, lift it about 3.4 mm, pull it 4 mm forwards, lift it another 3 mm, then pull it another 16 mm into the empty battery bay. Centre it slightly to the right (about 0.2 mm) and lift it out. Leave enough wire slack for this movement. The USB board then slides forwards out of the rear opening and lifts out. For PWM-controller removal, also remove the knob and its two PCB screws before tilting and withdrawing the PCB. Tilt its rear up partway, pull it farther backwards under the front insert boss, then continue tilting it upwards. Once the shaft clears the front rim, move the controller about 6.5 mm left before the final upward lift, clearing the rear mounting area.
 
 ## Design notes
 

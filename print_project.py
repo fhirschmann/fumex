@@ -22,7 +22,6 @@ PARTS = {
     "foot": (4, "TPU", 1),
     "ball_lid": (1, "PETG-black", 1),
     "filter_support": (1, "PETG-black", 1),
-    "battery_bridge": (2, "PETG-black", 1),
     "usbc_fit_base": (0, "PETG-black", 1),
     "usbc_fit_lid": (0, "PETG-black", 1),
 }
@@ -43,7 +42,6 @@ ASSEMBLY = {
     "filter_support": "filter_support();",
     "magnets": "magnets_env();",
     "battery": "battery_env();",
-    "battery_bridges": "battery_bridges();",
     "battery_ties": "battery_ties_env();",
     "pwm_board": "pwm_board_env();",
     "pot": "pot_env();",
@@ -102,7 +100,7 @@ PROCESS = dict(wall_loops=4, top_shell_layers=5, bottom_shell_layers=5, infill=2
 FILAMENTS = [dict(material="PETG-black", profile="Generic PETG @BBL H2S", colour="#1A1B1D"),
              dict(material="PETG-grey", profile="Generic PETG @BBL H2S", colour="#8C9196"),
              dict(material="TPU", profile="Generic TPU @BBL H2S", colour="#1A1B1D")]
-PLATES = [("Head", ["head", "ball_lid", "filter_support", "battery_bridge"]),
+PLATES = [("Head", ["head", "ball_lid", "filter_support"]),
           ("Base and back cover", ["base", "head_back"]),
           ("Grey parts", ["cassette", "knob"]),
           ("TPU feet", ["foot"])]
@@ -125,7 +123,7 @@ MASSES_G = {"fan": 185, "battery": 150, "filter": 15, "pwm_board": 12, "chg_modu
 # bodies whose mass comes from their volume rather than a data sheet
 BY_VOLUME = {"base": "PETG", "head": "PETG", "head_back": "PETG", "cassette": "PETG", "knob": "PETG",
              "feet": "TPU", "ball_lid": "PETG", "filter_support": "PETG-solid", "ballast": "iron-loose",
-             "chg_tie": "nylon", "battery_bridges": "PETG", "battery_ties": "nylon"}
+             "chg_tie": "nylon", "battery_ties": "nylon"}
 
 LIMITATIONS = ["Hardware envelopes, not detailed vendor CAD",
                "Most service motions are sampled; USB insertion and front ratchet translations use continuous sweeps; ratchet swing is bounded between samples",
@@ -1405,7 +1403,7 @@ def check_battery_retention(ctx):
     # opening, not a measurement of the real pack's wires or connector.
     corridor = _air_box([end + .05, cy - bms[0] / 2, cz + diameter / 4],
                         [end + 12, cy + bms[0] / 2, cz + diameter / 2 + bms[1]])
-    blocked = (corridor ^ (base + lid)).volume()
+    blocked = (corridor ^ (base + lid + ctx.solids["battery_ties"])).volume()
     assert blocked < .01, f"Battery stop blocks the upper cable exit: {blocked:.4f} mm3"
     ctx.summary.append("Battery: floor-rooted axial stop holds in nine shifted/lifted poses")
     ctx.open_items.append("Battery: check the base end-stop fit and actual cable exit; "
@@ -1417,29 +1415,30 @@ def check_battery_retention(ctx):
 
 
 def check_battery_ties(ctx):
-    """Check the fixed loops, closed bands and separate BMS-free bearing bridges."""
+    """Check two direct pack straps, recessed anchors and the complete band route."""
     m, s = ctx.metrics, ctx.solids
     x0, cy, cz, diameter, length, board_size = m['battery']
     xs, slot, floor, anchor_roof, span, wall = m['battery_tie_anchors']
-    width, opening, roof, bms_clear, radial_clear, relief = m['battery_bridge']
     band_width, band_t, nominal_length = m['battery_ties']
-    assert xs == [26, 54] and opening >= 25 and roof >= 1.6, 'Battery tie layout or BMS protection changed'
+    assert xs == [26, 54], 'Revalidate the two battery tie anchor positions'
+    width = slot[0] + 2*wall  # ROI includes the entire 6-mm buckle as well as the band
     assert slot[0] - band_width >= .39 and slot[1] - band_t >= .59, 'Battery tie does not fit its tunnel'
     assert floor >= 1.8 and anchor_roof >= 1.6 and wall >= 2, 'Battery tie anchors are too thin'
     assert diameter == 32.5 and length == 71.6 and board_size == [20, 4], 'Revalidate measured cell and BMS'
-    caps, ties, base, head = (s[n] for n in ('battery_bridges', 'battery_ties', 'base', 'head'))
-    assert len(caps.decompose()) == len(ties.decompose()) == 2, 'Both separate bridges and closed ties are required'
+    ties, base, head = (s[n] for n in ('battery_ties', 'base', 'head'))
+    assert len(ties.decompose()) == 2, 'Two separate closed battery ties are required'
     cell = ctx.cylinder([x0, cy, cz], [1, 0, 0], length, diameter/2, 360)
     bms = _air_box([x0, cy-board_size[0]/2, cz+diameter/4],
                    [x0+length, cy+board_size[0]/2, cz+diameter/2+board_size[1]])
-    top, bridge_top = floor + slot[1] + anchor_roof, cz + diameter/2 + board_size[1] + bms_clear + roof
+    top = floor + slot[1] + anchor_roof
     assert abs(cz-diameter/2-top-.5) < .01, 'Anchor roof must clear the cell by 0.5 mm'
-    assert caps.min_gap(bms, 3) >= .49, 'Battery bridge loads the BMS in the installed pose'
-    assert caps.translate([0, 0, -.2]).min_gap(bms, 3) >= .29, 'Settling bridge can press on the BMS'
-    assert ties.min_gap(bms, 3) >= 1, 'Cable tie crosses the BMS instead of its protective bridge'
-    head_gaps = {n: s[n].min_gap(head, 3) for n in ('battery_bridges', 'battery_ties')}
-    assert min(head_gaps.values()) >= .19, f'Battery tie or bridge rubs the head: {head_gaps}'
-    # Independent normal-thickness rays measure the actual head pocket ceiling.
+    bms_gap = ties.min_gap(bms, 1)
+    assert .04 <= bms_gap <= .06, f'Direct band must follow the complete wrapped BMS envelope: {bms_gap}'
+    expected_top = cz+diameter/2+board_size[1]+.05+band_t
+    assert abs(ties.bounding_box()[5]-expected_top) < .01, 'Battery ties still span an obsolete raised bridge'
+    head_gaps = {'battery_ties': ties.min_gap(head, 3)}
+    assert min(head_gaps.values()) >= .19, f'Battery tie rubs the head: {head_gaps}'
+    # Independent normal-thickness rays measure the retained head-floor relief ceiling.
     angle = math.radians(m['tilt'])
     normal = np.array([0, -math.sin(angle), math.cos(angle)])
     origins = [_tilt(m, [x, 24, m['base_h']-.1]) for x in xs]
@@ -1454,8 +1453,8 @@ def check_battery_ties(ctx):
     rows = []
     for x in xs:
         roi = _air_box([x-width/2-.01, 0, 0], [x+width/2+.01, 74, 60])
-        cap, tie = caps ^ roi, ties ^ roi
-        assert cap.volume() > 500 and tie.volume() > 300, f'Battery strap or bridge missing at x{x}'
+        tie = ties ^ roi
+        assert tie.volume() > 300, f'Battery strap missing at x{x}'
         a, b, ceiling = cy-span/2, cy+span/2, floor+slot[1]
         empty = _air_box([x-slot[0]/2+.02, a+.02, floor+.02],
                          [x+slot[0]/2-.02, b-.02, ceiling-.02])
@@ -1478,21 +1477,18 @@ def check_battery_ties(ctx):
                 q = _air_box([x-1.9, y-.03, bottom+.05], [x+1.9, y+.03, ceiling-.02])
                 mouth_volumes.append((q ^ base).volume())
         assert max(mouth_volumes) < .001, f'Battery tie lead-in is blocked at x{x}'
-        channel = _air_box([x-width/2+.02, cy-opening/2+.02, 26],
-                           [x+width/2-.02, cy+opening/2-.02, bridge_top-roof-.02])
-        assert (channel ^ cap).volume() < .001, 'Bridge narrows the free 25-mm BMS channel'
-        roof_probe = _air_box([x-width/2+.02, cy-9, bridge_top-roof+.02],
-                              [x+width/2-.02, cy+9, bridge_top-.02])
-        assert (roof_probe ^ cap).volume()/roof_probe.volume() > .999, 'BMS bridge roof is incomplete'
-        bearing = []
-        for lo, hi in ((cy-15, cy-opening/2), (cy+opening/2, cy+15)):
-            q = _air_box([x-width/2-.01, lo, 20], [x+width/2+.01, hi, 43])
-            contact = (cell ^ cap.translate([0, 0, -.2]) ^ q).volume()
-            assert contact > .05, 'Bridge must bear on both cell shoulders before the BMS'
-            bearing.append(round(contact, 6))
-        cap_stop = (cap.translate([0, 0, .3]) ^ tie).volume()
+        # The band captures the actual pack, including the BMS under the wrap.
+        # Report cell/BMS contacts independently: enclosure is not pressure isolation.
+        capture = []
+        for dz in (.1, .3):
+            pack_hit = (s['battery'].translate([0, 0, dz]) ^ tie).volume()
+            cell_hit = (cell.translate([0, 0, dz]) ^ tie).volume()
+            bms_hit = (bms.translate([0, 0, dz]) ^ tie).volume()
+            capture.append(dict(lift_mm=dz, pack_contact_mm3=round(pack_hit,6),
+                                cell_contact_mm3=round(cell_hit,6), bms_contact_mm3=round(bms_hit,6)))
+        assert capture[-1]['pack_contact_mm3'] > 1, f'Direct tie does not capture the battery at x{x}'
         anchor_stop = (tie.translate([0, 0, .3]) ^ base).volume()
-        assert cap_stop > 1 and anchor_stop > 1, 'Closed tie does not capture bridge and fixed anchor'
+        assert anchor_stop > 1, f'Closed tie misses its fixed floor anchor at x{x}'
         # A cross-section of the real envelope must contain a closed inner loop.
         polygons = tie.transform([[0,1,0,0], [0,0,1,0], [1,0,0,0]]).slice(x).to_polygons()
         holes = [p for p in polygons if np.sum(p[:,0]*np.roll(p[:,1],-1)-np.roll(p[:,0],-1)*p[:,1]) < 0]
@@ -1500,23 +1496,22 @@ def check_battery_ties(ctx):
         inner_length = float(np.linalg.norm(holes[0]-np.roll(holes[0],1,axis=0),axis=1).sum())
         centre_length = inner_length + math.pi*band_t
         assert nominal_length >= centre_length + 20, 'Battery tie has less than 20 mm for buckle and tail'
-        overlaps = {n: (tie ^ s[n]).volume() for n in ('base', 'battery', 'battery_bridges', 'head')}
+        overlaps = {n: (tie ^ s[n]).volume() for n in ('base', 'battery', 'head')}
         assert max(overlaps.values()) < .01, f'Installed battery band collides at x{x}: {overlaps}'
         rows.append(dict(x_mm=x, anchor_material_fill={k:round(v,6) for k,v in fills.items()},
-            maximum_mouth_overlap_mm3=round(max(mouth_volumes),7), shoulder_contacts_at_settle_0_2_mm3=bearing,
-            bridge_capture_mm3=round(cap_stop,6), anchor_capture_mm3=round(anchor_stop,6),
+            maximum_mouth_overlap_mm3=round(max(mouth_volumes),7), pack_lift_capture=capture,
+            anchor_capture_mm3=round(anchor_stop,6),
             band_centre_length_mm=round(centre_length,3), buckle_and_tail_reserve_mm=round(nominal_length-centre_length,3),
             nominal_overlap_mm3={k:round(v,7) for k,v in overlaps.items()}))
-    ctx.summary.append('Battery: two closed ties capture shoulder-bearing BMS bridges and recessed floor anchors')
+    ctx.summary.append('Battery: two direct closed ties capture the wrapped cell/BMS pack and recessed floor anchors')
     ctx.open_items.append('Battery ties: fit two bands up to 3.6 x 1.2 mm, nominally at least 150 mm long; '
-                          'verify the actual buckle fits the 6 x 4 x 5 mm front envelope. Thread before inserting the battery, '
-                          'place both loose bridges over the BMS, and check clearance while tightening. Cut ties before service. '
-                          'This geometric check does not prove clamp force, PETG creep, wrap integrity or flexible strap behaviour.')
-    return dict(battery_ties=dict(bridges=2, ties=2, bms_opening_mm=opening, bridge_roof_mm=roof,
-                nominal_bridge_bms_gap_mm=round(caps.min_gap(bms,3),4),
-                settled_bridge_bms_gap_mm=round(caps.translate([0,0,-.2]).min_gap(bms,3),4),
+                          'verify the actual buckle fits the 6 x 4 x 5 mm front envelope. Thread before inserting the pack. '
+                          'Tighten gently without crushing the wrapped electronics; there is no separate BMS pressure bridge. '
+                          'Cut ties before service. This geometric check does not prove clamp force, wrap integrity or flexible strap behaviour.')
+    return dict(battery_ties=dict(ties=2, route='Directly around the complete shrink-wrapped cell and BMS envelope',
+                nominal_tie_bms_gap_mm=round(bms_gap,4),
                 head_clearances_mm={k:round(v,5) for k,v in head_gaps.items()}, head_floor_skins_mm=skins,
-                anchors=rows, limitation='Rigid envelopes and geometric capture only; no force or deformation proof'))
+                anchors=rows, limitation='Rigid envelopes and geometric capture only; no BMS pressure isolation or force proof'))
 
 
 
@@ -1592,9 +1587,9 @@ def checks(ctx):
         # The support cross may remain in the head during removal.
         ("head_off", ["head", "filter_support", "magnets"],
          ["base", "battery", "pwm_board", "usbc", "switch", "pot", "led", "ball_lid", "ballast",
-          "chg_module", "chg_sink", "chg_tie", "battery_bridges", "battery_ties"], up, 60, 1),
-        # Cut and remove both ties before lifting the battery with its loose bridges.
-        ("battery_out", ["battery", "battery_bridges"], ["base", "pwm_board", "usbc", "switch", "ball_lid"], [0, 0, 1], 40, 0.5),
+          "chg_module", "chg_sink", "chg_tie", "battery_ties"], up, 60, 1),
+        # Cut and remove both ties before lifting the shrink-wrapped battery pack.
+        ("battery_out", "battery", ["base", "pwm_board", "usbc", "switch", "ball_lid"], [0, 0, 1], 40, 0.5),
         # Remove the head and loaded ballast lid first. Withdraw the USB board
         # into the bay, then lift it completely above the rim; reverse to install.
         ("usbc_out", "usbc", ["base", "battery", "pwm_board", "pot", "switch", "led", "ballast"],
@@ -1693,7 +1688,6 @@ VIEWER = dict(
            ("fan_visual", "Fan 120 x 25", "bought", "#6a6f75", "1x", [0, 0.5, 1.35]),
            ("filter", "Filter mat 120 x 120 x 17", "bought", "#a09488", "1x", [0, -0.9, 1.1]),
            ("battery", "LiFePO4 3.2 V 6 Ah", "bought", "#4a6d3f", "1x", [0, 0, -0.2]),
-           ("battery_bridges", "Battery BMS bridges", "black", "#aeb5bb", "2x", [0, 0, 0.8]),
            ("battery_ties", "Battery cable ties", "bought", "#55595e", "2x", [0, -0.3, 0.4]),
            ("pwm_board", "PWM controller", "bought", "#2f5d3a", "1x", [0, -0.2, 0]),
            ("chg_module", "Charge / boost module", "bought", "#2f5d3a", "1x", [0, 0, 0.3]),
@@ -1753,7 +1747,6 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
                                  "translate([3.2, 14, 0]) cube([115, 59, 48]); } "
                                  "color(\"#8a9096\") ball_lid(); "
                                  "color(\"#4a6d3f\") battery_env(); "
-                                 "color(\"#b8c0c7\") battery_bridges(); "
                                  "color(\"#414950\") battery_ties_env(); "
                                  "color(\"#2f5d3a\") usbc_env();",
                                  "135,-160,135,68,38,28"),

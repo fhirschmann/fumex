@@ -55,23 +55,28 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     protection board along its full length. Here the BMS faces up: x4..75.6, y25..45,
     z30.125..42.25 in the conservative bought-part envelope. LEO's body/back halves close three
     rings around its upright cell; its shelf stops axial motion. Those positive stops, rather than
-    foam adhesion, are the reference. Do not clamp the BMS under a bare circumferential cable tie.
+    foam adhesion, are the reference. The subsequent direct-tie change is described below; it does not retain the old BMS load-isolation claim.
   - **Two cable ties through base-floor loops** replace the head-mounted shoulder retainers
     (user, 2026-09-25). Their axes are x26/54, between the existing saddles. Each loop has a
     4 x 1.8 mm tunnel, 2 mm side walls, 1.6 mm roof and 1.85 mm remaining floor underneath.
     The roof ends at z5.25, 0.5 mm below the nominal cell. Four-millimetre ramps expose the
     tunnel mouths for threading before inserting the battery. The cell's position is unchanged.
     The two ties retain the battery even while the base is open; cut them before removing it.
-  - Two loose `battery_bridge` pieces sit under the ties. They bear on the cell shoulders and
-    leave a 25 mm channel around the full-length BMS. This is separate from the removed
-    head-mounted restraints: lifting the head does not release the tied battery. The new print
-    orientation is broad top down; local head-floor reliefs clear the bridge and tie envelopes.
-  - `check_battery_retention()` isolates the floor-rooted axial wall and tests Y offsets -0.4/0/+0.4
-    at Z lifts 0/1/2 mm before the ties are fastened. The tie/bridge checks separately test the
-    cell cylinder, protection board, actual loop tunnels, surrounding material and tie route.
-    Contact involving only the combined battery envelope must not count as proof that the cell
-    body is held. These geometric checks do not establish tightening force, bridge deflection,
-    tie strength, creep, shrink-wrap pressure or wire fit.
+  - The user removed the two loose battery bridges on 2026-09-25. Two cable ties now
+    run directly around the shrink-wrapped pack and through the existing floor loops.
+    Their envelope includes both the cylindrical cell and the measured full-length
+    side BMS (approximately 20 mm wide, 4 mm thick). The model has 0.05 mm nominal
+    fit clearance, not an engineered pressure-free space over the electronics.
+    Tighten gently by hand; no rigid printed spacer or new substitute part is fitted.
+    Removing the head does not release the battery; cut and replace the ties for service.
+  - Existing base geometry and the two shallow head-floor reliefs are retained so the
+    current printed housing stays compatible. Their parameters are now independent
+    of the removed bridge dimensions (`bat_tie_head_clearance`). The bridge print part,
+    assembly body, plate instances, STL and viewer item are removed.
+  - Battery checks retain the floor-rooted axial stop, closed strap loops, actual
+    tunnels and threading ramps, anchor material, strap/pack capture and clear service
+    paths. The direct straps no longer have the earlier bridge-to-BMS load isolation.
+    Geometric capture does not prove clamp force, wrap integrity or pressure on the BMS.
   - The USB front stop is a **central removable keeper on the ballast lid**, 4 mm wide at x104..108.
     Its stem spans y53.2..57.22; the arm ends at y59.42, 0.2 mm before the PCB, and begins at z42.75,
     below the actual underside at z42.85. A separate 0.1 mm thin central edge probe prevents the
@@ -225,7 +230,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     envelope includes the complete bit, front entry, seating motion and ±6-degree swing.
     Remove cassette and mat for front fastening. Rear screws require the fan/cover off.
   - `head_off` moves the head, support cross and magnets along the tilted normal after
-    the cassette, mat, fan/cover and screws are removed; battery bridges and ties remain.
+    the cassette, mat, fan/cover and screws are removed; battery ties remain.
   - PWM service first pitches the released PCB to 20 degrees, withdraws it 7.9 mm,
     then pitches it to 35 degrees before the remaining lift and sideways extraction.
     This staged route clears the raised front boss; pitching directly to 35 degrees
@@ -605,3 +610,11 @@ they do not validate the subsequent geometry.
 - Source SHA256 `7e90185f184b1b34f1a70f9b1028df8e681000716e65b3594a7d6f6cf688a46d`; report `docs/pd-keeper-braces-2026-09-25.md`. Changed print geometries: ball_lid and usbc_fit_lid. Full export PASS: eleven closed single-body meshes, zero degenerate faces, 445 coaxial feature pairs, 595 assembly pairs and ten standard paths. Both rib foot/web/stem-junction/deck probes contain 100% material and reject the previous bare stem. The isolated keeper clearance includes the whole ribs through y61.2. All six wire corridors, the lower/upper board capture, coupon insertion and complete loaded-lid removal remain clear; service clearance after the first lift is at least 0.20 mm.
 - Islands, overhangs, thickness and fins are CLEAN on all eleven meshes. All eleven slices, four production plates and the USB fit plate pass without warnings or supports. Lid mass 8.43 g; arranged production 477.4 g / 15.9 h; individual jobs 478.0 g / 17.2 h; USB fit 10.0 g / 62 min. Static estimate 1014.0 g, front margin 28.3 mm, tip angle 21.0 degrees. Physical strength/creep remain unmeasured.
 - Both 3MFs, all twelve documentation images and both viewer copies are rebuilt. The local file tab needs manual reload. Shared scripts remain identical to the skill.
+
+
+## Direct battery cable ties (2026-09-25)
+
+- The user removed the two loose pressure bridges. Both ties now run directly around the shrink-wrapped cell/BMS pack through the unchanged floor loops. No replacement spacers are fitted. Tighten gently by hand; the geometry does not isolate the BMS from strap pressure. The removed bridge STL, print registrations, plate instances and viewer item are gone.
+- Source SHA256 `b918a76215a4885e8c215c0fe97e16c3aa9fbab6748c803e2b0783f3ac3178f7`; report `docs/direct-battery-ties-2026-09-25.md`. Full export PASS: ten closed single-body meshes, zero degenerate faces, 443 coaxial pairs, 561 assembly pairs and ten standard service paths. Direct band/head clearance 2.70913 mm; centreline length 120.448 mm, leaving 29.552 mm on each 150 mm tie. Anchor tunnels/material and the battery cable corridor pass. Separate pack-lift contact measurements explicitly identify initial BMS contact, without retaining the old pressure-isolation claim.
+- Islands, overhangs, thickness and fins are CLEAN on all ten meshes at configured thresholds. Head thickness retains 65,253/65,414 rays with the known numerical warnings. All ten individual slices, four production plates and the USB fit plate pass without supports or slicer warnings. Arranged production 475.8 g / 15.8 h; individual jobs 476.2 g / 16.8 h; USB fit 10.0 g / 62 min. Static estimate 1012.6 g, front margin 28.3 mm, tip angle 21.0 degrees.
+- All remaining printed geometries match commit `2beb14ea21e3c4499f302b4efcb3e42927a42121`; base and fit-base Boolean differences are zero, all other STLs are byte-identical. Existing head reliefs remain, parameterized independently as `bat_tie_head_clearance`. No housing reprint is needed for this change. Both 3MFs, all twelve views and both viewer copies are rebuilt. The local file tab requires manual reload. Shared scripts remain identical to the skill.
