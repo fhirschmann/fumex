@@ -72,6 +72,8 @@ ASSEMBLY = {
 ALLOWED_OVERLAPS = [("base", "screws_pwm"),     # thread forms into the pilot; independently bounded by check_pwm_mount
                     # PCB is fastened before the head, filter and cover assembly is installed.
                     ("head", "driver_pwm"), ("filter", "driver_pwm"), ("cassette", "driver_pwm"),
+                    # PWM service removes the complete head and all four head screws first.
+                    ("screws_head", "driver_pwm"), ("driver_head", "driver_pwm"),
                     ("filter_support", "driver_pwm"), ("fan", "driver_pwm"),
                     ("driver_fan", "driver_pwm"), ("driver_back", "driver_pwm"),
                     ("fan", "screws_fan"),      # screws run through the holes of the solid fan envelope
@@ -79,7 +81,9 @@ ALLOWED_OVERLAPS = [("base", "screws_pwm"),     # thread forms into the pilot; i
                     # The drivers are checked against the state of the build at the moment that screw is
                     # driven, not against the finished assembly: remove cassette and back/fan assembly
                     # for the front/rear head screws; close the ballast lid before fitting the head.
-                    ("head_back", "driver_head"), ("cassette", "driver_head"),
+                    ("head_back", "driver_head"), ("cassette", "driver_head"), ("filter", "driver_head"),
+                    # Local flexible-mat contacts are bounded by check_front_mat_contact.
+                    ("head", "filter"), ("screws_head", "filter"),
                     ("driver_back", "driver_head"), ("head_back", "driver_lid"), ("head", "driver_lid"),
                     ("fan", "driver_lid"),      # the whole head group is removed before servicing the lid
                     ("driver_fan", "driver_head"), ("driver_head", "driver_lid"),
@@ -124,7 +128,7 @@ BY_VOLUME = {"base": "PETG", "head": "PETG", "head_back": "PETG", "cassette": "P
              "chg_tie": "nylon", "battery_bridges": "PETG", "battery_ties": "nylon"}
 
 LIMITATIONS = ["Hardware envelopes, not detailed vendor CAD",
-               "Service motions are sampled; only the USB-to-base translation has a continuous swept-volume check",
+               "Most service motions are sampled; USB insertion and front ratchet translations use continuous sweeps; ratchet swing is bounded between samples",
                "No flexible deformation, physical fit, strength or thermal validation",
                "Tipping margin uses estimated part masses and the static centre of mass only",
                "Filter pressure drop and capture distance are not modelled",
@@ -378,66 +382,203 @@ def check_charger_holder(ctx):
 
 
 def check_head_fasteners(ctx):
-    """Check each head seat and its direct, gap-free support by the inserted base boss."""
+    """Four direct clamping stacks, complete bearings, insert walls and tool access."""
     m = ctx.metrics
     axes = np.asarray(m['head_axes'], float)
-    assert axes.shape == (4, 5) and np.allclose(axes,
-        [[7.5, 0, 68, 4.5, 2.45], [137.5, 0, 68, 4.5, 2.45],
-         [25, 66, 48, 3, .7], [131, 66, 48, 3, .7]]), \
-        f'Head must use two front-face and two rear-floor fasteners: {axes.tolist()}'
-    _, length, _ = m['head_screw']
-    tab_depth = m['head_mount'][4]
-    assert tab_depth - m['insert_depth'] >= 2, 'Front inserts need a 2-mm closed tongue end'
-    local = {n: ctx.manifold(head_frame(ctx.meshes[n], m)) for n in ('head', 'screws_head', 'base')}
-    assert len(local['screws_head'].decompose()) == 4, 'Head must have four separate screws'
+    expected = [[9.1,10,52,-math.sin(math.radians(40)),0,-math.cos(math.radians(40)),10.3,16],
+                [135.9,10,52,math.sin(math.radians(40)),0,-math.cos(math.radians(40)),10.3,16],
+                [25,66,48,0,0,-1,2.3,8], [131,66,48,0,0,-1,2.3,8]]
+    assert axes.shape == (4,8) and np.allclose(axes, expected, atol=.001), \
+        f'Head needs two sloping front and two downward rear fasteners: {axes.tolist()}'
+    local = {n: ctx.manifold(head_frame(ctx.meshes[n], m)) for n in ('head','screws_head','base')}
+    screws = local['screws_head'].decompose()
+    assert len(screws) == 4, 'Head must have four separate screws'
     rows = []
-    for x, y, z, thickness, recess in axes:
-        front = y == 0
-        axis = np.array([0., 1., 0.]) if front else np.array([0., 0., -1.])
-        entry = np.array([x, thickness, z]) if front else np.array([x, y, z])
-        bearing_t = thickness-recess
+    used = set()
+    for index, row in enumerate(axes):
+        entry, axis, bearing_t, length = row[:3], row[3:6], row[6], row[7]
+        axis = axis / np.linalg.norm(axis)
+        front = index < 2
         penetration = length-bearing_t
         assert bearing_t >= 1.2 and 5.7-1e-6 <= penetration <= m['insert_depth']-.5, \
             f'Invalid head screw stack: bearing {bearing_t}, penetration {penetration}'
         def cyl(t, height, radius, direction=1):
             return ctx.cylinder(entry+axis*t, axis*direction, height, radius, 120)
-        # Counterbores preserve full head-underface support and a closed surrounding rim.
-        bearing = cyl(-bearing_t+.02, bearing_t-.04, 3.15) - cyl(-bearing_t, thickness, 1.75)
-        enclosure = cyl(-thickness+.02, recess-.04, 4.4 if front else 3.9) - cyl(-thickness, recess, 3.25)
-        fill = (bearing ^ local['head']).volume() / bearing.volume()
-        rim_fill = (enclosure ^ local['head']).volume() / enclosure.volume()
-        assert fill > .995 and rim_fill > .995, f'Incomplete head screw seat at {x,y}: {fill}, {rim_fill}'
-        # The base must begin immediately behind the seat, not after an assembly gap.
-        # This catches a floating bearing plate even if head contact and insert fit both pass.
-        backing = cyl(.02, .05, 4.1) - cyl(.01, .08, 2.1)
-        backing_fill = (backing ^ local['base']).volume() / backing.volume()
-        seat_back = cyl(-.07, .05, 2.85) - cyl(-.08, .08, 2.1)
-        seat_back_fill = (seat_back ^ local['head']).volume() / seat_back.volume()
+        bearing = cyl(-bearing_t+.02,bearing_t-.04,3.15)-cyl(-bearing_t,bearing_t,1.75)
+        # A complete lower counterbore rim is required. The upper mouth has an
+        # intentional bevel; it need not enclose the top of the button head.
+        enclosure = cyl(-bearing_t-.22,.2,4.4 if front else 3.9)-cyl(-bearing_t-.23,.22,3.25)
+        fill = (bearing ^ local['head']).volume()/bearing.volume()
+        rim_fill = (enclosure ^ local['head']).volume()/enclosure.volume()
+        assert fill > .995 and rim_fill > .995, f'Incomplete screw bearing/rim at {entry}: {fill}, {rim_fill}'
+        backing = cyl(.02,.05,4.1)-cyl(.01,.08,2.1)
+        seat_back = cyl(-.07,.05,2.85)-cyl(-.08,.08,2.1)
+        backing_fill = (backing ^ local['base']).volume()/backing.volume()
+        seat_back_fill = (seat_back ^ local['head']).volume()/seat_back.volume()
         assert backing_fill > .995 and seat_back_fill > .995, \
-            f'Head seat lacks direct base backing at {x,y}: base {backing_fill}, head {seat_back_fill}'
-        interface = cyl(-.1, .2, 2.85) - cyl(-.11, .22, 2.1)
-        interface_gap = (local['head'] ^ interface).min_gap(local['base'] ^ interface, .5)
-        assert interface_gap < .01, f'Head seat floats above the insert support at {x,y}: {interface_gap} mm'
+            f'Head seat lacks direct base backing at {entry}: {backing_fill}, {seat_back_fill}'
+        interface = cyl(-.1,.2,2.85)-cyl(-.11,.22,2.1)
+        gap = (local['head'] ^ interface).min_gap(local['base'] ^ interface,.5)
+        assert gap < .01, f'Head seat floats above base at {entry}: {gap}'
+        core = cyl(.03,m['insert_depth']-.06,1.97)
+        wall = cyl(.04,m['insert_depth']-.08,3.6)-cyl(.03,m['insert_depth']-.06,2.03)
+        bottom = cyl(m['insert_depth']+.05,1.9,3.6)
+        core_overlap = (core ^ local['base']).volume()
+        wall_fill = (wall ^ local['base']).volume()/wall.volume()
+        bottom_fill = (bottom ^ local['base']).volume()/bottom.volume()
+        assert core_overlap < .01 and wall_fill > .995 and bottom_fill > .995, \
+            f'Incomplete head insert pocket/wall/2mm floor at {entry}: {core_overlap}, {wall_fill}, {bottom_fill}'
         seat = entry-axis*bearing_t
-        window = _air_box([x-3, y-12, z-3], [x+3, y+12, z+3]) if front else \
-                 _air_box([x-3, y-3, z-12], [x+3, y+3, z+12])
-        screw = local['screws_head'] ^ window
-        sb = screw.bounding_box()
-        component = 1 if front else 2
-        limits = sorted([(seat-axis*1.65)[component], (seat+axis*length)[component]])
-        assert screw.volume() > 20 and abs(sb[component]-limits[0]) < .02 \
-            and abs(sb[component+3]-limits[1]) < .02, f'Wrong head screw length or seat at {x,y}'
+        nearest = min(range(4), key=lambda i: np.linalg.norm(np.mean(np.asarray(screws[i].bounding_box()).reshape(2,3),axis=0)-seat))
+        assert nearest not in used, 'Multiple head axes selected the same screw'
+        used.add(nearest)
+        screw = screws[nearest]
+        vertices = np.asarray(screw.to_mesh().vert_properties)[:,:3]
+        projections = (vertices-entry)@axis
+        assert abs(float(projections.min())-(-bearing_t-1.65)) < .015 \
+            and abs(float(projections.max())-(length-bearing_t)) < .015, f'Wrong screw length/seat at {entry}'
         contact = (screw.translate(axis*.05) ^ local['head']).volume()
-        assert contact > .1, f'Head screw floats above its bearing at {x,y}'
-        press = cyl(-.02, 60, 3.175, -1)
-        access = (press ^ local['base']).volume()
-        assert access < .01, f'Head insert press access blocked at {x,y}: {access}'
-        rows.append(dict(axis_mm=[x, y, z], direction=axis.tolist(), insert_penetration_mm=round(penetration,3),
-                         bearing_thickness_mm=round(bearing_t,3), hole_bottom_clearance_mm=round(m['insert_depth']-penetration,3),
-                         bearing_fill=round(fill,5), enclosed_rim_fill=round(rim_fill,5), backing_fill=round(backing_fill,5),
-                         seat_back_fill=round(seat_back_fill,5), backing_gap_mm=round(interface_gap,6),
-                         screw_contact_mm3=round(contact,5), insert_access_overlap_mm3=round(access,5)))
-    return dict(head_fasteners=dict(count=4, screw_length_mm=length, seats=rows))
+        assert contact > .1, f'Head screw does not bear on its seat at {entry}'
+        access = (cyl(-.02,60,3.175,-1) ^ local['base']).volume()
+        assert access < .01, f'Insert press access blocked at {entry}: {access}'
+        rows.append(dict(entry_mm=entry.tolist(), direction=axis.tolist(), screw_length_mm=length,
+            bearing_thickness_mm=bearing_t, insert_penetration_mm=round(penetration,3),
+            hole_bottom_clearance_mm=round(m['insert_depth']-penetration,3), bearing_fill=round(fill,6),
+            enclosed_lower_rim_fill=round(rim_fill,6), backing_fill=round(backing_fill,6),
+            seat_back_fill=round(seat_back_fill,6), backing_gap_mm=round(gap,6),
+            insert_core_overlap_mm3=round(core_overlap,6), insert_wall_fill=round(wall_fill,6),
+            insert_bottom_fill=round(bottom_fill,6), screw_contact_mm3=round(contact,6), insert_access_overlap_mm3=round(access,6)))
+    return dict(head_fasteners=dict(count=4, screw_lengths_mm=[16,16,8,8], seats=rows))
+
+
+def check_front_mat_contact(ctx):
+    """Permit only the two deliberately rounded front wells under the soft mat."""
+    m = ctx.metrics
+    local = {n:ctx.manifold(head_frame(ctx.meshes[n],m)) for n in ('head','screws_head','filter')}
+    zones = [_air_box([12,4.8,60.49],[27,15.2,63.21]), _air_box([118,4.8,60.49],[133,15.2,63.21])]
+    allowed = zones[0]+zones[1]
+    rows = {}
+    total = 0.
+    for name, limit in [('head',2.7),('screws_head',2.49)]:
+        contact = local[name] ^ local['filter']
+        volume = contact.volume()
+        outside = (contact-allowed).volume()
+        # Facet-coincident mat faces can leave negligible remote slivers; test
+        # their total volume separately, then measure depth inside the allowed zones.
+        bounded = contact ^ allowed
+        depth = float(bounded.bounding_box()[5]-60.5) if bounded.volume() > 1e-6 else 0.
+        assert outside < .01 and depth <= limit+.002, \
+            f'Unexpected mat contact by {name}: outside {outside} mm3, depth {depth} mm'
+        assert all((contact ^ zone).volume() > .1 for zone in zones), f'Missing reviewed local mat contact: {name}'
+        rows[name] = dict(volume_mm3=round(volume,6), maximum_local_deflection_mm=round(depth,6),
+                          outside_allowed_zones_mm3=round(outside,8))
+        total += volume
+    assert total < 330, f'Front hardware displaces too much nominal mat volume: {total} mm3'
+    ctx.open_items.append('The soft filter mat bends locally by up to 2.7 mm over two bevelled screw wells; '
+                          'only the two measured contact zones are allowed. No compression force or flexible deformation is simulated.')
+    return dict(front_mat_contact=dict(contacts=rows, total_nominal_displacement_mm3=round(total,6),
+        allowed_zones_mm=[[[12,4.8,60.49],[27,15.2,63.21]],[[118,4.8,60.49],[133,15.2,63.21]]]))
+
+
+def check_front_ratchet_access(ctx):
+    """Conservative ratchet envelope; exact translations and bounded swing.
+
+    The cassette and flexible mat are removed. Head, fan, support cross and all
+    electronics stay installed. Tool dimensions are assumptions, not measured
+    Wera hardware; the full 25-mm bit is represented above the head outer face.
+    """
+    m = ctx.metrics
+    axes = np.asarray(m['head_axes'], float)
+    assert axes.shape == (4, 8), 'Ratchet check needs per-screw entry, direction, bearing and length'
+    expected = np.array([[9.1, 10, 52, -math.sin(math.radians(40)), 0, -math.cos(math.radians(40)), 10.3, 16],
+                         [135.9, 10, 52, math.sin(math.radians(40)), 0, -math.cos(math.radians(40)), 10.3, 16]])
+    assert np.allclose(axes[:2], expected, atol=.001), 'Revalidate ratchet route for changed front screws'
+    local = {n: ctx.manifold(head_frame(mesh, m)) for n, mesh in ctx.meshes.items()
+             if n not in ('filter', 'cassette') and not n.startswith('driver_')}
+    exported = ctx.manifold(head_frame(ctx.meshes['driver_head'], m))
+    rows = []
+
+    def cylinder(radius, bottom, height, segments=96):
+        return md.Manifold.cylinder(height, radius, radius, segments).translate([0, 0, bottom])
+
+    def exact_translation(parts, start, delta):
+        # Every part here is convex. Its endpoint hull equals its exact sweep;
+        # union the four sweeps rather than hull the concave complete ratchet.
+        return md.Manifold.batch_boolean([
+            md.Manifold.batch_hull([p.translate(start), p.translate(start+delta)])
+            for p in parts], md.OpType.Add)
+
+    def collisions(q):
+        return {n: round((q ^ ob).volume(), 8) for n, ob in local.items()}
+
+    for entry_x, y, z, dx, dy, dz, bearing, length in axes[:2]:
+        entry = np.array([entry_x, y, z])
+        u = -np.array([dx, dy, dz])
+        seat = entry + bearing*u
+        face = seat + 1.65*u
+        width = np.array([u[2], 0., -u[0]])
+        frame = np.c_[np.column_stack([width, [0., 1., 0.], u]), face]
+
+        def parts(swing=0):
+            # Ø7.4 contains every orientation of the 6.35-AF hex shank.
+            return [cylinder(2, 0, 6, 64).transform(frame),
+                    cylinder(3.7, 6, 19).transform(frame),
+                    cylinder(11, 9, 14).transform(frame),
+                    _air_box([-7, -76, 9], [7, 0, 23]).rotate([0, 0, swing]).transform(frame)]
+
+        ps = parts()
+        tool = md.Manifold.batch_boolean(ps, md.OpType.Add)
+        # Require that the exported driver contains the complete body and bit;
+        # this catches accidentally keeping only a short stylized tool tip.
+        inner = md.Manifold.batch_boolean([
+            cylinder(1.95, .05, 5.9, 64).transform(frame),
+            cylinder(3.65, 6.05, 18.9).transform(frame),
+            cylinder(10.95, 9.05, 13.9).transform(frame),
+            _air_box([-6.95, -75.95, 9.05], [6.95, -.05, 22.95]).transform(frame)], md.OpType.Add)
+        presence = (inner ^ exported).volume()/inner.volume()
+        assert presence > .999, f'Exported front ratchet/25-mm bit is incomplete at x={entry_x}: {presence}'
+        installed = collisions(tool)
+        assert max(installed.values(), default=0) < .01, f'Front ratchet does not fit: {installed}'
+
+        # Start wholly outside the intake: raise9mm along the bit axis, then
+        # translate50mm forwards. Enter horizontally and lower along the axis.
+        initial = 9*u + np.array([0., -50., 0.])
+        first = exact_translation(ps, initial, np.array([0., 50., 0.]))
+        second = exact_translation(ps, 9*u, -9*u)
+        assert tool.translate(initial).bounding_box()[4] < -5, 'Ratchet route does not start outside the intake'
+        entry_hits, seating_hits = collisions(first), collisions(second)
+        assert max(entry_hits.values(), default=0) < .01, f'Ratchet entry is blocked: {entry_hits}'
+        assert max(seating_hits.values(), default=0) < .01, f'Ratchet seating/bit channel is blocked: {seating_hits}'
+
+        # The round bit envelope and head do not change when the handle swings.
+        # Check±6 degrees at0.1-degree spacing; every unsampled handle point is
+        # within0.066604mm of a sample (r<=hypot(76,7), angle<=0.05degree).
+        swing_fixed = md.Manifold.batch_boolean(list(local.values()), md.OpType.Add)
+        sampled_gap = 10.
+        swing_peak = 0.
+        for angle in np.linspace(-6, 6, 121):
+            pp = parts(float(angle))
+            body = pp[2] + pp[3]
+            swing_peak = max(swing_peak, (body ^ swing_fixed).volume())
+            sampled_gap = min(sampled_gap, body.min_gap(swing_fixed, 10))
+        bound = float(2*np.hypot(76, 7)*np.sin(np.deg2rad(.05)/2))
+        guaranteed_gap = sampled_gap-bound
+        assert swing_peak < .01 and guaranteed_gap > .1, \
+            f'Ratchet needs a free 6-degree operating stroke: gap bound {guaranteed_gap}, overlap {swing_peak}'
+        rows.append(dict(insert_entry_mm=entry.tolist(), screw_seat_mm=seat.tolist(), exported_tool_fill=round(presence,6),
+            installed_overlap_mm3=installed, entry_swept_overlap_mm3=entry_hits,
+            seating_swept_overlap_mm3=seating_hits, entry_head_gap_mm=round(first.min_gap(local['head'],10),6),
+            swing_degrees=[-6,6], swing_sample_spacing_degrees=.1, sampled_body_gap_mm=round(sampled_gap,6),
+            between_sample_motion_bound_mm=round(bound,6), continuous_swing_gap_lower_bound_mm=round(guaranteed_gap,6)))
+
+    ctx.summary.append('Front screws: full ratchet/25-mm bit enters from the empty intake and has a verified 6-degree operating stroke')
+    ctx.open_items.append('Ratchet envelope is assumed: 22 mm head diameter, 14 mm head thickness, 87 mm overall length, 14 mm handle width; '
+                          '25 mm bit, 2 mm engagement, 4 mm neck for 6 mm above the screw face. Actual tool dimensions are not measured.')
+    return dict(front_ratchet_access=dict(assembly_stage='Cassette and flexible mat removed; support cross, fan and electronics remain fitted',
+        assumed_tool=dict(head_diameter_mm=22,head_thickness_mm=14,overall_length_mm=87,handle_width_mm=14,
+                          bit_length_mm=25,engagement_mm=2,body_bottom_above_screw_face_mm=9,hex_corner_envelope_mm=7.4),
+        insertion_route='9 mm up the screw axis; enter 50 mm through the front; lower 9 mm along the screw axis',
+        method='Exact convex-piece translation sweeps; handle swing bounded between 0.1-degree samples',screws=rows))
 
 
 def check_lid_fasteners(ctx):
@@ -1018,7 +1159,7 @@ def check_pwm_removal(ctx):
                       for d in np.linspace(0, 4.5, 46)]),
         ('clear_rim', [pose(rear=8.6, angle=35, postrear=7.9+d, postup=3.9)
                       for d in np.linspace(0, 2, 21)]),
-        # The shaft is already free; centre the board left of the rear-right tongue.
+        # The shaft is already free; centre the board left of the rear-right screw boss.
         ('side_clear', [pose(rear=8.6, angle=35, postrear=9.9, postup=3.9).translate([-d, 0, 0])
                         for d in np.linspace(0, 6.5, 66)]),
         ('up', [pose(rear=8.6, angle=35, postrear=9.9, postup=3.9+d).translate([-6.5, 0, 0])
@@ -1388,9 +1529,9 @@ def checks(ctx):
         ("switch_out", "switch", ["base", "ball_lid", "battery", "pwm_board", "pot", "usbc", "led", "ballast"],
          [1, 0, 0], 35, .1),
         ("fan_out", ["fan", "screws_fan"], ["head", "base", "filter_support"], [-o for o in out], 40, 0.5),   # cover off first
-        # Cassette and back/fan assembly are removed to reach the four corner screws.
-        # The mat and its support may remain in the head during removal.
-        ("head_off", ["head", "filter", "filter_support", "magnets"],
+        # Cassette, mat and back/fan assembly are removed to reach the screws.
+        # The support cross may remain in the head during removal.
+        ("head_off", ["head", "filter_support", "magnets"],
          ["base", "battery", "pwm_board", "usbc", "switch", "pot", "led", "ball_lid", "ballast",
           "chg_module", "chg_sink", "chg_tie", "battery_bridges", "battery_ties"], up, 60, 1),
         # Cut and remove both ties before lifting the battery with its loose bridges.
@@ -1408,9 +1549,10 @@ def checks(ctx):
     probes = ctx.insert_probes(
         [("head_back", _tilt(m, [p[0], m["head_y"][3], p[1]]), back, depth, d, w) for p in m["fan_holes"]] +
         [("head", _tilt(m, [p[0], m["back_y"], p[1]]), out, depth, d, w) for p in m["head_bosses"]] +
-        [("base", _tilt(m, [x, thickness, z] if y == 0 else [x, y, z]),
-          back if y == 0 else [-v for v in up], depth, d, w)
-         for x,y,z,thickness,recess in m["head_axes"]] +
+        [("base", _tilt(m, row[:3]),
+          [row[3], row[4]*math.cos(tilt)-row[5]*math.sin(tilt),
+           row[4]*math.sin(tilt)+row[5]*math.cos(tilt)], depth, d, w)
+         for row in m["head_axes"]] +
         [("base", [p[0], p[1], 0], [0, 0, 1], depth, d, w) for p in _foot_xy(m)] +
         [("base", [p[0], p[1], m["ballast"][3]], [0, 0, -1], depth, d, w)
          for p in m["ballast_posts"]])
@@ -1423,8 +1565,8 @@ def checks(ctx):
     mat_free = y0 + (m["chamber"][0] - MAT[0]) / (2 * lip) * (y1 - y0) - (m["head_y"][0] + MAT[2])
     fan_gap = m["head_y"][2] - (m["head_y"][0] + MAT[2])
     assert 0 < mat_free < 0.25 * fan_gap, f"Mat travels {mat_free:.1f} mm of the {fan_gap:.1f} mm to the fan"
-    # The rigid nominal mat must not be displaced by the head or its rear support.
-    # Flexible bulging towards the central cross is outside this envelope check.
+    # Total nominal mat displacement is reported here; check_front_mat_contact
+    # bounds the only allowed intersections to the two front screw wells.
     squashed = (ctx.solids["filter"] ^ ctx.solids["head"]).volume()
     mat = MAT[0] * MAT[1] * MAT[2]
     assert squashed < 0.05 * mat, f"Head displaces {squashed / mat:.1%} of the mat"
@@ -1454,7 +1596,7 @@ def checks(ctx):
                 foot_polygon_mm=poly, tip_margins_mm={k: round(v, 1) for k, v in margins.items()},
                 tip_angle_deg=round(tip_angle, 1), **check_top_corners(ctx), **check_joint_profile(ctx),
                 **check_rim_chamfers(ctx), **check_charger_air(ctx), **check_charger_holder(ctx),
-                **check_lid_fasteners(ctx), **check_head_fasteners(ctx), **check_pwm_mount(ctx), **check_pwm_removal(ctx), **check_usb_wire_access(ctx), **check_ballast_cover(ctx),
+                **check_lid_fasteners(ctx), **check_head_fasteners(ctx), **check_front_mat_contact(ctx), **check_front_ratchet_access(ctx), **check_pwm_mount(ctx), **check_pwm_removal(ctx), **check_usb_wire_access(ctx), **check_ballast_cover(ctx),
                 **check_switch_trough_clearance(ctx), **check_filter_support(ctx), **check_led_window(ctx), **check_usb_support(ctx),
                 **check_battery_retention(ctx), **check_battery_ties(ctx), **check_usb_installation(ctx), **check_usb_fit(ctx), **check_loaded_lid_removal(ctx))
 
@@ -1503,7 +1645,7 @@ VIEWER = dict(
            ("magnets", "Magnets 10 x 3", "bought", "#9aa0a6", "8x", [0, -1.2, 0.9]),
            ("screws_fan", "Screws M3 x 30", "bought", "#9aa0a6", "4x", [0, 0.9, 1.35]),
            ("screws_back", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, 2.8, 0.6]),
-           ("screws_head", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, -0.3, 1.6]),
+           ("screws_head", "Head screws", "bought", "#9aa0a6", "2x M3 x 8 + 2x M3 x 16", [0, -0.3, 1.6]),
            ("screws_feet", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, 0, -1.0]),
            ("screws_pwm", "PCB screws 2.5 x 8", "bought", "#9aa0a6", "2x", [0, 0, 0.9]),
            ("screws_lid", "Lid screws M3 x 8", "bought", "#9aa0a6", "2x", [0, 0, 1.1]),
@@ -1540,7 +1682,7 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
                            "head_at() intersection() { head_raw(); "
                            "translate([-1, -1, base_h - 0.1]) cube([body_w + 2, body_d + 2, 28]); } "
                            "color(\"#414950\") screws_head(socket = true);",
-                           "180,-140,250,72.5,37,52"),
+                           "72.5,-160,280,72.5,37,52"),
          "10_pwm_mount": ("color(\"#8a9096\") intersection() { base(); "
                           "translate([96, 1, 0]) cube([41, 45, pwm_z0 + 0.1]); } "
                           "color(\"#2f5d3a\") translate([0, 0, 5]) intersection() { pwm_board_env(); "

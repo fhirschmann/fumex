@@ -274,26 +274,28 @@ screw_clear_d = 3.4;
 screw_head_d = 5.7;
 screw_head_h = 1.65;
 head_pocket = [6.4, 1.9];
-// Front corner screws enter base tongues; the rear pair clamps the floor directly to base inserts.
-// Remove the cassette and back/fan assembly for straight access; no angled ratchet is assumed.
-rim_screws = [[7.5, 0], [137.5, 0], [25, 66], [131, 66]]; // front-face and rear-floor axes in the head frame
-rim_axis_z = base_h;       // rear insert entry at the joint, in the tilted head frame
-rim_front_z = base_h + 20; // raised over the lower magnets, outside the PWM PCB
-rim_front_t = 4.5;         // local face thickness preserves the magnet-pocket backs
-rim_front_recess = 2.45;   // 2.05 mm bearing and 5.95 mm M3 x 8 engagement
-rim_front_pad = 0.35;      // preserve the lateral strip of the existing magnet backing
+// Four screws clamp directly into base inserts. The front pair slopes 40 degrees outwards.
+rim_screws = [[9.1, 10], [135.9, 10], [25, 66], [131, 66]];
+rim_front_angle = 40;
+rim_front_entry_z = 52.0;   // actual angled insert-face height in the head frame
+rim_front_well_d = 9.8;
+rim_front_well_c = 0.3;
+rim_front_mouth_c = 0.2;
+rim_front_bearing = 10.3;    // M3 x 16 leaves 5.7 mm in the base insert
+rim_front_well_top = 63.2;  // the soft mat bends locally over the two rounded well rims
 rim_seat_d = 8.8;
-rim_recess = 0.7;            // rear floor: 2.3 mm bearing and 5.7 mm M3 x 8 engagement
+rim_recess = 0.7;           // rear floor: 2.3 mm bearing and 5.7 mm M3 x 8 engagement
 rim_rear_boss_d = 10;
-rim_rear_boss_len = 9;       // 7 mm insert pocket with a 2 mm floor
+rim_rear_boss_len = 9;
 rim_boss_d = 9.2;
-rim_tab_gap = 0.25;
-rim_tab_depth = 9;           // 7 mm insert pocket and 2 mm closed end
+rim_boss_depth = 9;         // 7 mm insert pocket and 2 mm closed end
+rim_fit_gap = 0.25;         // side clearance, never between the clamping faces
 // ISO 7380 button head Torx from the user's set (M3 x 6, 8, 10, 12, 16, 25) except the fan screws
 len_lid = 8;         // 1.8 mm lid bearing plus 6.2 mm into the 7 mm insert pocket
 len_fan = 30;        // M3 x 30, bought: through the 25 mm frame, 5 mm of thread in the insert
 len_back = 8;
 len_head = 8;
+len_head_front = 16;
 len_foot = 8;
 
 // ---------- derived values ----------
@@ -329,12 +331,13 @@ function mag_xz() = [for (sx = [-1, 1], sz = [-1, 1]) [body_w / 2 + sx * mag_off
 function head_bosses() = [for (sx = [-1, 1], z = [base_h + boss_bottom, base_h + head_h - boss_inset])
                           [body_w / 2 + sx * (body_w / 2 - boss_inset), z]];
 function rim_bosses() = rim_screws;
-function rim_z(p) = p[1] == 0 ? rim_front_z : rim_axis_z;
-function rim_dir(p) = p[1] == 0 ? 1 : -1;
-function rim_recess_at(p) = rim_dir(p) > 0 ? rim_front_recess : rim_recess;
-function rim_wall_at(p) = rim_dir(p) > 0 ? rim_front_t : wall;
-function rim_seat(p) = p[1] + rim_dir(p) * rim_recess_at(p);
-function rim_mouth(p) = p[1] + rim_dir(p) * (rim_wall_at(p) + (rim_dir(p) > 0 ? 0 : rim_tab_gap));
+function rim_dir(p) = p[1] < body_d / 2 ? 1 : -1;
+function rim_entry(p) = [p[0], p[1], rim_dir(p) > 0 ? rim_front_entry_z : base_h];
+function rim_axis(p) = rim_dir(p) > 0 ?
+    [(p[0] < body_w/2 ? -1 : 1) * sin(rim_front_angle), 0, -cos(rim_front_angle)] : [0, 0, -1];
+function rim_bearing(p) = rim_dir(p) > 0 ? rim_front_bearing : wall - rim_recess;
+function rim_length(p) = rim_dir(p) > 0 ? len_head_front : len_head;
+function rim_seat_point(p) = rim_entry(p) - rim_axis(p) * rim_bearing(p);
 // lowest point of the cell over y, or clear of it altogether
 function bat_low(y) = abs(y - bat_cy) >= bat_d / 2 + bat_clear ? 1e6
                     : bat_cz - sqrt(pow(bat_d / 2 + bat_clear, 2) - pow(y - bat_cy, 2));
@@ -391,7 +394,7 @@ assert(bat_stop_top <= bat_cz + bat_d / 4 - 1,
        "Battery stop must stay below the BMS and cable exit");
 assert(foot_boss[1] - insert_depth >= 1.2, "Foot insert pocket floor thinner than three perimeters");
 assert(floor_t - foot_peg[1] >= 3 * 0.4, "Floor under the foot peg holes thinner than three perimeters");
-assert(min([for (p = rim_bosses()) len_head - rim_wall_at(p) + rim_recess_at(p)]) >= insert_len - eps,
+assert(min([for (p = rim_bosses()) rim_length(p) - rim_bearing(p)]) >= insert_len - eps,
        "Head screws must engage the complete 5.7 mm insert");
 
 // ---------- helpers ----------
@@ -541,29 +544,41 @@ module back_rim_chamfer(path, y, c) let(sweep_eps = 1 / 1024) difference() {
 }
 
 // ---------- head: shell, filter chamber, fan seat (untilted frame) ----------
-module rim_tab_profile(p, grow = 0, bottom = base_h - 0.5) let (r = rim_boss_d / 2 + grow)
-    hull() {
-        translate([p[0], rim_z(p)]) circle(r = r);
-        translate([p[0] - r, bottom]) square([2 * r, rim_z(p) - bottom]);
-    }
-module rim_tab_raw(p, grow = 0, bottom = base_h - 0.5) let (
-    a = rim_mouth(p), b = a + rim_dir(p) * rim_tab_depth)
-    along_y(min(a, b) - grow, max(a, b) + grow) rim_tab_profile(p, grow, bottom);
-// The front bearing face meets the base tongue directly; clearance is only lateral and above.
-module rim_front_window(p) let (a = rim_mouth(p))
-    along_y(a, a + rim_tab_depth + rim_tab_gap)
-        rim_tab_profile(p, rim_tab_gap, base_h - 1);
-module rim_head_windows() for (p = rim_bosses()) if (rim_dir(p) > 0) rim_front_window(p);
-module rim_head_seats() for (p = rim_bosses()) if (rim_dir(p) > 0)
-    along_y(0, rim_wall_at(p)) rim_tab_profile(p, rim_tab_gap + 0.1, base_h);
-module rim_head_holes() for (p = rim_bosses()) if (rim_dir(p) > 0) let (
-    a = p[1] - eps, b = p[1] + rim_wall_at(p) + eps) {
-    cyl_y([p[0], rim_z(p)], a, b, screw_clear_d / 2);
-    cyl_y([p[0], rim_z(p)], a, rim_seat(p), head_pocket[0] / 2);
-} else {
-    translate([p[0], p[1], base_h - 1]) cylinder(d = screw_clear_d, h = wall + 2);
-    translate([p[0], p[1], base_h + wall - rim_recess])
-        cylinder(d = head_pocket[0], h = rim_recess + 1);
+// Local z follows the screw axis; t is the distance into the base from its insert entry.
+module rim_at(p, t = 0) translate(rim_entry(p) + rim_axis(p) * t)
+    if (rim_dir(p) > 0) rotate([0, (p[0] < body_w/2 ? -1 : 1) * (180-rim_front_angle), 0]) children();
+    else rotate([180, 0, 0]) children();
+module rim_front_boss(p) rim_at(p) cylinder(d = rim_boss_d, h = rim_boss_depth);
+module rim_front_well(p) let (e = rim_entry(p), d = rim_axis(p), z0 = base_h-10,
+    slope = d[0]/d[2], radius = rim_front_well_d/2,
+    outline = [for (i = [0:95]) [radius*cos(i*360/96)/cos(rim_front_angle), radius*sin(i*360/96)]]) difference() {
+    // A sheared ellipse is the horizontal section of the inclined cylindrical well.
+    // Bevel its true top perimeter, then end the lower face on the insert's angled plane.
+    translate([e[0]+slope*(z0-e[2]), e[1], z0])
+        multmatrix([[1,0,slope,0], [0,1,0,0], [0,0,1,0], [0,0,0,1]])
+            offset_sweep(outline, height = rim_front_well_top-z0,
+                top = os_chamfer(height = rim_front_well_c, width = rim_front_well_c));
+    rim_at(p) translate([-30,-30,0]) cube([60,60,50]);
+}
+module rim_head_seats() for (p = rim_bosses()) if (rim_dir(p) > 0) rim_front_well(p);
+module rim_head_windows() for (p = rim_bosses()) if (rim_dir(p) > 0)
+    // Keep the angled clamp plane, but clear the boss throughout normal head removal.
+    hull() for (drop = [0, 10]) translate([0, 0, -drop])
+        rim_at(p) cylinder(d = rim_boss_d+2*rim_fit_gap, h = rim_boss_depth+1);
+module rim_front_mouth(p) let (e = rim_entry(p), d = rim_axis(p),
+    z0 = rim_front_well_top-rim_front_mouth_c, slope = d[0]/d[2],
+    radius = head_pocket[0]/2,
+    outline = [for (i = [0:95]) [radius*cos(i*360/96)/cos(rim_front_angle), radius*sin(i*360/96)]])
+    translate([e[0]+slope*(z0-e[2]), e[1], z0])
+        multmatrix([[1,0,slope,0], [0,1,0,0], [0,0,1,0], [0,0,0,1]])
+            offset_sweep(offset(outline, delta = rim_front_mouth_c),
+                height = rim_front_mouth_c+2*eps,
+                bottom = os_chamfer(height = rim_front_mouth_c, width = rim_front_mouth_c));
+module rim_head_holes() for (p = rim_bosses()) {
+    rim_at(p, -rim_bearing(p)-eps) cylinder(d = screw_clear_d, h = rim_bearing(p)+2*eps);
+    // The counterbore opens fully into the chamber for tool insertion.
+    rim_at(p, -rim_bearing(p)-30) cylinder(d = head_pocket[0], h = 30);
+    if (rim_dir(p) > 0) rim_front_mouth(p);
 }
 module head_raw() difference() {
     intersection() { plan_prism(); head_body(); }
@@ -844,7 +859,7 @@ module base() difference() {
        joint_halfspace();
        joint_neck();
       }
-      // Add the roots and tongues after the joint cuts so the neck cannot sever their connection.
+      // Add complete insert faces after the joint cuts; their wall roots are clipped separately.
       rim_boss_bodies();
     }
     // That plane rises 15 degrees towards the back, so it meets the vertical back face at 75 degrees and
@@ -864,10 +879,7 @@ module base() difference() {
     sw_cuts();
     vent_slots();
     ballast_screw_holes();
-    for (p = rim_bosses()) head_at() if (rim_dir(p) > 0)
-        translate([p[0], rim_mouth(p) - eps, rim_z(p)])
-            axis_orient([0, 1, 0]) cylinder(d = insert_hole_d, h = insert_depth + eps);
-    else translate([p[0], p[1], base_h - insert_depth])
+    for (p = rim_bosses()) head_at() rim_at(p, -eps)
         cylinder(d = insert_hole_d, h = insert_depth + eps);
     for (p = foot_xy) translate([p[0], p[1], -1]) cylinder(d = insert_hole_d, h = insert_depth + 1);
     for (p = foot_xy) translate([p[0] + foot_peg[2], p[1], -eps])
@@ -1131,22 +1143,25 @@ module ballast_env() difference() {
     // the insert pockets of the rear feet are sealed voids under a 2 mm cap: no resin gets in there
     for (p = foot_xy) translate([p[0], p[1], -1]) cylinder(d = insert_hole_d + 0.4, h = insert_depth + 1);
 }
-// Front locating tongues carry horizontal inserts; the rear inserts open at the joint.
-// Their inclined roots merge into the nearest wall without separate support material.
+// Angled front insert bosses retain their complete end faces above the joint.
+// The wall-root hulls are clipped below it, preserving the exterior joint rounding.
 module rim_boss_bodies() for (p = rim_bosses()) if (rim_dir(p) > 0) {
-    head_at() rim_tab_raw(p);
+    // Trim only the remote outer tip; the complete inclined clamping face remains intact.
+    intersection() {
+        head_at() rim_front_boss(p);
+        translate([0, 0, -1]) linear_extrude(101) base_outline();
+    }
     difference() {
-      intersection() {
-        base_joint_envelope();
-        hull() {
-            head_at() rim_tab_raw(p);
-            translate([p[0] - rim_boss_d / 2,
-                       rim_dir(p) > 0 ? 0 : body_d - wall,
-                       rim_dir(p) > 0 ? base_top(0) - 10 : base_top(body_d) - 24])
-                cube([rim_boss_d, wall, 2]);
+        intersection() {
+            base_joint_envelope();
+            head_at() hull() {
+                rim_front_boss(p);
+                translate([p[0] < body_w/2 ? 0 : body_w-wall, 5.4, 29])
+                    cube([wall, p[0] < body_w/2 ? 4.6 : 9.2, base_h-29]);
+            }
         }
-      }
-      joint_halfspace();
+        joint_halfspace();
+        joint_neck();
     }
 } else difference() {
     intersection() {
@@ -1286,9 +1301,8 @@ module screw(len, socket = false) difference() {
 // bench, before it goes into the head
 module screws_fan(socket = false) head_at() for (p = fan_holes()) translate([p[0], head_y[2], p[1]]) axis_orient([0, 1, 0]) screw(len_fan, socket);
 module screws_back(socket = false) head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) axis_orient([0, -1, 0]) screw(len_back, socket);
-module screws_head(socket = false) head_at() for (p = rim_bosses()) if (rim_dir(p) > 0)
-    translate([p[0], rim_seat(p), rim_z(p)]) axis_orient([0, 1, 0]) screw(len_head, socket);
-else translate([p[0], p[1], base_h + wall - rim_recess]) axis_orient([0, 0, -1]) screw(len_head, socket);
+module screws_head(socket = false) head_at() for (p = rim_bosses())
+    rim_at(p, -rim_bearing(p)) screw(rim_length(p), socket);
 module screws_lid(socket = false) for (q = ball_posts())
     translate([q[0], q[1], ball[3] + ball_lid_t - lid_pocket]) axis_orient([0, 0, -1]) screw(len_lid, socket);
 module screws_feet(socket = false) for (p = foot_xy) translate([p[0], p[1], -foot[2] + foot_head_recess + screw_head_h]) axis_orient([0, 0, 1]) screw(len_foot, socket);
@@ -1309,11 +1323,33 @@ module driver_at() translate([0, 0, -screw_head_h]) mirror([0, 0, 1]) {
     translate([0, 0, driver[1] - eps]) cylinder(d = driver[2], h = driver[3] + eps);
     translate([0, 0, driver[1] + driver[3] - eps]) cylinder(d = driver[4], h = driver[5] + eps);
 }
+// Conservative, unmeasured Wera-style access envelope. Coordinates are relative
+// to the outside face of the ISO7380 screw head; no tool enters the solid screw.
+// Full 25-mm bit length is retained above that face (2 mm extra conservatism).
+// A real 25-mm bit engaging 2 mm with a 14-mm ratchet head leaves its head's
+// lower face 9 mm above the screw face. Do not move that face up with the bit.
+module front_ratchet_local(swing = 0) {
+    cylinder(d = 4, h = 6, $fn = 64);
+    translate([0, 0, 6 - eps]) cylinder(d = 7.4, h = 19 + eps, $fn = 96);
+    translate([0, 0, 9]) cylinder(d = 22, h = 14, $fn = 96);
+    rotate([0, 0, swing]) translate([-7, -76, 9]) cube([14, 76, 14]);
+}
+// rim_axis() points into the insert. Keep the ratchet handle forwards in -Y
+// while its bit points inwards/upwards away from the sloping front screw.
+module front_ratchet_at(p, swing = 0) let (
+    u = -rim_axis(p),
+    q = rim_seat_point(p) + u * screw_head_h
+) translate(q) multmatrix([
+    [u[2], 0, u[0], 0],
+    [0,    1, 0,    0],
+    [-u[0],0, u[2], 0],
+    [0,    0, 0,    1]
+]) front_ratchet_local(swing);
 module drivers_fan()  head_at() for (p = fan_holes())   translate([p[0], head_y[2], p[1]]) axis_orient([0, 1, 0]) driver_at();
 module drivers_back() head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) axis_orient([0, -1, 0]) driver_at();
-module drivers_head() head_at() for (p = rim_bosses()) if (rim_dir(p) > 0)
-    translate([p[0], rim_seat(p), rim_z(p)]) axis_orient([0, 1, 0]) driver_at();
-else translate([p[0], p[1], base_h + wall - rim_recess]) axis_orient([0, 0, -1]) driver_at();
+module drivers_head() head_at() for (p = rim_bosses())
+    if (rim_dir(p) > 0) front_ratchet_at(p);
+    else rim_at(p, -rim_bearing(p)) driver_at();
 module drivers_feet() for (p = foot_xy) translate([p[0], p[1], -foot[2] + foot_head_recess + screw_head_h]) axis_orient([0, 0, 1]) driver_at();
 module drivers_lid()  for (q = ball_posts()) translate([q[0], q[1], ball[3] + ball_lid_t - lid_pocket]) axis_orient([0, 0, -1]) driver_at();
 
@@ -1350,10 +1386,10 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["corner_r", corner_r], ["plan_r", plan_r], ["edge_c", edge_c], ["mag_off", mag_off],
     ["wall", wall], ["tilt", tilt], ["body", [body_w, body_d]], ["head_h", head_h],
     ["fan_insert_front", lug_d - insert_depth], ["fan_thread", len_fan - fan_t],
-    ["head_thread", min([for (p = rim_bosses()) len_head - rim_wall_at(p) + rim_recess_at(p)])],
+    ["head_thread", min([for (p = rim_bosses()) rim_length(p) - rim_bearing(p)])],
     ["head_screw", [rim_recess, len_head, rim_seat_d]],
-    ["head_mount", [rim_axis_z, front_t, rim_boss_d, rim_tab_gap, rim_tab_depth]],
-    ["head_axes", [for (p = rim_bosses()) [p[0], p[1], rim_z(p), rim_wall_at(p), rim_recess_at(p)]]],
+    ["head_mount", [rim_front_angle, rim_front_well_top, rim_boss_d, rim_fit_gap, rim_boss_depth]],
+    ["head_axes", [for (p = rim_bosses()) concat(rim_entry(p), rim_axis(p), [rim_bearing(p), rim_length(p)])]],
     ["chamber", [chamber_sq, chamber_d]], ["open_sq", open_sq],
     ["head_y", head_y], ["mat_stop", mat_stop_y()], ["mat_support", mat_support],
     ["magnet_pocket", mag], ["pot_mount_t", pot_mount_t], ["front_rim_z", base_top(0)],
