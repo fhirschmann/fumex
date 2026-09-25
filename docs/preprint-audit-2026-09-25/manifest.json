@@ -1,0 +1,24 @@
+{
+  "audited_commit": "4a11856a99f9fa5a5ec1200dd7cae6f7c7e18762",
+  "source_sha256": "152bdde96866f33b4eff4f85b12d2b582b43e39602d3c16a702fa8b487168946",
+  "files": {
+    "fumex.scad": "152bdde96866f33b4eff4f85b12d2b582b43e39602d3c16a702fa8b487168946",
+    "print_project.py": "b0a2345d1dd32c8d281db202c253019cf7ff5669e1bb03db2b1662e9c877b856",
+    "docs/index.html": "834b76f1d52e8580bf5781d01acda885d8ea903635b6621d970f2dbfa7e7f4a7",
+    "stl/fumex_all_parts.3mf": "44a38e1d811f3bb8351d791a97c76d54a472be8644009309627cdb6137fcdcac",
+    "stl/fumex_usb_fit.3mf": "d4694d73806711e534a5782f58ffc7fcd7745a7625c63c10095b05bc96aa4124"
+  },
+  "scope": "Audit only; model, print profiles and print artifacts unchanged. Current exports and slices were produced in the immediately preceding model-change loop and their hashes were independently verified.",
+  "external_sources": [
+    {
+      "url": "https://www.extrudr.com/en/gb/products/xpetg-matt/",
+      "checked": "2026-09-25",
+      "use": "Material manufacturer recommendations: nozzle210–240°C, bed60–90°C, cooling20–50%, volumetric12mm³/s; HDT/B67°C and density1.36g/cm³."
+    },
+    {
+      "url": "https://www.arctic.de/media/2c/de/c6/1750758983/Spec_Sheet_P12_Pro_PST_EN.pdf",
+      "checked": "2026-09-25",
+      "use": "P12 Pro PST0.33A at12V and120×120×25mm frame."
+    }
+  ]
+}
