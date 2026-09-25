@@ -81,6 +81,12 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     height includes components, so an actual bare PCB bearing patch is not established by this
     envelope. Both lateral wire routes remain open: x101.5..103.5
     and x108.5..110.5, checked at the end and above/below the board with the lid installed.
+    Two low triangular cheeks reinforce its root (user, 2026-09-25). They span
+    x102..104.2 and x107.8..110, overlap the stem by 0.2 mm and grow 8 mm above
+    the z29 lid. Their feet run from y53.2 to y61.2; their top edges slope down
+    towards the rear. The wider and longer attachment supports bending from USB
+    insertion while the upper 4 mm keeper and both cable exits remain unchanged.
+    They print as part of the lid without supports and also appear in the fit coupon.
   - Two narrow 2 mm side-guide gussets carry the USB channel from the rear wall, at
     x98.625..100.625 and x111.375..113.375. The old broad inner right gusset is removed; the rear
     seat now bridges 10.75 mm. The **lid has no USB slots or seat recess**. Both support undersides
@@ -591,3 +597,11 @@ they do not validate the subsequent geometry.
 - Source SHA256 `fd2fbc0cf9d9d500c3e94c05c317dcb5912706031bdcfc5565e9813130792e07`; report `docs/recessed-front-screws-2026-09-25.md`. Full export PASS: eleven closed single-body meshes, zero degenerate faces, 445 coaxial feature pairs, 595 assembly pairs and ten standard paths. Measured front pocket depth is 0.699999 mm on both sides. All bearing/rim/backing/insert probes pass; PWM service and the ratchet route pass, with at least 0.902039 mm continuously bounded swing clearance for the assumed tool.
 - Local nominal mat overlap is 379.548611 mm3 (head 280.800581, screws 98.748029), maximum depths 1.8/2.75 mm, gate 400 mm3. All four print analyses are CLEAN on all eleven meshes. All eleven individual slices, four production plates and the USB fit plate pass without warnings or supports. Production 477.3 g / 15.9 h arranged, 477.8 g / 17.2 h individually; USB fit 9.9 g / 62 min. Assembled estimate remains 1013.9 g, front margin 28.3 mm and tip angle 21.0 degrees.
 - Only the head production geometry changes; the base matches commit `39c6441` with 0 mm3 Boolean difference. Both 3MF files, all twelve views and both viewer copies are rebuilt. Local file tab still needs manual reload. Shared scripts match the skill.
+
+
+## Reinforced lid-mounted PD keeper (2026-09-25)
+
+- User requested angled reinforcement at the keeper foot. Two triangular cheeks at x102..104.2 and x107.8..110 add 2 mm side extensions with 0.2 mm overlap into the stem. They run 8 mm rearwards from y53.2 and rise 8 mm above the z29 lid, with their toes embedded 0.01 mm into it. Both are integral, support-free features below the wire corridors. The upper PCB stop/return and base channel remain unchanged.
+- Source SHA256 `7e90185f184b1b34f1a70f9b1028df8e681000716e65b3594a7d6f6cf688a46d`; report `docs/pd-keeper-braces-2026-09-25.md`. Changed print geometries: ball_lid and usbc_fit_lid. Full export PASS: eleven closed single-body meshes, zero degenerate faces, 445 coaxial feature pairs, 595 assembly pairs and ten standard paths. Both rib foot/web/stem-junction/deck probes contain 100% material and reject the previous bare stem. The isolated keeper clearance includes the whole ribs through y61.2. All six wire corridors, the lower/upper board capture, coupon insertion and complete loaded-lid removal remain clear; service clearance after the first lift is at least 0.20 mm.
+- Islands, overhangs, thickness and fins are CLEAN on all eleven meshes. All eleven slices, four production plates and the USB fit plate pass without warnings or supports. Lid mass 8.43 g; arranged production 477.4 g / 15.9 h; individual jobs 478.0 g / 17.2 h; USB fit 10.0 g / 62 min. Static estimate 1014.0 g, front margin 28.3 mm, tip angle 21.0 degrees. Physical strength/creep remain unmeasured.
+- Both 3MFs, all twelve documentation images and both viewer copies are rebuilt. The local file tab needs manual reload. Shared scripts remain identical to the skill.

@@ -757,12 +757,35 @@ def check_usb_support(ctx):
     assert (mouth ^ ctx.solids['base']).volume() < .01, 'Fixed USB front stop blocks insertion'
     # Isolate the keeper above the lid, so its normal bearing on the base cannot
     # stand in for the clearance between this central stem and the fixed channel.
-    keeper = ctx.solids['ball_lid'] ^ _air_box([cx - 2.05, keeper_front - 5, lid_top + .01],
-                                             [cx + 2.05, y0 + reach + .02, roof_top + .02])
+    brace_run, brace_height, brace_side, brace_overlap = ctx.metrics['usb_keeper_brace']
+    assert np.allclose([brace_run, brace_height, brace_side, brace_overlap], [8, 8, 2, .2], atol=.001), \
+        'Revalidate the USB keeper root braces after changing their proportions'
+    keeper = ctx.solids['ball_lid'] ^ _air_box([cx - 2 - brace_side - .05, keeper_front - 5, lid_top + .01],
+                                             [cx + 2 + brace_side + .05, max(y0 + reach, ctx.metrics['ballast'][2] + .2 + brace_run) + .02, roof_top + .02])
     stem = _air_box([cx - 1.95, ctx.metrics['ballast'][2] + .25, lid_top + .02],
                     [cx + 1.95, keeper_front - .45, upper - .02])
     stem_fill = (stem ^ keeper).volume() / stem.volume()
     assert stem_fill > .999, f'Central USB keeper stem is missing or too narrow: {stem_fill:.5f}'
+    # Test each load path separately: a continuous lid footing, its web and the
+    # overlap into the stem. These probes use substantial interior volumes, so
+    # a tiny union or the pre-existing bare stem cannot pass as reinforcement.
+    brace_rows = {}
+    brace_front = ctx.metrics['ballast'][2] + .2
+    for side, edge, outer in (('left', cx-2, cx-2-brace_side), ('right', cx+2, cx+2+brace_side)):
+        lo, hi = sorted((edge, outer))
+        foot = _air_box([lo+.08, brace_front+.1, lid_top+.02],
+                        [hi-.08, brace_front+brace_run-.25, lid_top+.1])
+        deck = _air_box([lo+.08, brace_front+.1, lid_top-.1],
+                        [hi-.08, brace_front+brace_run-.25, lid_top-.02])
+        web = _air_box([lo+.1, brace_front+.25, lid_top+.2],
+                       [hi-.1, brace_front+brace_run/2-.25, lid_top+brace_height/2-.3])
+        junction = _air_box([edge-.1, brace_front+.1, lid_top+.2],
+                            [edge+.1, brace_front+2, lid_top+brace_height-2.2])
+        fills = {name: (probe ^ ctx.solids['ball_lid']).volume()/probe.volume()
+                 for name, probe in (('foot', foot), ('lid_below_foot', deck), ('web', web), ('stem_junction', junction))}
+        assert min(fills.values()) > .995, f'USB {side} root brace is missing or detached: {fills}'
+        brace_rows[side] = dict(material_fill={name:round(value,6) for name,value in fills.items()},
+                               outer_x_mm=round(outer,3), rearward_run_mm=brace_run, height_mm=brace_height)
     gap = keeper.min_gap(ctx.solids['base'], 3)
     assert gap >= .19, f'Removable USB keeper rubs the fixed channel: {gap:.4f} mm'
     # The bought envelope includes components; only its bottom 0.1 mm proves
@@ -807,6 +830,7 @@ def check_usb_support(ctx):
                           'component-free bearing area are unmeasured. Check contact and cable-lever resistance on the fit print.')
     return dict(usb_support=dict(gusset_undersides=underside, upper_material_fill=filled,
         inner_support_overlap_mm3=round(inner_overlap, 6), central_keeper_fill=round(stem_fill, 6),
+        keeper_root_braces=brace_rows,
         removable_keeper_to_base_mm=round(gap, 4), keeper_clearance_search_cap_mm=3,
         lower_pcb_edge_contact_mm3=round(edge_hit, 5),
         upper_return=dict(overlap_mm=reach, roof_thickness_mm=roof_t, underside_rise_per_run=roof_rise,

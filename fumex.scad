@@ -204,6 +204,7 @@ usbc_stop_w = 4;     // central PCB-end bearing; both side wire exits stay open
 usbc_keeper_w = 4;  // centered removable L-stop on the ballast lid
 usbc_keeper_gap = 0.4; // stem clears the front of the fixed gusset
 usbc_keeper_top = [1, 1.6, 1.25]; // overlap past module edge, roof thickness, rise/run in print pose
+usbc_keeper_brace = [8, 8, 2, 0.2]; // rearward run, height, side extension, overlap into stem
 usbc_gusset_lid_gap = 4; // permits the first 3.4 mm service lift above the battery end stop
 usbc_guide_lead = 0.9; // side guides extend just ahead of the PCB, keeping the sloped tips solid
 
@@ -1078,6 +1079,14 @@ module usbc_keeper() let (
                  [yt, zb - 0.3 + yt - (yr - 0.2)], [yt, root_z],
                  [reach, tip_z], [reach, tip_z + usbc_keeper_top[1]],
                  [yr - 0.2, tip_z + usbc_keeper_top[1]], [yr - 0.2, zt], [yf, zt]]);
+    // Low triangular cheeks spread plug loads into the lid, below both wire exits.
+    // Each slopes down towards the rear and grows from the lid without supports.
+    for (xs = [[x0-usbc_keeper_brace[2], x0+usbc_keeper_brace[3]],
+               [x0+usbc_keeper_w-usbc_keeper_brace[3], x0+usbc_keeper_w+usbc_keeper_brace[2]]])
+        along_x(xs[0], xs[1])
+            polygon([[yf, ball[3]+ball_lid_t-eps],
+                     [yf+usbc_keeper_brace[0], ball[3]+ball_lid_t-eps],
+                     [yf, ball[3]+ball_lid_t+usbc_keeper_brace[1]]]);
 }
 // A rounded end wall grows from the base floor, independent of the removable lid.
 // It bears on the cell body below the BMS and leaves the upper cable end open.
@@ -1397,6 +1406,7 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["battery_tie_anchors", [bat_tie_x, bat_tie_slot, bat_tie_floor, bat_tie_roof, bat_tie_span, bat_tie_wall]],
     ["usb_origin", [usbc_xz[0], usbc_y0, usbc_xz[1]]], ["usb_board", usbc_board],
     ["usb_keeper", [usbc_keeper_w, usbc_keeper_gap, usbc_stop_w]], ["usb_keeper_top", usbc_keeper_top],
+    ["usb_keeper_brace", usbc_keeper_brace],
     ["usb_guides", [usbc_guide_lead, usbc_gusset_lid_gap]],
     ["led_pocket", [led_xz, led_d, led_cl, led_skin, led_boss]],
     ["base_h", base_h], ["joint_y", joint_y], ["base_joint_h", base_joint_h],
