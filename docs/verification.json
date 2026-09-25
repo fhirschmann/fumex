@@ -1,5 +1,5 @@
 {
-  "source_sha256": "b45799ece7eedaee3dce09ec6baf3b646c45baf648104f66f1b36f7e49f55787",
+  "source_sha256": "fd2fbc0cf9d9d500c3e94c05c317dcb5912706031bdcfc5565e9813130792e07",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -36,10 +36,10 @@
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "bc93340778311a7ed626c18e42cfe316a3a6a33d41c6ace9cde163a2220bcf3c",
+      "sha256": "d6d7a5de34d9c5a17a16a7d016c21f29fe11dd7fda37de0eb48da7f62714e91e",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "bc93340778311a7ed626c18e42cfe316a3a6a33d41c6ace9cde163a2220bcf3c"
+      "committed_sha256": "d6d7a5de34d9c5a17a16a7d016c21f29fe11dd7fda37de0eb48da7f62714e91e"
     },
     "head": {
       "size_mm": [
@@ -59,17 +59,17 @@
           70.0
         ]
       ],
-      "volume_mm3": 194911.7031,
-      "triangles": 9276,
+      "volume_mm3": 194890.4853,
+      "triangles": 9910,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "cb241134c6f59b19d0308f893168b6480f7bd21900d4ea66b83ddff0e2f1a7d3",
+      "sha256": "405774119fa3662ff0e4dcd7be3db18e8eb719a08ca36c1eea57bae6695a432f",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "cb241134c6f59b19d0308f893168b6480f7bd21900d4ea66b83ddff0e2f1a7d3"
+      "committed_sha256": "405774119fa3662ff0e4dcd7be3db18e8eb719a08ca36c1eea57bae6695a432f"
     },
     "head_back": {
       "size_mm": [
@@ -306,10 +306,10 @@
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "ec668a1ee489552cded63bf95ea779adfc5f94ddac6635c5f7a8c18f662b4dbd",
+      "sha256": "3a411a8cc0ce2b3828f29c7bbe1b1c46a2669a8282e02f789b32daad97341cee",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "ec668a1ee489552cded63bf95ea779adfc5f94ddac6635c5f7a8c18f662b4dbd"
+      "committed_sha256": "3a411a8cc0ce2b3828f29c7bbe1b1c46a2669a8282e02f789b32daad97341cee"
     },
     "usbc_fit_lid": {
       "size_mm": [
@@ -385,7 +385,7 @@
         0,
         0,
         -1,
-        2.3,
+        1.6,
         8
       ],
       [
@@ -395,7 +395,7 @@
         0,
         0,
         -1,
-        2.3,
+        1.6,
         8
       ],
       [
@@ -730,7 +730,7 @@
   },
   "intersections": [],
   "alignment": {
-    "features": 271,
+    "features": 275,
     "coaxial_pairs": {
       "ball_lid|ballast": 26,
       "ball_lid|base": 17,
@@ -738,7 +738,7 @@
       "ball_lid|screws_lid": 16,
       "ballast|base": 63,
       "ballast|feet": 24,
-      "ballast|head": 4,
+      "ballast|head": 6,
       "ballast|led": 4,
       "ballast|pwm_board": 22,
       "ballast|screws_feet": 16,
@@ -747,11 +747,11 @@
       "base|battery": 3,
       "base|driver_pwm": 6,
       "base|feet": 20,
-      "base|head": 6,
+      "base|head": 10,
       "base|led": 4,
       "base|pwm_board": 22,
       "base|screws_feet": 8,
-      "base|screws_head": 4,
+      "base|screws_head": 6,
       "base|screws_lid": 4,
       "base|screws_pwm": 6,
       "battery|battery_bridges": 2,
@@ -759,7 +759,7 @@
       "cassette|magnets": 8,
       "driver_back|head_back": 8,
       "driver_feet|feet": 8,
-      "driver_head|head": 8,
+      "driver_head|head": 14,
       "driver_pwm|pwm_board": 4,
       "feet|screws_feet": 16,
       "head_back|screws_back": 16,
@@ -767,7 +767,7 @@
       "head|head_back": 8,
       "head|magnets": 8,
       "head|screws_back": 4,
-      "head|screws_head": 12,
+      "head|screws_head": 16,
       "knob|pot": 6,
       "pwm_board|screws_pwm": 12
     },
@@ -1141,7 +1141,7 @@
   ],
   "intake_lip_mm": 2.25,
   "mat_free_travel_mm": 1.62,
-  "mat_squashed_percent": 0.13,
+  "mat_squashed_percent": 0.11,
   "mass_g": 1013.9,
   "centre_of_mass_mm": [
     67.3,
@@ -1637,11 +1637,12 @@
           -1.0
         ],
         "screw_length_mm": 8.0,
-        "bearing_thickness_mm": 2.3,
-        "insert_penetration_mm": 5.7,
-        "hole_bottom_clearance_mm": 1.3,
+        "bearing_thickness_mm": 1.6,
+        "insert_penetration_mm": 6.4,
+        "hole_bottom_clearance_mm": 0.6,
         "bearing_fill": 1.0,
-        "enclosed_lower_rim_fill": null,
+        "enclosed_lower_rim_fill": 1.0,
+        "measured_front_recess_depth_mm": 0.699999,
         "exposed_head_clearance_overlap_mm3": 0.0,
         "backing_fill": 1.0,
         "seat_back_fill": 1.0,
@@ -1649,7 +1650,7 @@
         "insert_core_overlap_mm3": 0.0,
         "insert_wall_fill": 1.0,
         "insert_bottom_fill": 1.0,
-        "screw_contact_mm3": 0.821785,
+        "screw_contact_mm3": 0.821792,
         "insert_access_overlap_mm3": 0.0
       },
       {
@@ -1664,11 +1665,12 @@
           -1.0
         ],
         "screw_length_mm": 8.0,
-        "bearing_thickness_mm": 2.3,
-        "insert_penetration_mm": 5.7,
-        "hole_bottom_clearance_mm": 1.3,
+        "bearing_thickness_mm": 1.6,
+        "insert_penetration_mm": 6.4,
+        "hole_bottom_clearance_mm": 0.6,
         "bearing_fill": 1.0,
-        "enclosed_lower_rim_fill": null,
+        "enclosed_lower_rim_fill": 1.0,
+        "measured_front_recess_depth_mm": 0.699999,
         "exposed_head_clearance_overlap_mm3": 0.0,
         "backing_fill": 1.0,
         "seat_back_fill": 1.0,
@@ -1676,7 +1678,7 @@
         "insert_core_overlap_mm3": 0.0,
         "insert_wall_fill": 1.0,
         "insert_bottom_fill": 1.0,
-        "screw_contact_mm3": 0.821785,
+        "screw_contact_mm3": 0.821794,
         "insert_access_overlap_mm3": 0.0
       },
       {
@@ -1696,6 +1698,7 @@
         "hole_bottom_clearance_mm": 1.3,
         "bearing_fill": 1.0,
         "enclosed_lower_rim_fill": 1.0,
+        "measured_front_recess_depth_mm": null,
         "exposed_head_clearance_overlap_mm3": null,
         "backing_fill": 1.0,
         "seat_back_fill": 1.0,
@@ -1723,6 +1726,7 @@
         "hole_bottom_clearance_mm": 1.3,
         "bearing_fill": 1.0,
         "enclosed_lower_rim_fill": 1.0,
+        "measured_front_recess_depth_mm": null,
         "exposed_head_clearance_overlap_mm3": null,
         "backing_fill": 1.0,
         "seat_back_fill": 1.0,
@@ -1738,17 +1742,17 @@
   "front_mat_contact": {
     "contacts": {
       "head": {
-        "volume_mm3": 313.06884,
+        "volume_mm3": 280.800581,
         "maximum_local_deflection_mm": 1.800003,
         "outside_allowed_zones_mm3": 8.764e-05
       },
       "screws_head": {
-        "volume_mm3": 108.391642,
-        "maximum_local_deflection_mm": 3.450001,
+        "volume_mm3": 98.748029,
+        "maximum_local_deflection_mm": 2.75,
         "outside_allowed_zones_mm3": 0.0
       }
     },
-    "total_nominal_displacement_mm3": 421.460483,
+    "total_nominal_displacement_mm3": 379.548611,
     "allowed_zones_mm": [
       [
         [
@@ -1759,7 +1763,7 @@
         [
           31.8,
           12.8,
-          63.96
+          63.26
         ]
       ],
       [
@@ -1771,7 +1775,7 @@
         [
           125.8,
           12.8,
-          63.96
+          63.26
         ]
       ]
     ]
@@ -1800,7 +1804,7 @@
         "screw_seat_mm": [
           25.5,
           6.5,
-          62.3
+          61.6
         ],
         "exported_tool_fill": 1.0,
         "installed_overlap_mm3": {
@@ -1827,7 +1831,7 @@
           "ballast": 0.0,
           "screws_fan": 0.0,
           "screws_back": 0.0,
-          "screws_head": 2.67e-06,
+          "screws_head": -0.0,
           "screws_lid": 0.0,
           "screws_feet": 0.0,
           "screws_pwm": 0.0
@@ -1885,7 +1889,7 @@
           "ballast": 0.0,
           "screws_fan": 0.0,
           "screws_back": 0.0,
-          "screws_head": 2.55e-06,
+          "screws_head": -0.0,
           "screws_lid": 0.0,
           "screws_feet": 0.0,
           "screws_pwm": 0.0
@@ -1909,7 +1913,7 @@
         "screw_seat_mm": [
           119.5,
           6.5,
-          62.3
+          61.6
         ],
         "exported_tool_fill": 1.0,
         "installed_overlap_mm3": {
@@ -1936,7 +1940,7 @@
           "ballast": 0.0,
           "screws_fan": 0.0,
           "screws_back": 0.0,
-          "screws_head": 2.67e-06,
+          "screws_head": 0.0,
           "screws_lid": 0.0,
           "screws_feet": 0.0,
           "screws_pwm": 0.0
@@ -1994,7 +1998,7 @@
           "ballast": 0.0,
           "screws_fan": 0.0,
           "screws_back": 0.0,
-          "screws_head": 2.7e-06,
+          "screws_head": -0.0,
           "screws_lid": 0.0,
           "screws_feet": 0.0,
           "screws_pwm": 0.0
@@ -2892,7 +2896,7 @@
   },
   "open_measurements": [
     "Masses of the bought parts are data-sheet or estimated values, not weighed",
-    "The soft filter mat bends locally by up to 3.45 mm over two exposed screw heads and their bevelled seats; only the two measured contact zones are allowed. No compression force or flexible deformation is simulated.",
+    "The soft filter mat bends locally by up to 2.75 mm over the two front screw heads and their shallow recessed seats; only the two measured contact zones are allowed. No compression force or flexible deformation is simulated.",
     "Ratchet envelope is assumed: 22 mm head diameter, 14 mm head thickness, 87 mm overall length, 14 mm handle width; 25 mm bit, 2 mm engagement, 4 mm neck for 6 mm above the screw face. Actual tool dimensions are not measured.",
     "PWM mounting: verify the 2.0 mm PETG pilot fit with the real 2.5 x 8 screws and measure their head height (4.5 mm head diameter confirmed; 2.5 mm height is a conservative envelope). Assembly requires a slim 4 mm screwdriver shaft exposed for at least 25 mm.",
     "PWM service motion is sampled at 0.1 mm / 0.5 degrees (final lift 0.5 mm); remove the head, battery, loaded ballast lid, knob, PCB screws and rocker switch first. The real wiring and flexible leads are not modelled.",

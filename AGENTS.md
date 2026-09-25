@@ -123,7 +123,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     stand in the filter chamber, and printed intake-face-down it has to grow from the intake face at 45
     degrees - 38.9 mm legs over 27.5 mm of depth, no smaller (21.6 would have held the insert). They
     pressed 6.6 cm3 out of the mat. Removing those gussets reduced `mat_squashed_percent`
-    to 0.0; the current front screw seats intentionally raise it to 0.13%, confined to
+    to 0.0; the current front screw seats intentionally raise it to 0.11%, confined to
     the local flexible contacts described below.
 - The cassette stands 4.5 mm proud of the intake face and cannot be let into it: the head prints intake-face-down,
   so a recess for it would be a 5687 mm2 horizontal ceiling over the chamber. It cannot get thinner either - the
@@ -186,24 +186,30 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   (user, 2026-09-25). In the untilted head frame every axis is (0,0,-1), normal to the
   joint plane; the shared housing tilt is unchanged. Front insert entries are
   (25.5,6.5,60) and (119.5,6.5,60), behind the front wall. Rear entries remain
-  (25,66,48) and (131,66,48). All seats have 2.3 mm material backed directly by the
-  base, giving 5.7 mm engagement and 1.3 mm reserve in each 7 mm insert pocket.
+  (25,66,48) and (131,66,48). All seats bear directly against the base. Front seats have 1.6 mm material,
+  6.4 mm screw penetration and 0.6 mm pocket reserve; rear seats retain 2.3 mm
+  material, 5.7 mm penetration and 1.3 mm reserve in the 7 mm insert pockets.
   This supersedes the previous 40-degree outward front axes and M3 x 16 screws.
   - Front base bosses are Ø9.2 x 9 mm with Ø4 x 7 mm Ruthex pockets and 2 mm blind ends.
     Their short hull roots join the front wall and remain above the joint where needed;
     clipping the entire root at the joint would leave the raised bosses disconnected.
     The outer base outline clips only the outside, preserving the complete insert-wall
     and blind-floor probes. Rear bosses remain Ø10 x 9 mm with the existing cover notches.
-  - The head has short Ø12.2 mm caps from local z59.5 to the bearing plane z62.3,
+  - The head has short Ø12.2 mm caps from local z59.5 to z62.3,
     connected to the lower filter tube. A Ø9.7 mm guide opening below the insert face
     leaves 1.25 mm radial material around each boss and 0.25 mm guide clearance.
-    The cap edges are chamfered below the seat; there is no plastic shroud above it.
-    A separate probe verifies free space around each exposed button head.
+    The front bearing plane is z61.6, with a flat Ø6.4 x 0.7 mm counterbore: the
+    same shallow recess depth as at the rear (user, 2026-09-25). The 1.65 mm
+    button heads remain 0.95 mm proud of the caps. The cap edges retain the
+    0.3 mm bevel. The intake cutter excludes the cap bodies so their pocket rims
+    stay complete, without a thin remnant where the two cuts would meet. Independent
+    mesh probes check pocket depth, complete bearing/rim material, and clearance
+    above the caps.
     Two rectangular reliefs below local z57.5 open the boss-root windows through
     the front, removing accidental 0.3–1.2 mm skins. Above the reliefs, the front
     wall retains at least 1.254 mm and the filter-tube floor remains closed.
   - The nominal mat begins at z60.5. Its user-authorised local bending is bounded to
-    the two front fastener regions: 1.8 mm over the caps and 3.45 mm over the bare
+    the two front fastener regions: 1.8 mm over the caps and 2.75 mm over the partly recessed
     screw heads. The export checks the actual overlap volume, depth and location;
     arbitrary head/mat collisions remain errors. This is no force or stiffness model.
   - Front fastening uses the Wera 8001 A / Zyklop Mini 1 from Tool-Check PLUS 1
@@ -570,10 +576,18 @@ they do not validate the subsequent geometry.
 - Base envelope is 145 x 74 x 57.2657 mm; head is 145 x 145 x 70 mm in print orientation. Both production parts need the current matching versions. All twelve views and both viewer copies are rebuilt. The local file tab still requires manual reload. Shared scripts match; skill pitfall update `32581a6` is published.
 
 
-## Straight exposed front head screws (2026-09-25, current)
+## Straight exposed front head screws (2026-09-25, before the shallow recesses)
 
 - Source SHA256 `b45799ece7eedaee3dce09ec6baf3b646c45baf648104f66f1b36f7e49f55787`. Current dimensions and evidence: `docs/straight-front-clamp-2026-09-25.md`. All four head screws are M3 x 8, parallel to the same downward joint normal. Front entries are (25.5,6.5,60) and (119.5,6.5,60), with seats at z62.3; no printed shroud remains above the seats. This supersedes the angled front pair in the preceding section.
 - Full export PASS: eleven closed single-body meshes, no degenerate faces, 427 coaxial feature pairs, 595 assembly pairs and ten standard service paths. All bearing, direct backing, insert-wall and blind-floor probes have 100% material. Each screw engages 5.7 mm with 1.3 mm pocket reserve. The staged 532-pose PWM route passes with at most 0.000052 mm3 numerical overlap. Ratchet translations are clear and the continuously bounded swing retains at least 0.902039 mm clearance, subject to the assumed tool dimensions.
 - Mat contact is 313.068840 mm3 for the caps (1.8 mm depth) and 108.391642 mm3 for bare screw heads (3.45 mm depth), total 421.460483 mm3. Only the two local zones are allowed, with a 450 mm3 volume gate. The flexible-mat allowance does not prove force, sealing or durability.
 - Islands, overhangs, thickness and fins are CLEAN on all eleven meshes. The initial root clearance left broad 0.3–1.2 mm front membranes; rectangular reliefs below local z57.5 eliminate them while preserving the caps and sealed tube floor. All eleven individual slices, four production plates and the USB fit plate pass without warnings or supports. Arranged production: 477.3 g / 15.8 h; individual jobs: 477.9 g / 17.2 h; fit plate: 9.9 g / 62 min. Static assembled estimate 1013.9 g, front margin 28.3 mm and tipping angle 21.0 degrees.
 - Base/head are the changed production pair; their print envelopes remain 145 x 74 x 57.2657 mm and 145 x 145 x 70 mm. All twelve views and both viewer copies are rebuilt. The local file tab requires manual reload. Shared scripts match; skill pitfall update `00197d8` is published.
+
+
+## Shallow front screw recesses (2026-09-25, current)
+
+- User requested shallow front recesses like the rear pair. The two front pockets are Ø6.4 x 0.7 mm, with bearing faces at local z61.6 and unchanged cap tops at z62.3. The screw heads remain 0.95 mm proud. Front bearing thickness is 1.6 mm; M3 x 8 penetration is 6.4 mm with 0.6 mm pocket-bottom reserve. Base axes, roots and inserts remain unchanged. The intake cutter now excludes the cap bodies, preserving their full pocket rims and outer bevels instead of leaving a 0.09 mm sliver beside the pocket.
+- Source SHA256 `fd2fbc0cf9d9d500c3e94c05c317dcb5912706031bdcfc5565e9813130792e07`; report `docs/recessed-front-screws-2026-09-25.md`. Full export PASS: eleven closed single-body meshes, zero degenerate faces, 445 coaxial feature pairs, 595 assembly pairs and ten standard paths. Measured front pocket depth is 0.699999 mm on both sides. All bearing/rim/backing/insert probes pass; PWM service and the ratchet route pass, with at least 0.902039 mm continuously bounded swing clearance for the assumed tool.
+- Local nominal mat overlap is 379.548611 mm3 (head 280.800581, screws 98.748029), maximum depths 1.8/2.75 mm, gate 400 mm3. All four print analyses are CLEAN on all eleven meshes. All eleven individual slices, four production plates and the USB fit plate pass without warnings or supports. Production 477.3 g / 15.9 h arranged, 477.8 g / 17.2 h individually; USB fit 9.9 g / 62 min. Assembled estimate remains 1013.9 g, front margin 28.3 mm and tip angle 21.0 degrees.
+- Only the head production geometry changes; the base matches commit `39c6441` with 0 mm3 Boolean difference. Both 3MF files, all twelve views and both viewer copies are rebuilt. Local file tab still needs manual reload. Shared scripts match the skill.

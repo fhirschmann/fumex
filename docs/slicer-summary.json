@@ -6,11 +6,11 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "bc93340778311a7ed626c18e42cfe316a3a6a33d41c6ace9cde163a2220bcf3c",
+      "source_sha256": "d6d7a5de34d9c5a17a16a7d016c21f29fe11dd7fda37de0eb48da7f62714e91e",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 3.715,
+      "hours": 3.718,
       "grams": 119.29,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -29,12 +29,12 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "cb241134c6f59b19d0308f893168b6480f7bd21900d4ea66b83ddff0e2f1a7d3",
+      "source_sha256": "405774119fa3662ff0e4dcd7be3db18e8eb719a08ca36c1eea57bae6695a432f",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 5.683,
-      "grams": 220.889,
+      "hours": 5.693,
+      "grams": 220.858,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -213,7 +213,7 @@
       "quantity": 0,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "ec668a1ee489552cded63bf95ea779adfc5f94ddac6635c5f7a8c18f662b4dbd",
+      "source_sha256": "3a411a8cc0ce2b3828f29c7bbe1b1c46a2669a8282e02f789b32daad97341cee",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -256,7 +256,7 @@
     }
   ],
   "total_parts": 13,
-  "total_grams_individual_plates": 477.9,
+  "total_grams_individual_plates": 477.8,
   "total_hours_individual_plates": 17.2,
   "production_gcode": false,
   "project_3mf": {
@@ -318,7 +318,7 @@
         ]
       }
     ],
-    "total_hours_plates": 15.8,
+    "total_hours_plates": 15.9,
     "total_grams_plates": 477.3,
     "multicolour_parts": {},
     "multicolour_slices": {},
@@ -326,9 +326,9 @@
     "plate_slices": {
       "Head": {
         "plate": 1,
-        "hours": 6.29,
+        "hours": 6.3,
         "grams_by_filament": {
-          "1": 237.81
+          "1": 237.78
         },
         "warnings": ""
       },
@@ -358,7 +358,7 @@
       }
     },
     "own_infill_parts": 5,
-    "sha256": "bfa1f37702bcf82ac65bb276cc56edab8d0c25bc29e5a9a31d4e94f5b3fb78a6"
+    "sha256": "8612938924cdd3cf8134564dd642ca9737524766f9df1531079fc4409c491e27"
   },
   "test_3mf": {
     "file": "stl/fumex_usb_fit.3mf",
@@ -394,7 +394,7 @@
       }
     },
     "own_infill_parts": 0,
-    "sha256": "1c7fbdbc3d9b82b4ed1cfc0b06a0ad20044e8e1d3cf60c478a63235757630e20",
+    "sha256": "29170f5c6ceff29f360a9537d069c098b371e0d917a4846163fd7a5614082500",
     "process": {
       "wall_loops": 4,
       "top_shell_layers": 5,

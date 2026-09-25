@@ -1,5 +1,7 @@
 # Straight front head-to-base screws — 2026-09-25
 
+This revision predates the [0.7 mm front recesses](recessed-front-screws-2026-09-25.md); its recorded dimensions and results describe the fully exposed front heads.
+
 All four head screws are M3 × 8 and point down in the same direction into the base. The front inserts sit in raised bosses directly behind the front wall. Their screw heads are exposed above flat seats, with no enclosing plastic wall. This supersedes the [angled front arrangement](front-clamp-2026-09-25.md).
 
 ## Geometry and assembly
