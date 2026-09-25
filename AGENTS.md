@@ -123,7 +123,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     stand in the filter chamber, and printed intake-face-down it has to grow from the intake face at 45
     degrees - 38.9 mm legs over 27.5 mm of depth, no smaller (21.6 would have held the insert). They
     pressed 6.6 cm3 out of the mat. Removing those gussets reduced `mat_squashed_percent`
-    to 0.0; the current front screw wells intentionally raise it to 0.1, confined to
+    to 0.0; the current front screw seats intentionally raise it to 0.13%, confined to
     the local flexible contacts described below.
 - The cassette stands 4.5 mm proud of the intake face and cannot be let into it: the head prints intake-face-down,
   so a recess for it would be a 5687 mm2 horizontal ceiling over the chamber. It cannot get thinner either - the
@@ -182,27 +182,30 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     physical strength, long-term creep, loose-fibre or maximum-speed rubbing test has been performed.
     Do not turn the nominal 5 mm central-bar/frame gap into a guarantee of rotor clearance.
 - The mat is held by the intake lip (opening 117 in a 121.5 chamber, 2.25 mm per side). It is pressed in and pulled out past that lip — a rigid-body path check cannot show this, so `filter_out` is not a checked path but a documented limitation.
-- **Head screws: two M3 x 16 at the front and two M3 x 8 at the rear**, all directly into
-  the base (user, 2026-09-25). Front insert entries in the untilted head frame are
-  (9.1,10,52) and (135.9,10,52), with axes (-0.6427876,0,-0.7660444) and
-  (+0.6427876,0,-0.7660444): 40 degrees outwards from the downward joint normal. Their seats
-  are at (15.72071,10,59.89026) and (129.27929,10,59.89026), giving 10.3 mm clamping stacks,
-  5.7 mm engagement and 1.3 mm reserve in the 7 mm insert pockets. The old front
-  horizontal tongues, front-face holes and mating windows are removed.
+- **Head screws: four M3 x 8, all straight down into the base in the same direction**
+  (user, 2026-09-25). In the untilted head frame every axis is (0,0,-1), normal to the
+  joint plane; the shared housing tilt is unchanged. Front insert entries are
+  (25.5,6.5,60) and (119.5,6.5,60), behind the front wall. Rear entries remain
+  (25,66,48) and (131,66,48). All seats have 2.3 mm material backed directly by the
+  base, giving 5.7 mm engagement and 1.3 mm reserve in each 7 mm insert pocket.
+  This supersedes the previous 40-degree outward front axes and M3 x 16 screws.
   - Front base bosses are Ø9.2 x 9 mm with Ø4 x 7 mm Ruthex pockets and 2 mm blind ends.
-    Keep their full inclined end faces; their side-wall root hulls are clipped to
-    the joint and neck. The small outer tip protrusions are clipped to the vertical
-    base outline while retaining the complete insert-wall and blind-floor probes. Full annular head/base contact is checked separately from the
-    0.25 mm lateral guide clearance. Straight vertical front bosses collided with the
-    PWM board; the outward tilt keeps the roots clear of both board and cell.
-  - Sealed head wells join the lower filter tube to the head floor. Their Ø9.8 outer
-    profile ends at local z63.2 with a 0.3 mm outer and 0.2 mm inner mouth chamfer. The nominal mat begins at
-    z60.5. The user accepts local bending of the flexible mat; the implemented envelope
-    allows 2.7 mm over the wells and about 2.5 mm over the screw heads. Local mesh intersections are
-    bounded to these two small regions; do not ignore arbitrary head/mat collisions.
-  - Rear insert axes remain (25,66,48) and (131,66,48), pointing -z. Seats at z50.3 have
-    2.3 mm backing, 5.7 mm engagement and 1.3 mm pocket-bottom reserve. The Ø10 x 9 mm
-    bosses and back-cover lip notches retain the previous directly clamped geometry.
+    Their short hull roots join the front wall and remain above the joint where needed;
+    clipping the entire root at the joint would leave the raised bosses disconnected.
+    The outer base outline clips only the outside, preserving the complete insert-wall
+    and blind-floor probes. Rear bosses remain Ø10 x 9 mm with the existing cover notches.
+  - The head has short Ø12.2 mm caps from local z59.5 to the bearing plane z62.3,
+    connected to the lower filter tube. A Ø9.7 mm guide opening below the insert face
+    leaves 1.25 mm radial material around each boss and 0.25 mm guide clearance.
+    The cap edges are chamfered below the seat; there is no plastic shroud above it.
+    A separate probe verifies free space around each exposed button head.
+    Two rectangular reliefs below local z57.5 open the boss-root windows through
+    the front, removing accidental 0.3–1.2 mm skins. Above the reliefs, the front
+    wall retains at least 1.254 mm and the filter-tube floor remains closed.
+  - The nominal mat begins at z60.5. Its user-authorised local bending is bounded to
+    the two front fastener regions: 1.8 mm over the caps and 3.45 mm over the bare
+    screw heads. The export checks the actual overlap volume, depth and location;
+    arbitrary head/mat collisions remain errors. This is no force or stiffness model.
   - Front fastening uses the Wera 8001 A / Zyklop Mini 1 from Tool-Check PLUS 1
     (05049055001), with a 25 mm TX10 bit directly in the ratchet. Wera specifies 87 mm
     overall length and 6-degree return angle. The head is assumed Ø22 x 14 mm, handle
@@ -211,6 +214,11 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     Remove cassette and mat for front fastening. Rear screws require the fan/cover off.
   - `head_off` moves the head, support cross and magnets along the tilted normal after
     the cassette, mat, fan/cover and screws are removed; battery bridges and ties remain.
+  - PWM service first pitches the released PCB to 20 degrees, withdraws it 7.9 mm,
+    then pitches it to 35 degrees before the remaining lift and sideways extraction.
+    This staged route clears the raised front boss; pitching directly to 35 degrees
+    at the previous position does not. The full actual-mesh route includes the PCB,
+    potentiometer and tab, with separate removal checks for both PCB screws and knob.
 - **Driver access is checked in the applicable assembly stage.** Most screws use a
   straight Torx-bit/holder envelope. Front head screws use the conservative ratchet
   above. Assembly-stage exclusions only cover parts removed for that operation; fixed
@@ -219,7 +227,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   2026-09-23). The Ø10 posts stand at (x, y) = (10, 63) and (117, 56.8), with Ø4 x 7 mm insert pockets
   opening upwards. This replaces all four plastic-forming screws and their core holes. With the
   3 mm lid and 1.2 mm head pockets, nominal thread reach is 6.2 mm. Total hardware is 18 inserts,
-  12 M3 x 8, two M3 x 16 and four M3 x 30 screws. The right post moved inwards and forwards on 2026-09-24 so
+  14 M3 x 8 and four M3 x 30 screws. The right post moved inwards and forwards on 2026-09-24 so
   the screwdriver clears the head-mount bosses; the intermediate (130,63) position did not.
   Earlier positions at x30/115, 45/90, 12/40 and (135,63), including the G3 rear-row adjustment
   to y66.2, are historical. The head vent slots remain 14 mm long.
@@ -259,7 +267,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 - Tipping: `checks()` computes the centre of mass from mesh volumes and part masses and requires ≥ 15 mm to every foot edge. Use the current verification report for results. An early layout gave 30.6 mm at the front, 23.3°, 1.02 kg (13.8° when this started).
   - Feet fully under the housing (user, 2026-09-22: pads sticking out past the rounded corners looked wrong), x 16/129, front pair at y = 8 so the pads end flush with the front face. Tipping edge y = 0.
   - Historical first trough behind the cell: x 3–96, y 53–71, rim 35, 39 cm³ and about 184 g of loose iron at an assumed 4.7 g/cm³ (60 % packing). The later full-width trough supersedes it. The cell moved forward to make room (user: "du kannst die batterie einfach nach vorne rücken und hinten ne größere wanne machen"). `ballast_env()` remains the trough volume minus `base()` itself, so foot boss, posts and rounded corners are cut out of it and the reported mass is what really fits.
-  - Historical battery-position constraint: the earlier tilted front screw-boss run-outs reached the cell shoulder; y35 cleared them while y34 overlapped by 0.14 mm³. The 2026-09-25 corner tongues replace those bosses; the battery position remains unchanged.
+  - Historical battery-position constraint: the earlier tilted front screw-boss run-outs reached the cell shoulder; y35 cleared them while y34 overlapped by 0.14 mm³. The current raised front bosses replace those earlier run-outs; the battery position remains unchanged.
   - Historical four-post layout: each Ø10 corner post lay 3.5 mm off the adjacent walls; at Ø8 it left a sealed sliver void and a second exported body. `ball_rim` = 0.4 kept the walls below the posts to avoid coplanar unions. The current lid instead uses the two insert posts listed above.
   - The 2026-09-22 choice of plastic-forming screws and Ø2.5 core holes was superseded by the user's two-screw, heat-set-insert mounting on 2026-09-23.
   - The lid has a plain top without the former Ø16 mm finger dish (removed at the user's request,
@@ -553,10 +561,19 @@ they do not validate the subsequent geometry.
 - Both viewer copies and all twelve documentation views are rebuilt. View09 now keeps the head and screws assembled; previously lifting only the head made the screw heads appear detached. Shared scripts match; skill commit `a3823d0` records direct backing checks and clear fastener illustrations. Physical preload, PETG creep, pull-out and ultimate strength remain untested.
 
 
-## Angled front head screws and local mat bending (2026-09-25)
+## Angled front head screws and local mat bending (2026-09-25, historical)
 
 - Source SHA256 `168a78f6f4feee21a4a681cc80e19e1eff23b0a5b94902d21c74bd88b72ffc9a`. Final dimensions and evidence: `docs/front-clamp-2026-09-25.md`. Both front fasteners now point 40 degrees outwards into the base. A 30-degree candidate obstructed the PWM service path; the final right boss starts beyond PCB x132 throughout its length, restoring the unchanged full service route. The head's guide windows sweep downwards so the head can lift straight off while its angled clamping faces retain direct contact.
 - All four head bearing rings, backing rings, insert walls and blind floors have 100% material in the independent probes; all nominal clamp gaps are zero. Engagement is 5.7 mm for both front M3 x 16 and rear M3 x 8 screws. Front total mat overlap is 290.818 mm3, bounded to two local zones and 2.7 mm maximum deflection. The user authorises local mat bending; no flexible-force model is claimed.
 - The ratchet's complete assumed body and 25-mm bit pass continuous entry/seating sweeps. Its ±6-degree swing has 0.442 mm sampled clearance and a conservative 0.376 mm lower bound between samples. Tool dimensions remain assumptions as listed above. The cassette and mat are removed for this operation. Head screws and their tools are also absent during PWM fastening; the two new stage exclusions reflect that actual assembly order.
 - Full export PASS: eleven closed single-body print meshes, zero degenerate faces, 445 coaxial feature pairs, 595 assembly pairs and ten standard service paths. All four print analyses are CLEAN. All eleven individual slices, four production plates and one USB fit plate pass without supports or warnings. Production: 478.8 g / 15.9 h as arranged plates, 479.4 g / 17.3 h as individual jobs. USB fit: 9.9 g / about 62 min. Static mass 1015.5 g, front margin 28.2 mm, tipping angle 21.0 degrees.
 - Base envelope is 145 x 74 x 57.2657 mm; head is 145 x 145 x 70 mm in print orientation. Both production parts need the current matching versions. All twelve views and both viewer copies are rebuilt. The local file tab still requires manual reload. Shared scripts match; skill pitfall update `32581a6` is published.
+
+
+## Straight exposed front head screws (2026-09-25, current)
+
+- Source SHA256 `b45799ece7eedaee3dce09ec6baf3b646c45baf648104f66f1b36f7e49f55787`. Current dimensions and evidence: `docs/straight-front-clamp-2026-09-25.md`. All four head screws are M3 x 8, parallel to the same downward joint normal. Front entries are (25.5,6.5,60) and (119.5,6.5,60), with seats at z62.3; no printed shroud remains above the seats. This supersedes the angled front pair in the preceding section.
+- Full export PASS: eleven closed single-body meshes, no degenerate faces, 427 coaxial feature pairs, 595 assembly pairs and ten standard service paths. All bearing, direct backing, insert-wall and blind-floor probes have 100% material. Each screw engages 5.7 mm with 1.3 mm pocket reserve. The staged 532-pose PWM route passes with at most 0.000052 mm3 numerical overlap. Ratchet translations are clear and the continuously bounded swing retains at least 0.902039 mm clearance, subject to the assumed tool dimensions.
+- Mat contact is 313.068840 mm3 for the caps (1.8 mm depth) and 108.391642 mm3 for bare screw heads (3.45 mm depth), total 421.460483 mm3. Only the two local zones are allowed, with a 450 mm3 volume gate. The flexible-mat allowance does not prove force, sealing or durability.
+- Islands, overhangs, thickness and fins are CLEAN on all eleven meshes. The initial root clearance left broad 0.3–1.2 mm front membranes; rectangular reliefs below local z57.5 eliminate them while preserving the caps and sealed tube floor. All eleven individual slices, four production plates and the USB fit plate pass without warnings or supports. Arranged production: 477.3 g / 15.8 h; individual jobs: 477.9 g / 17.2 h; fit plate: 9.9 g / 62 min. Static assembled estimate 1013.9 g, front margin 28.3 mm and tipping angle 21.0 degrees.
+- Base/head are the changed production pair; their print envelopes remain 145 x 74 x 57.2657 mm and 145 x 145 x 70 mm. All twelve views and both viewer copies are rebuilt. The local file tab requires manual reload. Shared scripts match; skill pitfall update `00197d8` is published.
