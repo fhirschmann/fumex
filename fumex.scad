@@ -108,8 +108,14 @@ bat_stop_w = 3;      // floor-rooted end wall thickness
 bat_stop_y = [30, 51]; // stays ahead of the ballast lid
 bat_stop_top = 29;   // below the BMS and upper cable exit
 bat_stop_c = 0.4;    // soften the top against the cell's insulating wrap
-bat_bms_open = 25;   // measured 20 mm protection board plus 2.5 mm each side
-bat_shoulder_c = 0.4; // ease the axial edges of the removable shoulder seats
+bat_tie_x = [26, 54]; // two floor-rooted loops between the three existing saddles
+bat_tie_slot = [4, 1.8]; // clear tunnel width and height, for ties up to 3.6 x 1.2 mm
+bat_tie_floor = 1.85; // solid floor remaining below the recessed tie tunnels
+bat_tie_roof = 1.6;
+bat_tie_span = 8;     // bridge length along the tie route (Y)
+bat_tie_wall = 2;
+bat_bridge = [8, 25, 1.6, 0.5, 0.1, 1.7]; // x width, BMS opening, roof, BMS gap, cell gap, head relief
+bat_tie = [3.6, 1.2, 150];                // conservative band width/thickness, minimum nominal length
 
 /* [PWM fan controller CNY-FA5-PRO: board flat in the bay, potentiometer through the front wall] */
 pwm_pcb = [41.05, 32, 1.6]; // measured length (here along y), width (x), PCB thickness
@@ -197,6 +203,7 @@ usbc_wall = 2;
 usbc_stop_w = 4;     // central PCB-end bearing; both side wire exits stay open
 usbc_keeper_w = 4;  // centered removable L-stop on the ballast lid
 usbc_keeper_gap = 0.4; // stem clears the front of the fixed gusset
+usbc_keeper_top = [1, 1.6, 1.25]; // overlap past module edge, roof thickness, rise/run in print pose
 usbc_gusset_lid_gap = 4; // permits the first 3.4 mm service lift above the battery end stop
 usbc_guide_lead = 0.9; // side guides extend just ahead of the PCB, keeping the sloped tips solid
 
@@ -267,18 +274,19 @@ screw_clear_d = 3.4;
 screw_head_d = 5.7;
 screw_head_h = 1.65;
 head_pocket = [6.4, 1.9];
-// Head screws along the side walls: their bosses merge into those walls, so they hang from the rim on
-// solid material. y stays clear of the back cover lip inside the head, x of the electronics below.
-// One row in the plenum behind the fan: the only place inside the head where a driver reaches the rim.
-// Everywhere else the filter tube, the fan or the lower back cover boss stands over the screw, and the
-// 5.75 mm channel beside the tube takes no bit at all (user, 2026-09-23). Mechanically that is also the
-// right row - the head leans forward, so the head group (523 g with fan and mat) has its centre of
-// mass 22 mm in front of the joint centre, pressing the front of the joint together and lifting the back.
-rim_screws = [[25, 66], [45, 66], [118, 66], [127, 66]];
-rim_seat_d = 9;              // keep cable/vent cut-outs 1.3 mm from each 6.4-mm pocket
-rim_recess = 0.6;            // head screw counterbore; the screw bears on its bottom
-rim_boss_len = 9;
-rim_boss_d = 10;     // 13 bulged 12.5 mm into the bay and read as a random step (user, 2026-09-22)
+// Four corner joints use front/rear-facing M3 screws into registration tongues on the base.
+// Remove the cassette and back/fan assembly for straight access; no angled ratchet is assumed.
+rim_screws = [[7.5, 0], [137.5, 0], [25, 70], [131, 70]]; // front and rear entry planes, in the head frame
+rim_axis_z = base_h + 5.7;  // rear screw height, in the tilted head frame
+rim_front_z = base_h + 20; // raised over the lower magnets, outside the PWM PCB
+rim_front_t = 4.5;         // local face thickness preserves the magnet-pocket backs
+rim_front_recess = 2.45;   // 2.05 mm bearing and 5.7 mm M3 x 8 engagement
+rim_front_pad = 0.35;      // preserve the lateral strip of the existing magnet backing
+rim_seat_d = 8.8;
+rim_recess = 1.85;           // button head ends 0.2 mm below the face; 1.35 mm bearing remains
+rim_boss_d = 9.2;
+rim_tab_gap = 0.25;
+rim_tab_depth = 9;           // 7 mm insert pocket and 2 mm closed end
 // ISO 7380 button head Torx from the user's set (M3 x 6, 8, 10, 12, 16, 25) except the fan screws
 len_lid = 8;         // 1.8 mm lid bearing plus 6.2 mm into the 7 mm insert pocket
 len_fan = 30;        // M3 x 30, bought: through the 25 mm frame, 5 mm of thread in the insert
@@ -319,6 +327,12 @@ function mag_xz() = [for (sx = [-1, 1], sz = [-1, 1]) [body_w / 2 + sx * mag_off
 function head_bosses() = [for (sx = [-1, 1], z = [base_h + boss_bottom, base_h + head_h - boss_inset])
                           [body_w / 2 + sx * (body_w / 2 - boss_inset), z]];
 function rim_bosses() = rim_screws;
+function rim_z(p) = p[1] == 0 ? rim_front_z : rim_axis_z;
+function rim_dir(p) = p[1] == 0 ? 1 : -1;
+function rim_recess_at(p) = rim_dir(p) > 0 ? rim_front_recess : rim_recess;
+function rim_wall_at(p) = rim_dir(p) > 0 ? rim_front_t : front_t;
+function rim_seat(p) = p[1] + rim_dir(p) * rim_recess_at(p);
+function rim_mouth(p) = p[1] + rim_dir(p) * (rim_wall_at(p) + rim_tab_gap);
 // lowest point of the cell over y, or clear of it altogether
 function bat_low(y) = abs(y - bat_cy) >= bat_d / 2 + bat_clear ? 1e6
                     : bat_cz - sqrt(pow(bat_d / 2 + bat_clear, 2) - pow(y - bat_cy, 2));
@@ -365,13 +379,18 @@ assert(ball_lid_ear_r >= head_pocket[0] / 2 + 1.2, "Right lid screw pocket loses
 assert(led_skin >= 1.2 && led_skin < wall, "LED front skin must meet the normal wall-thickness threshold");
 assert(min([for (p = foot_xy) bat_low(p[1])]) > foot_boss[1], "Foot boss reaches into the battery");
 assert(bat_stop_gap >= 0.3 && bat_stop_gap <= 0.6, "Battery end stop has excessive axial play");
+assert(bat_tie_floor >= 1.8 && bat_tie_roof >= 1.6 && bat_tie_wall >= 2,
+       "Battery tie loops need continuous floor, roof and side walls");
+assert(bat_cz - bat_d/2 - (bat_tie_floor + bat_tie_slot[1] + bat_tie_roof) >= 0.5 - eps,
+       "Battery tie anchors touch the cell underside");
 assert(bat_stop_w >= 3 && bat_stop_top > bat_cz + 4, "Battery end wall is too slender or low");
 assert(bat_stop_y[1] <= ball[2] - 0.2, "Fixed battery stop reaches the removable ballast lid");
 assert(bat_stop_top <= bat_cz + bat_d / 4 - 1,
        "Battery stop must stay below the BMS and cable exit");
 assert(foot_boss[1] - insert_depth >= 1.2, "Foot insert pocket floor thinner than three perimeters");
 assert(floor_t - foot_peg[1] >= 3 * 0.4, "Floor under the foot peg holes thinner than three perimeters");
-assert(len_head - wall + rim_recess >= 5, "Head screws reach less than 5 mm into the base inserts");
+assert(min([for (p = rim_bosses()) len_head - rim_wall_at(p) - rim_tab_gap + rim_recess_at(p)]) >= insert_len - eps,
+       "Head screws must engage the complete 5.7 mm insert");
 
 // ---------- helpers ----------
 module rrect(size, r) offset(r = r) offset(delta = -r) square(size, center = true);
@@ -519,49 +538,35 @@ module back_rim_chamfer(path, y, c) let(sweep_eps = 1 / 1024) difference() {
     profile_sweep_y(offset(path, delta = sweep_eps), y - c - 3 * eps, y, back_c = c + sweep_eps);
 }
 
-// The two front shoulder caps oppose the rear cradle walls. They release with
-// the head, so the cell lifts out freely without loading its upper BMS.
-// A 1.25:1 ramp grows from the head floor in the intake-face-down print pose.
-function shoulder_raw_yz(y, z) = [
-    joint_y + (y - joint_y) * cos(tilt) + (z - base_h) * sin(tilt),
-    base_h - (y - joint_y) * sin(tilt) + (z - base_h) * cos(tilt)];
-module shoulder_untilt() translate([0, joint_y, base_h]) rotate([-tilt, 0, 0])
-    translate([0, -joint_y, -base_h]) children();
-module battery_shoulders_raw() let (
-    r = bat_d / 2 + bat_clear,
-    contact_y = bat_cy - 13.5,
-    contact = shoulder_raw_yz(contact_y, bat_cz + sqrt(r*r - pow(contact_y - bat_cy, 2))),
-    rise = 1.25,
-    start_y = contact.x - rise * (base_h - contact.y),
-    end_y = bat_cy - 11,
-    end_z = base_h - (end_y - start_y) / rise,
-    free_y = bat_cy - bat_bms_open / 2) {
-    assert(bat_bms_open >= bat_bms[0] + 5, "Battery shoulders crowd the protection board");
-    assert(start_y > edge_c, "Shoulder ramp starts behind the front bed chamfer");
-    for (x = [cradle_x[0], cradle_x[len(cradle_x)-1]]) difference() {
-        along_x(x - cradle_t/2, x + cradle_t/2)
-            polygon([[start_y, base_h + 0.2], [start_y, base_h],
-                     [end_y, end_z], [end_y, base_h + 0.2]]);
-        shoulder_untilt() {
-            cyl_x([bat_cy, bat_cz], x - cradle_t/2 - 1, x + cradle_t/2 + 1, r);
-            // Ease only the two axial contact edges, leaving 3.2 mm of full-width seat.
-            cyl_x([bat_cy, bat_cz], x - cradle_t/2 - eps, x - cradle_t/2 + bat_shoulder_c,
-                  r + bat_shoulder_c + eps, r);
-            cyl_x([bat_cy, bat_cz], x + cradle_t/2 - bat_shoulder_c, x + cradle_t/2 + eps,
-                  r, r + bat_shoulder_c + eps);
-            translate([x - cradle_t/2 - 1, free_y, -10])
-                cube([cradle_t + 2, body_d + 20, base_h + 30]);
-        }
-    }
-}
-
 // ---------- head: shell, filter chamber, fan seat (untilted frame) ----------
-module head_raw() union() {
-    difference() {
-        intersection() { plan_prism(); head_body(); }
-        top_corner_blends();
+module rim_tab_profile(p, grow = 0, bottom = base_h - 0.5) let (r = rim_boss_d / 2 + grow)
+    hull() {
+        translate([p[0], rim_z(p)]) circle(r = r);
+        translate([p[0] - r, bottom]) square([2 * r, rim_z(p) - bottom]);
     }
-    battery_shoulders_raw();
+module rim_tab_raw(p, grow = 0, bottom = base_h - 0.5) let (
+    a = rim_mouth(p), b = a + rim_dir(p) * rim_tab_depth)
+    along_y(min(a, b) - grow, max(a, b) + grow) rim_tab_profile(p, grow, bottom);
+module rim_head_windows() for (p = rim_bosses()) rim_tab_raw(p, rim_tab_gap, base_h - 1);
+module rim_head_seats() for (p = rim_bosses()) if (rim_dir(p) > 0) {
+    along_y(0, rim_wall_at(p)) rim_tab_profile(p, rim_tab_gap + 0.1, base_h);
+} else {
+    along_y(p[1] - front_t, p[1]) rim_tab_profile(p, 0, base_h);
+    // The window removes the centre; these ramps leave banks for a short bridge.
+    along_x(p[0] - rim_boss_d / 2 - 1.5, p[0] + rim_boss_d / 2 + 1.5)
+        polygon([[57.3, base_h], [57.3, base_h + wall],
+                 [66.8, rim_z(p) + rim_boss_d / 2], [70, rim_z(p) + rim_boss_d / 2],
+                 [70, base_h]]);
+}
+module rim_head_holes() for (p = rim_bosses()) let (
+    a = p[1] - rim_dir(p) * eps, b = p[1] + rim_dir(p) * (rim_wall_at(p) + eps)) {
+    cyl_y([p[0], rim_z(p)], min(a, b), max(a, b), screw_clear_d / 2);
+    cyl_y([p[0], rim_z(p)], min(a, rim_seat(p)), max(a, rim_seat(p)), head_pocket[0] / 2);
+}
+module head_raw() difference() {
+    intersection() { plan_prism(); head_body(); }
+    top_corner_blends();
+    battery_tie_head_relief();
 }
 module head_body() difference() {
     union() {
@@ -576,6 +581,7 @@ module head_body() difference() {
         mat_stop();
         for (p = head_bosses()) cyl_y(p, head_y[2], head_y[4], boss_d / 2);
         fan_guides();
+        rim_head_seats();
     }
     along_y(-eps, front_t + eps) head_centre_sq(open_sq, open_r);       // intake opening; its lip holds the mat
     filter_support_pockets();
@@ -583,28 +589,14 @@ module head_body() difference() {
     for (p = mag_xz()) cyl_y(p, -eps, mag[1], mag[0] / 2);              // magnet pockets, open at the intake face
     for (sx = [-1, 1]) cyl_y([body_w / 2 + sx * body_w / 2, head_cz], -eps, scoop[1],
                              scoop[0] / 2 + eps, scoop[0] / 2 - scoop[1]);   // finger scoops at the side edges
-    for (p = rim_bosses()) translate([p[0], p[1], base_h - 1]) {
-        cylinder(d = screw_clear_d, h = wall + 2);
-        translate([0, 0, 1 + wall - rim_recess]) cylinder(d = head_pocket[0], h = 1);   // shallow counterbore for the button head
-    }
-    // Keep complete screw seats where the cable opening and first vent cross this row.
-    difference() {
-        union() {
-            translate([20, head_y[3] + 2, base_h - 1]) cube([20, 10, wall + 2]); // wires to the bay
-            // Filtered plenum air reaches the charge module through six short slots.
-            for (i = [0:chg_vent[2] - 1])
-                translate([chg_cx - ((chg_vent[2] - 1) * chg_vent[1] + chg_vent[0]) / 2 + i * chg_vent[1],
-                           head_y[3] + 1, base_h - 1])
-                    cube([chg_vent[0], chg_vent[3], wall + 2]);
-        }
-        for (p = rim_bosses()) translate([p[0], p[1], base_h - 2])
-            cylinder(d = rim_seat_d, h = wall + 4);
-        // The left seat grows from the cable opening's front/left edge in the intake-down print pose.
-        hull() {
-            translate([rim_screws[0][0], rim_screws[0][1], base_h - 2]) cylinder(d = rim_seat_d, h = wall + 4);
-            translate([19.8, head_y[3] + 1.8, base_h - 2]) cube([1, 1, wall + 4]);
-        }
-    }
+    rim_head_windows();
+    rim_head_holes();
+    // A 10 mm cable bridge clears the rear-left mounting tongue.
+    translate([32, head_y[3] + 2, base_h - 1]) cube([10, 10, wall + 2]);
+    for (i = [0:chg_vent[2] - 1])
+        translate([chg_cx - ((chg_vent[2] - 1) * chg_vent[1] + chg_vent[0]) / 2 + i * chg_vent[1],
+                   head_y[3] + 1, base_h - 1])
+            cube([chg_vent[0], chg_vent[3], wall + 2]);
     front_rim_chamfer(head_profile_points(), 0, edge_c);
 }
 // Rear lip of the filter chamber, the counterpart of the intake lip. Without it the mat is held at the
@@ -741,8 +733,11 @@ module head_back_body() intersection() {
             head_outline(wall + lip_cl);
             head_outline(wall + lip_cl + lip_t);
             for (p = head_bosses()) offset(r = 0.8) translate([p[0], p[1]]) circle(d = boss_d);
-            // and clear of the head screw heads sitting in the floor below it
-            for (p = rim_bosses()) offset(r = 0.8) translate([p[0], base_h + wall]) circle(d = head_pocket[0]);
+            // Clear the complete rear screw seat, including both print-support banks.
+            for (p = rim_bosses()) if (rim_dir(p) < 0)
+                bounds_rect([p[0] - rim_boss_d/2 - 1.5 - rim_tab_gap, base_h - 1],
+                            [p[0] + rim_boss_d/2 + 1.5 + rim_tab_gap,
+                             rim_axis_z + rim_boss_d/2 + rim_tab_gap]);
         }
         fan_posts();
     }
@@ -826,6 +821,8 @@ module base_joint_envelope(inset = 0) intersection() {
 // ---------- base ----------
 module base() difference() {
     union() {
+      difference() {
+       union() {
         difference() {
             base_joint_envelope();
             intersection() {
@@ -835,17 +832,21 @@ module base() difference() {
         }
         battery_cradle();
         battery_end_stop();
+        battery_tie_anchors();
         pwm_ribs();
         pwm_bosses();
         led_boss_body();
         usbc_channel();
-        rim_boss_bodies();
         foot_bosses();
         sw_wall_box();
         ballast_walls();
     }
-    joint_halfspace();                                   // the tilted joint plane cuts the rim
-    joint_neck();                                        // whose corners follow the head's bottom radius
+       joint_halfspace();
+       joint_neck();
+      }
+      // Add the roots and tongues after the joint cuts so the neck cannot sever their connection.
+      rim_boss_bodies();
+    }
     // That plane rises 15 degrees towards the back, so it meets the vertical back face at 75 degrees and
     // leaves an acute edge across the full width - the sharp edge under the back cover (user, 2026-09-23).
     // Cut at 45 degrees to the joint plane, so it mirrors the chamfer on the cover's lower edge and the two
@@ -853,6 +854,7 @@ module base() difference() {
     head_at() along_x(-1, body_w + 1)
         polygon([[body_d - edge_c, base_h], [body_d + 3, base_h - edge_c - 3], [body_d + 3, base_h + 3]]);
     pot_cuts();
+    battery_tie_tunnels();
     pwm_pilots();
     // The inward-curving upper rim needs shallow relief for the slim driver shafts.
     for (p = pwm_holes()) translate([p[0], p[1], pwm_z0 + pwm_pcb[2] + pwm_screw[3]])
@@ -862,7 +864,8 @@ module base() difference() {
     sw_cuts();
     vent_slots();
     ballast_screw_holes();
-    for (p = rim_bosses()) head_at() translate([p[0], p[1], base_h - insert_depth]) cylinder(d = insert_hole_d, h = insert_depth + 2);
+    for (p = rim_bosses()) head_at() translate([p[0], rim_mouth(p) - rim_dir(p) * eps, rim_z(p)])
+        axis_orient([0, rim_dir(p), 0]) cylinder(d = insert_hole_d, h = insert_depth + eps);
     for (p = foot_xy) translate([p[0], p[1], -1]) cylinder(d = insert_hole_d, h = insert_depth + 1);
     for (p = foot_xy) translate([p[0] + foot_peg[2], p[1], -eps])
         cylinder(d = foot_peg[0] + foot_peg_cl, h = foot_peg[1] + eps);   // anti-rotation peg holes
@@ -878,6 +881,55 @@ module battery_cradle() for (cx = cradle_x) translate([cx - cradle_t / 2, 0, 0])
     bounds_rect([bat_cy - bat_d / 2 - cradle_out, floor_t - eps], [bat_cy + bat_d / 2 + cradle_out, bat_cz]);
     translate([bat_cy, bat_cz]) circle(d = bat_d + 2 * bat_clear);
 }
+// Loose bridges transfer tie pressure into the cell shoulders, leaving the BMS free.
+// Print the flat roof down. The two feet grow upwards without a support structure.
+function bat_bridge_top() = bat_cz + bat_d / 2 + bat_bms[1] + bat_bridge[3] + bat_bridge[2];
+function bat_bridge_outline() = let (a = bat_cy - bat_bridge[1]/2, b = bat_cy + bat_bridge[1]/2,
+                                    z = bat_bridge_top())
+    [[a - 2, bat_cz + 4], [b + 2, bat_cz + 4], [b + 2, z - 1.05],
+     [b, z], [a, z], [a - 2, z - 1.05]];
+module battery_bridge_profile() difference() {
+    polygon(bat_bridge_outline());
+    translate([bat_cy, bat_cz]) circle(r = bat_d/2 + bat_bridge[4]);
+    translate([bat_cy - bat_bridge[1]/2, 0])
+        square([bat_bridge[1], bat_bridge_top() - bat_bridge[2]]);
+}
+module battery_bridge_local() along_x(-bat_bridge[0]/2, bat_bridge[0]/2) battery_bridge_profile();
+module battery_bridges() for (x = bat_tie_x) translate([x, 0, 0]) battery_bridge_local();
+module battery_bridge_print() translate([0, bat_cy, bat_bridge_top()]) rotate([180, 0, 0]) battery_bridge_local();
+module battery_tie_outline() hull() {
+    translate([bat_cy, bat_cz]) circle(r = bat_d/2 + 0.05);
+    polygon(bat_bridge_outline());
+    translate([bat_cy - bat_tie_span/2, bat_tie_floor + bat_tie_slot[1]])
+        square([bat_tie_span, bat_tie_roof]);
+}
+module battery_ties_env() for (x = bat_tie_x) union() {
+    along_x(x - bat_tie[0]/2, x + bat_tie[0]/2) difference() {
+        offset(delta = bat_tie[1]) battery_tie_outline();
+        battery_tie_outline();
+    }
+    // Conservative bought buckle envelope; thread the tail before loading the cell.
+    translate([x - 3, bat_cy - bat_d/2 - 4.75, bat_cz - 2.5]) cube([6, 4, 5]);
+}
+module battery_tie_head_relief() for (x = bat_tie_x)
+    translate([x - bat_bridge[0]/2 - 0.4, 18, base_h - eps])
+        cube([bat_bridge[0] + 0.8, 13, bat_bridge[5] + eps]);
+
+// Recess the tunnel into the floor so its 1.6 mm roof clears the unraised cell.
+// Two shallow ramps expose the tunnel mouths for threading before fitting the battery.
+module battery_tie_anchors() let (
+    w = bat_tie_slot[0] + 2 * bat_tie_wall,
+    top = bat_tie_floor + bat_tie_slot[1] + bat_tie_roof)
+    for (x = bat_tie_x) translate([x, bat_cy, floor_t - eps])
+        offset_sweep(round_corners([[-w/2, -bat_tie_span/2], [w/2, -bat_tie_span/2],
+                                   [w/2, bat_tie_span/2], [-w/2, bat_tie_span/2]], radius = 0.6),
+                     height = top - floor_t + eps, offset = "delta", top = os_chamfer(height = 0.3));
+module battery_tie_tunnels() let (
+    a = bat_cy - bat_tie_span/2, b = bat_cy + bat_tie_span/2,
+    z = bat_tie_floor, top = z + bat_tie_slot[1])
+    for (x = bat_tie_x) along_x(x - bat_tie_slot[0]/2, x + bat_tie_slot[0]/2)
+        polygon([[a - 4, floor_t + eps], [a, z], [b, z], [b + 4, floor_t + eps],
+                 [b + 4, top], [a - 4, top]]);
 // two ribs under the pin-free long edges, pads on top, solder pins hanging free between them
 module pwm_ribs() for (sx = [-1, 1]) let (edge = pot_x + sx * pwm_pcb[1] / 2,        // long edge of the board
                                           inner = edge - sx * pwm_edge_free,        // where the solder pins start
@@ -992,20 +1044,26 @@ module ball_lid() difference() {
         translate([0, 0, 1 + ball_lid_t - lid_pocket]) cylinder(d = head_pocket[0], h = lid_pocket + 1);
     }
 }
-// Install the USB board first, then this centered lid-mounted L-stop.
-// Wire exits on both sides stay open; removing the lid releases the board.
+// Install the USB module first, then this centered lid-mounted keeper.
+// The upper return captures its measured envelope; bare PCB thickness is unknown.
+// Wire exits on both sides stay open; lifting and withdrawing the lid releases it.
 module usbc_keeper() let (
     x0 = usbc_xz[0] - usbc_keeper_w / 2, yf = ball[2] + 0.2,
     yr = usbc_y0 - 2 - usbc_keeper_gap, yt = usbc_y0 - usbc_cl,
     zb = usbc_xz[1] - usbc[2] / 2 - usbc_cl - usbc_wall,
-    zt = usbc_xz[1] + usbc[2] / 2 + usbc_cl) {
-    translate([x0, yf, ball[3]])
-        cube([usbc_keeper_w, yr - yf, zt - ball[3]]);
-    // The short 45-degree arm grows upwards from the stem and clears the gusset.
-    // Its front reaches below the PCB underside, independent of component height.
-    along_x(usbc_xz[0] - usbc_stop_w / 2, usbc_xz[0] + usbc_stop_w / 2)
-        polygon([[yr - 0.2, zb - 0.3], [yt, zb - 0.3 + yt - (yr - 0.2)],
-                 [yt, zt], [yr - 0.2, zt]]);
+    zt = usbc_xz[1] + usbc[2] / 2 + usbc_cl,
+    reach = usbc_y0 + usbc_keeper_top[0],
+    root_z = zt - usbc_cl * usbc_keeper_top[2],
+    tip_z = zt + usbc_keeper_top[0] * usbc_keeper_top[2]) {
+    assert(usbc_keeper_w == usbc_stop_w, "USB keeper stem and returns must share one profile width");
+    // The underside rises faster than 45 degrees and starts 0.2 mm above the
+    // module's inner top edge. The short return resists cable-induced lifting.
+    // One extrusion avoids coincident internal faces where the returns join.
+    along_x(x0, x0 + usbc_keeper_w)
+        polygon([[yf, ball[3]], [yr, ball[3]], [yr, zb - 0.1],
+                 [yt, zb - 0.3 + yt - (yr - 0.2)], [yt, root_z],
+                 [reach, tip_z], [reach, tip_z + usbc_keeper_top[1]],
+                 [yr - 0.2, tip_z + usbc_keeper_top[1]], [yr - 0.2, zt], [yf, zt]]);
 }
 // A rounded end wall grows from the base floor, independent of the removable lid.
 // It bears on the cell body below the BMS and leaves the upper cable end open.
@@ -1070,20 +1128,22 @@ module ballast_env() difference() {
     // the insert pockets of the rear feet are sealed voids under a 2 mm cap: no resin gets in there
     for (p = foot_xy) translate([p[0], p[1], -1]) cylinder(d = insert_hole_d + 0.4, h = insert_depth + 1);
 }
-// bosses for the head screws: columns under the tilted rim in the corners, merged into both walls,
-// with a 45 degree run-out below so they print without support
-// The boss hangs under the rim where there is no wall, so it runs out to the nearest wall (p[2]) and its
-// underside drops 45 degrees towards that wall: no island, nothing to support.
-// The boss hangs under the rim: it merges into the back wall and its underside drops 45 degrees towards
-// that wall, so nothing starts in the air. It stays well above the ballast trough, so it costs no ballast.
-module rim_boss_bodies() intersection() {
-    base_joint_envelope();   // clip the rim bosses to the shared upper-base profile
-    for (p = rim_bosses()) head_at()
-    let (dy = body_d - wall - p[1])
-    hull() {
-        translate([p[0], p[1], base_h - rim_boss_len]) cylinder(d = rim_boss_d, h = rim_boss_len + 1);
-        translate([p[0] - rim_boss_d / 2, body_d - wall, base_h - rim_boss_len - dy])
-            cube([rim_boss_d, wall, rim_boss_len + 1 + dy]);
+// Four locating tongues carry horizontal inserts. Their roots merge into the
+// front/rear walls below the joint; only the accurately mating tongues project above it.
+module rim_boss_bodies() for (p = rim_bosses()) {
+    head_at() rim_tab_raw(p);
+    difference() {
+      intersection() {
+        base_joint_envelope();
+        hull() {
+            head_at() rim_tab_raw(p);
+            translate([p[0] - rim_boss_d / 2,
+                       rim_dir(p) > 0 ? 0 : body_d - wall,
+                       rim_dir(p) > 0 ? base_top(0) - 10 : base_top(body_d) - 24])
+                cube([rim_boss_d, wall, 2]);
+        }
+      }
+      joint_halfspace();
     }
 }
 module foot_bosses() for (p = foot_xy) translate([p[0], p[1], 0]) cylinder(d = foot_boss[0], h = foot_boss[1]);
@@ -1212,7 +1272,8 @@ module screw(len, socket = false) difference() {
 // bench, before it goes into the head
 module screws_fan(socket = false) head_at() for (p = fan_holes()) translate([p[0], head_y[2], p[1]]) axis_orient([0, 1, 0]) screw(len_fan, socket);
 module screws_back(socket = false) head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) axis_orient([0, -1, 0]) screw(len_back, socket);
-module screws_head(socket = false) head_at() for (p = rim_bosses()) translate([p[0], p[1], base_h + wall - rim_recess]) axis_orient([0, 0, -1]) screw(len_head, socket);
+module screws_head(socket = false) head_at() for (p = rim_bosses())
+    translate([p[0], rim_seat(p), rim_z(p)]) axis_orient([0, rim_dir(p), 0]) screw(len_head, socket);
 module screws_lid(socket = false) for (q = ball_posts())
     translate([q[0], q[1], ball[3] + ball_lid_t - lid_pocket]) axis_orient([0, 0, -1]) screw(len_lid, socket);
 module screws_feet(socket = false) for (p = foot_xy) translate([p[0], p[1], -foot[2] + foot_head_recess + screw_head_h]) axis_orient([0, 0, 1]) screw(len_foot, socket);
@@ -1235,7 +1296,8 @@ module driver_at() translate([0, 0, -screw_head_h]) mirror([0, 0, 1]) {
 }
 module drivers_fan()  head_at() for (p = fan_holes())   translate([p[0], head_y[2], p[1]]) axis_orient([0, 1, 0]) driver_at();
 module drivers_back() head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) axis_orient([0, -1, 0]) driver_at();
-module drivers_head() head_at() for (p = rim_bosses())  translate([p[0], p[1], base_h + wall - rim_recess]) axis_orient([0, 0, -1]) driver_at();
+module drivers_head() head_at() for (p = rim_bosses())
+    translate([p[0], rim_seat(p), rim_z(p)]) axis_orient([0, rim_dir(p), 0]) driver_at();
 module drivers_feet() for (p = foot_xy) translate([p[0], p[1], -foot[2] + foot_head_recess + screw_head_h]) axis_orient([0, 0, 1]) driver_at();
 module drivers_lid()  for (q = ball_posts()) translate([q[0], q[1], ball[3] + ball_lid_t - lid_pocket]) axis_orient([0, 0, -1]) driver_at();
 
@@ -1258,6 +1320,8 @@ module assembly(explode = 0) {
     color("#5a5f66") translate([0, -explode * 0.8, explode * 1.4]) filter_env();
     color("#8c9196") translate([0, -explode * 0.6, 0]) knob();
     color("#5a5f66") translate([0, 0, explode * 0.8]) ball_lid();
+    color("#90979d") translate([0, 0, explode * 0.8]) battery_bridges();
+    color("#414950") translate([0, -explode * 0.3, explode * 0.4]) battery_ties_env();
     color("#1a1b1d") translate([0, 0, -explode * 0.6]) place_feet();
     color("#3f4247") fan_visual();
 }
@@ -1270,7 +1334,11 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["corner_r", corner_r], ["plan_r", plan_r], ["edge_c", edge_c], ["mag_off", mag_off],
     ["wall", wall], ["tilt", tilt], ["body", [body_w, body_d]], ["head_h", head_h],
     ["fan_insert_front", lug_d - insert_depth], ["fan_thread", len_fan - fan_t],
-    ["head_thread", len_head - wall + rim_recess], ["head_screw", [rim_recess, len_head, rim_seat_d]], ["chamber", [chamber_sq, chamber_d]], ["open_sq", open_sq],
+    ["head_thread", min([for (p = rim_bosses()) len_head - rim_wall_at(p) - rim_tab_gap + rim_recess_at(p)])],
+    ["head_screw", [rim_recess, len_head, rim_seat_d]],
+    ["head_mount", [rim_axis_z, front_t, rim_boss_d, rim_tab_gap, rim_tab_depth]],
+    ["head_axes", [for (p = rim_bosses()) [p[0], p[1], rim_z(p), rim_wall_at(p), rim_recess_at(p)]]],
+    ["chamber", [chamber_sq, chamber_d]], ["open_sq", open_sq],
     ["head_y", head_y], ["mat_stop", mat_stop_y()], ["mat_support", mat_support],
     ["magnet_pocket", mag], ["pot_mount_t", pot_mount_t], ["front_rim_z", base_top(0)],
     ["pwm_front", [pot_x, pot_z, pot_shoulder_y, pwm_install_lift]], ["pwm_pcb", pwm_pcb], ["pwm_origin", [pwm_x[0], pwm_y0, pwm_z0]],
@@ -1286,10 +1354,11 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["charge_tie", chg_tie], ["charge_web", [chg_web_gap, chg_web_touch, chg_web_w, chg_web_back]],
     ["lid_screw", [ball_lid_t, lid_pocket, len_lid]],
     ["battery", [bat_x0, bat_cy, bat_cz, bat_d, bat_l, bat_bms]],
+    ["battery_bridge", bat_bridge], ["battery_ties", bat_tie],
     ["battery_stop", [bat_stop_gap, bat_stop_w, bat_stop_y, bat_stop_c, bat_stop_top]],
-    ["battery_shoulders", [[cradle_x[0], cradle_x[len(cradle_x)-1]], cradle_t, bat_bms_open, bat_shoulder_c]],
+    ["battery_tie_anchors", [bat_tie_x, bat_tie_slot, bat_tie_floor, bat_tie_roof, bat_tie_span, bat_tie_wall]],
     ["usb_origin", [usbc_xz[0], usbc_y0, usbc_xz[1]]], ["usb_board", usbc_board],
-    ["usb_keeper", [usbc_keeper_w, usbc_keeper_gap, usbc_stop_w]],
+    ["usb_keeper", [usbc_keeper_w, usbc_keeper_gap, usbc_stop_w]], ["usb_keeper_top", usbc_keeper_top],
     ["usb_guides", [usbc_guide_lead, usbc_gusset_lid_gap]],
     ["led_pocket", [led_xz, led_d, led_cl, led_skin, led_boss]],
     ["base_h", base_h], ["joint_y", joint_y], ["base_joint_h", base_joint_h],
@@ -1304,5 +1373,6 @@ else if (part == "knob") knob_print_pose() knob_local();
 else if (part == "foot") foot_print_pose() foot_local();
 else if (part == "ball_lid") ball_lid_print_pose() ball_lid();
 else if (part == "filter_support") filter_support_print();
+else if (part == "battery_bridge") battery_bridge_print();
 else if (part == "usbc_fit_base") usbc_fit_base();
 else if (part == "usbc_fit_lid") usbc_fit_lid();

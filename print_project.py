@@ -22,6 +22,7 @@ PARTS = {
     "foot": (4, "TPU", 1),
     "ball_lid": (1, "PETG-black", 1),
     "filter_support": (1, "PETG-black", 1),
+    "battery_bridge": (2, "PETG-black", 1),
     "usbc_fit_base": (0, "PETG-black", 1),
     "usbc_fit_lid": (0, "PETG-black", 1),
 }
@@ -42,6 +43,8 @@ ASSEMBLY = {
     "filter_support": "filter_support();",
     "magnets": "magnets_env();",
     "battery": "battery_env();",
+    "battery_bridges": "battery_bridges();",
+    "battery_ties": "battery_ties_env();",
     "pwm_board": "pwm_board_env();",
     "pot": "pot_env();",
     "chg_module": "chg_module_env();",
@@ -74,9 +77,10 @@ ALLOWED_OVERLAPS = [("base", "screws_pwm"),     # thread forms into the pilot; i
                     ("fan", "screws_fan"),      # screws run through the holes of the solid fan envelope
                     ("knob", "pot"),           # the slotted sleeve is a press fit on the knurled shaft
                     # The drivers are checked against the state of the build at the moment that screw is
-                    # driven, not against the finished assembly: the head screws go in through the open
-                    # back before the cover, and the ballast lid is closed before the head goes on at all.
-                    ("head_back", "driver_head"), ("head_back", "driver_lid"), ("head", "driver_lid"),
+                    # driven, not against the finished assembly: remove cassette and back/fan assembly
+                    # for the front/rear head screws; close the ballast lid before fitting the head.
+                    ("head_back", "driver_head"), ("cassette", "driver_head"),
+                    ("driver_back", "driver_head"), ("head_back", "driver_lid"), ("head", "driver_lid"),
                     ("fan", "driver_lid"),      # the whole head group is removed before servicing the lid
                     ("driver_fan", "driver_head"), ("driver_head", "driver_lid"),
                     # and the fan is screwed to the cover on the bench, where its front face is reachable,
@@ -94,7 +98,7 @@ PROCESS = dict(wall_loops=4, top_shell_layers=5, bottom_shell_layers=5, infill=2
 FILAMENTS = [dict(material="PETG-black", profile="Generic PETG @BBL H2S", colour="#1A1B1D"),
              dict(material="PETG-grey", profile="Generic PETG @BBL H2S", colour="#8C9196"),
              dict(material="TPU", profile="Generic TPU @BBL H2S", colour="#1A1B1D")]
-PLATES = [("Head", ["head", "ball_lid", "filter_support"]),
+PLATES = [("Head", ["head", "ball_lid", "filter_support", "battery_bridge"]),
           ("Base and back cover", ["base", "head_back"]),
           ("Grey parts", ["cassette", "knob"]),
           ("TPU feet", ["foot"])]
@@ -117,7 +121,7 @@ MASSES_G = {"fan": 185, "battery": 150, "filter": 15, "pwm_board": 12, "chg_modu
 # bodies whose mass comes from their volume rather than a data sheet
 BY_VOLUME = {"base": "PETG", "head": "PETG", "head_back": "PETG", "cassette": "PETG", "knob": "PETG",
              "feet": "TPU", "ball_lid": "PETG", "filter_support": "PETG-solid", "ballast": "iron-loose",
-             "chg_tie": "nylon"}
+             "chg_tie": "nylon", "battery_bridges": "PETG", "battery_ties": "nylon"}
 
 LIMITATIONS = ["Hardware envelopes, not detailed vendor CAD",
                "Service motions are sampled; only the USB-to-base translation has a continuous swept-volume check",
@@ -374,42 +378,48 @@ def check_charger_holder(ctx):
 
 
 def check_head_fasteners(ctx):
-    """Four real button-head seats; no cable or air cut may open their bearing rings."""
+    """Four external-access screws seat on full rings and engage horizontal base inserts."""
     m = ctx.metrics
-    axes = np.asarray(m['rim_screws'], float)
-    assert axes.shape == (4, 2), f'Head needs exactly four screw axes: {axes.tolist()}'
-    recess, length, seat_d = m['head_screw']
-    entry, thickness = m['base_h'], m['wall']
-    seat = entry + thickness - recess
-    penetration = length - thickness + recess
-    assert thickness - recess >= 1.2 and 5 <= penetration <= m['insert_depth'] - 0.5, \
-        f'Invalid head screw stack: bearing {thickness-recess}, penetration {penetration}'
+    axes = np.asarray(m['head_axes'], float)
+    assert axes.shape == (4, 5) and np.allclose(axes,
+        [[7.5, 0, 68, 4.5, 2.45], [137.5, 0, 68, 4.5, 2.45],
+         [25, 70, 53.7, 3.2, 1.85], [131, 70, 53.7, 3.2, 1.85]]), \
+        f'Head must use four front/rear corner axes: {axes.tolist()}'
+    _, length, seat_d = m['head_screw']
+    _, _, boss_d, gap, tab_depth = m['head_mount']
+    assert tab_depth - m['insert_depth'] >= 2, 'Head inserts need a 2-mm closed tongue end'
     local = {n: ctx.manifold(head_frame(ctx.meshes[n], m)) for n in ('head', 'screws_head', 'base')}
     assert len(local['screws_head'].decompose()) == 4, 'Head must have four separate screws'
     rows = []
-    for x, y in axes:
-        def cyl(z, height, radius):
-            return ctx.cylinder([x, y, z], [0, 0, 1], height, radius, 120)
-        # Independent annuli preserve a full load path and a closed rim around the shallow pocket.
-        bearing = cyl(entry + .02, thickness - recess - .04, 3.15) - cyl(entry, thickness, 1.75)
-        enclosure = cyl(seat + .02, recess - .04, 3.9) - cyl(seat, recess, 3.25)
+    for x, face, z, thickness, recess in axes:
+        penetration = length - thickness - gap + recess
+        assert thickness - recess >= 1.2 and 5.7-1e-6 <= penetration <= m['insert_depth']-.5, \
+            f'Invalid head screw stack: bearing {thickness-recess}, penetration {penetration}'
+        direction = 1 if face == 0 else -1
+        seat = face + direction * recess
+        mouth = face + direction * (thickness + gap)
+        def cyl(y, height, radius, sign=direction):
+            return ctx.cylinder([x, y, z], [0, sign, 0], height, radius, 120)
+        bearing = cyl(seat + direction*.02, thickness-recess-.04, 3.15) - cyl(seat, thickness, 1.75)
+        enclosure = cyl(face + direction*.02, recess-.04, 4.4) - cyl(face, recess, 3.25)
         fill = (bearing ^ local['head']).volume() / bearing.volume()
         rim_fill = (enclosure ^ local['head']).volume() / enclosure.volume()
-        assert fill > .995 and rim_fill > .995, f'Incomplete head screw seat at {x,y}: {fill}, {rim_fill}'
-        screw = local['screws_head'] ^ _air_box([x-3, y-3, entry-10], [x+3, y+3, seat+3])
+        assert fill > .995 and rim_fill > .995, f'Incomplete head screw seat at {x,face}: {fill}, {rim_fill}'
+        screw = local['screws_head'] ^ _air_box([x-3, face-12, z-3], [x+3, face+12, z+3])
         sb = screw.bounding_box()
-        assert screw.volume() > 20 and abs(sb[2] - (seat-length)) < .02 \
-            and abs(sb[5] - (seat+1.65)) < .02, f'Wrong head screw length or seat at {x,y}'
-        contact = (screw.translate([0, 0, -.05]) ^ local['head']).volume()
-        assert contact > .1, f'Head screw floats above its bearing at {x,y}'
-        press = cyl(entry + .02, 60, 3.175)
+        limits = sorted([seat-direction*1.65, seat+direction*length])
+        assert screw.volume() > 20 and abs(sb[1]-limits[0]) < .02 and abs(sb[4]-limits[1]) < .02, \
+            f'Wrong head screw length or seat at {x,face}'
+        contact = (screw.translate([0, direction*.05, 0]) ^ local['head']).volume()
+        assert contact > .1, f'Head screw floats above its bearing at {x,face}'
+        press = cyl(mouth-direction*.02, 60, 3.175, -direction)
         access = (press ^ local['base']).volume()
-        assert access < .01, f'Head insert press access blocked at {x,y}: {access}'
-        rows.append(dict(axis_mm=[x, y], bearing_fill=round(fill, 5), enclosed_rim_fill=round(rim_fill, 5),
+        assert access < .01, f'Head insert press access blocked at {x,face}: {access}'
+        rows.append(dict(axis_mm=[x, face, z], insert_penetration_mm=round(penetration,3),
+                         bearing_thickness_mm=round(thickness-recess,3), hole_bottom_clearance_mm=round(m['insert_depth']-penetration,3),
+                         bearing_fill=round(fill, 5), enclosed_rim_fill=round(rim_fill, 5),
                          screw_contact_mm3=round(contact, 5), insert_access_overlap_mm3=round(access, 5)))
-    return dict(head_fasteners=dict(count=4, screw_length_mm=length, insert_penetration_mm=round(penetration, 3),
-                bearing_thickness_mm=round(thickness-recess, 3), hole_bottom_clearance_mm=round(m['insert_depth']-penetration, 3),
-                seats=rows))
+    return dict(head_fasteners=dict(count=4, screw_length_mm=length, seats=rows))
 
 
 def check_lid_fasteners(ctx):
@@ -480,13 +490,17 @@ def check_usb_wire_access(ctx):
 
 
 def check_usb_support(ctx):
-    """Two narrow sloping guides above the plain lid and a central PCB-edge stop."""
+    """Two side guides and a removable central stop with an upper module return."""
     bounds = ctx.meshes['usbc'].bounds
     xmin, xmax = bounds[:, 0]
     cx, y0, zseat = (xmin + xmax) / 2, bounds[0, 1], bounds[0, 2]
     front, back = y0 - ctx.metrics['usb_guides'][0], ctx.metrics['body'][1] - ctx.metrics['wall']
     keeper_front = y0 - 2
     upper = zseat + 4.5
+    reach, roof_t, roof_rise = ctx.metrics['usb_keeper_top']
+    assert abs(reach - 1) < .01 and roof_t >= 1.6 and roof_rise >= 1.25, \
+        'Revalidate the short, support-free USB upper return'
+    roof_top = upper + reach * roof_rise + roof_t
     top = ctx.metrics['ballast'][3]
     lid_top = top + ctx.metrics['lid_screw'][0]
     sides = [('left', [xmin - 2.2, xmin - .2]), ('right', [xmax + .2, xmax + 2.2])]
@@ -553,7 +567,7 @@ def check_usb_support(ctx):
     # Isolate the keeper above the lid, so its normal bearing on the base cannot
     # stand in for the clearance between this central stem and the fixed channel.
     keeper = ctx.solids['ball_lid'] ^ _air_box([cx - 2.05, keeper_front - 5, lid_top + .01],
-                                             [cx + 2.05, y0, upper + .1])
+                                             [cx + 2.05, y0 + reach + .02, roof_top + .02])
     stem = _air_box([cx - 1.95, ctx.metrics['ballast'][2] + .25, lid_top + .02],
                     [cx + 1.95, keeper_front - .45, upper - .02])
     stem_fill = (stem ^ keeper).volume() / stem.volume()
@@ -570,10 +584,44 @@ def check_usb_support(ctx):
     edge_hit = (pcb_edge.translate([0, -.3, 0]) ^ keeper).volume()
     assert edge_free < .0001 and edge_hit > .03, \
         f'Central USB keeper misses the lower PCB edge or its clearance: {edge_free:.5f}/{edge_hit:.5f} mm3'
+    # The 4.3-mm measurement includes components, not a measured bare PCB
+    # thickness. Check capture of that conservative module envelope explicitly.
+    module_top = float(zseat + ctx.metrics['usb_board'][2])
+    upper_edge = _air_box([cx - 1.9, y0 + .02, module_top - .1],
+                          [cx + 1.9, y0 + .25, module_top])
+    assert (upper_edge ^ ctx.solids['usbc']).volume() / upper_edge.volume() > .999, \
+        'USB upper-edge probe no longer matches the measured module envelope'
+    top_free = (upper_edge.translate([0, 0, .1]) ^ keeper).volume()
+    top_hit = (upper_edge.translate([0, 0, .6]) ^ keeper).volume()
+    assert top_free < .0001 and top_hit > .03, \
+        f'USB upper return misses the module or its clearance: {top_free:.5f}/{top_hit:.5f} mm3'
+    # Probe the actual return thickness and 1.25:1 underside, including its tip.
+    ya, yb = y0 + .02, y0 + reach - .02
+    roof_profile = np.array([[ya, upper + (ya - y0) * roof_rise + .02],
+                             [yb, upper + (yb - y0) * roof_rise + .02],
+                             [yb, roof_top - .02], [ya, roof_top - .02]])
+    roof_core = md.CrossSection([roof_profile], md.FillRule.NonZero).extrude(3.8).transform(
+        [[0, 0, 1, cx - 1.9], [1, 0, 0, 0], [0, 1, 0, 0]])
+    roof_fill = (roof_core ^ keeper).volume() / roof_core.volume()
+    assert roof_fill > .999, f'USB upper return is incomplete: {roof_fill:.5f}'
+    pivot = np.array([cx, back, zseat])
+    pitch_hit = None
+    for angle in np.arange(0, 3.001, .1):
+        tipped = ctx.solids['usbc'].translate(-pivot).rotate([-float(angle), 0, 0]).translate(pivot)
+        if (tipped ^ keeper).volume() > .01:
+            pitch_hit = round(float(angle), 2)
+            break
+    assert pitch_hit is not None, 'USB module can lever its front edge up past the return'
+    ctx.open_items.append('USB upper return captures the measured module envelope; bare PCB thickness and '
+                          'component-free bearing area are unmeasured. Check contact and cable-lever resistance on the fit print.')
     return dict(usb_support=dict(gusset_undersides=underside, upper_material_fill=filled,
         inner_support_overlap_mm3=round(inner_overlap, 6), central_keeper_fill=round(stem_fill, 6),
         removable_keeper_to_base_mm=round(gap, 4), keeper_clearance_search_cap_mm=3,
         lower_pcb_edge_contact_mm3=round(edge_hit, 5),
+        upper_return=dict(overlap_mm=reach, roof_thickness_mm=roof_t, underside_rise_per_run=roof_rise,
+                          material_fill=round(roof_fill, 6), free_at_01_mm3=round(top_free, 6),
+                          contact_at_06_mm3=round(top_hit, 6), front_lift_capture_deg=pitch_hit,
+                          limitation='Measured total module envelope; bare PCB bearing surface not measured'),
         minimum_lid_gap_mm=round(min(row['minimum_lid_gap_mm'] for row in underside.values()), 4),
         pcb_seat_z_mm=round(float(zseat), 3), seat_contact_mm3=round(contact, 5)))
 
@@ -952,7 +1000,10 @@ def check_pwm_removal(ctx):
                       for d in np.linspace(0, 4.5, 46)]),
         ('clear_rim', [pose(rear=8.6, angle=35, postrear=7.9+d, postup=3.9)
                       for d in np.linspace(0, 2, 21)]),
-        ('up', [pose(rear=8.6, angle=35, postrear=9.9, postup=3.9+d)
+        # The shaft is already free; centre the board left of the rear-right tongue.
+        ('side_clear', [pose(rear=8.6, angle=35, postrear=9.9, postup=3.9).translate([-d, 0, 0])
+                        for d in np.linspace(0, 6.5, 66)]),
+        ('up', [pose(rear=8.6, angle=35, postrear=9.9, postup=3.9+d).translate([-6.5, 0, 0])
                 for d in np.linspace(0, 60, 121)]),
     ]
     rows = []
@@ -1120,8 +1171,7 @@ def check_battery_retention(ctx):
     gap = battery.min_gap(stop, 2)
     assert .45 <= gap <= .55, f"Battery end-stop clearance is {gap:.3f} mm"
     rows = []
-    # Conservative axial probes include raised poses of the open base. They
-    # need not remain reachable after fitting the head's shoulder retainers.
+    # Conservative axial probes include raised poses before the ties are fastened.
     for dy in (-.4, 0, .4):
         for dz in (0, 1, 2):
             moved = battery.translate([0, dy, dz])
@@ -1141,58 +1191,115 @@ def check_battery_retention(ctx):
     assert blocked < .01, f"Battery stop blocks the upper cable exit: {blocked:.4f} mm3"
     ctx.summary.append("Battery: floor-rooted axial stop holds in nine shifted/lifted poses")
     ctx.open_items.append("Battery: check the base end-stop fit and actual cable exit; "
-                          "the open base intentionally permits upward battery removal")
+                          "release both ties before upward battery removal")
     return dict(battery_retention=dict(retained_by="base", right_gap_mm=round(gap, 4),
                 floor_root_fill=round(root_fill, 5), shifted_axial_probes=rows,
                 upper_cable_corridor_overlap_mm3=round(blocked, 6),
                 limitation="Rigid translation probes; no foam friction, strength or physical-fit proof"))
 
 
-def check_battery_shoulders(ctx):
-    """Require cell-body contact before the separate protection-board envelope."""
+def check_battery_ties(ctx):
+    """Check the fixed loops, closed bands and separate BMS-free bearing bridges."""
     m, s = ctx.metrics, ctx.solids
     x0, cy, cz, diameter, length, board_size = m['battery']
-    xs, width, opening, chamfer = m['battery_shoulders']
-    assert xs == [12, 68] and width >= 4 and opening >= 25 and chamfer >= .4, \
-        'Revalidate battery shoulder geometry against the measured cell and BMS'
-    radius = diameter / 2
-    cell = ctx.cylinder([x0, cy, cz], [1, 0, 0], length, radius, 256)
-    bms = _air_box([x0, cy - board_size[0]/2, cz + radius/2],
-                   [x0 + length, cy + board_size[0]/2, cz + radius + board_size[1]])
-    holders = [s['head'] ^ _air_box([x - width/2 - .01, 3, 25],
-                                   [x + width/2 + .01, cy - opening/2 + .01, 44.5]) for x in xs]
-    assert all(h.volume() > 400 for h in holders), 'A battery shoulder holder is missing'
-    nominal_gap = cell.min_gap(s['head'], 3)
-    assert .45 <= nominal_gap <= .55, f'Battery shoulder fit is {nominal_gap:.4f} mm'
-    bms_gap = bms.min_gap(s['head'], 5)
-    assert bms_gap > 2, f'Head crowds the seated protection board: {bms_gap:.4f} mm'
-    # A rising cylinder gains additional sideways travel at the cradle's upper
-    # edge. Include that diagonal escape attempt, with 0.02 mm wall reserve.
+    xs, slot, floor, anchor_roof, span, wall = m['battery_tie_anchors']
+    width, opening, roof, bms_clear, radial_clear, relief = m['battery_bridge']
+    band_width, band_t, nominal_length = m['battery_ties']
+    assert xs == [26, 54] and opening >= 25 and roof >= 1.6, 'Battery tie layout or BMS protection changed'
+    assert slot[0] - band_width >= .39 and slot[1] - band_t >= .59, 'Battery tie does not fit its tunnel'
+    assert floor >= 1.8 and anchor_roof >= 1.6 and wall >= 2, 'Battery tie anchors are too thin'
+    assert diameter == 32.5 and length == 71.6 and board_size == [20, 4], 'Revalidate measured cell and BMS'
+    caps, ties, base, head = (s[n] for n in ('battery_bridges', 'battery_ties', 'base', 'head'))
+    assert len(caps.decompose()) == len(ties.decompose()) == 2, 'Both separate bridges and closed ties are required'
+    cell = ctx.cylinder([x0, cy, cz], [1, 0, 0], length, diameter/2, 360)
+    bms = _air_box([x0, cy-board_size[0]/2, cz+diameter/4],
+                   [x0+length, cy+board_size[0]/2, cz+diameter/2+board_size[1]])
+    top, bridge_top = floor + slot[1] + anchor_roof, cz + diameter/2 + board_size[1] + bms_clear + roof
+    assert abs(cz-diameter/2-top-.5) < .01, 'Anchor roof must clear the cell by 0.5 mm'
+    assert caps.min_gap(bms, 3) >= .49, 'Battery bridge loads the BMS in the installed pose'
+    assert caps.translate([0, 0, -.2]).min_gap(bms, 3) >= .29, 'Settling bridge can press on the BMS'
+    assert ties.min_gap(bms, 3) >= 1, 'Cable tie crosses the BMS instead of its protective bridge'
+    head_gaps = {n: s[n].min_gap(head, 3) for n in ('battery_bridges', 'battery_ties')}
+    assert min(head_gaps.values()) >= .19, f'Battery tie or bridge rubs the head: {head_gaps}'
+    # Independent normal-thickness rays measure the actual head pocket ceiling.
+    angle = math.radians(m['tilt'])
+    normal = np.array([0, -math.sin(angle), math.cos(angle)])
+    origins = [_tilt(m, [x, 24, m['base_h']-.1]) for x in xs]
+    points, rayids, _ = ctx.meshes['head'].ray.intersects_location(origins, [normal]*len(xs), multiple_hits=True)
+    skins = []
+    for i in range(len(xs)):
+        distances = np.sort((points[rayids == i] - origins[i]) @ normal)
+        assert len(distances) >= 2, 'Battery tie relief opens through the head floor'
+        skin = float(distances[1] - distances[0])
+        assert skin >= 1.2, f'Battery tie relief leaves only {skin:.4f} mm head skin'
+        skins.append(round(skin, 5))
     rows = []
-    for name, fixed_y in [('front', -.4), ('centre', 0), ('rear', .4), ('rear_wall', None)]:
-        first = [None, None]
-        min_board_gap = 5.
-        for dz in np.linspace(0, 1.65, 67):
-            dy = fixed_y if fixed_y is not None else radius + .48 - math.sqrt(radius**2 - dz**2)
-            q = cell.translate([0, dy, dz])
-            assert (q ^ s['base']).volume() < .01, f'Battery {name} probe is blocked by the base before capture'
-            moved_bms = bms.translate([0, dy, dz])
-            min_board_gap = min(min_board_gap, moved_bms.min_gap(s['head'], 5))
-            assert min_board_gap >= .5, f'Protection board takes load before cell capture during {name}'
-            for i, h in enumerate(holders):
-                if first[i] is None and (q ^ h).volume() > .01:
-                    first[i] = round(float(dz), 3)
-            if all(v is not None for v in first):
-                break
-        assert all(v is not None for v in first), f'Battery escapes an upper shoulder during {name}'
-        rows.append(dict(path=name, first_cell_contact_z_mm=first,
-                         last_y_offset_mm=round(float(dy), 4), minimum_bms_gap_mm=round(min_board_gap, 4)))
-    ctx.summary.append('Battery: both head shoulders catch the cell before the BMS, including diagonal rearward escape')
-    ctx.open_items.append('Battery retention is geometric: verify shrink-wrap, cushioning and wire fit; '
-                          'the head must be fitted to prevent upward removal. No load, creep or impact test was performed.')
-    return dict(battery_shoulders=dict(x_mm=xs, bms_opening_mm=opening,
-                nominal_cell_gap_mm=round(nominal_gap, 4), nominal_bms_gap_mm=round(bms_gap, 4),
-                capture_paths=rows, limitation='Sampled rigid-body motions; no force or flexible-wrap model'))
+    for x in xs:
+        roi = _air_box([x-width/2-.01, 0, 0], [x+width/2+.01, 74, 60])
+        cap, tie = caps ^ roi, ties ^ roi
+        assert cap.volume() > 500 and tie.volume() > 300, f'Battery strap or bridge missing at x{x}'
+        a, b, ceiling = cy-span/2, cy+span/2, floor+slot[1]
+        empty = _air_box([x-slot[0]/2+.02, a+.02, floor+.02],
+                         [x+slot[0]/2-.02, b-.02, ceiling-.02])
+        assert (empty ^ base).volume() < .01, f'Battery tie tunnel is obstructed at x{x}'
+        material = {
+            'floor': _air_box([x-1.9, a+.1, .02], [x+1.9, b-.1, floor-.02]),
+            'roof': _air_box([x-1.9, a+.35, ceiling+.02], [x+1.9, b-.35, top-.02]),
+            'left_wall': _air_box([x-3.6, a+.4, 3.3], [x-2.02, b-.4, 4.6]),
+            'right_wall': _air_box([x+2.02, a+.4, 3.3], [x+3.6, b-.4, 4.6]),
+        }
+        fills = {n: (q ^ base).volume()/q.volume() for n, q in material.items()}
+        assert min(fills.values()) > .999, f'Battery tie anchor material missing at x{x}: {fills}'
+        # Probe both actual sloping mouth channels, not just their endpoints.
+        mouth_volumes = []
+        for rear in (False, True):
+            ys = np.linspace(a-3.8, a-.2, 10) if not rear else np.linspace(b+.2, b+3.8, 10)
+            for y in ys:
+                distance = a-y if not rear else y-b
+                bottom = floor + distance/4*(m['floor_t']+.01-floor)
+                q = _air_box([x-1.9, y-.03, bottom+.05], [x+1.9, y+.03, ceiling-.02])
+                mouth_volumes.append((q ^ base).volume())
+        assert max(mouth_volumes) < .001, f'Battery tie lead-in is blocked at x{x}'
+        channel = _air_box([x-width/2+.02, cy-opening/2+.02, 26],
+                           [x+width/2-.02, cy+opening/2-.02, bridge_top-roof-.02])
+        assert (channel ^ cap).volume() < .001, 'Bridge narrows the free 25-mm BMS channel'
+        roof_probe = _air_box([x-width/2+.02, cy-9, bridge_top-roof+.02],
+                              [x+width/2-.02, cy+9, bridge_top-.02])
+        assert (roof_probe ^ cap).volume()/roof_probe.volume() > .999, 'BMS bridge roof is incomplete'
+        bearing = []
+        for lo, hi in ((cy-15, cy-opening/2), (cy+opening/2, cy+15)):
+            q = _air_box([x-width/2-.01, lo, 20], [x+width/2+.01, hi, 43])
+            contact = (cell ^ cap.translate([0, 0, -.2]) ^ q).volume()
+            assert contact > .05, 'Bridge must bear on both cell shoulders before the BMS'
+            bearing.append(round(contact, 6))
+        cap_stop = (cap.translate([0, 0, .3]) ^ tie).volume()
+        anchor_stop = (tie.translate([0, 0, .3]) ^ base).volume()
+        assert cap_stop > 1 and anchor_stop > 1, 'Closed tie does not capture bridge and fixed anchor'
+        # A cross-section of the real envelope must contain a closed inner loop.
+        polygons = tie.transform([[0,1,0,0], [0,0,1,0], [1,0,0,0]]).slice(x).to_polygons()
+        holes = [p for p in polygons if np.sum(p[:,0]*np.roll(p[:,1],-1)-np.roll(p[:,0],-1)*p[:,1]) < 0]
+        assert len(holes) == 1, 'Battery tie is open or lacks a continuous loop'
+        inner_length = float(np.linalg.norm(holes[0]-np.roll(holes[0],1,axis=0),axis=1).sum())
+        centre_length = inner_length + math.pi*band_t
+        assert nominal_length >= centre_length + 20, 'Battery tie has less than 20 mm for buckle and tail'
+        overlaps = {n: (tie ^ s[n]).volume() for n in ('base', 'battery', 'battery_bridges', 'head')}
+        assert max(overlaps.values()) < .01, f'Installed battery band collides at x{x}: {overlaps}'
+        rows.append(dict(x_mm=x, anchor_material_fill={k:round(v,6) for k,v in fills.items()},
+            maximum_mouth_overlap_mm3=round(max(mouth_volumes),7), shoulder_contacts_at_settle_0_2_mm3=bearing,
+            bridge_capture_mm3=round(cap_stop,6), anchor_capture_mm3=round(anchor_stop,6),
+            band_centre_length_mm=round(centre_length,3), buckle_and_tail_reserve_mm=round(nominal_length-centre_length,3),
+            nominal_overlap_mm3={k:round(v,7) for k,v in overlaps.items()}))
+    ctx.summary.append('Battery: two closed ties capture shoulder-bearing BMS bridges and recessed floor anchors')
+    ctx.open_items.append('Battery ties: fit two bands up to 3.6 x 1.2 mm, nominally at least 150 mm long; '
+                          'verify the actual buckle fits the 6 x 4 x 5 mm front envelope. Thread before inserting the battery, '
+                          'place both loose bridges over the BMS, and check clearance while tightening. Cut ties before service. '
+                          'This geometric check does not prove clamp force, PETG creep, wrap integrity or flexible strap behaviour.')
+    return dict(battery_ties=dict(bridges=2, ties=2, bms_opening_mm=opening, bridge_roof_mm=roof,
+                nominal_bridge_bms_gap_mm=round(caps.min_gap(bms,3),4),
+                settled_bridge_bms_gap_mm=round(caps.translate([0,0,-.2]).min_gap(bms,3),4),
+                head_clearances_mm={k:round(v,5) for k,v in head_gaps.items()}, head_floor_skins_mm=skins,
+                anchors=rows, limitation='Rigid envelopes and geometric capture only; no force or deformation proof'))
+
 
 
 def checks(ctx):
@@ -1200,7 +1307,7 @@ def checks(ctx):
     m = ctx.metrics
     assert m["wall"] >= 1.2, "Walls below three perimeters"
     assert m["fan_thread"] >= 5, "Fan screws bite less than 5 mm"
-    assert m["head_thread"] >= 5, "Head screws bite less than 5 mm"
+    assert m["head_thread"] >= 5.7 - 1e-6, "Head screws must engage the full 5.7-mm Ruthex length"
     assert m["fan_post"][1] >= m["insert_depth"] + 1, "Fan posts too short for their inserts"
     assert m["knob_top_z"] + 2 <= m["front_rim_z"], "Knob reaches over the front rim"
     # Standard figures, independent of the model: 120 mm fans have a 105 mm hole pitch, the mat is 120 mm
@@ -1234,7 +1341,6 @@ def checks(ctx):
                        ("head_on_screws", "head", "screws_head", [1, 0, 0], 0.6),
                        ("battery_right", "battery", "base", [1, 0, 0], 0.8),
                        ("battery_left", "battery", "base", [-1, 0, 0], 1.25),
-                       ("battery_up_closed", "battery", "head", [0, 0, 1], 3),
                        ("battery_down", "battery", "base", [0, 0, -1], 0.8),
                        ("battery_forward", "battery", "base", [0, -1, 0], 0.8),
                        ("battery_backward", "battery", "base", [0, 1, 0], 0.8),
@@ -1248,7 +1354,7 @@ def checks(ctx):
     up = [0, -math.sin(tilt), math.cos(tilt)]
     out = [0, -math.cos(tilt), -math.sin(tilt)]       # out of the intake face, normal to it
     paths = ctx.paths([
-        ("cassette_off", "cassette", ["head", "base", "fan", "filter"], out, 30, 0.5),
+        ("cassette_off", "cassette", ["head", "base", "fan", "filter", "screws_head"], out, 30, 0.5),
         # the fan is bolted to the cover, so it comes off with it
         ("cover_off", ["head_back", "fan", "screws_fan"], ["head", "base", "filter_support", "chg_module", "chg_sink", "chg_tie"],
          [-o for o in out], 30, 0.5),
@@ -1264,10 +1370,13 @@ def checks(ctx):
         ("switch_out", "switch", ["base", "ball_lid", "battery", "pwm_board", "pot", "usbc", "led", "ballast"],
          [1, 0, 0], 35, .1),
         ("fan_out", ["fan", "screws_fan"], ["head", "base", "filter_support"], [-o for o in out], 40, 0.5),   # cover off first
-        ("head_off", ["head", "head_back", "cassette", "fan", "filter", "filter_support", "magnets"],
+        # Cassette and back/fan assembly are removed to reach the four corner screws.
+        # The mat and its support may remain in the head during removal.
+        ("head_off", ["head", "filter", "filter_support", "magnets"],
          ["base", "battery", "pwm_board", "usbc", "switch", "pot", "led", "ball_lid", "ballast",
-          "chg_module", "chg_sink", "chg_tie"], up, 60, 1),
-        ("battery_out", "battery", ["base", "pwm_board", "usbc", "switch", "ball_lid"], [0, 0, 1], 40, 0.5),
+          "chg_module", "chg_sink", "chg_tie", "battery_bridges", "battery_ties"], up, 60, 1),
+        # Cut and remove both ties before lifting the battery with its loose bridges.
+        ("battery_out", ["battery", "battery_bridges"], ["base", "pwm_board", "usbc", "switch", "ball_lid"], [0, 0, 1], 40, 0.5),
         # Remove the head and loaded ballast lid first. Withdraw the USB board
         # into the bay, then lift it completely above the rim; reverse to install.
         ("usbc_out", "usbc", ["base", "battery", "pwm_board", "pot", "switch", "led", "ballast"],
@@ -1281,7 +1390,9 @@ def checks(ctx):
     probes = ctx.insert_probes(
         [("head_back", _tilt(m, [p[0], m["head_y"][3], p[1]]), back, depth, d, w) for p in m["fan_holes"]] +
         [("head", _tilt(m, [p[0], m["back_y"], p[1]]), out, depth, d, w) for p in m["head_bosses"]] +
-        [("base", _tilt(m, [p[0], p[1], m["base_h"]]), [-u for u in up], depth, d, w) for p in m["rim_screws"]] +
+        [("base", _tilt(m, [x, face+sign*(thickness+m["head_mount"][3]), z]),
+          [sign*v for v in back], depth, d, w)
+         for x,face,z,thickness,recess in m["head_axes"] for sign in [1 if face == 0 else -1]] +
         [("base", [p[0], p[1], 0], [0, 0, 1], depth, d, w) for p in _foot_xy(m)] +
         [("base", [p[0], p[1], m["ballast"][3]], [0, 0, -1], depth, d, w)
          for p in m["ballast_posts"]])
@@ -1327,7 +1438,7 @@ def checks(ctx):
                 **check_rim_chamfers(ctx), **check_charger_air(ctx), **check_charger_holder(ctx),
                 **check_lid_fasteners(ctx), **check_head_fasteners(ctx), **check_pwm_mount(ctx), **check_pwm_removal(ctx), **check_usb_wire_access(ctx), **check_ballast_cover(ctx),
                 **check_switch_trough_clearance(ctx), **check_filter_support(ctx), **check_led_window(ctx), **check_usb_support(ctx),
-                **check_battery_retention(ctx), **check_battery_shoulders(ctx), **check_usb_installation(ctx), **check_usb_fit(ctx), **check_loaded_lid_removal(ctx))
+                **check_battery_retention(ctx), **check_battery_ties(ctx), **check_usb_installation(ctx), **check_usb_fit(ctx), **check_loaded_lid_removal(ctx))
 
 
 def _tilt(m, point):
@@ -1363,6 +1474,8 @@ VIEWER = dict(
            ("fan_visual", "Fan 120 x 25", "bought", "#6a6f75", "1x", [0, 0.5, 1.35]),
            ("filter", "Filter mat 120 x 120 x 17", "bought", "#a09488", "1x", [0, -0.9, 1.1]),
            ("battery", "LiFePO4 3.2 V 6 Ah", "bought", "#4a6d3f", "1x", [0, 0, -0.2]),
+           ("battery_bridges", "Battery BMS bridges", "black", "#aeb5bb", "2x", [0, 0, 0.8]),
+           ("battery_ties", "Battery cable ties", "bought", "#55595e", "2x", [0, -0.3, 0.4]),
            ("pwm_board", "PWM controller", "bought", "#2f5d3a", "1x", [0, -0.2, 0]),
            ("chg_module", "Charge / boost module", "bought", "#2f5d3a", "1x", [0, 0, 0.3]),
            ("chg_sink", "Heatsink", "bought", "#9aa0a6", "1x", [0, 0, 0.3]),
@@ -1398,15 +1511,18 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
                               "color(\"#414950\") translate([0, 0, 16]) screws_lid(socket = true);",
                               "100,-180,240,72.5,63,24"),
          "08_usb_mount": ("color(\"#8a9096\") intersection() { base(); "
-                          "translate([94, 57.4, 0]) cube([24, 17.6, 60]); } "
+                          "translate([97, 57.4, 29]) cube([20, 17.6, 25]); } "
+                          "color(\"#b8c0c7\") intersection() { ball_lid(); "
+                          "translate([97, 52, 26]) cube([20, 20, 27]); } "
                           "color(\"#2f5d3a\") usbc_env();",
-                          "145,-45,85,106,64,25"),
-         "09_head_mount": ("color(\"#aeb5bb\") head_at() intersection() { head_raw(); "
-                           "translate([-1, head_y[3], base_h - 0.1]) "
-                           "cube([body_w + 2, body_d - head_y[3] + 1, 12]); } "
-                           "color(\"#414950\") translate([0, -5*sin(tilt), 5*cos(tilt)]) "
-                           "screws_head(socket = true);",
-                           "105,-165,230,72.5,63,55"),
+                          "170,10,80,106,63,40"),
+         "09_head_mount": ("color(\"#717980\") intersection() { base(); "
+                           "head_at() translate([-1, -1, base_h - 16]) cube([body_w + 2, body_d + 2, 34]); } "
+                           "color(\"#b8c0c7\") translate([0, -8*sin(tilt), 8*cos(tilt)]) "
+                           "head_at() intersection() { head_raw(); "
+                           "translate([-1, -1, base_h - 0.1]) cube([body_w + 2, body_d + 2, 28]); } "
+                           "color(\"#414950\") screws_head(socket = true);",
+                           "200,-200,175,72.5,37,52"),
          "10_pwm_mount": ("color(\"#8a9096\") intersection() { base(); "
                           "translate([96, 1, 0]) cube([41, 45, pwm_z0 + 0.1]); } "
                           "color(\"#2f5d3a\") translate([0, 0, 5]) intersection() { pwm_board_env(); "
@@ -1418,8 +1534,10 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
                                  "translate([3.2, 14, 0]) cube([115, 59, 48]); } "
                                  "color(\"#8a9096\") ball_lid(); "
                                  "color(\"#4a6d3f\") battery_env(); "
-                                 "color(\"#b8c0c7\") head_at() intersection() { head_raw(); "
-                                 "for (x = [cradle_x[0], cradle_x[len(cradle_x)-1]]) "
-                                 "translate([x - 3.5, -1, 0]) cube([7, 29, base_h + wall + 1]); } "
+                                 "color(\"#b8c0c7\") battery_bridges(); "
+                                 "color(\"#414950\") battery_ties_env(); "
                                  "color(\"#2f5d3a\") usbc_env();",
-                                 "135,-160,135,68,38,28")}
+                                 "135,-160,135,68,38,28"),
+         "12_floor_tie_loops": ("color(\"#aeb5bb\") intersection() { base(); "
+                                "translate([15, 24, 0]) cube([50, 22, 9]); }",
+                                "83,-45,43,40,35,3")}
