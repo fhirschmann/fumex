@@ -1,5 +1,5 @@
 {
-  "source_sha256": "b918a76215a4885e8c215c0fe97e16c3aa9fbab6748c803e2b0783f3ac3178f7",
+  "source_sha256": "152bdde96866f33b4eff4f85b12d2b582b43e39602d3c16a702fa8b487168946",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -29,17 +29,17 @@
           57.2657
         ]
       ],
-      "volume_mm3": 109165.0354,
-      "triangles": 11082,
+      "volume_mm3": 109319.9048,
+      "triangles": 11104,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "a4ad29214642627d390432a3d9b37fe2b14fb573f8523fe89a70c8b8ad3bcd79",
+      "sha256": "8a3b9ded2392f70377d480cfb8ffa271249253195a7a0a56134032f91171d490",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "a4ad29214642627d390432a3d9b37fe2b14fb573f8523fe89a70c8b8ad3bcd79"
+      "committed_sha256": "8a3b9ded2392f70377d480cfb8ffa271249253195a7a0a56134032f91171d490"
     },
     "head": {
       "size_mm": [
@@ -276,10 +276,10 @@
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "3a411a8cc0ce2b3828f29c7bbe1b1c46a2669a8282e02f789b32daad97341cee",
+      "sha256": "3e9a3a79237402dcc5c56aacbed592af1c0ce44d924ef2eaee6b252547e32137",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "3a411a8cc0ce2b3828f29c7bbe1b1c46a2669a8282e02f789b32daad97341cee"
+      "committed_sha256": "3e9a3a79237402dcc5c56aacbed592af1c0ce44d924ef2eaee6b252547e32137"
     },
     "usbc_fit_lid": {
       "size_mm": [
@@ -1115,7 +1115,7 @@
   "intake_lip_mm": 2.25,
   "mat_free_travel_mm": 1.62,
   "mat_squashed_percent": 0.11,
-  "mass_g": 1012.6,
+  "mass_g": 1012.8,
   "centre_of_mass_mm": [
     67.3,
     31.3,
@@ -2455,7 +2455,7 @@
           0
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 99.80902
+        "contact_at_075_mm3": 100.60148
       },
       {
         "offset_yz_mm": [
@@ -2463,7 +2463,7 @@
           1
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 95.08228
+        "contact_at_075_mm3": 95.88348
       },
       {
         "offset_yz_mm": [
@@ -2471,7 +2471,7 @@
           2
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 90.26131
+        "contact_at_075_mm3": 91.06107
       },
       {
         "offset_yz_mm": [
@@ -2479,7 +2479,7 @@
           0
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 101.09054
+        "contact_at_075_mm3": 102.85409
       },
       {
         "offset_yz_mm": [
@@ -2487,7 +2487,7 @@
           1
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 96.26426
+        "contact_at_075_mm3": 98.02245
       },
       {
         "offset_yz_mm": [
@@ -2495,7 +2495,7 @@
           2
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 91.37325
+        "contact_at_075_mm3": 93.05313
       },
       {
         "offset_yz_mm": [
@@ -2503,7 +2503,7 @@
           0
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 102.13062
+        "contact_at_075_mm3": 105.08233
       },
       {
         "offset_yz_mm": [
@@ -2511,7 +2511,7 @@
           1
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 97.23844
+        "contact_at_075_mm3": 100.08337
       },
       {
         "offset_yz_mm": [
@@ -2519,9 +2519,15 @@
           2
         ],
         "free_at_03_mm3": 0.0,
-        "contact_at_075_mm3": 92.33755
+        "contact_at_075_mm3": 94.96856
       }
     ],
+    "trough_connection_material_fill": {
+      "former_gap": 1.0,
+      "stop_junction": 1.0,
+      "trough_junction": 1.0
+    },
+    "local_connection_to_lid_mm": 0.282844,
     "upper_cable_corridor_overlap_mm3": 0.0,
     "limitation": "Rigid translation probes; no foam friction, strength or physical-fit proof"
   },

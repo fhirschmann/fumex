@@ -51,6 +51,12 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     plan corners and a 0.4 mm top bevel. The nominal cell ends at x75.6, leaving 0.5 mm axial play.
     Its top stays 1.125 mm below the BMS envelope. The earlier 8 mm lid tongue is removed; the
     base must contain the new end wall. Foam cushions the pack but is not the axial restraint.
+    A 3 mm thick floor-rooted connection now joins its rear end to the fixed trough
+    wall (user, 2026-09-25). It spans x76.1..79.1 and y49.6..54, with a top descending
+    from z29 at y49.6 to z25.6 at y53, then remaining level inside the wall. The
+    1 mm wall overlap and original-stop overlap form a continuous connection;
+    the lid starts at z26, retaining 0.4 mm vertical clearance over the connection.
+    Battery-facing clearance, the upper cable opening and the lid itself are unchanged.
   - LEO-AC1 supplies the measured Ø32.5 x 71.6 mm cell and the approximate 20 mm wide, 4 mm thick
     protection board along its full length. Here the BMS faces up: x4..75.6, y25..45,
     z30.125..42.25 in the conservative bought-part envelope. LEO's body/back halves close three
@@ -618,3 +624,11 @@ they do not validate the subsequent geometry.
 - Source SHA256 `b918a76215a4885e8c215c0fe97e16c3aa9fbab6748c803e2b0783f3ac3178f7`; report `docs/direct-battery-ties-2026-09-25.md`. Full export PASS: ten closed single-body meshes, zero degenerate faces, 443 coaxial pairs, 561 assembly pairs and ten standard service paths. Direct band/head clearance 2.70913 mm; centreline length 120.448 mm, leaving 29.552 mm on each 150 mm tie. Anchor tunnels/material and the battery cable corridor pass. Separate pack-lift contact measurements explicitly identify initial BMS contact, without retaining the old pressure-isolation claim.
 - Islands, overhangs, thickness and fins are CLEAN on all ten meshes at configured thresholds. Head thickness retains 65,253/65,414 rays with the known numerical warnings. All ten individual slices, four production plates and the USB fit plate pass without supports or slicer warnings. Arranged production 475.8 g / 15.8 h; individual jobs 476.2 g / 16.8 h; USB fit 10.0 g / 62 min. Static estimate 1012.6 g, front margin 28.3 mm, tip angle 21.0 degrees.
 - All remaining printed geometries match commit `2beb14ea21e3c4499f302b4efcb3e42927a42121`; base and fit-base Boolean differences are zero, all other STLs are byte-identical. Existing head reliefs remain, parameterized independently as `bat_tie_head_clearance`. No housing reprint is needed for this change. Both 3MFs, all twelve views and both viewer copies are rebuilt. The local file tab requires manual reload. Shared scripts remain identical to the skill.
+
+
+## Battery stop tied into the trough (2026-09-25)
+
+- User requested the battery end stop be connected to the ballast trough for stability. A 3 mm full-width, floor-rooted web joins the existing rounded stop to the trough front wall; its rearward top slopes 45 degrees from z29 down to z25.6 and overlaps the wall by 1 mm. Only the base production geometry changes. The battery-facing stop, axial play, ties and removable lid stay as before.
+- Source SHA256 `152bdde96866f33b4eff4f85b12d2b582b43e39602d3c16a702fa8b487168946`; report `docs/battery-stop-link-2026-09-25.md`. Full export PASS: ten closed single-body meshes, zero degenerate faces, 443 coaxial pairs, 561 assembly pairs and ten standard paths. Probes find 100% material across the former gap and both junctions, rejecting the preceding unconnected base. Installed local lid clearance is 0.282844 mm across the diagonal top (0.4 mm vertically); the complete loaded-lid path still passes. Battery gap stays 0.5 mm and the upper cable corridor remains clear. This geometry check does not measure strength or creep.
+- Islands, overhangs, thickness and fins are CLEAN on all ten meshes at configured thresholds. All ten individual slices, four production plates and the USB fit plate pass without supports or slicer warnings. Base 119.472 g; arranged production 475.9 g / 15.8 h; individual jobs 476.3 g / 16.8 h; USB fit 10.0 g / 62 min. Static estimate 1012.8 g, front margin 28.3 mm, tip angle 21.0 degrees.
+- Both 3MFs, all twelve views and both viewer copies are rebuilt. The local file tab requires manual reload. Shared scripts remain identical to the skill.

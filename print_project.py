@@ -1384,6 +1384,23 @@ def check_battery_retention(ctx):
     root = _air_box([end + .9, cy - 3, floor - .2], [end + 2.9, cy + 12, top - .6])
     root_fill = (root ^ base).volume() / root.volume()
     assert root_fill > .995, "Battery end wall is not continuously rooted in the base floor"
+    # Prove substantial material across the former 2-mm gap, from the floor to
+    # the trough rim, plus both junctions. These independent boxes would fail
+    # for an isolated stop, a thin top bridge or a connection floating above the floor.
+    link_probes = {
+        'former_gap': _air_box([76.25, 51.05, floor-.15], [78.95, 52.95, 25.45]),
+        'stop_junction': _air_box([76.25, 49.8, floor+.05], [78.95, 50.2, 28.3]),
+        'trough_junction': _air_box([76.25, 53.25, floor+.05], [78.95, 53.75, 25.5]),
+    }
+    link_fills = {name: (probe ^ base).volume()/probe.volume() for name,probe in link_probes.items()}
+    assert min(link_fills.values()) > .995, f'Battery stop/trough connection is absent or incomplete: {link_fills}'
+    # Only the actual connection and the lid immediately above it. Measuring
+    # against the complete base would return zero at the intentional lid seats.
+    connection = base ^ _air_box([76.1, 49.6, floor-.15], [79.1, 54, top+.01])
+    lid_above_link = lid ^ _air_box([76.1, 52.9, 25.9], [79.1, 54.1, 29.1])
+    assert connection.volume() > 100 and lid_above_link.volume() > 5, 'Battery stop/lid clearance probe misses its real surfaces'
+    link_gap = connection.min_gap(lid_above_link, 1)
+    assert link_gap >= .25, f'Battery stop connection rubs the ballast lid: {link_gap:.4f} mm'
     gap = battery.min_gap(stop, 2)
     assert .45 <= gap <= .55, f"Battery end-stop clearance is {gap:.3f} mm"
     rows = []
@@ -1405,11 +1422,13 @@ def check_battery_retention(ctx):
                         [end + 12, cy + bms[0] / 2, cz + diameter / 2 + bms[1]])
     blocked = (corridor ^ (base + lid + ctx.solids["battery_ties"])).volume()
     assert blocked < .01, f"Battery stop blocks the upper cable exit: {blocked:.4f} mm3"
-    ctx.summary.append("Battery: floor-rooted axial stop holds in nine shifted/lifted poses")
+    ctx.summary.append("Battery: floor-rooted stop joins the fixed trough and holds in nine shifted/lifted poses")
     ctx.open_items.append("Battery: check the base end-stop fit and actual cable exit; "
                           "release both ties before upward battery removal")
     return dict(battery_retention=dict(retained_by="base", right_gap_mm=round(gap, 4),
                 floor_root_fill=round(root_fill, 5), shifted_axial_probes=rows,
+                trough_connection_material_fill={name:round(value,6) for name,value in link_fills.items()},
+                local_connection_to_lid_mm=round(link_gap,6),
                 upper_cable_corridor_overlap_mm3=round(blocked, 6),
                 limitation="Rigid translation probes; no foam friction, strength or physical-fit proof"))
 
