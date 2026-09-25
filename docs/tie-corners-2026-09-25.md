@@ -1,5 +1,7 @@
 # Battery ties, four-corner head fastening and USB hold-down — 2026-09-25
 
+The head-fastener arrangement in this report is superseded by [direct head-to-base clamping](head-clamp-2026-09-25.md). Battery and USB features remain in use.
+
 This revision replaces the head-mounted battery shoulder retainers and the single rear row of head fasteners. It also adds an upper return to the central USB keeper. Updated production parts are `base`, `head`, `head_back` and `ball_lid`, plus two new `battery_bridge` pieces. Use the matching new base, head and back cover together.
 
 ## Battery restraint

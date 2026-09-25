@@ -1,0 +1,16 @@
+{
+  "previous_published_base": {
+    "front_backing_fill": [
+      0.0,
+      0.0
+    ],
+    "base_sha256": "e1091f10584ae84dfc25aa8df15bb5d4bcd9ce00a0834bac3a43c88f56022bcf"
+  },
+  "revised_base": {
+    "front_backing_fill": [
+      0.9999999999999999,
+      0.9999999999999998
+    ],
+    "base_sha256": "672fb91e290de9e65d076a84de70d4d4c82385ba5f2c655a24409037e3c4fb9f"
+  }
+}
