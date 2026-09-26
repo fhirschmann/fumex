@@ -18,7 +18,7 @@ grid of the cassette ─► mat 17 mm ─► corner gussets ─► fan 120 × 25
 
 The mat sits on the intake side, so flux resin settles in the fleece and the impeller stays clean. It is held by a 2.25 mm lip around the 117 mm intake opening; two half-round notches in that lip let you get a finger behind it. Instead of a flat plate with a round bore in front of the fan — which would have been a 4400 mm² flat overhang over the chamber — the four corners of the chamber fill in at 45°: nothing needs support, the remaining opening is wider than the fan's swept annulus, and those gussets carry the fan's four heat-set inserts.
 
-The filter cassette is held by four magnet pairs and comes off by hand; two finger scoops in the side edges of the intake face give you something to pull against.
+The filter cassette is held by four magnet pairs and comes off by hand; two finger scoops in the side edges of the intake face give you something to pull against. It stands 4.5 mm proud of the intake face rather than sitting flush in it: letting it into the face would put a 5700 mm² horizontal ceiling over the chamber, and the head prints with that face on the bed. 4.5 mm is also as thin as it goes, because the magnet pockets are 3.2 mm deep and the minimum wall is 1.2 mm. A 2 mm bevel round its rim takes the visible step down to 2.5 mm.
 
 The charge module is the part that gets warm, so it gets a draught of its own. It stands in the bay behind the front wall, and a row of slots in the head floor right above it opens into a 5.75 mm channel that runs between the filter chamber and the shell, under the fan, into the plenum. With the fan running, filtered air is pushed down through those slots, over the board and out of the ventilation slots in the back wall; with the fan off the warm air rises the same way. Nothing of the filtered stream is lost, because the channel is downstream of the mat either way.
 
@@ -34,7 +34,7 @@ The charge module is the part that gets warm, so it gets a draught of its own. I
 | `knob` speed knob | 1 | PETG grey | Ø 28 × 14 | top on the bed |
 | `foot` foot | 4 | TPU | 18 × 16 × 6.5 | ground face on the bed, 100 % infill |
 
-All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head and ballast lid, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.47 kg and 16.3 hours** in total (head 229 g, base 117 g, back cover 57 g, cassette 52 g, ballast lid 7 g, knob 6 g, feet 4 × 1.5 g).
+All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head and ballast lid, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.48 kg and 16.4 hours** in total (head 230 g, base 119 g, back cover 57 g, cassette 52 g, ballast lid 7 g, knob 6 g, feet 4 × 1.5 g).
 
 Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid (feet 100 %).
 
@@ -102,7 +102,7 @@ To change the mat: pull the cassette off, hook a finger into one of the notches 
 - The head leans forward, so the centre of mass moves towards the front feet. The model computes it from the part masses and checks that it stays at least 15 mm inside the foot polygon: 28.5 mm at the front, which is 22.5° of tip angle at 1.03 kg. The ballast does most of that work — the cell sits well forward so everything behind it is one trough across the full width, 44 cm³ or about 210 g of iron offcuts under a screwed lid, with the USB-C socket above it.
 - **Filling the ballast:** only behind the cell, never in front of it — mass ahead of the centre of mass makes tipping worse, and the large free space at the front is exactly the wrong place. The lid keeps the pieces away from the wiring and comes off again, so the offcuts stay reusable. Its four screws form their own thread in the printed posts; a plastic-forming screw tolerates a handful of refits, so do not open it every week.
 - Walls 3 mm, base floor 3.2 mm, back cover 4 mm, corner radius 6 mm.
-- The head is located on the base by its four screws; there is no register, and the outer contours match.
+- The head is located on the base by its four screws; there is no register, and the outer contours match. The head outline is square at its two bottom corners so its side walls run straight into the base rim; the back cover keeps the radius on all four of its own corners, where the head wall behind it carries the silhouette.
 - The mat is 17 mm of soft fleece, so it seals against the chamber walls: everything downstream of it is filtered air.
 - PETG softens well below a soldering iron. Keep the tip away from the housing.
 

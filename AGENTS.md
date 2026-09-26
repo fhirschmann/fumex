@@ -38,6 +38,15 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 - The housing bends: `base` stands upright, `head` leans `tilt` = 15° forward above it, so the intake looks down at the work (user: "erst senkrecht nach oben, und dann nach vorne im Winkel"). Head modules are written in an untilted frame and placed by `head_at()`; `print_project.py` mirrors that transform in `_tilt()` for the probes.
 - Base and head share one 145 × 72 footprint, so the head's floor closes the electronics bay exactly — no extra cover, and the joint is one flat plane cut by `joint_halfspace()`. 145 mm width is set by the Ø10 magnet pockets in the corners of the intake face, not by the fan.
 - **No fan seat plate.** A flat plate with a round bore would have been a 4453 mm² flat overhang over the filter chamber (found by `analyze.py overhangs`). Instead four corner gussets grow at 45° from the intake face back to the fan (`fan_lugs()`): nothing overhangs, the remaining opening (11 700 mm²) is wider than the fan's swept annulus (8 800 mm²), the fan bears on their back faces and its four inserts sit in them. The fleece mat is pressed into the gussets; `checks()` bounds that at 5 % of the mat volume (currently 2.3 %).
+- The cassette stands 4.5 mm proud of the intake face and cannot be let into it: the head prints intake-face-down,
+  so a recess for it would be a 5687 mm2 horizontal ceiling over the chamber. It cannot get thinner either - the
+  magnet pockets are 3.2 deep and `analyze.py thickness` wants 1.2. What is left is the rim bevel, `cass_c` = 2.0;
+  at `cass_inset + cass_c` it stops 0.15 mm short of the pockets, so 2.0 is the limit. Visible step 2.5 mm.
+  At the joint the cassette therefore reaches 3.9 mm in front of the base face - reported to the user 2026-09-23;
+  the only way to close that is a plinth on the base front, which has not been built.
+- `head_outline(inset, square_bottom)`: the head shell keeps the square bottom corners so its side walls meet the
+  base rim without a step; `head_back` passes false and keeps its radius all round (user, 2026-09-23). No step
+  appears there because the head wall behind the cover still carries the silhouette.
 - Filter cassette held by four magnet pairs in open pockets (skill rule: glue one side in, place the counterparts on them, then glue — polarity is then automatic). Two 45° finger scoops in the side edges of the intake face get a finger behind the flange; two half-round notches in the intake lip get a finger behind the mat.
 - The mat is held by the intake lip (opening 117 in a 121.5 chamber, 2.25 mm per side). It is pressed in and pulled out past that lip — a rigid-body path check cannot show this, so `filter_out` is not a checked path but a documented limitation.
 - Head screws (4 × M3 × 8) sit along the side walls at x 9/136, y 9/60: their bosses merge into those walls and their undersides drop 45° towards them, so nothing starts in the air. x keeps them clear of the back cover bosses inside the head, y of its back cover lip. There is no register between head and base — the screws locate it, which is what `stops` checks.

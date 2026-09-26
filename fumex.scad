@@ -67,7 +67,11 @@ fan_blade_d = 113;
 fan_cl = 0.4;        // clearance per side in the corner guides
 
 /* [Filter cassette: grid panel held by four magnet pairs] */
-cass_t = 4.5;        // magnet pocket 3.2 plus 1.3 mm skin
+cass_t = 4.5;        // magnet pocket 3.2 plus 1.3 mm skin - the minimum wall is 1.2, so this is as thin
+                     // as the cassette gets. It cannot be let into the intake face either: that recess
+                     // would be a 5687 mm2 flat overhang in print (user asked, 2026-09-23)
+cass_c = 2.0;        // 45 degree bevel round its rim instead, so the step is 2.5 mm of wall, not 4.5.
+                     // 2.0 is the limit: at 1 + 2.0 the bevel stops 0.15 mm short of the magnet pockets
 cass_inset = 1;      // flange inside the head outline, leaves a ledge beside the finger scoops
 mag = [10.3, 3.2];   // pocket for a 10 x 3 neodymium disc (skill: +0.3 diameter, +0.2 depth)
 mag_off = 64.2;      // magnet axes from the head centre, on both diagonals
@@ -299,7 +303,8 @@ assert(chg_y0 > wall + 1, "Charge module parts touch the front wall");
 assert(chg_y0 - 0.5 + chg_pcb[2] + chg_comp_h + chg_sink[3] + chg_sink[2] < bat_cy - bat_d / 2 - cradle_out,
        "Charge module or its brackets run into the battery cradle");
 assert(vent_xz[1] > ball[3] + ball_lid_t, "Back wall slots would let the ballast out");
-assert(mag[1] < cass_t - 1, "Cassette too thin for the magnet pockets");
+assert(mag[1] < cass_t - 1.2, "Cassette too thin for the magnet pockets");
+assert(cass_inset + cass_c < body_w / 2 - mag_off - mag[0] / 2, "Cassette bevel cuts into the magnet pockets");
 assert(len_fan - fan_t >= 5, "Fan screws reach less than 5 mm into the insert");
 assert(min([for (p = foot_xy) bat_low(p[1])]) > foot_boss[1], "Foot boss reaches into the battery");
 assert(foot_boss[1] - insert_depth >= 1.2, "Foot insert pocket floor thinner than three perimeters");
@@ -331,11 +336,12 @@ module joint_halfspace() head_at() translate([-40, -40, base_h]) cube([body_w + 
 module base_outline(inset = 0) translate([body_w / 2, body_d / 2]) rrect([body_w - 2 * inset, body_d - 2 * inset], max(corner_r - inset, 0.5));
 // Rounded at the top, square at the bottom: the two bottom corners sit on the joint plane, and a radius
 // there pulls the head 6 mm in from the base rim - the step the user pointed at (2026-09-23). Squared,
-// the side walls of head and base run into each other without an offset.
-module head_outline(inset = 0) let (w = body_w - 2 * inset, h = head_h - 2 * inset)
+// the side walls of head and base run into each other without an offset. square_bottom = false gives the
+// back cover its radius on all four corners (user, 2026-09-23).
+module head_outline(inset = 0, square_bottom = true) let (w = body_w - 2 * inset, h = head_h - 2 * inset)
     translate([body_w / 2, head_cz]) union() {
         rrect([w, h], max(corner_r - inset, 0.5));
-        translate([0, -h / 4]) square([w, h / 2], center = true);
+        if (square_bottom) translate([0, -h / 4]) square([w, h / 2], center = true);
     }
 module head_centre_sq(size, r) translate([body_w / 2, head_cz]) rrect([size, size], r);
 
@@ -426,10 +432,10 @@ module head_back_raw() intersection() {
     translate([-1, head_y[4] - lip_h - 1, base_h + cover_gap]) cube([body_w + 2, back_t + lip_h + 2, head_h]);
     difference() {
     union() {
-        along_y(head_y[4], body_d) head_outline();
+        along_y(head_y[4], body_d) head_outline(0, false);
         along_y(head_y[4] - lip_h, head_y[4] + eps) difference() {
-            head_outline(wall + lip_cl);
-            head_outline(wall + lip_cl + lip_t);
+            head_outline(wall + lip_cl, false);
+            head_outline(wall + lip_cl + lip_t, false);
             for (p = head_bosses()) offset(r = 0.8) translate([p[0], p[1]]) circle(d = boss_d);
         }
     }
@@ -439,9 +445,9 @@ module head_back_raw() intersection() {
         cyl_y(p, body_d - head_pocket[1], body_d + 1, head_pocket[0] / 2);
     }
     difference() {                                                      // chamfer on the outer bed face
-        along_y(body_d - edge_c, body_d + eps) head_outline(-1);
-        hull() { along_y(body_d - edge_c, body_d - edge_c + tip) head_outline(0);
-                 along_y(body_d - tip, body_d) head_outline(edge_c); }
+        along_y(body_d - edge_c, body_d + eps) head_outline(-1, false);
+        hull() { along_y(body_d - edge_c, body_d - edge_c + tip) head_outline(0, false);
+                 along_y(body_d - tip, body_d) head_outline(edge_c, false); }
     }
     }
 }
@@ -454,9 +460,9 @@ module cassette_raw() difference() {
     translate([body_w / 2, 0, head_cz]) along_y(-cass_t - 1, 1) grid_2d(open_sq);
     for (p = mag_xz()) cyl_y(p, -mag[1], eps, mag[0] / 2);              // pockets open towards the head
     difference() {                                                      // chamfer on the outer bed face
-        along_y(-cass_t - eps, -cass_t + edge_c) head_outline(-1);
-        hull() { along_y(-cass_t - eps, -cass_t + tip) head_outline(cass_inset + edge_c);
-                 along_y(-cass_t + edge_c - tip, -cass_t + edge_c) head_outline(cass_inset); }
+        along_y(-cass_t - eps, -cass_t + cass_c) head_outline(-1);
+        hull() { along_y(-cass_t - eps, -cass_t + tip) head_outline(cass_inset + cass_c);
+                 along_y(-cass_t + cass_c - tip, -cass_t + cass_c) head_outline(cass_inset); }
     }
 }
 module cassette() head_at() cassette_raw();
