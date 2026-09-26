@@ -23,7 +23,7 @@ PARTS = {
     "ball_lid": (1, "PETG-black", 1),
     "filter_support": (1, "PETG-black", 1),
 }
-FULL_INFILL = set()
+FULL_INFILL = {"filter_support"}
 FULL_INFILL_MATERIALS = {"TPU"}
 
 # Assembly bodies in installed position: name -> OpenSCAD call. Every pair is checked for overlap.
@@ -99,17 +99,18 @@ PROJECT_3MF = "stl/fumex_all_parts.3mf"
 SLICER_SUMMARY = "docs/slicer-summary.json"
 
 # Masses used only for the tipping check: printed parts from their mesh volume, bought parts measured
-# or from the data sheet. The effective print density covers walls plus 20 % gyroid.
+# or from the data sheet. The effective PETG density covers walls plus 20 % gyroid;
+# the solid filter cross uses the PETG density from the Bambu filament profile.
 # g/mm3; the ballast is iron offcuts potted in epoxy, about 60 % metal by volume
 # loose iron offcuts under a lid, roughly 60 % of the volume actually metal
 MAT = (120, 120, 17)      # the mat the user cut from a cooker hood filter
-DENSITY = {"PETG": 0.90e-3, "TPU": 1.20e-3, "nylon": 1.14e-3, "iron-loose": 4.7e-3}
+DENSITY = {"PETG": 0.90e-3, "PETG-solid": 1.27e-3, "TPU": 1.20e-3, "nylon": 1.14e-3, "iron-loose": 4.7e-3}
 MASSES_G = {"fan": 185, "battery": 150, "filter": 15, "pwm_board": 12, "chg_module": 3, "chg_sink": 5,
             "usbc": 2, "switch": 5, "led": 0.6, "magnets": 18, "pot": 6, "screws_pwm": 0.7,
             "screws_fan": 6, "screws_back": 4, "screws_head": 6, "screws_feet": 3, "screws_lid": 1.5}
 # bodies whose mass comes from their volume rather than a data sheet
 BY_VOLUME = {"base": "PETG", "head": "PETG", "head_back": "PETG", "cassette": "PETG", "knob": "PETG",
-             "feet": "TPU", "ball_lid": "PETG", "filter_support": "PETG", "ballast": "iron-loose",
+             "feet": "TPU", "ball_lid": "PETG", "filter_support": "PETG-solid", "ballast": "iron-loose",
              "chg_tie": "nylon"}
 
 LIMITATIONS = ["Hardware envelopes, not detailed vendor CAD",
@@ -683,10 +684,11 @@ def check_filter_support(ctx):
     core_bounds = core.bounding_box()
     mat_gap = core_bounds[1] - meshes["filter"].bounds[1, 1]
     fan_gap = solids["fan"].min_gap(core, 6.0)
-    assert 0 < mat_gap <= 2.35, f"Filter support too far behind the mat: {mat_gap:.3f} mm"
+    assert clearance < mat_gap <= 2.35, f"Filter support leaves insufficient mat clearance: {mat_gap:.3f} mm"
     assert abs(core_bounds[1] - front) < 0.03 and abs(core_bounds[4] - front - thickness) < 0.03, \
         "Filter support centre is not in its specified support plane"
     assert fan_gap >= 4.95, f"Filter support approaches the fan envelope: {fan_gap:.3f} mm"
+    assert fan_gap - clearance >= 4.75, "Filter support axial play consumes its fan clearance"
 
     # Check each captured end independently: a summed contact could pass with
     # missing seats. The front stop is the head; the rear stop is the fan frame.
@@ -723,9 +725,12 @@ def check_filter_support(ctx):
     assert open_area > 13000, f"Unexpected filter throat area: {open_area:.1f} mm2"
     ideal_cross = 2 * m["open_sq"] * bar - bar * bar
     assert blocked >= ideal_cross * 0.98, "Filter support projection is missing a full-width arm"
-    assert blocked / open_area < 0.05, f"Filter support blocks {100 * blocked / open_area:.2f}% of the throat"
+    # The reinforced 4-mm arms, rounded centre and broad seats retain at least 92% of the throat.
+    assert blocked / open_area < 0.08, f"Filter support blocks {100 * blocked / open_area:.2f}% of the throat"
     return dict(filter_support_checks=dict(
         mat_centre_gap_mm=round(mat_gap, 3), centre_to_fan_mm=round(fan_gap, 3),
+        mat_gap_at_front_stop_mm=round(mat_gap - clearance, 3),
+        fan_gap_at_rear_stop_mm=round(fan_gap - clearance, 3),
         end_clearance_mm=clearance, end_stops=stop_rows,
         throat_area_mm2=round(open_area, 3), blocked_area_mm2=round(blocked, 3),
         blocked_percent=round(100 * blocked / open_area, 3),
