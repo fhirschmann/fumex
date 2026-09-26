@@ -29,12 +29,12 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "f31f4bb53f9147758d7d5e228d5d0c1f5dbf9b9246b2de36fbbeff0eec2a19d9",
+      "source_sha256": "017d8f84e5e6af440fb9685a4cdcd663e1c9710acfb659bbec24c3f3a7814ed5",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 6.074,
-      "grams": 230.584,
+      "hours": 5.562,
+      "grams": 221.827,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -52,12 +52,12 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "9c4180de503745c4727ac34a83dfac89b25bbd8b2c232a48f27826f0b419a187",
+      "source_sha256": "405b6dcbe1645c4bd3126886429f5b11eeb5ee7b5cfb02bf8c42fb5aa0cfbbee",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.523,
-      "grams": 56.51,
+      "hours": 2.727,
+      "grams": 59.741,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -164,8 +164,8 @@
     }
   ],
   "total_parts": 10,
-  "total_grams_individual_plates": 473.5,
-  "total_hours_individual_plates": 16.3,
+  "total_grams_individual_plates": 467.9,
+  "total_hours_individual_plates": 16.0,
   "production_gcode": false,
   "project_3mf": {
     "file": "stl/fumex_all_parts.3mf",
@@ -223,25 +223,25 @@
         ]
       }
     ],
-    "total_hours_plates": 15.7,
-    "total_grams_plates": 473.1,
+    "total_hours_plates": 15.3,
+    "total_grams_plates": 467.6,
     "multicolour_parts": {},
     "multicolour_slices": {},
     "pause_slices": {},
     "plate_slices": {
       "Head": {
         "plate": 1,
-        "hours": 6.3,
+        "hours": 5.79,
         "grams_by_filament": {
-          "1": 237.29
+          "1": 228.53
         },
         "warnings": ""
       },
       "Base and back cover": {
         "plate": 2,
-        "hours": 6.06,
+        "hours": 6.17,
         "grams_by_filament": {
-          "1": 173.96
+          "1": 177.19
         },
         "warnings": "It seems object base_1 has floating cantilever. Please re-orient the object or enable support generation."
       },
@@ -263,6 +263,6 @@
       }
     },
     "own_infill_parts": 4,
-    "sha256": "6cacc6b0a64537fb53df5dd66c821a331f1bb6dba8c871363ca5ee122bdffa02"
+    "sha256": "614d9ae440d9d4e53d09f57529c2f708f86fa8f458caa08d9e6fc93b68b16344"
   }
 }

@@ -13,10 +13,12 @@ Designed for a Bambu Lab H2S with AMS in Bambu PETG black and grey. The electron
 ## How the air runs
 
 ```
-grid of the cassette ─► mat 17 mm ─► corner gussets ─► fan 120 × 25 ─► plenum ─► slots in the back cover
+grid of the cassette ─► mat 17 mm ─► throat 117 ─► fan 120 × 25 ─► plenum ─► slots in the back cover
 ```
 
-The mat sits on the intake side, so flux resin settles in the fleece and the impeller stays clean. It is held by a 2.25 mm lip around the 117 mm intake opening; two half-round notches in that lip let you get a finger behind it. The chamber has the same lip again at its back: at full speed the fan pulls the mat towards itself with about 1 N, and without that rear lip only the four corner gussets — 7.8 % of the mat's back face — stood between it and 10.5 mm of clear air to the impeller. Now it can move 1.6 mm and is caught. Instead of a flat plate with a round bore in front of the fan — which would have been a 4400 mm² flat overhang over the chamber — the four corners of the chamber fill in at 45°: nothing needs support, the remaining opening is wider than the fan's swept annulus, and those gussets carry the fan's four heat-set inserts.
+The mat sits on the intake side, so flux resin settles in the fleece and the impeller stays clean. It is held by a 2.25 mm lip around the 117 mm intake opening; two half-round notches in that lip let you get a finger behind it. The chamber has the same lip again at its back: at full speed the fan pulls the mat towards itself with about 1 N, and without that rear lip only the four corner gussets — 7.8 % of the mat's back face — stood between it and 10.5 mm of clear air to the impeller. Now it can move 1.6 mm and is caught.
+
+That rear lip is also the fan's seat: the filter tube ends as a ring the fan frame sits on. The fan is screwed to the **back cover**, not to the head — four spacer posts on the cover carry its heat-set inserts, and the M3 × 30 go in from the front of the fan. Fan and cover are screwed together on the bench, where that face is reachable, and the pair goes into the head as one part. The alternative was four 45° gussets growing from the intake face to carry the inserts in the head, because the fan's mounting holes sit 52.5 mm from the axis — inside the 60.75 mm bore — so any boss for them has to stand in the filter chamber. Printed intake-face-down those gussets came out with 38.9 mm legs and pressed 6.6 cm³ out of the mat. Now the chamber is a plain tube and nothing touches the mat but its two lips.
 
 The filter cassette is held by four magnet pairs and comes off by hand; two finger scoops in the side edges of the intake face give you something to pull against. It stands 4.5 mm proud of the intake face rather than sitting flush in it: letting it into the face would put a 5700 mm² horizontal ceiling over the chamber, and the head prints with that face on the bed. 4.5 mm is also as thin as it goes, because the magnet pockets are 3.2 mm deep and the minimum wall is 1.2 mm. A 2 mm bevel round its rim takes the visible step down to 2.5 mm.
 
@@ -34,7 +36,7 @@ The charge module is the part that gets warm, so it gets a draught of its own. I
 | `knob` speed knob | 1 | PETG grey | Ø 28 × 14 | top on the bed |
 | `foot` foot | 4 | TPU | 18 × 16 × 6.5 | ground face on the bed, 100 % infill |
 
-All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head and ballast lid, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.47 kg and 16.3 hours** in total (head 230 g, base 116 g, back cover 57 g, cassette 51 g, ballast lid 7 g, knob 6 g, feet 4 × 1.5 g).
+All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head and ballast lid, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.47 kg and 16.0 hours** in total (head 224 g, base 116 g, back cover 58 g, cassette 51 g, ballast lid 7 g, knob 6 g, feet 4 × 1.5 g).
 
 Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid (feet 100 %).
 
@@ -55,7 +57,7 @@ Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid (feet 1
 | Neodymium disc magnets Ø 10 × 3 | 8 | – | four pairs, glued into open pockets in the intake face and the cassette |
 | Resettable PTC fuse Bourns MF-R160 or RXEF160 (1.6 A hold) | 1 | – | optional, between battery plus and the switch, in heat shrink |
 | Heat-set inserts Ruthex RX-M3x5.7 | 16 | [ruthex.de](https://www.ruthex.de) | 4 fan, 4 back cover, 4 head screws, 4 feet |
-| M3 × 30, ISO 7380 Torx | 4 | – | fan; the frame alone is 25 mm thick, so nothing shorter reaches a thread |
+| M3 × 30, ISO 7380 Torx | 4 | – | fan to the back cover; the frame alone is 25 mm thick, so nothing shorter reaches a thread |
 | M3 × 8, ISO 7380 Torx | 10 | – | back cover (4), head onto the base (2), feet (4) |
 | M3 × 12 plastic-forming screw (Delta PT, Plastite or similar) | 4 | – | ballast lid, straight into the printed posts — no inserts there |
 | Iron offcuts for the ballast | – | – | up to 44 cm³, about 210 g, loose in the trough under its lid |
@@ -82,15 +84,15 @@ battery (JST-PH, built-in BMS) ──► (PTC) ──► rocker switch ──►
 
 ## Assembly
 
-1. Press in the heat-set inserts: 4 into the corner gussets of the head from the fan side, 4 into the bosses along its side walls from the back, 4 into the bosses under the base rim, 4 into the base floor from below. The ballast lid needs none — its screws form their own thread.
+1. Press in the heat-set inserts: 4 into the spacer posts of the back cover from the fan side, 4 into the bosses along the head's side walls from the back, 2 into the bosses under the base rim, 4 into the base floor from below. The ballast lid needs none — its screws form their own thread.
 2. Glue the magnets: four into the pockets of the intake face first, then put the other four on top of them, drop the cassette on and glue those into the cassette. The polarity then cannot be wrong.
-3. Screw the fan into the corner gussets with M3 × 30, blowing towards the back, and route its cable through the notch in the head floor.
+3. Lay the back cover on the bench, set the fan on its four posts blowing away from the cover, and screw it down with M3 × 30 from the front of the fan. The cable comes out on the side that will face the head floor.
 4. Fit the electronics in the base: PWM controller flat on its rib pads with the potentiometer through the front wall, washer and nut from outside; LED glued in beside the knob with its resistor; USB-C module into its channel in the back wall; rocker switch snapped into the right wall. Fix the USB-C and switch wires with a cable tie through the loops beside them.
 5. Stick the insulating pad onto the metal pad on the back of the charge module and the heatsink onto the pad. Slide the board down into the two grooved brackets on the bay floor, parts towards the front wall and the heatsink into the open bay, and run one cable tie through the tunnels over it.
 6. Fill the ballast trough behind the battery with iron offcuts — up to about 210 g — and screw its lid down with four M3 × 12 plastic-forming screws. Fill it properly or pack the rest with foam; loose pieces under a half-empty lid rattle.
 7. Lay the battery into its three saddles, protection board up, cable end to the right, a strip of foam tape above and below.
 8. Put a drop of CA gel into the knob bore and push the knob onto the shaft until it bottoms; it then stands 1.2 mm off the wall and turns freely.
-9. Set the head onto the base and screw it down with 2 × M3 × 8, reaching in through the open back: they sit in the head floor just behind the fan, the one place inside the head where a driver gets to the rim. Then screw on the back cover with 4 × M3 × 8.
+9. Set the head onto the base and screw it down with 2 × M3 × 8, reaching in through the open back: they sit in the head floor just behind the fan, the one place inside the head where a driver gets to the rim. Then lower the fan-and-cover assembly in from the back — the corner guides in the head take it onto its seat — and screw the cover down with 4 × M3 × 8.
 10. Screw the four TPU feet on from below with M3 × 8; the small peg beside each screw stops them turning.
 11. Push the mat in fleece side first, past the lip, and put the cassette on.
 

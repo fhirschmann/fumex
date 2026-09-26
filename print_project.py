@@ -63,7 +63,10 @@ ALLOWED_OVERLAPS = [("fan", "screws_fan"),      # screws run through the holes o
                     # driven, not against the finished assembly: the head screws go in through the open
                     # back before the cover, and the ballast lid is closed before the head goes on at all.
                     ("head_back", "driver_head"), ("head_back", "driver_lid"), ("head", "driver_lid"),
-                    ("driver_fan", "driver_head"), ("driver_head", "driver_lid")]
+                    ("driver_fan", "driver_head"), ("driver_head", "driver_lid"),
+                    # and the fan is screwed to the cover on the bench, where its front face is reachable,
+                    # before either of them goes into the head
+                    ("head", "driver_fan"), ("cassette", "driver_fan"), ("filter", "driver_fan")]
 
 # Multicolour: part -> inlay names. Black and grey are whole parts here, no inlays and no prime tower.
 COLOR_PARTS = {}
@@ -109,15 +112,15 @@ def checks(ctx):
     assert m["wall"] >= 1.2, "Walls below three perimeters"
     assert m["fan_thread"] >= 5, "Fan screws bite less than 5 mm"
     assert m["head_thread"] >= 5, "Head screws bite less than 5 mm"
-    assert m["fan_insert_front"] >= 3, "Less than 3 mm in front of the fan insert pockets"
+    assert m["fan_post"][1] >= m["insert_depth"] + 1, "Fan posts too short for their inserts"
     assert m["knob_top_z"] + 2 <= m["front_rim_z"], "Knob reaches over the front rim"
     # Standard figures, independent of the model: 120 mm fans have a 105 mm hole pitch, the mat is 120 mm
     assert m["fan_axis_pitch"] == 105, "120 mm fans have a 105 mm mounting hole pitch"
     assert m["open_sq"] < 120, "The intake lip must overlap the 120 mm mat"
     assert m["chamber"][0] >= 120 and m["chamber"][1] >= 17, "Filter chamber smaller than the mat"
     assert m["opening_sq"] >= 113, "Air passage narrower than the swept blade diameter"
-    assert m["lug_flank"] >= m["insert_hole_d"] / 2 + m["insert_w_min"], \
-        "Fan inserts are not inside the corner gussets"
+    assert m["fan_post"][0] / 2 >= m["insert_hole_d"] / 2 + m["insert_w_min"], \
+        "Fan posts too thin around their inserts"
     assert m["magnet_pocket"] == [10.3, 3.2], "Magnet pockets no longer fit a 10 x 3 disc"
 
     # Contact, not just freedom from overlap
@@ -126,7 +129,8 @@ def checks(ctx):
     contacts = ctx.contacts([
         ("head", "base", [0, 0, -1]),                 # head floor on the base rim
         ("cassette", "head", into),                   # cassette flange flat on the intake face
-        ("fan", "head", [0, -1, 0]),                  # fan frame on the seat plate
+        ("fan", "head", [-i for i in into]),          # fan frame on the end face of the filter tube
+        ("fan", "head_back", into),                   # and on the spacer posts of the cover
         ("feet", "base", [0, 0, 1]),
         ("pwm_board", "base", [0, 0, -1]),            # board on the rib pads
         ("chg_module", "base", [0, 0, -1]),           # board down in its grooves on the bay floor
@@ -139,7 +143,7 @@ def checks(ctx):
     # The cell is held in open saddles by foam tape, so it has clearance instead of contact
     # 0.2 for the heatsink: nominal 0.3 in its wall cut-out, less the facets of the rounded corners
     gaps = ctx.clearances([("battery", "base", 0.3), ("battery", "head", 1.0),
-                           ("chg_sink", "fan", 1.5), ("fan", "head_back", 5.0)])
+                           ("chg_sink", "fan", 1.5)])
     # Assembly paths, not only end positions. The head is pulled off along the tilted normal.
     up = [0, -math.sin(tilt), math.cos(tilt)]
     out = [0, -math.cos(tilt), -math.sin(tilt)]       # out of the intake face, normal to it
@@ -168,7 +172,7 @@ def checks(ctx):
     d, depth, w = m["insert_hole_d"], m["insert_depth"], m["insert_w_min"]
     back = [-o for o in out]
     probes = ctx.insert_probes(
-        [("head", _tilt(m, [p[0], m["seat_y"], p[1]]), out, depth, d, w) for p in m["fan_holes"]] +
+        [("head_back", _tilt(m, [p[0], m["head_y"][3], p[1]]), back, depth, d, w) for p in m["fan_holes"]] +
         [("head", _tilt(m, [p[0], m["back_y"], p[1]]), out, depth, d, w) for p in m["head_bosses"]] +
         [("base", _tilt(m, [p[0], p[1], m["base_h"]]), [-u for u in up], depth, d, w) for p in m["rim_screws"]] +
         [("base", [p[0], p[1], 0], [0, 0, 1], depth, d, w) for p in _foot_xy(m)])
