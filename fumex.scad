@@ -171,12 +171,26 @@ tie_loop = [8, 6, 6, 5, 2.5];   // width (x), height (z), stand-off (y), tunnel 
 tie_loop_xz = [[124, 22], [124, 34], [chg_x0 + chg_tie_x, chg_cz - 10], [chg_x0 + chg_tie_x, chg_cz + 10]];
 
 /* [Convection slots beside the charge module, upright so they need no bridges] */
-vent = [1.6, 3.2, 5, 12, 1.5];   // width, pitch, count per row, height, rise per slot
+// One row since the charger's heat leaves through its own heatsink; it sits above the ballast troughs,
+// otherwise resin would run out of it
+vent = [1.6, 3.2, 5, 14, 1.5];   // width, pitch, count, height, rise per slot
+vent_z = 28;
+
+/* [Ballast: iron offcuts potted in epoxy behind the battery (user, 2026-09-22)] */
+// Only mass behind the centre of mass helps against tipping, and behind the cell is all there is. Two
+// troughs with their own dam keep the pour off the wiring, the charge module and the tie loops.
+ball_y0 = 56.5;      // front wall of both troughs, clear of the battery saddles
+ball_wall = 2;
+ball_fill = 1.5;     // fill to this far below the dam
+ball_left = [3, 50, 24];     // x from, x to (its dam wall), dam height
+ball_right = [114, 142, 20]; // x from (its dam wall), x to, dam height
 
 /* [Feet: four TPU pads, each screwed with one M3 x 8 from below] */
 foot = [18, 16, 4.5];   // length (x), width (y), height
 // wide apart for stability, and clear of the PWM board above them
-foot_xy = [[10, 10], [135, 10], [10, 62], [135, 62]];   // front pair well forward: the head leans that way
+// front pair 3 mm proud of the front face: the head leans that way, and what the pads reach is the
+// tipping edge, not the housing
+foot_xy = [[10, 5], [135, 5], [10, 62], [135, 62]];
 // A keying pocket in the bottom face would be a 275 mm2 flat overhang per foot (analyze.py overhangs),
 // so the pad sits flat and a small peg beside the screw stops it turning.
 foot_peg = [3, 2, 7];   // anti-rotation peg on the foot: diameter, length, distance from the screw axis
@@ -401,6 +415,7 @@ module base() difference() {
         foot_bosses();
         tie_loops();
         sw_wall_box();
+        ballast_walls();
     }
     joint_halfspace();                                   // the tilted joint plane cuts the rim
     pot_cuts();
@@ -486,9 +501,24 @@ module sw_cuts() {
 }
 // the slots climb by vent[4] from left to right: without that stagger their corners are collinear in the
 // back face and the triangulation of that one plane leaves a degenerate triangle in every backend
-module vent_slots() for (row = [0, 1], i = [0:vent[2] - 1])
-    translate([20 + i * vent[1], body_d - wall - 1, (row == 0 ? 8 : 34) + i * vent[4]])
-        cube([vent[0], wall + 2, vent[3]]);
+module vent_slots() for (i = [0:vent[2] - 1])
+    translate([20 + i * vent[1], body_d - wall - 1, vent_z + i * vent[4]]) cube([vent[0], wall + 2, vent[3]]);
+
+// dam walls of the two troughs: a front wall each, and one side wall towards the middle of the bay
+module ballast_walls() for (t = [ball_left, ball_right]) let (left = t[0] < body_w / 2,
+                                                             xw = left ? t[1] : t[0] - ball_wall) {
+    translate([left ? t[0] : xw, ball_y0, floor_t - eps]) cube([t[1] - t[0] + ball_wall, ball_wall, t[2] - floor_t + eps]);
+    translate([xw, ball_y0, floor_t - eps]) cube([ball_wall, body_d - wall - ball_y0 + eps, t[2] - floor_t + eps]);
+}
+// What the troughs hold once poured: the filled box minus the housing itself, so the foot bosses, the
+// rounded inner corners and the switch well are cut out of it and the reported mass is what really fits.
+module ballast_env() difference() {
+    for (t = [ball_left, ball_right]) translate([t[0], ball_y0 + ball_wall, floor_t])
+        cube([t[1] - t[0], body_d - wall - ball_y0 - ball_wall, t[2] - ball_fill - floor_t]);
+    base();
+    // the insert pockets of the rear feet are sealed voids under a 2 mm cap: no resin gets in there
+    for (p = foot_xy) translate([p[0], p[1], -1]) cylinder(d = insert_hole_d + 0.4, h = insert_depth + 1);
+}
 module tie_loops() for (p = tie_loop_xz) difference() {
     translate([p[0] - tie_loop[0] / 2, body_d - wall - tie_loop[2], p[1] - tie_loop[1] / 2])
         cube([tie_loop[0], tie_loop[2] + eps, tie_loop[1]]);
@@ -650,7 +680,7 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["insert_w_min", insert_w_min], ["opening_sq", chamber_sq], ["lug_leg", lug_leg()],
     ["lug_flank", lug_flank(head_y[2] - insert_depth)],
     ["base_h", base_h], ["joint_y", joint_y],
-    ["foot_peg", foot_peg], ["seat_y", head_y[2]], ["back_y", head_y[4]],
+    ["foot_peg", foot_peg], ["ballast", [ball_left, ball_right, ball_fill]], ["seat_y", head_y[2]], ["back_y", head_y[4]],
     ["fan_holes", fan_holes()], ["head_bosses", head_bosses()], ["rim_screws", rim_screws]]);
 else if (part == "none") {}
 else if (part == "base") base();

@@ -29,9 +29,9 @@ The filter cassette is held by four magnet pairs and comes off by hand; two fing
 | `head_back` back cover | 1 | PETG black | 145 × 141.7 × 8 | outside on the bed |
 | `cassette` filter cassette | 1 | PETG grey | 143 × 143 × 4.5 | grid face on the bed |
 | `knob` speed knob | 1 | PETG grey | Ø 28 × 14 | top on the bed |
-| `foot` foot | 4 | TPU | 18 × 16 × 6.5 | ground face on the bed, 100 % infill |
+| `foot` foot | 4 | TPU | 18 × 16 × 6.5 | ground face on the bed, 100 % infill; the front pair stands 3 mm proud of the front face |
 
-All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.46 kg and 15.8 hours** in total (head 231 g, base 108 g, back cover 56 g, cassette 52 g, knob 6 g, feet 4 × 1.5 g).
+All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.46 kg and 15.9 hours** in total (head 231 g, base 113 g, back cover 56 g, cassette 52 g, knob 6 g, feet 4 × 1.5 g).
 
 Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid (feet 100 %).
 
@@ -93,7 +93,8 @@ To change the mat: pull the cassette off, hook a finger into one of the notches 
 ## Design notes
 
 - Base and head share one 145 × 72 footprint, so the head's floor closes the electronics bay — there is no separate bay cover. The 145 mm width comes from the magnet pockets in the corners of the intake face, not from the fan.
-- The head leans forward, so the centre of mass moves towards the front feet. The model computes it from the part masses and checks that it stays at least 15 mm inside the foot polygon; it currently has 20.4 mm, which is 13.8° of tip angle.
+- The head leans forward, so the centre of mass moves towards the front feet. The model computes it from the part masses and checks that it stays at least 15 mm inside the foot polygon: 28.8 mm at the front, which is 20.5° of tip angle. Two things buy that. The front feet sit 3 mm proud of the front face, because what counts is where the pads reach, not where the housing ends. And behind the battery there are two ballast troughs with their own dam: fill them with iron offcuts and pot them in epoxy, about 13 cm³ or 70 g, and they hold the centre of mass back where it belongs. Without ballast the same model gives 17.4°, which is still usable — the troughs are optional.
+- **Potting the ballast:** only behind the cell, never in front of it — mass ahead of the centre of mass makes tipping worse, and the large free space at the front is exactly the wrong place. Pour no more than about 10 mm of neat resin at a time; with plenty of iron in it the exotherm stays mild, but PETG softens from about 80 °C. The foot bosses stand in the troughs and may be poured over: their insert pockets are closed by 2 mm of material. Keep the pour below the dam so it cannot reach the cable tie loops, the convection slots or the charge module. It is permanent — the base is not a spare part afterwards.
 - Walls 3 mm, base floor 3.2 mm, back cover 4 mm, corner radius 6 mm.
 - The head is located on the base by its four screws; there is no register, and the outer contours match.
 - The mat is 17 mm of soft fleece, so it seals against the chamber walls: everything downstream of it is filtered air.
