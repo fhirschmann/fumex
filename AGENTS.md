@@ -387,8 +387,8 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 
 ## Support-free printability (reviewed 2026-09-23 on the user's request)
 
-The current design has nine print types and thirteen physical printed pieces, all intended to print
-without supports. The support cross lies flat and its end posts grow upwards; its rear-open head
+The current design has eight production print types and eleven physical printed pieces, plus two
+optional USB test types, all intended to print without supports. The support cross lies flat and its end posts grow upwards; its rear-open head
 pockets add no chamber-wide bridge. The following completed checks predate the support-cross addition,
 two-insert lid, OUT-end holder, USB support ribs, wider switch recess and closed LED window:
 
@@ -632,3 +632,12 @@ they do not validate the subsequent geometry.
 - Source SHA256 `152bdde96866f33b4eff4f85b12d2b582b43e39602d3c16a702fa8b487168946`; report `docs/battery-stop-link-2026-09-25.md`. Full export PASS: ten closed single-body meshes, zero degenerate faces, 443 coaxial pairs, 561 assembly pairs and ten standard paths. Probes find 100% material across the former gap and both junctions, rejecting the preceding unconnected base. Installed local lid clearance is 0.282844 mm across the diagonal top (0.4 mm vertically); the complete loaded-lid path still passes. Battery gap stays 0.5 mm and the upper cable corridor remains clear. This geometry check does not measure strength or creep.
 - Islands, overhangs, thickness and fins are CLEAN on all ten meshes at configured thresholds. All ten individual slices, four production plates and the USB fit plate pass without supports or slicer warnings. Base 119.472 g; arranged production 475.9 g / 15.8 h; individual jobs 476.3 g / 16.8 h; USB fit 10.0 g / 62 min. Static estimate 1012.8 g, front margin 28.3 mm, tip angle 21.0 degrees.
 - Both 3MFs, all twelve views and both viewer copies are rebuilt. The local file tab requires manual reload. Shared scripts remain identical to the skill.
+
+
+## Pre-print audit (2026-09-25, revision 4a11856)
+
+- Consolidated user-facing audit: `docs/preprint-audit-2026-09-25.md`; immutable report snapshots, artifact hashes and supplementary mesh probes are in its sibling directory. No model, print profile or production artifact was changed during this audit. Additional review found no new confirmed geometric print/assembly blocker.
+- Before using the user's Extrudr XPETG Matt spool, reconcile the exported profile: both PETG slots still use Generic PETG at 255 C for all layers and normal cooling 40–90%, whereas the current manufacturer page recommends 210–240 C and 20–50%. Bed 70 C and the 12 mm3/s cap match its guidance. Keep material family PETG as requested, but select the actual spool profile and reslice. The audit does not claim that the exported profile was corrected or that the open Bambu session uses the same settings.
+- Pair-count precision: 34 assembly bodies give 561 possible pairs; 28 documented exceptions leave 533 generic pairwise collision tests. The important thread/mat exceptions have bounded dedicated probes. A lower overhang threshold 5 mm2 finds 31 production patches plus 2 repeats in the USB coupon; the largest is the 10.75-mm USB-seat bridge. This is compatible with the standard 100-mm2 gate and warning-free slices, not an absence of small bridges.
+- Additional rigid-path checks confirm USB insertion with PWM/pot/LEDs already fitted and left battery capture across nine shifted poses. Real-fit limits remain: 0.20–0.27 mm loaded-lid clearance, early PWM gaps around0.192 mm and a tiny conservative pin-envelope intersection 0.0000517 mm3, actual USB upper bearing, omitted wiring/charger tie buckle/switch clips, assumed ratchet dimensions, and approximate potentiometer axis height 6.0 mm in LEO versus model 6.3 mm with 0.2 mm radial bushing play. None is a confirmed new CAD obstruction; use the USB coupon and dry assembly to resolve them.
+- The tipping model's effective printed density gives 1012.8 g/21.0 degrees. Substituting current slicer part masses at unchanged mesh centroids gives 1090.1 g/20.2 degrees and 27.5 mm front margin; both use estimated hardware and unmeasured mass distributions. The audit records this uncertainty instead of silently presenting the original density estimate as a weighed result.

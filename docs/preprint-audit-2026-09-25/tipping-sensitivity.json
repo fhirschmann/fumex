@@ -1,0 +1,90 @@
+{
+  "assumptions": "Static mesh centroids, estimated hardware, symmetric undeformed TPU contacts; slicer scenarios substitute printed masses only, not spatial infill distribution. Not a physical stability test.",
+  "rows": [
+    {
+      "scenario": "model_nominal",
+      "mass_g": 1012.784,
+      "ballast_g": 189.399,
+      "centre_of_mass_mm": [
+        67.3069413935719,
+        31.261576676492364,
+        68.9850921318634
+      ],
+      "margins_mm": {
+        "front": 28.262,
+        "back": 36.738,
+        "left": 57.307,
+        "right": 67.693
+      },
+      "tip_angle_deg": 21.036
+    },
+    {
+      "scenario": "half_ballast",
+      "mass_g": 918.085,
+      "ballast_g": 94.7,
+      "centre_of_mass_mm": [
+        67.64112393566509,
+        27.95553849409618,
+        74.58735093109914
+      ],
+      "margins_mm": {
+        "front": 24.956,
+        "back": 40.044,
+        "left": 57.641,
+        "right": 67.359
+      },
+      "tip_angle_deg": 17.513
+    },
+    {
+      "scenario": "no_ballast",
+      "mass_g": 823.385,
+      "ballast_g": 0.0,
+      "centre_of_mass_mm": [
+        68.05217675813223,
+        23.88902946120036,
+        81.47826832371085
+      ],
+      "margins_mm": {
+        "front": 20.889,
+        "back": 44.111,
+        "left": 58.052,
+        "right": 66.948
+      },
+      "tip_angle_deg": 13.656
+    },
+    {
+      "scenario": "slicer_masses",
+      "mass_g": 1090.132,
+      "ballast_g": 189.399,
+      "centre_of_mass_mm": [
+        67.67660308389664,
+        30.53479264490784,
+        70.26294219752916
+      ],
+      "margins_mm": {
+        "front": 27.535,
+        "back": 37.465,
+        "left": 57.677,
+        "right": 67.323
+      },
+      "tip_angle_deg": 20.218
+    },
+    {
+      "scenario": "slicer_masses_half_ballast",
+      "mass_g": 995.433,
+      "ballast_g": 94.7,
+      "centre_of_mass_mm": [
+        68.01998594514174,
+        27.41650252043203,
+        75.5514542366581
+      ],
+      "margins_mm": {
+        "front": 24.417,
+        "back": 40.583,
+        "left": 58.02,
+        "right": 66.98
+      },
+      "tip_angle_deg": 16.962
+    }
+  ]
+}

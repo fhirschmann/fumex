@@ -1,0 +1,383 @@
+{
+  "source_sha256": "152bdde96866f33b4eff4f85b12d2b582b43e39602d3c16a702fa8b487168946",
+  "assembly_mesh_sha256": {
+    "base": "b21376567c9acd921d19dda88f0a8ac6a29726cfb09d88369172340221beddc6",
+    "pwm_board": "bb3580ed1a46e7c304471adee89400b3401bffd26d1f8983a136dd991c667507",
+    "pot": "8f5905419bb9d5aa272908d6f8a1563548cc3d33e80441d70310445807b103f5",
+    "ballast": "fdc8c8e02241fa0ce06709c220384bab4e9bb8a262bb60eabef077142bdb92dd",
+    "usbc": "bce547f306b71851ef24eafb03c79b74a6a2cc2c9ebd573df44d527af2531b23",
+    "led": "ef7935a2fe33ba3535122d8b7047abd82b3f3ad248733981da6eb6f5a82003b4",
+    "feet": "a7a3307a26c4acdff9141c40debadec78b4bb791e29d27340ca41e4a7e4dd075",
+    "battery": "4b98e9f54b36a7f7284ddc1410248ae5f1f0b86b1d23e0435e5ef2488c510bdf",
+    "battery_ties": "d82f25604594a8875bbd010f92e52eb355741633eba19106716b31dd4f5cf5e1",
+    "head": "816ab0777dab81634011eb688b754d50d689255d509588ebb1858e12f714bac5",
+    "ball_lid": "a8189012966e6950db87e2748adc028e7880ad11f0563e9140c9db512f873a51",
+    "switch": "b0188f68b29d6bca4ef1e3391314874a9c35934d93f434796988b603cf40e004",
+    "chg_module": "67d6cacd59514489f1cda9691b6513a02c254f01dfc59a6a51e840615d16e83b",
+    "chg_sink": "faeff55fe1ad7c5a86a635173b261c96c28dd147570d579a42cb727254eecf23",
+    "chg_tie": "b1e1a7b6b1aa576b05988c3af07283a86a1554c31053ddea88511abab3823ae4"
+  },
+  "pwm_route_gap": [
+    {
+      "stage": "lift_first",
+      "min_gap_mm": 0.0,
+      "sample": 0,
+      "max_overlap_mm3": 1.2789769243681803e-13,
+      "nearest_bodies": {
+        "base": 0.0,
+        "ballast": 2.0,
+        "usbc": 2.0,
+        "led": 2.0,
+        "feet": 2.0
+      }
+    },
+    {
+      "stage": "lift_clear",
+      "min_gap_mm": 0.0,
+      "sample": 18,
+      "max_overlap_mm3": 5.171841046834797e-05,
+      "nearest_bodies": {
+        "base": 0.0,
+        "ballast": 2.0,
+        "usbc": 2.0,
+        "led": 2.0,
+        "feet": 2.0
+      }
+    },
+    {
+      "stage": "retract",
+      "min_gap_mm": 0.19382085693767115,
+      "sample": 0,
+      "max_overlap_mm3": 0.0,
+      "nearest_bodies": {
+        "base": 0.19382085693767115,
+        "ballast": 2.0,
+        "usbc": 2.0,
+        "led": 2.0,
+        "feet": 2.0
+      }
+    },
+    {
+      "stage": "pitch",
+      "min_gap_mm": 0.19168154766873613,
+      "sample": 24,
+      "max_overlap_mm3": 0.0,
+      "nearest_bodies": {
+        "base": 0.19168154766873613,
+        "ballast": 2.0,
+        "usbc": 2.0,
+        "led": 2.0,
+        "feet": 2.0
+      }
+    },
+    {
+      "stage": "withdraw",
+      "min_gap_mm": 0.6687240600585938,
+      "sample": 0,
+      "max_overlap_mm3": 0.0,
+      "nearest_bodies": {
+        "base": 0.6687240600585938,
+        "ballast": 2.0,
+        "usbc": 2.0,
+        "led": 2.0,
+        "feet": 2.0
+      }
+    },
+    {
+      "stage": "pitch_clear",
+      "min_gap_mm": 1.8284045053976608,
+      "sample": 25,
+      "max_overlap_mm3": 0.0,
+      "nearest_bodies": {
+        "base": 2.0,
+        "ballast": 2.0,
+        "usbc": 1.8284045053976608,
+        "led": 2.0,
+        "feet": 2.0
+      }
+    },
+    {
+      "stage": "lift_rear",
+      "min_gap_mm": 1.274962498713381,
+      "sample": 45,
+      "max_overlap_mm3": 0.0,
+      "nearest_bodies": {
+        "base": 1.274962498713381,
+        "ballast": 2.0,
+        "usbc": 2.0,
+        "led": 2.0,
+        "feet": 2.0
+      }
+    },
+    {
+      "stage": "clear_rim",
+      "min_gap_mm": 0.9809387177999301,
+      "sample": 20,
+      "max_overlap_mm3": 0.0,
+      "nearest_bodies": {
+        "base": 0.9809387177999301,
+        "ballast": 2.0,
+        "usbc": 1.6609841067077387,
+        "led": 2.0,
+        "feet": 2.0
+      }
+    },
+    {
+      "stage": "side_clear",
+      "min_gap_mm": 0.9809387177999244,
+      "sample": 10,
+      "max_overlap_mm3": 0.0,
+      "nearest_bodies": {
+        "base": 0.9809387177999244,
+        "ballast": 2.0,
+        "usbc": 1.6609841067077387,
+        "led": 2.0,
+        "feet": 2.0
+      }
+    },
+    {
+      "stage": "up",
+      "min_gap_mm": 0.7886587671486716,
+      "sample": 22,
+      "max_overlap_mm3": 0.0,
+      "nearest_bodies": {
+        "base": 0.7886587671486716,
+        "ballast": 2.0,
+        "usbc": 2.0,
+        "led": 2.0,
+        "feet": 2.0
+      }
+    }
+  ],
+  "usb_readme_stage_sweeps": {
+    "fixed": [
+      "base",
+      "pwm_board",
+      "pot",
+      "led",
+      "feet"
+    ],
+    "segments": [
+      {
+        "from": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "to": [
+          0.0,
+          -20.0,
+          0.0
+        ],
+        "swept_overlap_mm3": 8.881784197001252e-15
+      },
+      {
+        "from": [
+          0.0,
+          -20.0,
+          0.0
+        ],
+        "to": [
+          0.0,
+          -20.0,
+          30.0
+        ],
+        "swept_overlap_mm3": 0.0
+      }
+    ]
+  },
+  "battery_left_shifted_contact": [
+    {
+      "offset_yz": [
+        -0.4,
+        0
+      ],
+      "left_contact_translation_mm": 0.852696418762207,
+      "overlap_at_1_25_mm3": 238.68799826726368
+    },
+    {
+      "offset_yz": [
+        -0.4,
+        1
+      ],
+      "left_contact_translation_mm": 0.8522071838378906,
+      "overlap_at_1_25_mm3": 240.80935033542886
+    },
+    {
+      "offset_yz": [
+        -0.4,
+        2
+      ],
+      "left_contact_translation_mm": 0.8519024848937988,
+      "overlap_at_1_25_mm3": 242.6550016974167
+    },
+    {
+      "offset_yz": [
+        0,
+        0
+      ],
+      "left_contact_translation_mm": 0.8527679443359375,
+      "overlap_at_1_25_mm3": 238.4576639131174
+    },
+    {
+      "offset_yz": [
+        0,
+        1
+      ],
+      "left_contact_translation_mm": 0.8522486686706543,
+      "overlap_at_1_25_mm3": 240.59017747178402
+    },
+    {
+      "offset_yz": [
+        0,
+        2
+      ],
+      "left_contact_translation_mm": 0.8519296646118164,
+      "overlap_at_1_25_mm3": 242.47713130926198
+    },
+    {
+      "offset_yz": [
+        0.4,
+        0
+      ],
+      "left_contact_translation_mm": 0.8528437614440918,
+      "overlap_at_1_25_mm3": 238.22849199581623
+    },
+    {
+      "offset_yz": [
+        0.4,
+        1
+      ],
+      "left_contact_translation_mm": 0.8522915840148926,
+      "overlap_at_1_25_mm3": 240.3680042645861
+    },
+    {
+      "offset_yz": [
+        0.4,
+        2
+      ],
+      "left_contact_translation_mm": 0.851956844329834,
+      "overlap_at_1_25_mm3": 242.29411946855276
+    }
+  ],
+  "pwm_lift_clear_tiny_intersection": [
+    {
+      "u": 0.6428571428571428,
+      "lift": 2.9,
+      "rear": 0.3214285714285714,
+      "volume": 9.998541317583045e-06,
+      "bounds": [
+        [
+          105.48250579833984,
+          3.8714284896850586,
+          13.0
+        ],
+        [
+          126.51749420166016,
+          3.896639108657837,
+          13.09999942779541
+        ]
+      ],
+      "by_mover": {
+        "pwm_board": 9.99854131758997e-06,
+        "pot": 0.0
+      }
+    },
+    {
+      "u": 0.6785714285714285,
+      "lift": 2.9499999999999997,
+      "rear": 0.33928571428571425,
+      "volume": 5.171841046834797e-05,
+      "bounds": [
+        [
+          105.48250579833984,
+          3.8892855644226074,
+          13.050000190734863
+        ],
+        [
+          126.51749420166016,
+          3.957754373550415,
+          13.09999942779541
+        ]
+      ],
+      "by_mover": {
+        "pwm_board": 5.1718410468334095e-05,
+        "pot": 0.0
+      }
+    }
+  ],
+  "installed_head_drivers": [
+    {
+      "bounds": [
+        [
+          14.5,
+          -75.77092742919922,
+          43.859474182128906
+        ],
+        [
+          36.5,
+          11.888084411621094,
+          79.9421615600586
+        ]
+      ],
+      "gaps_mm": {
+        "base": 3.249997285352717,
+        "head": 0.9686425642388385
+      }
+    },
+    {
+      "bounds": [
+        [
+          18.506736755371094,
+          35.454185485839844,
+          58.804969787597656
+        ],
+        [
+          31.5,
+          65.91596221923828,
+          144.07266235351562
+        ]
+      ],
+      "gaps_mm": {
+        "base": 3.9499987599831923,
+        "head": 1.519857890547772
+      }
+    },
+    {
+      "bounds": [
+        [
+          108.5,
+          -75.77092742919922,
+          43.859474182128906
+        ],
+        [
+          130.5,
+          11.888084411621094,
+          79.9421615600586
+        ]
+      ],
+      "gaps_mm": {
+        "base": 3.2499972853603305,
+        "head": 0.9686437568155982
+      }
+    },
+    {
+      "bounds": [
+        [
+          124.5067367553711,
+          35.454185485839844,
+          58.804969787597656
+        ],
+        [
+          137.5,
+          65.91596221923828,
+          144.07266235351562
+        ]
+      ],
+      "gaps_mm": {
+        "base": 3.949998759983196,
+        "head": 0.3249969482421875
+      }
+    }
+  ]
+}

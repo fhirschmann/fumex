@@ -1,0 +1,380 @@
+{
+  "profile": "Bambu Lab H2S 0.4 nozzle / 0.20mm Standard @BBL H2S, 4 walls, 5/5 top/bottom, no supports; 20 % gyroid, 100 % zig-zag: filter_support, foot",
+  "parts": [
+    {
+      "part": "base",
+      "quantity": 1,
+      "material": "PETG-black",
+      "passed": true,
+      "source_sha256": "8a3b9ded2392f70377d480cfb8ffa271249253195a7a0a56134032f91171d490",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 3.714,
+      "grams": 119.472,
+      "wall_loops": 4,
+      "infill_percent": 20.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "gyroid",
+        "enable_support": "0",
+        "curr_bed_type": "Textured PEI Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5"
+      },
+      "start_gcode_diagnostic": true
+    },
+    {
+      "part": "head",
+      "quantity": 1,
+      "material": "PETG-black",
+      "passed": true,
+      "source_sha256": "405774119fa3662ff0e4dcd7be3db18e8eb719a08ca36c1eea57bae6695a432f",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 5.693,
+      "grams": 220.858,
+      "wall_loops": 4,
+      "infill_percent": 20.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "gyroid",
+        "enable_support": "0",
+        "curr_bed_type": "Textured PEI Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5"
+      },
+      "start_gcode_diagnostic": true
+    },
+    {
+      "part": "head_back",
+      "quantity": 1,
+      "material": "PETG-black",
+      "passed": true,
+      "source_sha256": "8114f7eb1376ae4fd4ab3fe1a08c5241bc5fd0bb70f14441e68f713bcec46fd0",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 2.729,
+      "grams": 59.738,
+      "wall_loops": 4,
+      "infill_percent": 20.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "gyroid",
+        "enable_support": "0",
+        "curr_bed_type": "Textured PEI Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5"
+      },
+      "start_gcode_diagnostic": true
+    },
+    {
+      "part": "cassette",
+      "quantity": 1,
+      "material": "PETG-grey",
+      "passed": true,
+      "source_sha256": "32c90fbbf4a9494c4d4ad982ee74d91c48520018f32c789aa0243979d6a7bf41",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 2.399,
+      "grams": 49.705,
+      "wall_loops": 4,
+      "infill_percent": 20.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "gyroid",
+        "enable_support": "0",
+        "curr_bed_type": "Textured PEI Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5"
+      },
+      "start_gcode_diagnostic": true
+    },
+    {
+      "part": "knob",
+      "quantity": 1,
+      "material": "PETG-grey",
+      "passed": true,
+      "source_sha256": "c406eb2e289007354041ca9da392f83dd45b9691a9835808848bf2bef06dd463",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 0.425,
+      "grams": 4.94,
+      "wall_loops": 4,
+      "infill_percent": 20.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "gyroid",
+        "enable_support": "0",
+        "curr_bed_type": "Textured PEI Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5"
+      },
+      "start_gcode_diagnostic": true
+    },
+    {
+      "part": "foot",
+      "quantity": 4,
+      "material": "TPU",
+      "passed": true,
+      "source_sha256": "adaeaae7a83a4936711036a15ebe54ea2c98971e5b61930fa93e879a94336cc0",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 0.231,
+      "grams": 1.539,
+      "wall_loops": 4,
+      "infill_percent": 100.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "zig-zag",
+        "enable_support": "0",
+        "curr_bed_type": "Textured PEI Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5"
+      },
+      "start_gcode_diagnostic": true
+    },
+    {
+      "part": "ball_lid",
+      "quantity": 1,
+      "material": "PETG-black",
+      "passed": true,
+      "source_sha256": "396e4ae1f493d36398f69ef9dd125457d7d21d88aba249564448af3fca111eb6",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 0.542,
+      "grams": 8.43,
+      "wall_loops": 4,
+      "infill_percent": 20.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "gyroid",
+        "enable_support": "0",
+        "curr_bed_type": "Textured PEI Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5"
+      },
+      "start_gcode_diagnostic": true
+    },
+    {
+      "part": "filter_support",
+      "quantity": 1,
+      "material": "PETG-black",
+      "passed": true,
+      "source_sha256": "4fed78fc4f48182c16cb8f2ae265359a287b3989dd675cd5e6722c26b16dba9e",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 0.38,
+      "grams": 7.047,
+      "wall_loops": 4,
+      "infill_percent": 100.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "zig-zag",
+        "enable_support": "0",
+        "curr_bed_type": "Textured PEI Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5"
+      },
+      "start_gcode_diagnostic": true
+    },
+    {
+      "part": "usbc_fit_base",
+      "quantity": 0,
+      "material": "PETG-black",
+      "passed": true,
+      "source_sha256": "3e9a3a79237402dcc5c56aacbed592af1c0ce44d924ef2eaee6b252547e32137",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 0.997,
+      "grams": 8.279,
+      "wall_loops": 4,
+      "infill_percent": 20.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "gyroid",
+        "enable_support": "0",
+        "curr_bed_type": "Textured PEI Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5"
+      },
+      "start_gcode_diagnostic": true
+    },
+    {
+      "part": "usbc_fit_lid",
+      "quantity": 0,
+      "material": "PETG-black",
+      "passed": true,
+      "source_sha256": "353880bb51e1d50dabe43934b1bcb81b150f6ea99497091c2feb6754c6956f70",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 0.261,
+      "grams": 1.807,
+      "wall_loops": 4,
+      "infill_percent": 20.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "gyroid",
+        "enable_support": "0",
+        "curr_bed_type": "Textured PEI Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5"
+      },
+      "start_gcode_diagnostic": true
+    }
+  ],
+  "total_parts": 11,
+  "total_grams_individual_plates": 476.3,
+  "total_hours_individual_plates": 16.8,
+  "production_gcode": false,
+  "project_3mf": {
+    "file": "stl/fumex_all_parts.3mf",
+    "parts": 11,
+    "plates": 4,
+    "layout": [
+      {
+        "plate": 1,
+        "name": "Head",
+        "parts": [
+          "ball_lid",
+          "filter_support",
+          "head"
+        ],
+        "size_mm": [
+          239.6,
+          189.3
+        ]
+      },
+      {
+        "plate": 2,
+        "name": "Base and back cover",
+        "parts": [
+          "base",
+          "head_back"
+        ],
+        "size_mm": [
+          145.0,
+          220.7
+        ]
+      },
+      {
+        "plate": 3,
+        "name": "Grey parts",
+        "parts": [
+          "cassette",
+          "knob"
+        ],
+        "size_mm": [
+          164.0,
+          143.0
+        ]
+      },
+      {
+        "plate": 4,
+        "name": "TPU feet",
+        "parts": [
+          "foot",
+          "foot",
+          "foot",
+          "foot"
+        ],
+        "size_mm": [
+          38.0,
+          34.0
+        ]
+      }
+    ],
+    "total_hours_plates": 15.8,
+    "total_grams_plates": 475.9,
+    "multicolour_parts": {},
+    "multicolour_slices": {},
+    "pause_slices": {},
+    "plate_slices": {
+      "Head": {
+        "plate": 1,
+        "hours": 6.23,
+        "grams_by_filament": {
+          "1": 236.23
+        },
+        "warnings": ""
+      },
+      "Base and back cover": {
+        "plate": 2,
+        "hours": 6.25,
+        "grams_by_filament": {
+          "1": 179.15
+        },
+        "warnings": ""
+      },
+      "Grey parts": {
+        "plate": 3,
+        "hours": 2.71,
+        "grams_by_filament": {
+          "2": 54.57
+        },
+        "warnings": ""
+      },
+      "TPU feet": {
+        "plate": 4,
+        "hours": 0.6,
+        "grams_by_filament": {
+          "3": 5.98
+        },
+        "warnings": ""
+      }
+    },
+    "own_infill_parts": 5,
+    "sha256": "44a38e1d811f3bb8351d791a97c76d54a472be8644009309627cdb6137fcdcac"
+  },
+  "test_3mf": {
+    "file": "stl/fumex_usb_fit.3mf",
+    "parts": 2,
+    "plates": 1,
+    "layout": [
+      {
+        "plate": 1,
+        "name": "USB insertion fit",
+        "parts": [
+          "usbc_fit_base",
+          "usbc_fit_lid"
+        ],
+        "size_mm": [
+          21.5,
+          40.8
+        ]
+      }
+    ],
+    "total_hours_plates": 1.0,
+    "total_grams_plates": 10.0,
+    "multicolour_parts": {},
+    "multicolour_slices": {},
+    "pause_slices": {},
+    "plate_slices": {
+      "USB insertion fit": {
+        "plate": 1,
+        "hours": 1.04,
+        "grams_by_filament": {
+          "1": 10.03
+        },
+        "warnings": ""
+      }
+    },
+    "own_infill_parts": 0,
+    "sha256": "d4694d73806711e534a5782f58ffc7fcd7745a7625c63c10095b05bc96aa4124",
+    "process": {
+      "wall_loops": 4,
+      "top_shell_layers": 5,
+      "bottom_shell_layers": 5,
+      "infill": 20
+    }
+  }
+}

@@ -1,0 +1,896 @@
+{
+  "source_sha256": "152bdde96866f33b4eff4f85b12d2b582b43e39602d3c16a702fa8b487168946",
+  "verification_source_sha256": "152bdde96866f33b4eff4f85b12d2b582b43e39602d3c16a702fa8b487168946",
+  "source_matches": true,
+  "stl_slice_hashes": {
+    "base": true,
+    "head": true,
+    "head_back": true,
+    "cassette": true,
+    "knob": true,
+    "foot": true,
+    "ball_lid": true,
+    "filter_support": true,
+    "usbc_fit_base": true,
+    "usbc_fit_lid": true
+  },
+  "archives": {
+    "project_3mf": {
+      "file": "stl/fumex_all_parts.3mf",
+      "sha256": "44a38e1d811f3bb8351d791a97c76d54a472be8644009309627cdb6137fcdcac",
+      "summary_sha_matches": true,
+      "objects": {
+        "6": {
+          "name": "filter_support",
+          "filament_slot": 1,
+          "infill": "100%",
+          "infill_pattern": "zig-zag",
+          "face_count": 1532,
+          "stl_face_count": 1532,
+          "max_vertex_difference_mm": 4.9763544189753745e-08,
+          "max_face_centroid_difference_mm": 4.352133625238023e-08,
+          "bounds_world": [
+            [
+              50.184505844499995,
+              162.0410058445,
+              0.0
+            ],
+            [
+              142.8154941555,
+              254.67199415550002,
+              9.8000002
+            ]
+          ],
+          "z_orientation_preserved": true,
+          "printable": "1",
+          "mesh_repairs": {
+            "face_count": "1532",
+            "edges_fixed": "0",
+            "degenerate_facets": "0",
+            "facets_removed": "0",
+            "facets_reversed": "0",
+            "backwards_edges": "0"
+          }
+        },
+        "8": {
+          "name": "base",
+          "filament_slot": 1,
+          "infill": "20%",
+          "infill_pattern": "gyroid",
+          "face_count": 11104,
+          "stl_face_count": 11104,
+          "max_vertex_difference_mm": 4.307210613415861e-06,
+          "max_face_centroid_difference_mm": 3.849118925931611e-06,
+          "bounds_world": [
+            [
+              505.5,
+              196.35,
+              0.0
+            ],
+            [
+              650.5,
+              270.35,
+              57.2657204
+            ]
+          ],
+          "z_orientation_preserved": true,
+          "printable": "1",
+          "mesh_repairs": {
+            "face_count": "11104",
+            "edges_fixed": "0",
+            "degenerate_facets": "0",
+            "facets_removed": "0",
+            "facets_reversed": "0",
+            "backwards_edges": "0"
+          }
+        },
+        "14": {
+          "name": "knob",
+          "filament_slot": 2,
+          "infill": "20%",
+          "infill_pattern": "gyroid",
+          "face_count": 2228,
+          "stl_face_count": 2228,
+          "max_vertex_difference_mm": 2.42392672816968e-07,
+          "max_face_centroid_difference_mm": 2.3908833402233604e-07,
+          "bounds_world": [
+            [
+              88.0037298,
+              -227.938,
+              0.0
+            ],
+            [
+              111.9962702,
+              -203.938,
+              13.5
+            ]
+          ],
+          "z_orientation_preserved": true,
+          "printable": "1",
+          "mesh_repairs": {
+            "face_count": "2228",
+            "edges_fixed": "0",
+            "degenerate_facets": "0",
+            "facets_removed": "0",
+            "facets_reversed": "0",
+            "backwards_edges": "0"
+          }
+        },
+        "16": {
+          "name": "foot",
+          "filament_slot": 3,
+          "infill": "100%",
+          "infill_pattern": "zig-zag",
+          "face_count": 296,
+          "stl_face_count": 296,
+          "max_vertex_difference_mm": 5.800726301156225e-09,
+          "max_face_centroid_difference_mm": 4.20858692163566e-09,
+          "bounds_world": [
+            [
+              579.0,
+              -223.0,
+              0.0
+            ],
+            [
+              597.0,
+              -207.0,
+              6.5
+            ]
+          ],
+          "z_orientation_preserved": true,
+          "printable": "1",
+          "mesh_repairs": {
+            "face_count": "296",
+            "edges_fixed": "0",
+            "degenerate_facets": "0",
+            "facets_removed": "0",
+            "facets_reversed": "0",
+            "backwards_edges": "0"
+          }
+        },
+        "17": {
+          "name": "foot",
+          "filament_slot": 3,
+          "infill": "100%",
+          "infill_pattern": "zig-zag",
+          "face_count": 296,
+          "stl_face_count": 296,
+          "max_vertex_difference_mm": 5.800726301156225e-09,
+          "max_face_centroid_difference_mm": 4.20858692163566e-09,
+          "bounds_world": [
+            [
+              579.0,
+              -241.0,
+              0.0
+            ],
+            [
+              597.0,
+              -225.0,
+              6.5
+            ]
+          ],
+          "z_orientation_preserved": true,
+          "printable": "1",
+          "mesh_repairs": {
+            "face_count": "296",
+            "edges_fixed": "0",
+            "degenerate_facets": "0",
+            "facets_removed": "0",
+            "facets_reversed": "0",
+            "backwards_edges": "0"
+          }
+        },
+        "18": {
+          "name": "foot",
+          "filament_slot": 3,
+          "infill": "100%",
+          "infill_pattern": "zig-zag",
+          "face_count": 296,
+          "stl_face_count": 296,
+          "max_vertex_difference_mm": 5.800726301156225e-09,
+          "max_face_centroid_difference_mm": 4.20858692163566e-09,
+          "bounds_world": [
+            [
+              559.0,
+              -223.0,
+              0.0
+            ],
+            [
+              577.0,
+              -207.0,
+              6.5
+            ]
+          ],
+          "z_orientation_preserved": true,
+          "printable": "1",
+          "mesh_repairs": {
+            "face_count": "296",
+            "edges_fixed": "0",
+            "degenerate_facets": "0",
+            "facets_removed": "0",
+            "facets_reversed": "0",
+            "backwards_edges": "0"
+          }
+        },
+        "19": {
+          "name": "foot",
+          "filament_slot": 3,
+          "infill": "100%",
+          "infill_pattern": "zig-zag",
+          "face_count": 296,
+          "stl_face_count": 296,
+          "max_vertex_difference_mm": 5.800726301156225e-09,
+          "max_face_centroid_difference_mm": 4.20858692163566e-09,
+          "bounds_world": [
+            [
+              559.0,
+              -241.0,
+              0.0
+            ],
+            [
+              577.0,
+              -225.0,
+              6.5
+            ]
+          ],
+          "z_orientation_preserved": true,
+          "printable": "1",
+          "mesh_repairs": {
+            "face_count": "296",
+            "edges_fixed": "0",
+            "degenerate_facets": "0",
+            "facets_removed": "0",
+            "facets_reversed": "0",
+            "backwards_edges": "0"
+          }
+        },
+        "10": {
+          "name": "head_back",
+          "filament_slot": 1,
+          "infill": "20%",
+          "infill_pattern": "gyroid",
+          "face_count": 14024,
+          "stl_face_count": 14024,
+          "max_vertex_difference_mm": 5.869888224443271e-06,
+          "max_face_centroid_difference_mm": 4.88083766886378e-06,
+          "bounds_world": [
+            [
+              505.5,
+              49.65000150000001,
+              0.0
+            ],
+            [
+              650.5,
+              194.3499985,
+              18.29999924
+            ]
+          ],
+          "z_orientation_preserved": true,
+          "printable": "1",
+          "mesh_repairs": {
+            "face_count": "14024",
+            "edges_fixed": "0",
+            "degenerate_facets": "0",
+            "facets_removed": "0",
+            "facets_reversed": "0",
+            "backwards_edges": "0"
+          }
+        },
+        "12": {
+          "name": "cassette",
+          "filament_slot": 2,
+          "infill": "20%",
+          "infill_pattern": "gyroid",
+          "face_count": 9342,
+          "stl_face_count": 9342,
+          "max_vertex_difference_mm": 4.370554267971183e-06,
+          "max_face_centroid_difference_mm": 3.6827541639843e-06,
+          "bounds_world": [
+            [
+              113.9963,
+              -295.5,
+              0.0
+            ],
+            [
+              251.99630000000002,
+              -152.5,
+              4.5
+            ]
+          ],
+          "z_orientation_preserved": true,
+          "printable": "1",
+          "mesh_repairs": {
+            "face_count": "9342",
+            "edges_fixed": "0",
+            "degenerate_facets": "0",
+            "facets_removed": "0",
+            "facets_reversed": "0",
+            "backwards_edges": "0"
+          }
+        },
+        "2": {
+          "name": "head",
+          "filament_slot": 1,
+          "infill": "20%",
+          "infill_pattern": "gyroid",
+          "face_count": 9910,
+          "stl_face_count": 9910,
+          "max_vertex_difference_mm": 5.623558542681267e-06,
+          "max_face_centroid_difference_mm": 4.452108707093252e-06,
+          "bounds_world": [
+            [
+              144.8155,
+              109.672,
+              0.0
+            ],
+            [
+              289.8155,
+              254.672,
+              70.0
+            ]
+          ],
+          "z_orientation_preserved": true,
+          "printable": "1",
+          "mesh_repairs": {
+            "face_count": "9910",
+            "edges_fixed": "0",
+            "degenerate_facets": "0",
+            "facets_removed": "0",
+            "facets_reversed": "0",
+            "backwards_edges": "0"
+          }
+        },
+        "4": {
+          "name": "ball_lid",
+          "filament_slot": 1,
+          "infill": "20%",
+          "infill_pattern": "gyroid",
+          "face_count": 778,
+          "stl_face_count": 778,
+          "max_vertex_difference_mm": 3.11479536617593e-06,
+          "max_face_centroid_difference_mm": 2.600029336565902e-06,
+          "bounds_world": [
+            [
+              82.30626372516525,
+              65.32802508325452,
+              0.0
+            ],
+            [
+              188.6409821802652,
+              160.04112236107997,
+              24.2000008
+            ]
+          ],
+          "z_orientation_preserved": true,
+          "printable": "1",
+          "mesh_repairs": {
+            "face_count": "778",
+            "edges_fixed": "0",
+            "degenerate_facets": "0",
+            "facets_removed": "0",
+            "facets_reversed": "0",
+            "backwards_edges": "0"
+          }
+        }
+      },
+      "plates": [
+        {
+          "name": "Head",
+          "objects": [
+            "head",
+            "ball_lid",
+            "filter_support"
+          ],
+          "slots": [
+            1
+          ],
+          "bounds_local_mm": [
+            [
+              50.184505844499995,
+              65.32802508325452,
+              0.0
+            ],
+            [
+              289.8155,
+              254.672,
+              70.0
+            ]
+          ],
+          "inside_bed": true,
+          "minimum_xy_object_gap_mm": 2.0000152587890625,
+          "gaps_mm": {
+            "2/4": 2.000102146856397,
+            "2/6": 2.0000152587890625,
+            "4/6": 29.341969219619447
+          }
+        },
+        {
+          "name": "Base and back cover",
+          "objects": [
+            "base",
+            "head_back"
+          ],
+          "slots": [
+            1
+          ],
+          "bounds_local_mm": [
+            [
+              97.5,
+              49.65000150000001,
+              0.0
+            ],
+            [
+              242.5,
+              270.35,
+              57.2657204
+            ]
+          ],
+          "inside_bed": true,
+          "minimum_xy_object_gap_mm": 2.0,
+          "gaps_mm": {
+            "8/10": 2.0
+          }
+        },
+        {
+          "name": "Grey parts",
+          "objects": [
+            "cassette",
+            "knob"
+          ],
+          "slots": [
+            2
+          ],
+          "bounds_local_mm": [
+            [
+              88.0037298,
+              88.5,
+              0.0
+            ],
+            [
+              251.99630000000002,
+              231.5,
+              13.5
+            ]
+          ],
+          "inside_bed": true,
+          "minimum_xy_object_gap_mm": 2.000030517578125,
+          "gaps_mm": {
+            "12/14": 2.000030517578125
+          }
+        },
+        {
+          "name": "TPU feet",
+          "objects": [
+            "foot",
+            "foot",
+            "foot",
+            "foot"
+          ],
+          "slots": [
+            3
+          ],
+          "bounds_local_mm": [
+            [
+              151.0,
+              143.0,
+              0.0
+            ],
+            [
+              189.0,
+              177.0,
+              6.5
+            ]
+          ],
+          "inside_bed": true,
+          "minimum_xy_object_gap_mm": 2.0,
+          "gaps_mm": {
+            "16/17": 2.0,
+            "16/18": 2.0,
+            "16/19": 2.8284271247461903,
+            "17/18": 2.8284271247461903,
+            "17/19": 2.0,
+            "18/19": 2.0
+          }
+        }
+      ],
+      "settings": {
+        "printer_settings_id": "Bambu Lab H2S 0.4 nozzle",
+        "layer_height": "0.2",
+        "wall_loops": "4",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5",
+        "sparse_infill_density": "20%",
+        "sparse_infill_pattern": "gyroid",
+        "enable_support": "0",
+        "enable_prime_tower": "1",
+        "filament_type": [
+          "PETG",
+          "PETG",
+          "TPU"
+        ],
+        "filament_settings_id": [
+          "Generic PETG @BBL H2S",
+          "Generic PETG @BBL H2S",
+          "Generic TPU @BBL H2S"
+        ],
+        "filament_colour": [
+          "#1A1B1D",
+          "#8C9196",
+          "#1A1B1D"
+        ],
+        "curr_bed_type": "Textured PEI Plate",
+        "nozzle_temperature": [
+          "255",
+          "255",
+          "255",
+          "255",
+          "255",
+          "255",
+          "230",
+          "230",
+          "230"
+        ],
+        "nozzle_temperature_initial_layer": [
+          "255",
+          "255",
+          "255",
+          "255",
+          "255",
+          "255",
+          "230",
+          "230",
+          "230"
+        ],
+        "textured_plate_temp": [
+          "70",
+          "70",
+          "35"
+        ],
+        "textured_plate_temp_initial_layer": [
+          "70",
+          "70",
+          "35"
+        ],
+        "filament_max_volumetric_speed": [
+          "12",
+          "12",
+          "12",
+          "12",
+          "12",
+          "12",
+          "3.2",
+          "3.2",
+          "3.2"
+        ],
+        "different_settings_to_system": [
+          "bottom_shell_layers;sparse_infill_density;sparse_infill_pattern;wall_loops",
+          "filament_colour",
+          "filament_colour",
+          "filament_colour",
+          "curr_bed_type"
+        ]
+      },
+      "gcode_files": []
+    },
+    "test_3mf": {
+      "file": "stl/fumex_usb_fit.3mf",
+      "sha256": "d4694d73806711e534a5782f58ffc7fcd7745a7625c63c10095b05bc96aa4124",
+      "summary_sha_matches": true,
+      "objects": {
+        "2": {
+          "name": "usbc_fit_base",
+          "filament_slot": 1,
+          "infill": "20%",
+          "infill_pattern": "gyroid",
+          "face_count": 652,
+          "stl_face_count": 652,
+          "max_vertex_difference_mm": 9.404590776340601e-07,
+          "max_face_centroid_difference_mm": 9.230883761988727e-07,
+          "bounds_world": [
+            [
+              159.25,
+              159.4,
+              0.0
+            ],
+            [
+              180.75,
+              180.4,
+              57.2657204
+            ]
+          ],
+          "z_orientation_preserved": true,
+          "printable": "1",
+          "mesh_repairs": {
+            "face_count": "652",
+            "edges_fixed": "0",
+            "degenerate_facets": "0",
+            "facets_removed": "0",
+            "facets_reversed": "0",
+            "backwards_edges": "0"
+          }
+        },
+        "4": {
+          "name": "usbc_fit_lid",
+          "filament_slot": 1,
+          "infill": "20%",
+          "infill_pattern": "gyroid",
+          "face_count": 274,
+          "stl_face_count": 274,
+          "max_vertex_difference_mm": 5.360080627233856e-07,
+          "max_face_centroid_difference_mm": 3.456931607244959e-07,
+          "bounds_world": [
+            [
+              159.25,
+              139.6,
+              0.0
+            ],
+            [
+              180.75,
+              157.39999924,
+              24.2000008
+            ]
+          ],
+          "z_orientation_preserved": true,
+          "printable": "1",
+          "mesh_repairs": {
+            "face_count": "274",
+            "edges_fixed": "0",
+            "degenerate_facets": "0",
+            "facets_removed": "0",
+            "facets_reversed": "0",
+            "backwards_edges": "0"
+          }
+        }
+      },
+      "plates": [
+        {
+          "name": "USB insertion fit",
+          "objects": [
+            "usbc_fit_base",
+            "usbc_fit_lid"
+          ],
+          "slots": [
+            1
+          ],
+          "bounds_local_mm": [
+            [
+              159.25,
+              139.6,
+              0.0
+            ],
+            [
+              180.75,
+              180.4,
+              57.2657204
+            ]
+          ],
+          "inside_bed": true,
+          "minimum_xy_object_gap_mm": 2.0,
+          "gaps_mm": {
+            "2/4": 2.0
+          }
+        }
+      ],
+      "settings": {
+        "printer_settings_id": "Bambu Lab H2S 0.4 nozzle",
+        "layer_height": "0.2",
+        "wall_loops": "4",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5",
+        "sparse_infill_density": "20%",
+        "sparse_infill_pattern": "gyroid",
+        "enable_support": "0",
+        "enable_prime_tower": "1",
+        "filament_type": [
+          "PETG",
+          "PETG",
+          "TPU"
+        ],
+        "filament_settings_id": [
+          "Generic PETG @BBL H2S",
+          "Generic PETG @BBL H2S",
+          "Generic TPU @BBL H2S"
+        ],
+        "filament_colour": [
+          "#1A1B1D",
+          "#8C9196",
+          "#1A1B1D"
+        ],
+        "curr_bed_type": "Textured PEI Plate",
+        "nozzle_temperature": [
+          "255",
+          "255",
+          "255",
+          "255",
+          "255",
+          "255",
+          "230",
+          "230",
+          "230"
+        ],
+        "nozzle_temperature_initial_layer": [
+          "255",
+          "255",
+          "255",
+          "255",
+          "255",
+          "255",
+          "230",
+          "230",
+          "230"
+        ],
+        "textured_plate_temp": [
+          "70",
+          "70",
+          "35"
+        ],
+        "textured_plate_temp_initial_layer": [
+          "70",
+          "70",
+          "35"
+        ],
+        "filament_max_volumetric_speed": [
+          "12",
+          "12",
+          "12",
+          "12",
+          "12",
+          "12",
+          "3.2",
+          "3.2",
+          "3.2"
+        ],
+        "different_settings_to_system": [
+          "bottom_shell_layers;sparse_infill_density;sparse_infill_pattern;wall_loops",
+          "filament_colour",
+          "filament_colour",
+          "filament_colour",
+          "curr_bed_type"
+        ]
+      },
+      "gcode_files": []
+    }
+  },
+  "reported_open_measurements": [
+    "Masses of the bought parts are data-sheet or estimated values, not weighed",
+    "The soft filter mat bends locally by up to 2.75 mm over the two front screw heads and their shallow recessed seats; only the two measured contact zones are allowed. No compression force or flexible deformation is simulated.",
+    "Ratchet envelope is assumed: 22 mm head diameter, 14 mm head thickness, 87 mm overall length, 14 mm handle width; 25 mm bit, 2 mm engagement, 4 mm neck for 6 mm above the screw face. Actual tool dimensions are not measured.",
+    "PWM mounting: verify the 2.0 mm PETG pilot fit with the real 2.5 x 8 screws and measure their head height (4.5 mm head diameter confirmed; 2.5 mm height is a conservative envelope). Assembly requires a slim 4 mm screwdriver shaft exposed for at least 25 mm.",
+    "PWM service motion is sampled at 0.1 mm / 0.5 degrees (final lift 0.5 mm); remove the head, battery, loaded ballast lid, knob, PCB screws and rocker switch first. The real wiring and flexible leads are not modelled.",
+    "LEDs: test visibility through both 1.8 mm PETG skins with the actual filament; nominal 3 mm body and 3.8 mm flange dimensions remain unmeasured, as in LEO-AC1",
+    "USB upper return captures the measured module envelope; bare PCB thickness and component-free bearing area are unmeasured. Check contact and cable-lever resistance on the fit print.",
+    "Battery: check the base end-stop fit and actual cable exit; release both ties before upward battery removal",
+    "Battery ties: fit two bands up to 3.6 x 1.2 mm, nominally at least 150 mm long; verify the actual buckle fits the 6 x 4 x 5 mm front envelope. Thread before inserting the pack. Tighten gently without crushing the wrapped electronics; there is no separate BMS pressure bridge. Cut ties before service. This geometric check does not prove clamp force, wrap integrity or flexible strap behaviour.",
+    "Loaded ballast lid: remove head, battery, rocker switch and lid screws; lift 3.4 mm, pull 4 mm forwards, lift another 3 mm, pull another 16 mm forwards, center 0.2 mm right and lift out. The sampled rigid path keeps at least 0.15 mm clearance after the initial lift; real print tolerance, finger access, switch clip release and connected wiring need a physical check."
+  ],
+  "analyses": {
+    "islands": {
+      "base": [],
+      "head": [],
+      "head_back": [],
+      "cassette": [],
+      "knob": [],
+      "foot": [],
+      "ball_lid": [],
+      "filter_support": [],
+      "usbc_fit_base": [],
+      "usbc_fit_lid": []
+    },
+    "overhangs": {
+      "base": [],
+      "head": [],
+      "head_back": [],
+      "cassette": [],
+      "knob": [],
+      "foot": [],
+      "ball_lid": [],
+      "filter_support": [],
+      "usbc_fit_base": [],
+      "usbc_fit_lid": []
+    },
+    "thickness": {
+      "base": {
+        "samples": 38199,
+        "measured": 38199,
+        "mm2_per_sample": 2.0,
+        "p01": 1.374,
+        "p05": 2.0,
+        "median": 3.0,
+        "regions": []
+      },
+      "head": {
+        "samples": 65414,
+        "measured": 65253,
+        "mm2_per_sample": 2.0,
+        "p01": 2.009,
+        "p05": 2.4,
+        "median": 3.0,
+        "regions": []
+      },
+      "head_back": {
+        "samples": 23678,
+        "measured": 23678,
+        "mm2_per_sample": 2.0,
+        "p01": 2.002,
+        "p05": 2.5,
+        "median": 4.0,
+        "regions": []
+      },
+      "cassette": {
+        "samples": 20664,
+        "measured": 20664,
+        "mm2_per_sample": 2.0,
+        "p01": 1.3,
+        "p05": 2.5,
+        "median": 4.5,
+        "regions": []
+      },
+      "knob": {
+        "samples": 2000,
+        "measured": 2000,
+        "mm2_per_sample": 1.575,
+        "p01": 0.22,
+        "p05": 1.0,
+        "median": 5.5,
+        "regions": []
+      },
+      "foot": {
+        "samples": 2000,
+        "measured": 2000,
+        "mm2_per_sample": 0.458,
+        "p01": 1.65,
+        "p05": 1.65,
+        "median": 4.5,
+        "regions": []
+      },
+      "ball_lid": {
+        "samples": 3268,
+        "measured": 3268,
+        "mm2_per_sample": 2.0,
+        "p01": 1.6,
+        "p05": 2.0,
+        "median": 3.0,
+        "regions": []
+      },
+      "filter_support": {
+        "samples": 2438,
+        "measured": 2438,
+        "mm2_per_sample": 2.0,
+        "p01": 3.0,
+        "p05": 3.0,
+        "median": 5.0,
+        "regions": []
+      },
+      "usbc_fit_base": {
+        "samples": 2985,
+        "measured": 2985,
+        "mm2_per_sample": 2.0,
+        "p01": 1.5,
+        "p05": 2.0,
+        "median": 3.0,
+        "regions": []
+      },
+      "usbc_fit_lid": {
+        "samples": 2000,
+        "measured": 2000,
+        "mm2_per_sample": 0.731,
+        "p01": 0.839,
+        "p05": 2.2,
+        "median": 3.0,
+        "regions": []
+      }
+    },
+    "fins": {
+      "base": [],
+      "head": [],
+      "head_back": [],
+      "cassette": [],
+      "knob": [],
+      "foot": [],
+      "ball_lid": [],
+      "filter_support": [],
+      "usbc_fit_base": [],
+      "usbc_fit_lid": []
+    }
+  }
+}
