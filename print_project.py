@@ -66,7 +66,8 @@ ALLOWED_OVERLAPS = [("fan", "screws_fan"),      # screws run through the holes o
                     ("driver_fan", "driver_head"), ("driver_head", "driver_lid"),
                     # and the fan is screwed to the cover on the bench, where its front face is reachable,
                     # before either of them goes into the head
-                    ("head", "driver_fan"), ("cassette", "driver_fan"), ("filter", "driver_fan")]
+                    ("head", "driver_fan"), ("cassette", "driver_fan"), ("filter", "driver_fan"),
+                    ("screws_back", "driver_lid"), ("driver_back", "driver_lid")]
 
 # Multicolour: part -> inlay names. Black and grey are whole parts here, no inlays and no prime tower.
 COLOR_PARTS = {}
@@ -133,7 +134,7 @@ def checks(ctx):
         ("fan", "head_back", into),                   # and on the spacer posts of the cover
         ("feet", "base", [0, 0, 1]),
         ("pwm_board", "base", [0, 0, -1]),            # board on the rib pads
-        ("chg_module", "base", [0, 0, -1]),           # board down in its grooves on the bay floor
+        ("chg_module", "ball_lid", [0, 0, -1]),       # board down in its tray on the ballast lid
         ("ball_lid", "base", [0, 0, -1]),             # lid on its posts and walls
     ])
     # Stops: the fan cannot move sideways in its corner guides, the head is located by its screws

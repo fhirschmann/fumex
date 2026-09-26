@@ -160,12 +160,18 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
    through a cut-out in the back wall into ambient air; that is **no longer what is built**, and any text
    claiming a heatsink proud of the back face is stale.
 
-   What is built: the board stands upright against the inside of the front wall at x 24–56, z 5–16, low in
-   the bay, parts towards the wall and the 14 × 14 × 6 heatsink on its back facing into the bay. Six slots
-   in the head floor directly above it open into the 5.75 mm channel around the filter tube, so the fan
-   pushes filtered air down over the heatsink and out of the back wall slots; with the fan off the same
-   path is a chimney. The cell sits 10 mm behind it. The insulating silicone pad under the heatsink keeps
-   the fins off the board's metal pad.
+   What is built (user, 2026-09-23: "da kommt doch ueberhaupt keine luft hin"): the board lies flat in a
+   printed tray on the **ballast lid** at x 54-86, y 56.5-67.5, heatsink up. Six slots in the head floor
+   right over it open into the **plenum** - the side the fan blows into - so filtered air is pushed down
+   onto the heatsink and out through the back wall slots a few centimetres behind it. Before this the
+   board stood at the bottom of the front wall with its slots 25 mm above it and the outlet at the far
+   end of the bay: a dead corner.
+   - The tray's lip has to stay below the top face of the board almost all round, because the heatsink
+     is wider than the PCB on three sides. Only the left end is clear, so that wall is full height and
+     carries a tab over the board; it slides in from the right.
+   - The board rests on two end ledges. `chg_module_env()` keeps its parts `chg_br[2]` clear of both
+     ends for them - the original brackets gripped the same two edges for the same reason.
+   - `ball_post_x` moved to 12/40 and `ball_dish` to x 25: both were under the tray.
 
    Still available if it is not enough: swapping the ISET resistor (marked 122, 1.2 kΩ) for 2.4 kΩ halves the charge current to 0.5 A and the heat to about 0.85 W, at 12–13 h for a full charge. The user chose the heatsink route alone for now.
 
