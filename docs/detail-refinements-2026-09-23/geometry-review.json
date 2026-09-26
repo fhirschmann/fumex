@@ -1,0 +1,452 @@
+{
+  "source_sha256": "6bf5fd11fdefd249b418a3faa7921d67a7f2b9f68ec29cc29cbbd020050e2df5",
+  "fan_guide_profiles": [
+    {
+      "corner": [
+        -1,
+        -1
+      ],
+      "axis": "x",
+      "depth_from_rear_mm": 0.1,
+      "clearance_mm": 1.5,
+      "expected_mm": 1.5,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        -1,
+        -1
+      ],
+      "axis": "x",
+      "depth_from_rear_mm": 0.6,
+      "clearance_mm": 1.0,
+      "expected_mm": 1.0,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        -1,
+        -1
+      ],
+      "axis": "x",
+      "depth_from_rear_mm": 1.1,
+      "clearance_mm": 0.5,
+      "expected_mm": 0.4999999999999999,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        -1,
+        -1
+      ],
+      "axis": "x",
+      "depth_from_rear_mm": 1.3,
+      "clearance_mm": 0.4,
+      "expected_mm": 0.4,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        -1,
+        -1
+      ],
+      "axis": "z",
+      "depth_from_rear_mm": 0.1,
+      "clearance_mm": 1.500004,
+      "expected_mm": 1.5,
+      "error_mm": 4e-06
+    },
+    {
+      "corner": [
+        -1,
+        -1
+      ],
+      "axis": "z",
+      "depth_from_rear_mm": 0.6,
+      "clearance_mm": 1.0,
+      "expected_mm": 1.0,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        -1,
+        -1
+      ],
+      "axis": "z",
+      "depth_from_rear_mm": 1.1,
+      "clearance_mm": 0.499995,
+      "expected_mm": 0.4999999999999999,
+      "error_mm": -5e-06
+    },
+    {
+      "corner": [
+        -1,
+        -1
+      ],
+      "axis": "z",
+      "depth_from_rear_mm": 1.3,
+      "clearance_mm": 0.399994,
+      "expected_mm": 0.4,
+      "error_mm": -6e-06
+    },
+    {
+      "corner": [
+        -1,
+        1
+      ],
+      "axis": "x",
+      "depth_from_rear_mm": 0.1,
+      "clearance_mm": 1.5,
+      "expected_mm": 1.5,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        -1,
+        1
+      ],
+      "axis": "x",
+      "depth_from_rear_mm": 0.6,
+      "clearance_mm": 1.0,
+      "expected_mm": 1.0,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        -1,
+        1
+      ],
+      "axis": "x",
+      "depth_from_rear_mm": 1.1,
+      "clearance_mm": 0.5,
+      "expected_mm": 0.4999999999999999,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        -1,
+        1
+      ],
+      "axis": "x",
+      "depth_from_rear_mm": 1.3,
+      "clearance_mm": 0.4,
+      "expected_mm": 0.4,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        -1,
+        1
+      ],
+      "axis": "z",
+      "depth_from_rear_mm": 0.1,
+      "clearance_mm": 1.5,
+      "expected_mm": 1.5,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        -1,
+        1
+      ],
+      "axis": "z",
+      "depth_from_rear_mm": 0.6,
+      "clearance_mm": 1.0,
+      "expected_mm": 1.0,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        -1,
+        1
+      ],
+      "axis": "z",
+      "depth_from_rear_mm": 1.1,
+      "clearance_mm": 0.5,
+      "expected_mm": 0.4999999999999999,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        -1,
+        1
+      ],
+      "axis": "z",
+      "depth_from_rear_mm": 1.3,
+      "clearance_mm": 0.4,
+      "expected_mm": 0.4,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        1,
+        -1
+      ],
+      "axis": "x",
+      "depth_from_rear_mm": 0.1,
+      "clearance_mm": 1.500004,
+      "expected_mm": 1.5,
+      "error_mm": 4e-06
+    },
+    {
+      "corner": [
+        1,
+        -1
+      ],
+      "axis": "x",
+      "depth_from_rear_mm": 0.6,
+      "clearance_mm": 1.0,
+      "expected_mm": 1.0,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        1,
+        -1
+      ],
+      "axis": "x",
+      "depth_from_rear_mm": 1.1,
+      "clearance_mm": 0.499995,
+      "expected_mm": 0.4999999999999999,
+      "error_mm": -5e-06
+    },
+    {
+      "corner": [
+        1,
+        -1
+      ],
+      "axis": "x",
+      "depth_from_rear_mm": 1.3,
+      "clearance_mm": 0.399994,
+      "expected_mm": 0.4,
+      "error_mm": -6e-06
+    },
+    {
+      "corner": [
+        1,
+        -1
+      ],
+      "axis": "z",
+      "depth_from_rear_mm": 0.1,
+      "clearance_mm": 1.500004,
+      "expected_mm": 1.5,
+      "error_mm": 4e-06
+    },
+    {
+      "corner": [
+        1,
+        -1
+      ],
+      "axis": "z",
+      "depth_from_rear_mm": 0.6,
+      "clearance_mm": 1.0,
+      "expected_mm": 1.0,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        1,
+        -1
+      ],
+      "axis": "z",
+      "depth_from_rear_mm": 1.1,
+      "clearance_mm": 0.499995,
+      "expected_mm": 0.4999999999999999,
+      "error_mm": -5e-06
+    },
+    {
+      "corner": [
+        1,
+        -1
+      ],
+      "axis": "z",
+      "depth_from_rear_mm": 1.3,
+      "clearance_mm": 0.399994,
+      "expected_mm": 0.4,
+      "error_mm": -6e-06
+    },
+    {
+      "corner": [
+        1,
+        1
+      ],
+      "axis": "x",
+      "depth_from_rear_mm": 0.1,
+      "clearance_mm": 1.500004,
+      "expected_mm": 1.5,
+      "error_mm": 4e-06
+    },
+    {
+      "corner": [
+        1,
+        1
+      ],
+      "axis": "x",
+      "depth_from_rear_mm": 0.6,
+      "clearance_mm": 1.0,
+      "expected_mm": 1.0,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        1,
+        1
+      ],
+      "axis": "x",
+      "depth_from_rear_mm": 1.1,
+      "clearance_mm": 0.499995,
+      "expected_mm": 0.4999999999999999,
+      "error_mm": -5e-06
+    },
+    {
+      "corner": [
+        1,
+        1
+      ],
+      "axis": "x",
+      "depth_from_rear_mm": 1.3,
+      "clearance_mm": 0.399994,
+      "expected_mm": 0.4,
+      "error_mm": -6e-06
+    },
+    {
+      "corner": [
+        1,
+        1
+      ],
+      "axis": "z",
+      "depth_from_rear_mm": 0.1,
+      "clearance_mm": 1.5,
+      "expected_mm": 1.5,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        1,
+        1
+      ],
+      "axis": "z",
+      "depth_from_rear_mm": 0.6,
+      "clearance_mm": 1.0,
+      "expected_mm": 1.0,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        1,
+        1
+      ],
+      "axis": "z",
+      "depth_from_rear_mm": 1.1,
+      "clearance_mm": 0.5,
+      "expected_mm": 0.4999999999999999,
+      "error_mm": -0.0
+    },
+    {
+      "corner": [
+        1,
+        1
+      ],
+      "axis": "z",
+      "depth_from_rear_mm": 1.3,
+      "clearance_mm": 0.4,
+      "expected_mm": 0.4,
+      "error_mm": -0.0
+    }
+  ],
+  "guide_max_error_mm": 6e-06,
+  "former_mat_notch_lip_samples": {
+    "total": 114,
+    "solid": 114
+  },
+  "led_window": {
+    "skin_measurements_mm": [
+      0.8,
+      0.8,
+      0.8,
+      0.8,
+      0.8
+    ],
+    "skin_missing_mm3": 0.0,
+    "pocket_filled_mm3": 0.0,
+    "lens_to_skin_mm": 0.3,
+    "flange_ring_fill": 1.0,
+    "flange_contact_mm3": 0.16474,
+    "inside_access": [
+      {
+        "name": "led_inside_access",
+        "length_mm": 15.0,
+        "collisions": 0,
+        "first_mm": null,
+        "max_volume_mm3": 0.0
+      }
+    ],
+    "checked_fixed_bodies": [
+      "base",
+      "head",
+      "head_back",
+      "cassette",
+      "knob",
+      "feet",
+      "ball_lid",
+      "fan",
+      "filter",
+      "filter_support",
+      "magnets",
+      "battery",
+      "pwm_board",
+      "pot",
+      "pot_nut",
+      "chg_module",
+      "chg_sink",
+      "chg_tie",
+      "usbc",
+      "switch",
+      "ballast",
+      "screws_fan",
+      "screws_back",
+      "screws_head",
+      "screws_lid",
+      "screws_feet"
+    ],
+    "expected_thickness_finding": {
+      "part": "base",
+      "feature": "Closed LED optical skin",
+      "nominal_mm": 0.8,
+      "standard_threshold_mm": 1.2,
+      "bounds_mm": [
+        [
+          86.4,
+          0,
+          19.4
+        ],
+        [
+          89.6,
+          0.8,
+          22.6
+        ]
+      ],
+      "policy": "Report this intended thin optical area; retain the standard 1.2 mm check elsewhere"
+    }
+  },
+  "usb_support": {
+    "vertical_material_fill": {
+      "left_wall": 1.0,
+      "right_foot": 1.0,
+      "right_wall": 1.0,
+      "inner_stop": 1.0
+    },
+    "slot_overlap_mm3": {
+      "left": 0.0,
+      "right": 0.0
+    },
+    "pcb_seat_z_mm": 42.85,
+    "seat_contact_mm3": 2.5875
+  },
+  "ballast_top_cover": {
+    "ballast_section_mm2": 1817.303,
+    "uncovered_beyond_seam_mm2": 0.0,
+    "max_normal_seam_mm": 0.235
+  },
+  "switch_trough_clearance_mm": 2.002
+}

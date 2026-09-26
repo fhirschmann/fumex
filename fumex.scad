@@ -69,6 +69,7 @@ grid_r = 1.2;
 exhaust_sq = 121;
 scoop = [16, 2];     // finger scoops at both side edges of the intake face: diameter, depth (45 degree cone)
 guide = [2.4, 16];   // L-ribs guiding the fan onto its seat: thickness, leg length
+guide_c = 1.2;       // 45-degree lead-in on the two inner edges at the rear of each guide
 fan_post_d = 8;      // spacer posts on the back cover, carrying the fan and its inserts
 
 /* [Fan: Arctic P12 Pro, 120 x 120 x 25 mm PWM, 0.33 A at 12 V] */
@@ -100,7 +101,6 @@ bat_cy = 35;         // well forward: everything behind the cell is ballast (use
 bat_cz = 22;
 bat_clear = 0.5;
 cradle_x = [12, 40, 68];
-mat_notch = 20;      // half-round notches in the intake lip at both side edges: get a finger behind the mat
 cradle_t = 4;
 cradle_out = 2.5;    // saddle material beyond the cell: every mm here is a mm less ballast trough
 
@@ -179,10 +179,7 @@ usbc_shell = [8.9, 3.22];
 usbc_shell_bottom = 1.1;
 usbc_plate = usbc_protrusion;   // local wall thickness: PCB edge inside, receptacle face flush outside
 usbc_xz = [106, 45]; // above the ballast lid (user, 2026-09-22), high enough that the lid lifts out under it
-usbc_floor = 6;      // The channel floor reaches only this far from the back wall. A full-length floor
-                     // is a 198 mm2 flat overhang; at 6 mm it is an 85 mm2 ledge, well under the check
-                     // limit and a routine 6 mm cantilever in PETG. A 45 degree gusset under it would
-                     // reach down to z 32 and take away the lift the ballast lid needs (lid_off).
+usbc_floor = 6;      // rear PCB seat; a short bridge between floor-supported side ribs
 usbc_cl = 0.2;
 usbc_wall = 2;
 usbc_stop_w = 2.7;   // one side of the inner PCB end takes insertion force; cable centre stays open
@@ -202,10 +199,11 @@ sw_panel = 1.5;
 sw_well = [5, 0.2, 2.2];    // depth below the outer face, floor margin, wall measured horizontally
 
 /* [Charge indicator LED] */
-led_d = 3;           // 3 mm breathing LED; black PETG is opaque, so it looks through a real hole
+led_d = 3;           // nominal 3 mm breathing LED, glued into the blind pocket from inside
 led_xz = [88, 21];
-led_cl = 0.2;
-led_boss = [7, 5];   // boss inside the wall: diameter, length
+led_cl = 0.2;        // retain the LEO-AC1 bore and flange bearing ring
+led_skin = 0.8;      // closed front skin, as in LEO-AC1; check visibility through the chosen filament
+led_boss = [7, 5.8]; // boss diameter and rear face from the front; the flange seats on that face
 
 /* [Ballast trough with a screwed lid (user, 2026-09-22): loose iron offcuts, no resin] */
 // Only mass behind the centre of mass helps against tipping, so the cell moved forward and everything
@@ -222,7 +220,8 @@ ball_lid_t = 3;
 lid_pocket = 1.2;    // counterbore in the lid: at head_pocket's 1.9 the head bore on 1.1 mm (audit A5)
 ball_lip = 0;        // no lip over the front wall: the cell has to lift past it (battery_out)
 ball_dish = [16, 1.5];   // finger dish in the lid instead: diameter, depth
-ball_step = [122.5, 58.5]; // 1.5 mm before the switch terminals, then follow the widening well
+ball_step = [118.5, 60]; // wider wiring space: 5.5 mm before the switch terminals
+ball_lid_ear_r = 4.6;  // keep the right screw pocket enclosed beside the enlarged switch recess
 ball_switch_corner = [137, 142, 65]; // start of diagonal, housing inner face, rear end of diagonal
 ball_rim = 0.4;      // trough walls end this far below the posts, so the lid bears on the two posts
                      // alone and no two faces of the base share the plane z = ball[3]
@@ -321,6 +320,7 @@ assert(tube_sq / 2 - mat_support[2] / 2 - mat_support[7] >= 2.4,
        "Filter support pockets leave too little tube wall");
 // where the insert pocket starts, the gusset flank must still clear the insert by the datasheet wall
 assert(fan_post_d / 2 >= insert_hole_d / 2 + insert_w_min, "Fan posts too thin for the inserts");
+assert(guide_c > 0 && guide[0] - guide_c >= 1.2, "Fan guide lead-in leaves less than three perimeters");
 assert(head_y[4] - head_y[3] >= insert_depth + 1, "Fan posts too short for the inserts");
 assert(open_sq < chamber_sq - 2, "Intake lip does not hold the mat");
 assert(pot_mount_t > 1.2, "Wall under washer and nut too thin");
@@ -339,6 +339,8 @@ assert(len_fan - fan_t >= 5, "Fan screws reach less than 5 mm into the insert");
 assert(len_lid - (ball_lid_t - lid_pocket) < insert_depth, "Ballast lid screws reach the pocket floor");
 assert(len_lid - (ball_lid_t - lid_pocket) >= insert_len, "Ballast lid screws miss full insert engagement");
 assert(ball_post / 2 >= insert_hole_d / 2 + insert_w_min, "Ballast insert posts are too thin");
+assert(ball_lid_ear_r >= head_pocket[0] / 2 + 1.2, "Right lid screw pocket loses its enclosed rim");
+assert(led_skin >= 0.8 && led_skin < wall, "LED window must retain its closed two-line front skin");
 assert(min([for (p = foot_xy) bat_low(p[1])]) > foot_boss[1], "Foot boss reaches into the battery");
 assert(foot_boss[1] - insert_depth >= 1.2, "Foot insert pocket floor thinner than three perimeters");
 assert(floor_t - foot_peg[1] >= 3 * 0.4, "Floor under the foot peg holes thinner than three perimeters");
@@ -515,7 +517,6 @@ module head_body() difference() {
     for (p = mag_xz()) cyl_y(p, -eps, mag[1], mag[0] / 2);              // magnet pockets, open at the intake face
     for (sx = [-1, 1]) cyl_y([body_w / 2 + sx * body_w / 2, head_cz], -eps, scoop[1],
                              scoop[0] / 2 + eps, scoop[0] / 2 - scoop[1]);   // finger scoops at the side edges
-    for (sx = [-1, 1]) cyl_y([body_w / 2 + sx * open_sq / 2, head_cz], -eps, front_t + eps, mat_notch / 2);   // grip the mat
     for (p = rim_bosses()) translate([p[0], p[1], base_h - 1]) {
         cylinder(d = screw_clear_d, h = wall + 2);
         translate([0, 0, 1 + wall - 0.6]) cylinder(d = head_pocket[0], h = 1);   // the button head sits flush
@@ -627,9 +628,15 @@ module vent_slots() for (i = [0:vent[2] - 1])
     translate([vent_xz[0] + i * vent[1], body_d - wall - 1, vent_xz[1] + i * vent[4]])
         cube([vent[0], wall + 2, vent[3]]);
 module fan_guides() for (sx = [-1, 1], sz = [-1, 1]) translate([body_w / 2, 0, head_cz]) scale([sx, 1, sz])
-    along_y(head_y[2] - 0.5, head_y[3]) let (i = fan_size / 2 + fan_cl, o = i + guide[0]) {
-        bounds_rect([i, i - guide[1]], [o, o]);      // L round the corner, both inner faces on the fan
-        bounds_rect([i - guide[1], i], [o, o]);
+    let (i = fan_size / 2 + fan_cl, y0 = head_y[2] - 0.5, depth = head_y[3] - y0) {
+        // The fan enters from +Y with the back cover. Only the inward-facing rear edges
+        // are bevelled; the straight locating faces and front seat retain their clearance.
+        translate([i, y0, i - guide[1]])
+            cuboid([guide[0], depth, guide[1] + guide[0]], anchor=FRONT+LEFT+BOTTOM,
+                   chamfer=guide_c, edges=[BACK+LEFT]);
+        translate([i - guide[1], y0, i])
+            cuboid([guide[1] + guide[0], depth, guide[0]], anchor=FRONT+LEFT+BOTTOM,
+                   chamfer=guide_c, edges=[BACK+BOTTOM]);
     }
 module head() head_at() head_raw();
 module head_print_pose() translate([0, base_h + head_h, 0]) rotate([90, 0, 0]) children();   // intake face on the bed
@@ -799,24 +806,30 @@ module pot_cuts() {
 }
 module led_boss_body() cyl_y(led_xz, wall - eps, led_boss[1], led_boss[0] / 2);
 module led_cut() {
-    cyl_y(led_xz, -1, wall + eps, (led_d + led_cl) / 2);
-    cyl_y(led_xz, wall, led_boss[1] + 1, (led_d + led_cl) / 2 + 0.5);                 // seat for the LED flange
+    cyl_y(led_xz, led_skin, led_boss[1] + 1, (led_d + led_cl) / 2); // blind pocket, open only to the bay
 }
-// Open-top channel, also open at the inner cable end. A short side stop takes plug insertion force.
-module usbc_channel() {
-    difference() {
-        translate([usbc_xz[0] - usbc[1] / 2 - usbc_cl - usbc_wall, usbc_y0 - 2, usbc_xz[1] - usbc[2] / 2 - usbc_cl - usbc_wall])
-            cube([usbc[1] + 2 * (usbc_cl + usbc_wall), body_d - wall - usbc_y0 + 2, usbc[2] + 2 * usbc_cl + usbc_wall]);
-        translate([usbc_xz[0] - usbc[1] / 2 - usbc_cl, usbc_y0 - 3, usbc_xz[1] - usbc[2] / 2 - usbc_cl])
-            cube([usbc[1] + 2 * usbc_cl, body_d - usbc_y0 + 7, usbc[2] + 2 * usbc_cl + 2]);
-        translate([usbc_xz[0] - usbc[1], body_d - wall - usbc[0] - 1, usbc_xz[1] - usbc[2] / 2 - usbc_cl - usbc_wall - 1])
-            cube([2 * usbc[1], usbc[0] + 1 - usbc_floor, usbc_wall + 1]);   // floor only near the wall
-    }
-    // LEO-style end retention on one side only. It grows from the right channel wall.
-    translate([usbc_xz[0] + usbc[1] / 2 - usbc_stop_w, usbc_y0 - 2,
-               usbc_xz[1] - usbc[2] / 2 - usbc_cl])
-        cube([usbc_stop_w + usbc_cl + usbc_wall, 2 - usbc_cl,
-              usbc[2] + 2 * usbc_cl]);
+// Rear-open lid slots follow the solid support ribs below the USB-C channel.
+function usbc_support_x() = [
+    [usbc_xz[0] - usbc[1] / 2 - usbc_cl - usbc_wall, usbc_xz[0] - usbc[1] / 2 - usbc_cl],
+    [usbc_xz[0] + usbc[1] / 2 - usbc_stop_w, usbc_xz[0] + usbc[1] / 2 + usbc_cl + usbc_wall]];
+// The side walls grow from the trough floor. The wider right rib also carries the
+// plug-force stop. Between them the rear PCB seat bridges only 7.85 mm.
+module usbc_channel() let (
+    legs = usbc_support_x(), yi = usbc_y0 - 2, yb = body_d - wall,
+    zseat = usbc_xz[1] - usbc[2] / 2,
+    zb = zseat - usbc_cl - usbc_wall, zt = usbc_xz[1] + usbc[2] / 2 + usbc_cl,
+    xr = usbc_xz[0] + usbc[1] / 2 + usbc_cl) {
+    // Both channel walls are continuous vertical ribs, not cantilevered cheeks.
+    for (x = [legs[0][0], xr]) translate([x, yi, floor_t - eps])
+        cube([usbc_wall, yb - yi + eps, zt - floor_t + eps]);
+    // Broad right foot fills its lid slot and supports the one-sided inner stop.
+    translate([legs[1][0], yi, floor_t - eps])
+        cube([legs[1][1] - legs[1][0], yb - yi + eps, zb - floor_t + eps]);
+    translate([legs[1][0], yi, zb - eps])
+        cube([legs[1][1] - legs[1][0], 2 - usbc_cl, zt - zb + eps]);
+    // The board rests on this rear seat; the inner end remains open for its wires.
+    translate([legs[0][1] - eps, yb - usbc_floor, zb])
+        cube([xr - legs[0][1] + 2 * eps, usbc_floor + eps, zseat - zb]);
 }
 module usbc_cuts() {
     translate([usbc_xz[0] - usbc[1] / 2 - usbc_cl, body_d - wall - 1, usbc_xz[1] - usbc[2] / 2 - usbc_cl])
@@ -865,14 +878,20 @@ module ball_lid() difference() {
 }
 module ball_lid_plate() difference() {
     // 0.2 mm off the two housing walls, and a chamfer where their inner corner is rounded
-    translate([0, 0, ball[3]]) linear_extrude(ball_lid_t) difference() {
-        translate([ball[0] + 0.2, ball[2] - ball_lip])
-            square([ball[1] - ball[0] - 0.4, body_d - wall - 0.2 - ball[2] + ball_lip]);
-        translate([ball[0], body_d - wall]) polygon([[0, 0], [0.5, 0], [0, -0.5]]);
-        translate([ball[1], body_d - wall]) polygon([[0, 0], [-0.5, 0], [0, -0.5]]);
-        polygon([[ball_step[0], ball[2] - 1], [body_w + 1, ball[2] - 1],
-                 [body_w + 1, body_d], [ball_switch_corner[1], ball_switch_corner[2] - 1],
-                 [ball_switch_corner[0], ball_step[1] - 1], [ball_step[0], ball_step[1] - 1]]);
+    translate([0, 0, ball[3]]) linear_extrude(ball_lid_t) union() {
+        difference() {
+            translate([ball[0] + 0.2, ball[2] - ball_lip])
+                square([ball[1] - ball[0] - 0.4, body_d - wall - 0.2 - ball[2] + ball_lip]);
+            translate([ball[0], body_d - wall]) polygon([[0, 0], [0.5, 0], [0, -0.5]]);
+            translate([ball[1], body_d - wall]) polygon([[0, 0], [-0.5, 0], [0, -0.5]]);
+            // Rear-open slots let the lid lift 10 mm past the fixed USB support ribs.
+            for (xs = usbc_support_x()) translate([xs[0] - 0.2, usbc_y0 - 2.2])
+                square([xs[1] - xs[0] + 0.4, body_d - usbc_y0 + 3.2]);
+            polygon([[ball_step[0], ball[2] - 1], [body_w + 1, ball[2] - 1],
+                     [body_w + 1, body_d], [ball_switch_corner[1], ball_switch_corner[2] - 1],
+                     [ball_switch_corner[0], ball_step[1] - 1], [ball_step[0], ball_step[1] - 1]]);
+        }
+        translate([ball_post_x[1], ball_post_y]) circle(r=ball_lid_ear_r);
     }
     for (q = ball_posts()) translate([q[0], q[1], ball[3] - 1]) {
         cylinder(d = screw_clear_d, h = ball_lid_t + 2);
@@ -1016,9 +1035,9 @@ module sw_env() let (xf = body_w - sw_well[0]) {
     translate([xf - sw_body[2], sw_yz[0] - sw_body[0] / 2, sw_yz[1] - sw_body[1] / 2]) cube([sw_body[2] + eps, sw_body[0], sw_body[1]]);
     translate([xf - sw_body[2] - sw_pins, sw_yz[0] - 3, sw_yz[1] - 4]) cube([sw_pins + eps, 6, 8]);
 }
-module led_env() {
-    cyl_y(led_xz, 0, led_boss[1], led_d / 2);
-    cyl_y(led_xz, wall, wall + 1, 1.9);
+module led_env() {   // LEO-AC1 nominal envelope: lens clear of the skin, flange on the boss
+    cyl_y(led_xz, led_skin + 0.3, led_boss[1] + eps, led_d / 2);
+    cyl_y(led_xz, led_boss[1], led_boss[1] + 1, 1.9);
 }
 module screw(len, socket = false) difference() {
     union() {
@@ -1086,6 +1105,7 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["charge_tie", chg_tie], ["charge_web", [chg_web_gap, chg_web_touch, chg_web_w, chg_web_back]],
     ["lid_screw", [ball_lid_t, lid_pocket, len_lid]],
     ["usb_origin", [usbc_xz[0], usbc_y0, usbc_xz[1]]], ["usb_board", usbc_board],
+    ["led_pocket", [led_xz, led_d, led_cl, led_skin, led_boss]],
     ["base_h", base_h], ["joint_y", joint_y], ["base_joint_h", base_joint_h],
     ["foot_peg", foot_peg], ["ballast", ball], ["ballast_posts", ball_posts()], ["lid_screw_length", len_lid], ["seat_y", head_y[2]], ["back_y", head_y[4]],
     ["fan_holes", fan_holes()], ["head_bosses", head_bosses()], ["rim_screws", rim_screws]]);

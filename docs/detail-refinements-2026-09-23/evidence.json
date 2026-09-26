@@ -1,0 +1,172 @@
+{
+  "source_sha256": "6bf5fd11fdefd249b418a3faa7921d67a7f2b9f68ec29cc29cbbd020050e2df5",
+  "verification_sha256": "0d03c462b8e4aa91e5b78c49b0e621f80918d3aab76a2001a15bb045afa4a5ad",
+  "print_project_sha256": "ad876b26287ad7dfdb15ff643099c8d728746f0c1c49daf73728926525f2a1eb",
+  "slicer_summary_sha256": "4790aa09d6c71d009e52a7bbbd0623432bea23fb7e676c097232ae75aa602085",
+  "project_3mf_sha256": "e6d0f431259bb13143048ad1d66ad8e0ad4c1dfb00893a423b283ea6d67c92c4",
+  "viewer_sha256": "55e4c51fa48b23a92207e17556585149af69a71811aa9e52971a848ade9f836b",
+  "analyses": {
+    "islands": {
+      "base": [],
+      "head": [],
+      "head_back": [],
+      "cassette": [],
+      "knob": [],
+      "foot": [],
+      "ball_lid": [],
+      "filter_support": []
+    },
+    "overhangs": {
+      "base": [],
+      "head": [],
+      "head_back": [],
+      "cassette": [],
+      "knob": [],
+      "foot": [],
+      "ball_lid": [],
+      "filter_support": []
+    },
+    "thickness": {
+      "base": {
+        "samples": 37864,
+        "measured": 37864,
+        "mm2_per_sample": 2.0,
+        "p01": 1.374,
+        "p05": 2.0,
+        "median": 3.0,
+        "regions": [
+          {
+            "area_mm2": 20.0,
+            "min_mm": 0.8,
+            "median_mm": 0.8,
+            "bounds": [
+              [
+                86.7,
+                0.0,
+                19.6
+              ],
+              [
+                88.5,
+                0.8,
+                22.4
+              ]
+            ]
+          }
+        ]
+      },
+      "head": {
+        "samples": 65277,
+        "measured": 65088,
+        "mm2_per_sample": 2.0,
+        "p01": 2.3,
+        "p05": 2.4,
+        "median": 3.0,
+        "regions": []
+      },
+      "head_back": {
+        "samples": 23678,
+        "measured": 23678,
+        "mm2_per_sample": 2.0,
+        "p01": 2.002,
+        "p05": 2.5,
+        "median": 4.0,
+        "regions": []
+      },
+      "cassette": {
+        "samples": 20664,
+        "measured": 20664,
+        "mm2_per_sample": 2.0,
+        "p01": 1.3,
+        "p05": 2.5,
+        "median": 4.5,
+        "regions": []
+      },
+      "knob": {
+        "samples": 2000,
+        "measured": 2000,
+        "mm2_per_sample": 1.821,
+        "p01": 0.217,
+        "p05": 1.0,
+        "median": 7.503,
+        "regions": []
+      },
+      "foot": {
+        "samples": 2000,
+        "measured": 2000,
+        "mm2_per_sample": 0.458,
+        "p01": 1.65,
+        "p05": 1.65,
+        "median": 4.5,
+        "regions": []
+      },
+      "ball_lid": {
+        "samples": 3194,
+        "measured": 3194,
+        "mm2_per_sample": 2.001,
+        "p01": 1.5,
+        "p05": 1.5,
+        "median": 3.0,
+        "regions": []
+      },
+      "filter_support": {
+        "samples": 2000,
+        "measured": 2000,
+        "mm2_per_sample": 1.455,
+        "p01": 2.4,
+        "p05": 2.4,
+        "median": 3.0,
+        "regions": []
+      }
+    },
+    "fins": {
+      "base": [],
+      "head": [],
+      "head_back": [],
+      "cassette": [],
+      "knob": [],
+      "foot": [],
+      "ball_lid": [],
+      "filter_support": []
+    }
+  },
+  "commands_exit_codes": {
+    "export": 0,
+    "islands": 0,
+    "overhangs": 0,
+    "thickness": 1,
+    "fins": 0,
+    "slice": 0,
+    "views": 0,
+    "viewer": 0
+  },
+  "thickness_exception": {
+    "part": "base",
+    "feature": "Closed LED optical skin",
+    "nominal_mm": 0.8,
+    "standard_threshold_mm": 1.2,
+    "bounds_mm": [
+      [
+        86.4,
+        0,
+        19.4
+      ],
+      [
+        89.6,
+        0.8,
+        22.6
+      ]
+    ],
+    "policy": "Report this intended thin optical area; retain the standard 1.2 mm check elsewhere"
+  },
+  "ballast_volume_cm3": 40.96805530682545,
+  "documentation_views": {
+    "01_assembly.png": "d2bc39d59d87baadf7b24cae2b3e6c16322159d54c9b53db9b7d9ddb682926f3",
+    "02_exploded.png": "08a7ea7e47f627df2a024469ee8704cb51043240909ec36dd8766808f0336c65",
+    "03_back.png": "aeb97bfc24745bf5f338557a929d6011eaf481d9ba95f6ebac383c78297642d6",
+    "04_charger_front.png": "c94b683ef7a11881ad6f9eb0f01401fd87278b8c793112bb81d953c8b21c8383",
+    "05_charger_back.png": "1429123937e46950f519972d5618dd2dc5806f207b6062b7efc4aa70fa77f897",
+    "06_filter_support.png": "01e18273a670eac03f6465db07b3afb680d071a302377cac5898c75577cad25f",
+    "07_ballast_mount.png": "7fb2697d8eff68a44e50037f5173c23df5837cd897747942b66775710a540fc8",
+    "08_usb_mount.png": "aee7ab807b6006a228d885250bf5dff5b8e17b6525071c7f8ae1f324255df7cf"
+  }
+}
