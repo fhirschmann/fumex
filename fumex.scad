@@ -280,8 +280,8 @@ rim_front_entry_z = 60;     // raised base insert face, directly behind the fron
 rim_front_root_z = 46;      // short support-free root joins the front wall below the joint
 rim_front_cap_d = 12.2;
 rim_front_cap_c = 0.3;
-rim_front_bearing = 2.3;    // M3 x 8 leaves 5.7 mm in the base insert
-rim_front_cap_bottom = 59.5; // overlaps the filter-tube floor; the screw head remains completely exposed
+rim_front_bearing = 1.6;    // 0.7 mm recess leaves 6.4 mm of the M3 x 8 in the 7 mm pocket
+rim_front_cap_bottom = 59.5; // overlaps the filter-tube floor below the shallow screw pocket
 rim_seat_d = 8.8;
 rim_recess = 0.7;           // rear floor: 2.3 mm bearing and 5.7 mm M3 x 8 engagement
 rim_rear_boss_d = 10;
@@ -552,9 +552,9 @@ module rim_front_base_raw(p, clearance = 0) hull() {
         cube([rim_boss_d+2*clearance, wall+2*clearance, base_h-rim_front_root_z]);
 }
 // A short solid bearing cap closes the tube floor around the raised insert boss.
-// There is no counterbore wall above the seat or around the screw head.
+// The head is recessed by the same 0.7 mm as at the rear, with its upper part exposed.
 module rim_front_cap(p) let (e = rim_entry(p),
-    h = e[2]+rim_bearing(p)-rim_front_cap_bottom)
+    h = e[2]+rim_bearing(p)+rim_recess-rim_front_cap_bottom)
     translate([e[0], e[1], rim_front_cap_bottom]) {
         cylinder(d = rim_front_cap_d, h = h-rim_front_cap_c+eps);
         translate([0, 0, h-rim_front_cap_c])
@@ -573,7 +573,7 @@ module rim_head_windows() for (p = rim_bosses()) if (rim_dir(p) > 0) {
 }
 module rim_head_holes() for (p = rim_bosses()) {
     rim_at(p, -rim_bearing(p)-eps) cylinder(d = screw_clear_d, h = rim_bearing(p)+2*eps);
-    if (rim_dir(p) < 0) rim_at(p, -rim_bearing(p)-30)
+    rim_at(p, -rim_bearing(p)-30)
         cylinder(d = head_pocket[0], h = 30);
 }
 module head_raw() difference() {
@@ -596,7 +596,10 @@ module head_body() difference() {
         fan_guides();
         rim_head_seats();
     }
-    along_y(-eps, front_t + eps) head_centre_sq(open_sq, open_r);       // intake opening; its lip holds the mat
+    difference() { // Preserve the complete shallow pocket rims beside the intake opening.
+        along_y(-eps, front_t + eps) head_centre_sq(open_sq, open_r);
+        rim_head_seats();
+    }
     filter_support_pockets();
     for (p = head_bosses()) cyl_y(p, head_y[4] - insert_depth, head_y[4] + eps, insert_hole_d / 2);
     for (p = mag_xz()) cyl_y(p, -eps, mag[1], mag[0] / 2);              // magnet pockets, open at the intake face
@@ -1371,7 +1374,7 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["fan_insert_front", lug_d - insert_depth], ["fan_thread", len_fan - fan_t],
     ["head_thread", min([for (p = rim_bosses()) rim_length(p) - rim_bearing(p)])],
     ["head_screw", [rim_recess, len_head, rim_seat_d]],
-    ["head_mount", [0, rim_front_entry_z+rim_front_bearing, rim_boss_d, rim_fit_gap, rim_boss_depth]],
+    ["head_mount", [0, rim_front_entry_z+rim_front_bearing+rim_recess, rim_boss_d, rim_fit_gap, rim_boss_depth]],
     ["head_axes", [for (p = rim_bosses()) concat(rim_entry(p), rim_axis(p), [rim_bearing(p), rim_length(p)])]],
     ["chamber", [chamber_sq, chamber_d]], ["open_sq", open_sq],
     ["head_y", head_y], ["mat_stop", mat_stop_y()], ["mat_support", mat_support],

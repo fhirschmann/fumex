@@ -385,7 +385,7 @@ def check_head_fasteners(ctx):
     """Four direct clamping stacks, complete bearings, insert walls and tool access."""
     m = ctx.metrics
     axes = np.asarray(m['head_axes'], float)
-    expected = [[25.5,6.5,60,0,0,-1,2.3,8], [119.5,6.5,60,0,0,-1,2.3,8],
+    expected = [[25.5,6.5,60,0,0,-1,1.6,8], [119.5,6.5,60,0,0,-1,1.6,8],
                 [25,66,48,0,0,-1,2.3,8], [131,66,48,0,0,-1,2.3,8]]
     assert axes.shape == (4,8) and np.allclose(axes, expected, atol=.001), \
         f'Head needs four downward fasteners at the reviewed front and rear axes: {axes.tolist()}'
@@ -406,13 +406,35 @@ def check_head_fasteners(ctx):
         bearing = cyl(-bearing_t+.02,bearing_t-.04,3.15)-cyl(-bearing_t,bearing_t,1.75)
         fill = (bearing ^ local['head']).volume()/bearing.volume()
         assert fill > .995, f'Incomplete screw bearing at {entry}: {fill}'
-        rim_fill, exposed_clearance = None, None
+        rim_fill, exposed_clearance, recess_depth = None, None, None
         if front:
-            # The visible button head has no raised plastic shroud. Include a
-            # 0.55-mm radial ring beyond its 2.85-mm radius above the bearing plane.
-            above_seat = cyl(-bearing_t-1.8,1.78,3.4)
-            exposed_clearance = (above_seat ^ local['head']).volume()
-            assert exposed_clearance < .01, f'Front screw head is still enclosed at {entry}: {exposed_clearance}'
+            # The front uses the rear's shallow flat-bottom counterbore. A full
+            # annulus surrounds the 6.4-mm pocket, with no shroud above the cap.
+            recess = .7
+            enclosure = cyl(-bearing_t-recess+.02,recess-.04,3.9)-cyl(-bearing_t-recess,recess,3.25)
+            rim_fill = (enclosure ^ local['head']).volume()/enclosure.volume()
+            assert rim_fill > .995, f'Incomplete front counterbore rim at {entry}: {rim_fill}'
+            pocket = cyl(-bearing_t-recess-.02,recess,3.15)
+            assert (pocket ^ local['head']).volume() < .01, f'Front counterbore is obstructed at {entry}'
+            above_cap = cyl(-bearing_t-1.8,1.8-recess-.02,3.4)
+            exposed_clearance = (above_cap ^ local['head']).volume()
+            assert exposed_clearance < .01, f'Front screw still has a raised shroud at {entry}: {exposed_clearance}'
+            # Measure the actual flat floor and cap top on both radial sides;
+            # the model metrics alone cannot prove the recess was cut.
+            mesh = head_frame(ctx.meshes['head'], m)
+            measurements = []
+            for sign in (-1, 1):
+                depths = []
+                for radius in (2.4, 3.6):
+                    origin = entry-axis*(bearing_t+3)+np.array([sign*radius,0,0])
+                    hits, _, _ = mesh.ray.intersects_location([origin],[axis],multiple_hits=True)
+                    distances = (hits-origin)@axis
+                    assert len(distances), f'Front recess ray misses its surface at {entry}'
+                    depths.append(float(np.min(distances)))
+                measurements.append(depths[0]-depths[1])
+            assert np.allclose(measurements, recess, atol=.01), \
+                f'Front counterbore must be exactly 0.7 mm deep at {entry}: {measurements}'
+            recess_depth = float(np.mean(measurements))
         else:
             enclosure = cyl(-bearing_t-.22,.2,3.9)-cyl(-bearing_t-.23,.22,3.25)
             rim_fill = (enclosure ^ local['head']).volume()/enclosure.volume()
@@ -451,6 +473,7 @@ def check_head_fasteners(ctx):
             bearing_thickness_mm=bearing_t, insert_penetration_mm=round(penetration,3),
             hole_bottom_clearance_mm=round(m['insert_depth']-penetration,3), bearing_fill=round(fill,6),
             enclosed_lower_rim_fill=round(rim_fill,6) if rim_fill is not None else None,
+            measured_front_recess_depth_mm=round(recess_depth,6) if recess_depth is not None else None,
             exposed_head_clearance_overlap_mm3=round(exposed_clearance,6) if exposed_clearance is not None else None,
             backing_fill=round(backing_fill,6),
             seat_back_fill=round(seat_back_fill,6), backing_gap_mm=round(gap,6),
@@ -463,11 +486,11 @@ def check_front_mat_contact(ctx):
     """Bound contact from the exposed front screw heads and their bevelled seats."""
     m = ctx.metrics
     local = {n:ctx.manifold(head_frame(ctx.meshes[n],m)) for n in ('head','screws_head','filter')}
-    zones = [_air_box([19.2,3.19,60.49],[31.8,12.8,63.96]), _air_box([113.2,3.19,60.49],[125.8,12.8,63.96])]
+    zones = [_air_box([19.2,3.19,60.49],[31.8,12.8,63.26]), _air_box([113.2,3.19,60.49],[125.8,12.8,63.26])]
     allowed = zones[0]+zones[1]
     rows = {}
     total = 0.
-    for name, limit in [('head',1.8),('screws_head',3.45)]:
+    for name, limit in [('head',1.8),('screws_head',2.75)]:
         contact = local[name] ^ local['filter']
         volume = contact.volume()
         outside = (contact-allowed).volume()
@@ -482,11 +505,11 @@ def check_front_mat_contact(ctx):
         rows[name] = dict(volume_mm3=round(volume,6), maximum_local_deflection_mm=round(depth,6),
                           outside_allowed_zones_mm3=round(outside,8))
         total += volume
-    assert total < 450, f'Front hardware displaces too much nominal mat volume: {total} mm3'
-    ctx.open_items.append('The soft filter mat bends locally by up to 3.45 mm over two exposed screw heads and their bevelled seats; '
+    assert total < 400, f'Front hardware displaces too much nominal mat volume: {total} mm3'
+    ctx.open_items.append('The soft filter mat bends locally by up to 2.75 mm over the two front screw heads and their shallow recessed seats; '
                           'only the two measured contact zones are allowed. No compression force or flexible deformation is simulated.')
     return dict(front_mat_contact=dict(contacts=rows, total_nominal_displacement_mm3=round(total,6),
-        allowed_zones_mm=[[[19.2,3.19,60.49],[31.8,12.8,63.96]],[[113.2,3.19,60.49],[125.8,12.8,63.96]]]))
+        allowed_zones_mm=[[[19.2,3.19,60.49],[31.8,12.8,63.26]],[[113.2,3.19,60.49],[125.8,12.8,63.26]]]))
 
 
 def check_front_ratchet_access(ctx):
@@ -499,8 +522,8 @@ def check_front_ratchet_access(ctx):
     m = ctx.metrics
     axes = np.asarray(m['head_axes'], float)
     assert axes.shape == (4, 8), 'Ratchet check needs per-screw entry, direction, bearing and length'
-    expected = np.array([[25.5, 6.5, 60, 0, 0, -1, 2.3, 8],
-                         [119.5, 6.5, 60, 0, 0, -1, 2.3, 8]])
+    expected = np.array([[25.5, 6.5, 60, 0, 0, -1, 1.6, 8],
+                         [119.5, 6.5, 60, 0, 0, -1, 1.6, 8]])
     assert np.allclose(axes[:2], expected, atol=.001), 'Revalidate ratchet route for changed front screws'
     local = {n: ctx.manifold(head_frame(mesh, m)) for n, mesh in ctx.meshes.items()
              if n not in ('filter', 'cassette') and not n.startswith('driver_')}
