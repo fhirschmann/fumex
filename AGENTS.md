@@ -45,8 +45,15 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   At the joint the cassette therefore reaches 3.9 mm in front of the base face - reported to the user 2026-09-23;
   the only way to close that is a plinth on the base front, which has not been built.
 - `head_outline(inset, square_bottom)`: the head shell keeps the square bottom corners so its side walls meet the
-  base rim without a step; `head_back` passes false and keeps its radius all round (user, 2026-09-23). No step
-  appears there because the head wall behind the cover still carries the silhouette.
+  base rim without a step; `head_back` and `cassette` pass false and keep the radius all round (user,
+  2026-09-23). Neither lands on the base rim - the cover has the head wall behind it carrying the silhouette,
+  the cassette lies on the intake face - so the radius costs no flushness.
+- The joint plane rises 15 degrees to the back and therefore meets the vertical back face of the base at 75
+  degrees: an acute edge across the full width, right where the back cover lands (user, 2026-09-23: "die
+  scharfe kante weg wo die rueckwand aufliegt"). It is cut at 45 degrees to the joint plane, placed with
+  `head_at()` so it mirrors the chamfer on the cover's lower edge; both sit behind `head_y[4]`, where the rim
+  carries no head wall. The cover's lower edge had only 0.9 mm of the rim chamfer left on it, because the
+  joint plane cuts that chamfer off `cover_gap` above the outline's own bottom edge; now it is the full 1.2.
 - Filter cassette held by four magnet pairs in open pockets (skill rule: glue one side in, place the counterparts on them, then glue — polarity is then automatic). Two 45° finger scoops in the side edges of the intake face get a finger behind the flange; two half-round notches in the intake lip get a finger behind the mat.
 - The mat is held by the intake lip (opening 117 in a 121.5 chamber, 2.25 mm per side). It is pressed in and pulled out past that lip — a rigid-body path check cannot show this, so `filter_out` is not a checked path but a documented limitation.
 - Head screws (4 × M3 × 8) sit along the side walls at x 9/136, y 9/60: their bosses merge into those walls and their undersides drop 45° towards them, so nothing starts in the air. x keeps them clear of the back cover bosses inside the head, y of its back cover lip. There is no register between head and base — the screws locate it, which is what `stops` checks.
