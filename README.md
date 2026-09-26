@@ -16,7 +16,7 @@ Designed for a Bambu Lab H2S with AMS in Bambu PETG black and grey. The electron
 grid of the cassette ─► mat 17 mm ─► corner gussets ─► fan 120 × 25 ─► plenum ─► slots in the back cover
 ```
 
-The mat sits on the intake side, so flux resin settles in the fleece and the impeller stays clean. It is held by a 2.25 mm lip around the 117 mm intake opening; two half-round notches in that lip let you get a finger behind it. Instead of a flat plate with a round bore in front of the fan — which would have been a 4400 mm² flat overhang over the chamber — the four corners of the chamber fill in at 45°: nothing needs support, the remaining opening is wider than the fan's swept annulus, and those gussets carry the fan's four heat-set inserts.
+The mat sits on the intake side, so flux resin settles in the fleece and the impeller stays clean. It is held by a 2.25 mm lip around the 117 mm intake opening; two half-round notches in that lip let you get a finger behind it. The chamber has the same lip again at its back: at full speed the fan pulls the mat towards itself with about 1 N, and without that rear lip only the four corner gussets — 7.8 % of the mat's back face — stood between it and 10.5 mm of clear air to the impeller. Now it can move 1.6 mm and is caught. Instead of a flat plate with a round bore in front of the fan — which would have been a 4400 mm² flat overhang over the chamber — the four corners of the chamber fill in at 45°: nothing needs support, the remaining opening is wider than the fan's swept annulus, and those gussets carry the fan's four heat-set inserts.
 
 The filter cassette is held by four magnet pairs and comes off by hand; two finger scoops in the side edges of the intake face give you something to pull against. It stands 4.5 mm proud of the intake face rather than sitting flush in it: letting it into the face would put a 5700 mm² horizontal ceiling over the chamber, and the head prints with that face on the bed. 4.5 mm is also as thin as it goes, because the magnet pockets are 3.2 mm deep and the minimum wall is 1.2 mm. A 2 mm bevel round its rim takes the visible step down to 2.5 mm.
 
@@ -34,7 +34,7 @@ The charge module is the part that gets warm, so it gets a draught of its own. I
 | `knob` speed knob | 1 | PETG grey | Ø 28 × 14 | top on the bed |
 | `foot` foot | 4 | TPU | 18 × 16 × 6.5 | ground face on the bed, 100 % infill |
 
-All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head and ballast lid, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.48 kg and 16.4 hours** in total (head 230 g, base 118 g, back cover 57 g, cassette 52 g, ballast lid 7 g, knob 6 g, feet 4 × 1.5 g).
+All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head and ballast lid, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.48 kg and 16.4 hours** in total (head 231 g, base 118 g, back cover 57 g, cassette 52 g, ballast lid 7 g, knob 6 g, feet 4 × 1.5 g).
 
 Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid (feet 100 %).
 

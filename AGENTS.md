@@ -55,6 +55,13 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   carries no head wall. The cover's lower edge had only 0.9 mm of the rim chamfer left on it, because the
   joint plane cuts that chamfer off `cover_gap` above the outline's own bottom edge; now it is the full 1.2.
 - Filter cassette held by four magnet pairs in open pockets (skill rule: glue one side in, place the counterparts on them, then glue — polarity is then automatic). Two 45° finger scoops in the side edges of the intake face get a finger behind the flange; two half-round notches in the intake lip get a finger behind the mat.
+- **The chamber has a rear lip too** (`mat_stop()`, user asked 2026-09-23 what stops the mat falling into the
+  fan - nothing did). The mat's back face rested on the four gusset corners only, 7.8 % of it, with 10.5 mm
+  of clear air to the fan frame, while the fan pulls it that way with about 1 N at 69 Pa. The lip closes the
+  bore from `chamber_sq` to `open_sq` on a flank of `mat_stop_rise` = 1.5 mm of depth per mm inwards - at 45
+  degrees `analyze.py overhangs` counts it, the head prints intake-face-down and the lip hangs inwards. It
+  merges into the chamber tube so it grows out of the bore wall instead of starting as a knife edge.
+  `checks()` reports `mat_free_travel_mm` = 1.62 and asserts it stays under a quarter of the way to the fan.
 - The mat is held by the intake lip (opening 117 in a 121.5 chamber, 2.25 mm per side). It is pressed in and pulled out past that lip — a rigid-body path check cannot show this, so `filter_out` is not a checked path but a documented limitation.
 - Head screws (4 × M3 × 8) sit along the side walls at x 9/136, y 9/60: their bosses merge into those walls and their undersides drop 45° towards them, so nothing starts in the air. x keeps them clear of the back cover bosses inside the head, y of its back cover lip. There is no register between head and base — the screws locate it, which is what `stops` checks.
 - `head_outline()` is rounded at the top and **square at the bottom** (user, 2026-09-23). With a radius on the two bottom corners the head measured only 133 mm across at the joint plane while the base rim is 145, so its side walls curved away from the base and left a 6 mm step. Squared, the side walls of head and base run into each other.

@@ -31,6 +31,7 @@ head_h = 145;        // head height (z) in the untilted frame
 front_t = 3.2;       // intake face
 open_sq = 117;       // square opening in the intake face; its lip holds the mat in the chamber
 open_r = 3;
+mat_stop_rise = 1.5;  // flank of the rear lip: 1.5 mm of depth per mm inwards, so it is not an overhang
 chamber_sq = 121.5;  // filter chamber, 0.75 mm wider than the hand-cut mat all round
 chamber_d = 17.5;    // the mat is 17 mm (user, cut from a cooker hood mat)
 tube_w = 3;          // wall of the filter chamber inside the shell
@@ -366,6 +367,7 @@ module head_raw() difference() {
             head_centre_sq(chamber_sq, open_r);
         }
         fan_lugs();
+        mat_stop();
         for (p = head_bosses()) cyl_y(p, head_y[2], head_y[4], boss_d / 2);
         fan_guides();
     }
@@ -390,6 +392,20 @@ module head_raw() difference() {
         hull() { along_y(-eps, -eps + tip) head_outline(edge_c); along_y(edge_c - tip, edge_c) head_outline(0); }
     }
 }
+// Rear lip of the filter chamber, the counterpart of the intake lip. Without it the mat is held at the
+// front by that lip and at the back by nothing but the four gusset corners - 7.8 % of its rear face - with
+// 10.5 mm of clear air to the fan frame and about 1 N of suction pushing it exactly that way at full speed
+// (user asked what stops the mat falling into the fan, 2026-09-23). Same 2.25 mm all round as the front.
+// Printed intake-face-down this lip hangs inwards, so its flank rises 1.5 mm per mm instead of 1: at 45
+// degrees `analyze.py overhangs` counts it. It merges into the chamber tube, so it starts out of the bore
+// wall rather than as a knife edge.
+function mat_stop_y() = [head_y[1], head_y[1] + (chamber_sq - open_sq) / 2 * mat_stop_rise];
+module mat_stop() let (y0 = mat_stop_y()[0], y1 = mat_stop_y()[1])
+    translate([body_w / 2, 0, head_cz]) difference() {
+        along_y(y0, y1) rrect([tube_sq, tube_sq], open_r + tube_w);
+        hull() { along_y(y0 - eps, y0 + tip) rrect([chamber_sq, chamber_sq], open_r);
+                 along_y(y1 - tip, y1 + eps) rrect([open_sq, open_sq], open_r); }
+    }
 // Corner gussets from the intake face back to the fan: 45 degree flanks, so they print without support.
 // The fan bears on their back faces and its heat-set inserts sit in them; the mat presses into them.
 module fan_lugs() for (sx = [-1, 1], sz = [-1, 1]) translate([body_w / 2, 0, head_cz]) scale([sx, 1, sz]) hull() {
@@ -769,6 +785,7 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["wall", wall], ["tilt", tilt], ["body", [body_w, body_d]], ["head_h", head_h],
     ["fan_insert_front", lug_d - insert_depth], ["fan_thread", len_fan - fan_t],
     ["head_thread", len_head - wall], ["chamber", [chamber_sq, chamber_d]], ["open_sq", open_sq],
+    ["head_y", head_y], ["mat_stop", mat_stop_y()],
     ["magnet_pocket", mag], ["pot_mount_t", pot_mount_t], ["front_rim_z", base_top(0)],
     ["knob_top_z", pot_z + knob_d / 2], ["fan_axis_pitch", fan_pitch],
     ["foot_x", [foot_xy[0][0], foot_xy[1][0]]], ["foot_y", [foot_xy[0][1], foot_xy[2][1]]],

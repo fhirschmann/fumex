@@ -75,6 +75,7 @@ SLICER_SUMMARY = "docs/slicer-summary.json"
 # or from the data sheet. The effective print density covers walls plus 20 % gyroid.
 # g/mm3; the ballast is iron offcuts potted in epoxy, about 60 % metal by volume
 # loose iron offcuts under a lid, roughly 60 % of the volume actually metal
+MAT = (120, 120, 17)      # the mat the user cut from a cooker hood filter
 DENSITY = {"PETG": 0.90e-3, "TPU": 1.20e-3, "iron-loose": 4.7e-3}
 MASSES_G = {"fan": 185, "battery": 150, "filter": 15, "pwm_board": 12, "chg_module": 3, "chg_sink": 5,
             "usbc": 2, "switch": 5, "led": 0.3, "magnets": 18, "pot": 6, "pot_nut": 2,
@@ -160,12 +161,18 @@ def checks(ctx):
         [("head", _tilt(m, [p[0], m["back_y"], p[1]]), out, depth, d, w) for p in m["head_bosses"]] +
         [("base", _tilt(m, [p[0], p[1], m["base_h"]]), [-u for u in up], depth, d, w) for p in m["rim_screws"]] +
         [("base", [p[0], p[1], 0], [0, 0, 1], depth, d, w) for p in _foot_xy(m)])
-    # Air must not bypass the mat: the chamber lip overlaps it on every side
+    # Air must not bypass the mat: the chamber lip overlaps it on every side, front and back
     lip = (m["chamber"][0] - m["open_sq"]) / 2
     assert lip >= 2, f"Intake lip only {lip:.2f} mm wide"
+    # And the mat must not travel back into the fan. The rear lip closes the bore from the chamber to
+    # open_sq along a ramp, so a 120 mm mat is caught where the bore first drops below 120.
+    y0, y1 = m["mat_stop"]
+    mat_free = y0 + (m["chamber"][0] - MAT[0]) / (2 * lip) * (y1 - y0) - (m["head_y"][0] + MAT[2])
+    fan_gap = m["head_y"][2] - (m["head_y"][0] + MAT[2])
+    assert 0 < mat_free < 0.25 * fan_gap, f"Mat travels {mat_free:.1f} mm of the {fan_gap:.1f} mm to the fan"
     # The corner gussets press into the fleece. Bound how much of the mat that is.
     squashed = (ctx.solids["filter"] ^ ctx.solids["head"]).volume()
-    mat = 120 * 120 * 17
+    mat = MAT[0] * MAT[1] * MAT[2]
     assert squashed < 0.05 * mat, f"Gussets displace {squashed / mat:.1%} of the mat"
 
     # Tipping: the head leans forward, so the centre of mass must stay well inside the foot polygon
@@ -184,7 +191,7 @@ def checks(ctx):
     ctx.summary.append(f"{len(paths)} paths, tips at {tip_angle:.1f} degrees")
     ctx.open_items.append("Masses of the bought parts are data-sheet or estimated values, not weighed")
     return dict(contact_volumes_mm3=contacts, stops=stops, clearances_mm=gaps, sampled_paths=paths, insert_probes=probes,
-                intake_lip_mm=lip, mat_squashed_percent=round(100 * squashed / mat, 2), mass_g=round(total, 1),
+                intake_lip_mm=lip, mat_free_travel_mm=round(mat_free, 2), mat_squashed_percent=round(100 * squashed / mat, 2), mass_g=round(total, 1),
                 centre_of_mass_mm=[round(c, 1) for c in com],
                 foot_polygon_mm=poly, tip_margins_mm={k: round(v, 1) for k, v in margins.items()},
                 tip_angle_deg=round(tip_angle, 1))
