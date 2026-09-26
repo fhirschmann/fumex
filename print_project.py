@@ -48,11 +48,22 @@ ASSEMBLY = {
     "screws_back": "screws_back();",
     "screws_head": "screws_head();",
     "screws_feet": "screws_feet();",
+    # A bit and its holder on every screw head. These must not touch anything, which is the whole check.
+    "driver_fan": "drivers_fan();",
+    "driver_back": "drivers_back();",
+    "driver_head": "drivers_head();",
+    "driver_feet": "drivers_feet();",
+    "driver_lid": "drivers_lid();",
 }
 # the fan and the pot are solid envelopes, their screws and shaft run through them
 ALLOWED_OVERLAPS = [("fan", "screws_fan"),      # screws run through the holes of the solid fan envelope
                     ("knob", "pot"),           # the slotted sleeve is a press fit on the knurled shaft
-                    ("filter", "head")]        # the fleece mat is pressed into the corner gussets, checked below
+                    ("filter", "head"),        # the fleece mat is pressed into the corner gussets, checked below
+                    # The drivers are checked against the state of the build at the moment that screw is
+                    # driven, not against the finished assembly: the head screws go in through the open
+                    # back before the cover, and the ballast lid is closed before the head goes on at all.
+                    ("head_back", "driver_head"), ("head_back", "driver_lid"), ("head", "driver_lid"),
+                    ("driver_fan", "driver_head"), ("driver_head", "driver_lid")]
 
 # Multicolour: part -> inlay names. Black and grey are whole parts here, no inlays and no prime tower.
 COLOR_PARTS = {}

@@ -63,8 +63,27 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   merges into the chamber tube so it grows out of the bore wall instead of starting as a knife edge.
   `checks()` reports `mat_free_travel_mm` = 1.62 and asserts it stays under a quarter of the way to the fan.
 - The mat is held by the intake lip (opening 117 in a 121.5 chamber, 2.25 mm per side). It is pressed in and pulled out past that lip — a rigid-body path check cannot show this, so `filter_out` is not a checked path but a documented limitation.
-- Head screws (4 × M3 × 8) sit along the side walls at x 9/136, y 9/60: their bosses merge into those walls and their undersides drop 45° towards them, so nothing starts in the air. x keeps them clear of the back cover bosses inside the head, y of its back cover lip. There is no register between head and base — the screws locate it, which is what `stops` checks.
+- **Head screws: 2 × M3 × 8 in one row at x 25/120, y 66** (user asked 2026-09-23 whether every screw can
+  actually be reached - four of four could not). Vertical access inside the head exists only in the plenum
+  behind the fan: further forward the filter tube or the fan stands over the rim, and the 5.75 mm channel
+  beside the tube takes no bit. y 66 is the minimum that lets the Ø10 base boss reach the back wall it hangs
+  from. Mechanically it is also the right row - the head's centre of mass is 19 mm in front of the joint, so
+  the front of the joint is in compression and only the back needs holding down. The back cover's lip is
+  notched over the screw heads. `rim_boss_bodies()` is clipped to `base_outline()`: tilted, the 45 degree
+  run-out towards the back wall reached 2.4 mm past the back face.
+- **Driver access is a checked property.** `drivers_*()` put a Torx bit and its holder (4/6.35/13 mm) on
+  every screw head; they are ordinary assembly bodies, so the pairwise overlap check is the test. The
+  ALLOWED_OVERLAPS entries for them are assembly stages, not excuses: the head screws go in before the back
+  cover, the ballast lid is closed before the head goes on.
+- Ballast lid posts moved to x 45/90 (from 30/115): the rim bosses now hang over the trough left and right,
+  and the USB-C channel and the tie loops block everything right of x 90. Vent slots 14 mm instead of 16,
+  so the rim bosses clear them.
 - `head_outline()` is rounded at the top and **square at the bottom** (user, 2026-09-23). With a radius on the two bottom corners the head measured only 133 mm across at the joint plane while the base rim is 145, so its side walls curved away from the base and left a 6 mm step. Squared, the side walls of head and base run into each other.
+  - Carrying the radius through the joint instead - which the user asked for on 2026-09-23 - does not work at
+    `corner_r` 6 and `wall` 3, and this was built and measured before it was dropped: necking the base rim to
+    133 mm removes the whole 3 mm side wall for the top 3 mm (the export came back with 7 bodies), and the
+    head's bottom face would be 133 mm wide against a 139 mm bay opening, so it would bear on the front and
+    back rim only. It needs side walls of 7 mm over the top 12 mm and the cell moved 4 mm right.
   - What is left is the plan corners: the head's footprint is a sharp 145 x 74 rectangle, the base's is the same rectangle with R6 vertical edges, so the head stands about 2.5 mm proud at the four corners of the joint. A 3.5 mm 45 degree chamfer on the head's plan corners would track that R6 arc to within a few tenths (checked), but it also cuts into the magnet pockets unless `mag_off` drops from 64.2 to about 63. Not done; raise it with the user before touching it.
 - The back cover runs the full height of the head (user, 2026-09-22); the head floor stops at its inner face. Its lower edge keeps `cover_gap` = 0.3 mm off the joint plane, otherwise the two coplanar faces grind along each other on the way off and `cover_off` fails on facet-level overlap. Four screws, not six (user).
 - Feet: four TPU pads, one M3 × 8 each plus a Ø3 peg against turning. A keying pocket in the bottom face was 275 mm² of flat overhang per foot, so it went.
