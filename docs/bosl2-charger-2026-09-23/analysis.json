@@ -1,0 +1,102 @@
+{
+  "source_sha256": "544894c9fc4dc5176798e87bd9ad6000a1cbd028eab20a550ffad9b17326cd1d",
+  "bosl2_commit": "989cc33b56313238f3ffeafcbd2876b71a0a593a",
+  "analyses": {
+    "islands": {
+      "base": [],
+      "head": [],
+      "head_back": [],
+      "cassette": [],
+      "knob": [],
+      "foot": [],
+      "ball_lid": []
+    },
+    "overhangs": {
+      "base": [],
+      "head": [],
+      "head_back": [],
+      "cassette": [],
+      "knob": [],
+      "foot": [],
+      "ball_lid": []
+    },
+    "thickness": {
+      "base": {
+        "samples": 37159,
+        "measured": 37159,
+        "mm2_per_sample": 2.0,
+        "p01": 1.374,
+        "p05": 2.0,
+        "median": 3.009,
+        "regions": []
+      },
+      "head": {
+        "samples": 65060,
+        "measured": 64906,
+        "mm2_per_sample": 2.0,
+        "p01": 2.4,
+        "p05": 2.4,
+        "median": 3.0,
+        "regions": []
+      },
+      "head_back": {
+        "samples": 23678,
+        "measured": 23678,
+        "mm2_per_sample": 2.0,
+        "p01": 2.002,
+        "p05": 2.5,
+        "median": 4.0,
+        "regions": []
+      },
+      "cassette": {
+        "samples": 20664,
+        "measured": 20664,
+        "mm2_per_sample": 2.0,
+        "p01": 1.3,
+        "p05": 2.5,
+        "median": 4.5,
+        "regions": []
+      },
+      "knob": {
+        "samples": 2000,
+        "measured": 2000,
+        "mm2_per_sample": 1.821,
+        "p01": 0.217,
+        "p05": 1.0,
+        "median": 7.503,
+        "regions": []
+      },
+      "foot": {
+        "samples": 2000,
+        "measured": 2000,
+        "mm2_per_sample": 0.458,
+        "p01": 1.65,
+        "p05": 1.65,
+        "median": 4.5,
+        "regions": []
+      },
+      "ball_lid": {
+        "samples": 3008,
+        "measured": 3008,
+        "mm2_per_sample": 2.001,
+        "p01": 1.5,
+        "p05": 1.5,
+        "median": 3.0,
+        "regions": []
+      }
+    },
+    "fins": {
+      "base": [],
+      "head": [],
+      "head_back": [],
+      "cassette": [],
+      "knob": [],
+      "foot": [],
+      "ball_lid": []
+    }
+  },
+  "chamfer_negative_control": {
+    "baseline_rejected": true,
+    "reason": "Incorrect rim chamfer base/left/right at depth 0.1: [1.0693075776100156, 143.93068695068357] vs [1.0999999999999999, 143.9]"
+  }
+}

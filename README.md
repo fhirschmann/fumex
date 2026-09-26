@@ -22,7 +22,11 @@ That rear lip is also the fan's seat: the filter tube ends as a ring the fan fra
 
 The filter cassette is held by four magnet pairs and comes off by hand; two finger scoops in the side edges of the intake face give you something to pull against. It stands 4.5 mm proud of the intake face rather than sitting flush in it: letting it into the face would put a 5700 mm² horizontal ceiling over the chamber, and the head prints with that face on the bed. 4.5 mm is also as thin as it goes, because the magnet pockets are 3.2 mm deep and the minimum wall is 1.2 mm. A continuous 1.2 mm bevel round its finished contour leaves 3.3 mm of straight rim.
 
-The charge module is the part that gets warm, so it sits where the air actually moves: flat in a printed tray on the ballast lid at the back of the bay, heatsink facing straight up. Directly above it a row of six slots in the head floor opens into the plenum, and the plenum is what the fan blows into — so filtered air is pushed down onto the heatsink and straight out through the ventilation slots in the back wall a few centimetres behind it. With the fan off the same short path is a chimney. Nothing of the filtered stream is lost either way, because the plenum is downstream of the mat. It stood at the bottom of the front wall before, which is the one corner of the bay that draught never reaches.
+The charge module stands upright in two narrow edge holders on the ballast lid at the back of the bay. Its components face forwards and its heatsink faces the back wall; both broad faces have open space for air. Six slots directly above it connect to the plenum behind the fan, with passages past the component side and the heatsink to the back-wall ventilation slots. This branch carries filtered air because it starts downstream of the mat. With the fan off, the same openings allow natural convection. Actual cooling must be checked with the assembled wiring and the housing closed.
+
+| Component side | Heatsink side |
+|:---:|:---:|
+| ![Upright charge module, component side](img/04_charger_front.png) | ![Upright charge module, heatsink side](img/05_charger_back.png) |
 
 ## Printed parts
 
@@ -31,12 +35,12 @@ The charge module is the part that gets warm, so it sits where the air actually 
 | `head` fan and filter housing | 1 | PETG black | 145 × 145 × 70 | intake face on the bed |
 | `base` electronics bay | 1 | PETG black | 145 × 74 × 57.3 | bottom on the bed, open at the top along the 15° joint plane |
 | `head_back` back cover | 1 | PETG black | 145 × 144.7 × 18.3 | outside on the bed |
-| `ball_lid` ballast lid | 1 | PETG black | 138.6 × 17.8 × 8.4 | flat on the bed |
+| `ball_lid` ballast lid | 1 | PETG black | 138.6 × 17.8 × 12.4 | flat on the bed |
 | `cassette` filter cassette | 1 | PETG grey | 138 × 143 × 4.5 | grid face on the bed |
 | `knob` speed knob | 1 | PETG grey | Ø 28 × 13.5 | top on the bed |
 | `foot` foot | 4 | TPU | 18 × 16 × 6.5 | ground face on the bed, 100 % infill |
 
-All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head and ballast lid, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.47 kg and 15.4 hours** for the four arranged plates (16.1 hours as individual part jobs; head 222 g, base 119 g, back cover 60 g, cassette 50 g, ballast lid 8 g, knob 6 g, feet 4 × 1.5 g).
+All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head and ballast lid, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.47 kg and 15.3 hours** for the four arranged plates (16.1 hours as individual part jobs; head 222 g, base 119 g, back cover 60 g, cassette 50 g, ballast lid 7 g, knob 6 g, feet 4 × 1.5 g).
 
 Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid (feet 100 %).
 
@@ -48,7 +52,7 @@ Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid (feet 1
 | Filter mat, 120 × 120 × 17 | 1 | – | cut from a cooker hood mat: white fleece plus a carbon layer. **Fleece side to the front**, carbon behind it |
 | Battery 3.2 V 6000 mAh LiFePO4 pack with protection board (BMS), JST-PH 2.0 | 1 | [eremit.de](https://www.eremit.de/p/3-2v-6000mah-pack-mit-schutz-arduino-aio-jst-ph-2-0-stecker) | cell Ø 32.5 × 71.6 mm, lying across the bay, protection board up; charge only with a LiFePO4 charger (3.65 V), **no** TP4056 |
 | Charge/boost module "2-in-1 3.2 V LiFePO4", **12 V variant** | 1 | [AliExpress](https://de.aliexpress.com/item/1005008094801881.html) | eletechsup LFUPSMA, board 32.2 × 11 × 1.0 mm; IN± 5 V charging, B± battery, O± 12 V. See the note on its 0.32 A rating below |
-| Aluminium heatsink 14 × 14 × 6 mm with an insulating silicone thermal pad | 1 | – | on the metal pad behind the charger IC, facing into the draught through the bay; the pad must cover the whole heatsink face |
+| Aluminium heatsink 14 × 14 × 6 mm with an insulating silicone thermal pad | 1 | – | on the metal pad behind the charger IC, facing the back-wall vents; the pad must cover the whole heatsink face |
 | PWM fan controller CNY-FA5-PRO, DC 8–24 V, with potentiometer and switch | 1 | [AliExpress](https://de.aliexpress.com/item/1005010113177510.html) | 41 × 32 × 15 mm, flat in the bay, shaft through the front panel |
 | USB-C PD trigger module, Type A (default 5 V) | 1 | [AliExpress](https://de.aliexpress.com/item/1005010610660644.html) | charging socket high in the back wall, above the ballast lid. **Leave pads 1–4 open** (they select 9/12/15/20 V); the charge module only takes 4–6 V, check 5 V with a multimeter before connecting |
 | ON-OFF rocker switch, snap-in, 21 × 15 mm (cut-out 19.2 × 12.2 mm) | 1 | [AliExpress](https://de.aliexpress.com/item/1005008871215158.html) | in the right side wall, long side upright |
@@ -79,7 +83,7 @@ battery (JST-PH, built-in BMS) ──► (PTC) ──► rocker switch ──►
 - With the switch in the battery line, off really disconnects the battery, and the battery only charges with the switch on. To charge without the fan running, turn the knob down until it clicks.
 - The LED shows that the charging cable is plugged in, not the charge state.
 - **Start slow.** The module is specified for 0–0.32 A at 12 V and the P12 Pro draws 0.33 A at full speed, so the top of the knob range sits right at its limit: it gets warm there, and switching on at 100 % may brown out. Turn the knob up once the fan is running. At half speed the pack lasts far longer than the roughly four hours it manages flat out.
-- The CN3058E on the module is a linear charger: at 1 A from 5 V it turns about 1.6 W into heat, and it does that exactly while the battery is charging — which is when a LiFePO4 cell least wants to be warm. So the bay is not sealed around it: a row of slots in the head floor above the board opens into the channel under the filter chamber and on into the plenum, and the back wall has ventilation slots above the ballast lid. Fan running, filtered air is pushed down over the board and out of the back; fan off, the warm air rises out the same slots. Charging while the fan runs is therefore the cool case.
+- The CN3058E on the module is a linear charger: at 1 A from 5 V it turns about 1.6 W into heat while the battery charges. The upright board exposes its components at the front and its heatsink at the back to the passages between the head-floor slots and the back-wall vents. Keep wires clear of both sides and check temperatures in the closed housing while charging, with the fan running and stopped.
 - If that is still not cool enough for your taste, replace the ISET resistor (marked 122, 1.2 kΩ) with 2.4 kΩ: half the charge current, half the heat, and 12–13 hours for a full charge.
 
 ## Assembly
@@ -88,7 +92,7 @@ battery (JST-PH, built-in BMS) ──► (PTC) ──► rocker switch ──►
 2. Glue the magnets: four into the pockets of the intake face first, then put the other four on top of them, drop the cassette on and glue those into the cassette. The polarity then cannot be wrong.
 3. Lay the back cover on the bench, set the fan on its four posts **blowing towards the cover**, so it pushes the air out through its grid, and screw it down with M3 × 30 from the front of the fan. The cable comes out on the side that will face the head floor.
 4. Fit the electronics in the base: PWM controller flat on its rib pads with the potentiometer through the front wall, washer and nut from outside; LED glued in beside the knob with its resistor; USB-C module into its channel in the back wall; rocker switch snapped into the right wall. Fix the USB-C and switch wires with a cable tie through the loops beside them.
-5. Stick the insulating pad onto the metal pad on the back of the charge module and the heatsink onto the pad. Drop the board straight down into the tray on the ballast lid, parts downwards, heatsink up: it rests on the ledge at each end.
+5. Stick the insulating pad onto the metal pad on the back of the charge module and the heatsink onto the pad. Lower the board from above into the two edge holders on the ballast lid, components facing forwards and heatsink towards the back wall. Its lower edge rests on two narrow seats. The left holder guides both faces; the right holder is open behind the board to clear the heatsink. Check the solder joints and wire exits on the real board: only 0.2 mm separates the pad from the right guide. Leave slack in the wires and keep both faces exposed to air.
 6. Fill the ballast trough behind the battery with iron offcuts — up to about 190 g — and screw its lid down with four M3 × 10 plastic-forming screws. Fill it properly or pack the rest with foam; loose pieces under a half-empty lid rattle.
 7. Lay the battery into its three saddles, protection board up, cable end to the right, a strip of foam tape above and below.
 8. Put a drop of CA gel into the knob bore and push the knob onto the shaft until it bottoms; it then stands 1.2 mm off the wall and turns freely.
@@ -111,9 +115,10 @@ To change the mat: pull the cassette off, hook a finger into one of the notches 
 
 ## Build from source
 
-Model: [`fumex.scad`](fumex.scad) (OpenSCAD, parameters at the top), project settings and checks: [`print_project.py`](print_project.py). The scripts in `scripts/` export and check the meshes, slice with the Bambu Studio CLI and build the 3D assembly viewer.
+Model: [`fumex.scad`](fumex.scad) (OpenSCAD, parameters at the top), project settings and checks: [`print_project.py`](print_project.py). The scripts in `scripts/` export and check the meshes, slice with the Bambu Studio CLI and build the 3D assembly viewer. [BOSL2](https://github.com/BelfrySCAD/BOSL2) supplies the edge profiles and is pinned as the `BOSL2/` Git submodule; initialise it before opening the model in OpenSCAD or running the tools.
 
 ```sh
+git submodule update --init --recursive          # pinned BOSL2 geometry library
 python3 -m venv .venv
 .venv/bin/python -m pip install -r scripts/requirements.txt
 .venv/bin/python scripts/print_tools.py export     # export and check stl/, asm/, docs/verification.json
@@ -130,4 +135,4 @@ The fan in the model and the viewer is a simple parametric placeholder; no manuf
 
 ## Licence
 
-Model, printable files, images and documentation: [CC BY-NC-SA 4.0](LICENSE). Scripts in `scripts/`: [MIT](LICENSE-MIT).
+Model, printable files, images and documentation: [CC BY-NC-SA 4.0](LICENSE). Scripts in `scripts/`: [MIT](LICENSE-MIT). The BOSL2 submodule retains its own [BSD-2-Clause licence](BOSL2/LICENSE).

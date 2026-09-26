@@ -6,6 +6,7 @@ Everything project-specific lives here, the scripts stay identical to the skill 
 import math
 import numpy as np
 import trimesh
+import manifold3d as md
 
 SOURCE = "fumex.scad"
 METRICS_TAG = "PROJECT_METRICS"       # part="metrics" echoes this tag with [key, value] pairs
@@ -231,6 +232,111 @@ def check_joint_profile(ctx):
     return dict(upper_base_silhouette=rows)
 
 
+# These fixed probe routes describe the reviewed layout, not a fluid simulation.
+# A moved board or vent must keep the routes attached to the real surfaces and outlets.
+def _air_box(lo, hi):
+    return md.Manifold.cube([b - a for a, b in zip(lo, hi)]).translate(lo)
+
+
+def _air_corridor(points, cylinder, radius=0.6):
+    chunks = [md.Manifold.sphere(radius, 32).translate(p) for p in points]
+    for start, end in zip(points[:-1], points[1:]):
+        axis = np.asarray(end, float) - start
+        chunks.append(cylinder(start, axis, float(np.linalg.norm(axis)), radius, 48))
+    return md.Manifold.batch_boolean(chunks, md.OpType.Add)
+
+
+def _charger_air_probes(cylinder):
+    return {
+        'component_face_space': _air_box([57, 54.6, 33.2], [83, 56.6, 42.2]),
+        'heatsink_rear_space': _air_box([77.6, 67.7, 31.7], [89.6, 69.5, 43.7]),
+        'component_side_route': _air_corridor([[65.5, 59, 60], [65.5, 59, 47], [65.5, 55.5, 45],
+                                           [65.5, 55.5, 37], [50, 55.5, 37], [50, 75, 37]], cylinder),
+        'heatsink_side_route': _air_corridor([[83.5, 63, 60], [83.5, 63, 47], [83.5, 68.5, 46],
+                                          [83.5, 68.5, 37], [85, 68.5, 37], [85, 75, 37]], cylinder),
+    }
+
+
+def _charger_air_report(meshes, solids, cylinder):
+    result = {'module_extents_mm': meshes['chg_module'].extents.tolist(), 'probes': {}}
+    # This particular board is upright along X/Z, with its thickness and parts
+    # along Y. These independent physical dimensions reject the old flat pose.
+    extent = meshes['chg_module'].extents
+    result['vertical_pose'] = bool(abs(extent[0] - 32.2) < 0.05 and abs(extent[1] - 3.7) < 0.05
+                                   and abs(extent[2] - 11) < 0.05)
+    module_bounds, sink_bounds = meshes['chg_module'].bounds, meshes['chg_sink'].bounds
+    spaces = {'component_face_space': ([57, 54.6, 33.2], [83, 56.6, 42.2]),
+              'heatsink_rear_space': ([77.6, 67.7, 31.7], [89.6, 69.5, 43.7])}
+    result['face_anchor_gaps_mm'] = {'components': float(module_bounds[0, 1] - 56.6),
+                                      'heatsink': float(67.7 - sink_bounds[1, 1])}
+    result['fields_inside_face_extents'] = all(
+        bounds[0, axis] + 0.05 <= lo[axis] < hi[axis] <= bounds[1, axis] - 0.05
+        for bounds, (lo, hi) in [(module_bounds, spaces['component_face_space']),
+                                 (sink_bounds, spaces['heatsink_rear_space'])]
+        for axis in (0, 2))
+    bodies = _charger_air_probes(cylinder)
+    for name, probe in bodies.items():
+        collisions = {n: round(float((probe ^ s).volume()), 7) for n, s in solids.items()
+                      if not n.startswith('driver_')}
+        result['probes'][name] = {'volume_mm3': round(probe.volume(), 4),
+                                  'collisions_mm3': {n: v for n, v in collisions.items() if v > 0.0001}}
+    result['route_connections'] = {}
+    for side, space in [('component', 'component_face_space'), ('heatsink', 'heatsink_rear_space')]:
+        route = bodies[side + '_side_route']
+        result['route_connections'][side] = dict(components=len(route.decompose()),
+            face_space_overlap_mm3=round(float((route ^ bodies[space]).volume()), 5),
+            probe_diameter_mm=1.2)
+    return result
+
+
+def check_charger_air(ctx):
+    result = _charger_air_report(ctx.meshes, ctx.solids, ctx.cylinder)
+    assert result['vertical_pose'], f"Charge board is not upright: {result['module_extents_mm']}"
+    assert result['fields_inside_face_extents'], 'Air probe fields do not cover the board faces'
+    assert all(0.05 <= gap <= 0.5 for gap in result['face_anchor_gaps_mm'].values()), \
+        f"Air probe fields detached from board faces: {result['face_anchor_gaps_mm']}"
+    assert all(not item['collisions_mm3'] for item in result['probes'].values()), \
+        f"Charge-module air corridor blocked: {result['probes']}"
+    assert all(q['components'] == 1 and q['face_space_overlap_mm3'] > 1
+               for q in result['route_connections'].values()), 'Disconnected charge-module air corridor'
+    return dict(charger_air_access=result)
+
+
+
+def check_rim_chamfers(ctx):
+    """Measure real end profiles, including the four formerly truncated cassette sides."""
+    m = ctx.metrics
+    width, depth = m["body"]
+    bottom, top = m["base_h"], m["base_h"] + m["head_h"]
+    local = {n: head_frame(ctx.meshes[n], m) for n in ("head", "head_back", "cassette")}
+    rows = []
+    for d in (0.1, 0.6, 1.1, 1.3):
+        edge, cass = max(0, m["edge_c"] - d), max(0, m["cass_c"] - d)
+        cy = -m["cass_t"] + d
+        # (part, profile, mesh, ray origin, ray axis, expected outer limits)
+        cases = [
+            ("base", "left/right", ctx.meshes["base"], [-1, depth / 2, d], 0, [edge, width - edge]),
+            ("base", "front/back", ctx.meshes["base"], [width / 2, -1, d], 1, [edge, depth - edge]),
+            ("cassette", "left/right", local["cassette"], [-1, cy, (bottom + top) / 2], 0,
+             [m["plan_r"] + cass, width - m["plan_r"] - cass]),
+            ("cassette", "bottom/top", local["cassette"], [width / 2, cy, 0], 2,
+             [bottom + m["cass_inset"] + cass, top - m["cass_inset"] - cass]),
+            ("head", "bottom/top", local["head"], [width / 2, d, 0], 2, [bottom + edge, top - edge]),
+            ("head_back", "bottom/top", local["head_back"], [width / 2, depth - d, 0], 2,
+             [bottom + m["cover_gap"] + edge, top - edge]),
+        ]
+        for name, profile, mesh, origin, axis, expected in cases:
+            direction = np.eye(3)[axis]
+            hits, _, _ = mesh.ray.intersects_location([origin], [direction], multiple_hits=True)
+            assert len(hits) >= 2, f"Chamfer probe misses {name}/{profile} at depth {d}"
+            measured = [float(hits[:, axis].min()), float(hits[:, axis].max())]
+            error = float(np.max(np.abs(np.asarray(measured) - expected)))
+            assert error < 0.03, f"Incorrect rim chamfer {name}/{profile} at depth {d}: {measured} vs {expected}"
+            rows.append(dict(part=name, profile=profile, depth_mm=d,
+                             limits_mm=[round(x, 4) for x in measured], max_error_mm=round(error, 5)))
+    return dict(rim_chamfer_profiles=rows)
+
+
 def checks(ctx):
     """Project-specific checks after export."""
     m = ctx.metrics
@@ -258,7 +364,7 @@ def checks(ctx):
         ("fan", "head_back", into),                   # and on the spacer posts of the cover
         ("feet", "base", [0, 0, 1]),
         ("pwm_board", "base", [0, 0, -1]),            # board on the rib pads
-        ("chg_module", "ball_lid", [0, 0, -1]),       # board down in its tray on the ballast lid
+        ("chg_module", "ball_lid", [0, 0, -1]),       # upright board rests on two narrow PCB-edge seats
         ("ball_lid", "base", [0, 0, -1]),             # lid on its posts and walls
     ])
     # Stops: the fan cannot move sideways in its corner guides, the head is located by its screws
@@ -266,7 +372,9 @@ def checks(ctx):
     # usbc_in: pushing a cable into the socket must not push the board into the bay
     stops = ctx.stops([("fan_sideways", "fan", "head", [1, 0, 0], 1.5),
                        ("usbc_in", "usbc", "base", [0, -1, 0], 0.6),
-                       ("head_on_screws", "head", "screws_head", [1, 0, 0], 0.6)])
+                       ("head_on_screws", "head", "screws_head", [1, 0, 0], 0.6),
+                       ("charger_forward", "chg_module", "ball_lid", [0, -1, 0], 0.4),
+                       ("charger_backward", "chg_module", "ball_lid", [0, 1, 0], 0.4)])
     # The cell is held in open saddles by foam tape, so it has clearance instead of contact
     # 0.2 for the heatsink: nominal 0.3 in its wall cut-out, less the facets of the rounded corners
     gaps = ctx.clearances([("battery", "base", 0.3), ("battery", "head", 1.0),
@@ -279,15 +387,16 @@ def checks(ctx):
         # the fan is bolted to the cover, so it comes off with it
         ("cover_off", ["head_back", "fan", "screws_fan"], ["head", "base", "chg_module", "chg_sink"],
          [-o for o in out], 30, 0.5),
-        # the board lifts out of its grooves once the cover is off; it has to, because it stands in the
-        # way of the fan
-        ("chg_off", ["chg_module", "chg_sink"], ["base", "ball_lid", "battery", "pwm_board"], [0, 0, 1], 30, 0.5),
-        # the rear head screw bosses hang over the trough, so the lid slides forward first; the cell
-        # is out by then anyway
+        # Remove the head first, then lift board and heatsink out of the open-top guides.
+        ("chg_off", ["chg_module", "chg_sink"],
+         ["base", "ball_lid", "battery", "pwm_board", "usbc", "switch", "led", "pot", "screws_lid"],
+         [0, 0, 1], 30, 0.5),
+        # Remove the head, battery and lid screws before lifting the loaded lid.
         # 10 mm up: clear of the trough walls, its posts, the USB-C channel above it and the run-outs of
         # the rear head screw bosses. Out of the bay it comes at an angle, past the switch well box on the
         # right - a tilt, which a rigid axis-aligned path cannot express.
-        ("lid_off", "ball_lid", ["base", "ballast", "pwm_board", "usbc", "switch"], [0, 0, 1], 10, 0.5),
+        ("lid_off", ["ball_lid", "chg_module", "chg_sink"],
+         ["base", "ballast", "pwm_board", "usbc", "switch"], [0, 0, 1], 10, 0.5),
         ("fan_out", ["fan", "screws_fan"], ["head", "base"], [-o for o in out], 40, 0.5),   # cover off first
         ("head_off", ["head", "head_back", "cassette", "fan", "filter", "magnets"],
          ["base", "battery", "pwm_board", "usbc", "switch", "pot", "led", "ball_lid", "ballast",
@@ -341,7 +450,8 @@ def checks(ctx):
                 intake_lip_mm=lip, mat_free_travel_mm=round(mat_free, 2), mat_squashed_percent=round(100 * squashed / mat, 2), mass_g=round(total, 1),
                 centre_of_mass_mm=[round(c, 1) for c in com],
                 foot_polygon_mm=poly, tip_margins_mm={k: round(v, 1) for k, v in margins.items()},
-                tip_angle_deg=round(tip_angle, 1), **check_top_corners(ctx), **check_joint_profile(ctx))
+                tip_angle_deg=round(tip_angle, 1), **check_top_corners(ctx), **check_joint_profile(ctx),
+                **check_rim_chamfers(ctx), **check_charger_air(ctx))
 
 
 def _tilt(m, point):
@@ -395,4 +505,8 @@ VIEWER = dict(
 
 VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
          "02_exploded": ("assembly(18);", "60,-360,170,0,0,30"),
-         "03_back": ("assembly();", "60,320,150,0,0,205")}
+         "03_back": ("assembly();", "60,320,150,0,0,205"),
+         "04_charger_front": ("color(\"#8a9096\") ball_lid(); color(\"#2f5d3a\") chg_module_env(); "
+                              "color(\"#aeb5bb\") chg_sink_env();", "110,-90,90,70,60,34"),
+         "05_charger_back": ("color(\"#8a9096\") ball_lid(); color(\"#2f5d3a\") chg_module_env(); "
+                             "color(\"#aeb5bb\") chg_sink_env();", "110,180,90,70,60,34")}

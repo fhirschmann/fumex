@@ -9,6 +9,8 @@
 // Modules build every part in its INSTALLED position; the part branches at the end put each print
 // part into PRINT orientation (largest flat face on the bed at z = 0). The tools set `part`.
 
+include <BOSL2/std.scad>
+
 part = "assembly";   // print part, "assembly", "exploded", "metrics", "none"
 $fa = 2;
 $fs = 0.6;
@@ -45,12 +47,8 @@ mat_stop_rise = 1.5;  // flank of the rear lip: 1.5 mm of depth per mm inwards, 
 chamber_sq = 121.5;  // filter chamber, 0.75 mm wider than the hand-cut mat all round
 chamber_d = 17.5;    // the mat is 17 mm (user, cut from a cooker hood mat)
 tube_w = 3;          // wall of the filter chamber inside the shell
-lug_d = 10;          // the chamber runs this much further back than the mat: the fan bears on four corner
-                     // gussets there and its inserts sit in them
-// A flat seat plate with a round bore would be a 4400 mm2 flat overhang over the chamber (analyze.py
-// overhangs). Instead the four corners fill in at 45 degrees from the intake face: nothing overhangs,
-// the opening stays wider than the swept annulus, and the gussets carry the fan inserts.
-plenum = 14.3;       // free space behind the fan: the charge module rides on the back cover in there
+lug_d = 10;          // chamber depth behind the mat; the rear lip runs on to the fan frame's seat
+plenum = 14.3;       // free space behind the fan, also feeding the slots above the charge module
 back_t = 4;
 lip_h = 4;           // back cover lip reaching into the head
 lip_t = 3;
@@ -145,22 +143,19 @@ knob_c = 1.2;
 knob_mark = [1.6, 7.5, 0.8];   // pointer groove in the top face (single colour, no inlay)
 
 /* [Charge/boost module: eletechsup LFUPSMA, 12 V variant, in the bay under a vent] */
-// The CN3058E is a linear charger: at 1 A from 5 V it turns about 1.6 W into heat. It went outside the
-// housing, then into the plenum, and now back into the bay with an opening above it (user, 2026-09-22) -
-// the best of the three: short wires, nothing in the fan's way out, and brackets on the bay floor are
-// plain vertical walls in print. The opening in the head floor meets the 5.75 mm channel that runs
-// between the filter tube and the shell, under the fan and into the plenum, so the fan pushes filtered
-// air down through it, over the board and out of the slots in the back wall. With the fan off the warm
-// air rises the same way. No filter is bypassed either way.
+// The board stands on its long edge above the ballast lid, components towards the front and
+// heatsink towards the back. Two narrow end supports leave both broad faces exposed below the
+// plenum slots. Air can pass the component side and the heatsink before leaving the back vents.
 chg_pcb = [32.2, 11, 1.0];  // measured length (here along x), width (z), thickness (y)
 chg_comp_h = 2.7;    // parts above the PCB (3.7 total, measured)
 chg_cx = 70;         // board centre on the ballast lid, right of its two screws
-chg_cy = 62;         // and across the lid
-chg_stand = 3.2;     // board underside over the lid: its parts are chg_comp_h tall and hang down
+chg_cy = 60;         // PCB mid-plane across the lid; both board faces are exposed to air
+chg_stand = 3.2;     // lower PCB edge above the lid; the heatsink extends 1.5 mm below it
 chg_sink = [14, 14, 6, 1];  // user's heatsink behind the IC: length, width, height, insulating pad
 chg_sink_end = 9.5;  // near end of the heatsink from the IN end; it overhangs that end by 4.5 mm
-chg_cl = 0.5;        // clearance round the board in its tray
-chg_br = [2, 1.4, 2, 2.5];  // end brackets: thickness (x; 3 left only 1 mm beside the groove), groove width, depth, tie tunnel
+chg_cl = 0.2;        // end clearance; the 1.4 mm guide groove leaves 0.2 mm per PCB face
+chg_br = [2, 1.4, 2, 2.5];  // backbone thickness, guide width, edge engagement, gusset rise
+chg_grip = [3, 3.2];       // guide starts above the PCB lower edge, then grips its central width
 // The vent over the board is a row of slots, not one opening: printed with the intake face on the bed
 // the head floor is a vertical wall, so one 38 mm opening leaves a 113 mm2 flat bridge at its far edge.
 chg_vent = [6, 9, 6, 10];    // slot width (x), pitch, count, depth (y) in the head floor over the board
@@ -293,10 +288,10 @@ knob_len = knob_bore_top + knob_skin;   // 15.0 mm proud of the front face, and 
                                         // asked 2026-09-23, chose not to cut). knob_gap stays at 1.5 -
                                         // LEO-AC1 measured that 0.5 rubbed when the knob was pressed home.
 usbc_y0 = body_d - wall - usbc_board[0] + usbc_plate;
-chg_z0 = ball[3] + ball_lid_t + chg_stand;              // underside of the PCB
+chg_z0 = ball[3] + ball_lid_t + chg_stand;              // lower edge of the upright PCB
 chg_x0 = chg_cx - chg_pcb[0] / 2;                       // OUT end of the board
-chg_y0 = chg_cy - chg_pcb[1] / 2;                       // and its near edge across the lid
-chg_sink_z = chg_z0 + chg_pcb[2] + chg_sink[3];         // pad on the PCB, heatsink on the pad
+chg_y0 = chg_cy - chg_pcb[2] / 2;                       // component-side PCB face
+chg_sink_z = chg_z0 + (chg_pcb[1] - chg_sink[1]) / 2;   // heatsink lower edge, centred over the PCB width
 chg_sink_cx = chg_x0 + chg_pcb[0] - chg_sink_end + chg_sink[0] / 2;   // heatsink centre along x
 
 function base_top(y) = base_h + (y - joint_y) * tan(tilt);
@@ -327,13 +322,13 @@ assert(head_y[4] - head_y[3] >= insert_depth + 1, "Fan posts too short for the i
 assert(open_sq < chamber_sq - 2, "Intake lip does not hold the mat");
 assert(pot_mount_t > 1.2, "Wall under washer and nut too thin");
 assert(base_top(0) > pot_z + knob_d / 2 + 2, "Knob reaches over the front rim");
-assert(chg_stand > chg_comp_h + 0.3, "Charge module parts touch the ballast lid");
-assert(chg_y0 - 1 > ball[2] + 1 && chg_y0 + chg_pcb[1] + 1 < body_d - wall - 1,
-       "Charge module holder runs off the ballast lid");
+assert(chg_sink_z > ball[3] + ball_lid_t + 1.2, "Heatsink too close to the ballast lid");
+assert(chg_y0 - chg_comp_h > ball[2] + 1 && chg_y0 + chg_pcb[2] + chg_sink[3] + chg_sink[2] < body_d - wall - 1,
+       "Charge module leaves no air passage around its two faces");
 assert(min([for (q = ball_posts()) abs(q[0] - chg_cx) - chg_pcb[0] / 2 - chg_br[0]]) > 2,
        "Charge module holder sits on a ballast lid screw");
-assert(chg_z0 + chg_pcb[2] + chg_sink[3] + chg_sink[2] + 5 < base_top(chg_cy),
-       "Less than 5 mm over the heatsink to the head floor");
+assert(max(chg_z0 + chg_pcb[1], chg_sink_z + chg_sink[1]) + 5 < base_top(chg_y0 - chg_comp_h),
+       "Less than 5 mm over the charge module to the head floor");
 assert(vent_xz[1] > ball[3] + ball_lid_t, "Back wall slots would let the ballast out");
 assert(mag[1] < cass_t - 1.2, "Cassette too thin for the magnet pockets");
 assert(plan_r + cass_c < body_w / 2 - mag_off - mag[0] / 2, "Cassette bevel cuts into the magnet pockets");
@@ -346,14 +341,14 @@ assert(len_head - wall >= 5, "Head screws reach less than 5 mm into the base ins
 
 // ---------- helpers ----------
 module rrect(size, r) offset(r = r) offset(delta = -r) square(size, center = true);
-module rect(a, b) translate([min(a[0], b[0]), min(a[1], b[1])]) square([max(abs(b[0] - a[0]), eps), max(abs(b[1] - a[1]), eps)]);
+module bounds_rect(a, b) translate([min(a[0], b[0]), min(a[1], b[1])]) square([max(abs(b[0] - a[0]), eps), max(abs(b[1] - a[1]), eps)]);
 // 2D children in (x, z) extruded along y, and in (y, z) extruded along x
 module along_y(y0, y1) translate([0, y1, 0]) rotate([90, 0, 0]) linear_extrude(y1 - y0) children();
 module along_x(x0, x1) translate([x0, 0, 0]) multmatrix([[0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1]]) linear_extrude(x1 - x0) children();
 module cyl_y(c, y0, y1, r1, r2 = -1) translate([c[0], y0, c[1]]) rotate([-90, 0, 0]) cylinder(r1 = r1, r2 = r2 < 0 ? r1 : r2, h = y1 - y0);
 module cyl_x(c, x0, x1, r1, r2 = -1) translate([x0, c[0], c[1]]) rotate([0, 90, 0]) cylinder(r1 = r1, r2 = r2 < 0 ? r1 : r2, h = x1 - x0);
 // Point the local +z axis along an axis-aligned direction
-module orient(d) {
+module axis_orient(d) {
     if (d[2] < 0) rotate([180, 0, 0]) children();
     else if (d[1] > 0) rotate([-90, 0, 0]) children();
     else if (d[1] < 0) rotate([90, 0, 0]) children();
@@ -451,6 +446,45 @@ module grid_2d(area, bar = grid_bar, gap = grid_gap) let (n = max(1, floor((area
         square([area, area], center = true);
     }
 
+// Point paths matching the native offset(r) outline sampling. Keeping the
+// finished contour as data lets BOSL2 generate exact-height 45-degree chamfers.
+function head_profile_points(inset = 0) = let (
+    w = body_w - 2 * inset, h = head_h - 2 * inset,
+    rt = max(corner_r - inset, 0.5), rb = max(corner_rb - inset, 0.5))
+    [for (c = [0:3]) let (
+        r = c == 0 || c == 3 ? rb : rt,
+        nf = max(5, ceil(min(360 / $fa, 2 * PI * r / $fs))),
+        da = 360 / nf, n = ceil(90 / da),
+        cx = c < 2 ? w / 2 - r : -w / 2 + r,
+        cz = c == 0 || c == 3 ? -h / 2 + r : h / 2 - r)
+        for (k = [0:n]) let (a = -90 + c * 90 + min(k * da, 90))
+        [body_w / 2 + cx + r * cos(a), head_cz + cz + r * sin(a)]];
+function cassette_profile_points() = intersection(
+    head_profile_points(cass_inset),
+    move([body_w / 2, head_cz], p=rect([body_w - 2 * plan_r, head_h + 10])))[0];
+function cover_profile_points() = intersection(
+    head_profile_points(),
+    move([body_w / 2, base_h + cover_gap + head_h / 2], p=rect([body_w + 2, head_h])))[0];
+// A native-position profile in x/z, swept from y0 to y1. Chamfers are measured
+// from the real end planes; no hull-tip thickness enters their dimensions.
+module profile_sweep_y(path, y0, y1, front_c = 0, back_c = 0) {
+    translate([0, y1, 0]) rotate([90, 0, 0])
+        offset_sweep(path, height = y1 - y0, offset = "delta",
+            bottom = os_chamfer(height = back_c, width = back_c),
+            top = os_chamfer(height = front_c, width = front_c));
+}
+// Extend the tool beyond the quantized chamfer end. A one-grid outward offset
+// and equal added chamfer width/height keep the 45-degree cut unchanged while
+// avoiding a vanishing cut against the independently tessellated native outline.
+module front_rim_chamfer(path, y, c) let(sweep_eps = 1 / 1024) difference() {
+    translate([-1, y - eps, base_h - 1]) cube([body_w + 2, c + 2 * eps, head_h + 2]);
+    profile_sweep_y(offset(path, delta = sweep_eps), y, y + c + 3 * eps, front_c = c + sweep_eps);
+}
+module back_rim_chamfer(path, y, c) let(sweep_eps = 1 / 1024) difference() {
+    translate([-1, y - c - eps, base_h - 1]) cube([body_w + 2, c + 2 * eps, head_h + 2]);
+    profile_sweep_y(offset(path, delta = sweep_eps), y - c - 3 * eps, y, back_c = c + sweep_eps);
+}
+
 // ---------- head: shell, filter chamber, fan seat (untilted frame) ----------
 module head_raw() difference() {
     intersection() { plan_prism(); head_body(); }
@@ -489,10 +523,7 @@ module head_body() difference() {
         translate([chg_cx - ((chg_vent[2] - 1) * chg_vent[1] + chg_vent[0]) / 2 + i * chg_vent[1],
                    head_y[3] + 1, base_h - 1])
             cube([chg_vent[0], chg_vent[3], wall + 2]);
-    difference() {                                                      // chamfer on the intake bed face
-        along_y(-eps, edge_c) head_outline(-1);
-        hull() { along_y(-eps, -eps + tip) head_outline(edge_c); along_y(edge_c - tip, edge_c) head_outline(); }
-    }
+    front_rim_chamfer(head_profile_points(), 0, edge_c);
 }
 // Rear lip of the filter chamber, the counterpart of the intake lip. Without it the mat is held at the
 // front by that lip and at the back by nothing but the four gusset corners - 7.8 % of its rear face - with
@@ -519,39 +550,37 @@ module mat_stop() let (y0 = mat_stop_y()[0], y1 = mat_stop_y()[1])
 // asked whether the fan can be screwed to the back cover instead (2026-09-23) - it can, and the same
 // M3 x 30 do it: fan and cover are screwed together on the bench, where the fan's front face is reachable,
 // and the pair goes into the head as one.
-// Holder for the charge module: a plate that screws to the head floor and two grooved end brackets that
-// take the short edges of the board. One cable tie through the tunnels above it stops the board lifting
-// out. Printed with the plate on the bed, so the brackets and their grooves are plain vertical walls.
-// Holder on the ballast lid: a shallow tray the board drops into, heatsink up, parts hanging down in the
-// chg_stand gap. The lip stays below the top face of the board all round - the heatsink is wider than the
-// PCB on three sides - so the board goes straight down into the tray and straight back out. A tab over the
-// left end held it before and made both of those impossible (audit 2026-09-23, A4). The lid
-// prints flat, so all of this is plain walls on a plate.
-module chg_tray() let (w = chg_br[0], z0 = ball[3] + ball_lid_t,
-                       low = chg_z0 + chg_pcb[2] - 0.3, high = chg_z0 + chg_pcb[2] + 1.2)
-    translate([chg_x0 - chg_cl, chg_y0 - chg_cl, 0]) {
-        difference() {
-            translate([-w, -w, z0 - eps])
-                cube([chg_pcb[0] + 2 * (chg_cl + w), chg_pcb[1] + 2 * (chg_cl + w), low - z0 + eps]);
-            translate([0, 0, chg_z0])                                                // the board itself
-                cube([chg_pcb[0] + 2 * chg_cl, chg_pcb[1] + 2 * chg_cl, low]);
-            translate([chg_cl + chg_br[2], 0, z0 - eps])                                // its parts, between the
-                cube([chg_pcb[0] - 2 * chg_br[2], chg_pcb[1] + 2 * chg_cl,              // two end ledges it rests on
-                      chg_z0 - z0 + eps]);
-            translate([chg_pcb[0] + chg_cl - eps, -w - 1, z0 - eps])                    // heatsink overhang
-                cube([w + 1 + eps, chg_pcb[1] + 2 * (chg_cl + w) + 2, low]);
-        }
-        translate([-w, -w, z0 - eps]) cube([w, chg_pcb[1] + 2 * (chg_cl + w), high - z0 + eps]);   // left wall
+// Two end supports hold the board upright with both broad faces exposed to air. The central
+// guides miss the OUT pads at the upper and lower corners. Their lower flanks grow from the
+// end backbones, so no unsupported shelf is printed. The right rear cheek is deliberately open:
+// the heatsink and its insulating pad overhang that end. A narrow seat bears on the PCB cut edge.
+module chg_brackets() let (w = chg_br[0], g = chg_br[1], e = chg_br[2],
+                       z0 = ball[3] + ball_lid_t,
+                       za = chg_z0 + chg_grip[0], zb = za + chg_grip[1],
+                       yf = chg_cy - g / 2 - 1.8, yr = chg_cy + g / 2) {
+    for (side = [0, 1]) let (edge = side == 0 ? chg_x0 - chg_cl : chg_x0 + chg_pcb[0] + chg_cl,
+                            xr = side == 0 ? edge - w : edge,
+                            xs = side == 0 ? edge : edge - e) {
+        // Full end backbone; the right one stops before the insulating pad.
+        translate([xr, yf, z0 - eps])
+            cube([w, side == 0 ? g + 3.6 : chg_y0 + chg_pcb[2] - 0.2 - yf, zb - z0 + eps]);
+        translate([xs - eps, chg_y0 - 0.4, z0 - eps])
+            cube([e + 2 * eps, 1.2, chg_z0 - z0 + eps]);
+        for (rear = [0:side == 0 ? 1 : 0]) let (y = rear == 0 ? yf : yr)
+            hull() {
+                translate([xr, y, za - chg_br[3]]) cube([w, 1.8, zb - za + chg_br[3]]);
+                translate([min(xr, xs), y, za]) cube([w + e, 1.8, zb - za]);
+            }
     }
-module chg_brackets() chg_tray();
+}
 // ventilation slots in the back wall, above the ballast lid: the outlet of the draught through the bay
 module vent_slots() for (i = [0:vent[2] - 1])
     translate([vent_xz[0] + i * vent[1], body_d - wall - 1, vent_xz[1] + i * vent[4]])
         cube([vent[0], wall + 2, vent[3]]);
 module fan_guides() for (sx = [-1, 1], sz = [-1, 1]) translate([body_w / 2, 0, head_cz]) scale([sx, 1, sz])
     along_y(head_y[2] - 0.5, head_y[3]) let (i = fan_size / 2 + fan_cl, o = i + guide[0]) {
-        rect([i, i - guide[1]], [o, o]);      // L round the corner, both inner faces on the fan
-        rect([i - guide[1], i], [o, o]);
+        bounds_rect([i, i - guide[1]], [o, o]);      // L round the corner, both inner faces on the fan
+        bounds_rect([i - guide[1], i], [o, o]);
     }
 module head() head_at() head_raw();
 module head_print_pose() translate([0, base_h + head_h, 0]) rotate([90, 0, 0]) children();   // intake face on the bed
@@ -586,17 +615,7 @@ module head_back_body() intersection() {
         cyl_y(p, head_y[4] - 1, body_d + 1, screw_clear_d / 2);
         cyl_y(p, body_d - head_pocket[1], body_d + 1, head_pocket[0] / 2);
     }
-    difference() {                                                      // chamfer on the outer bed face
-        along_y(body_d - edge_c, body_d + eps) head_outline(-1);
-        hull() { along_y(body_d - edge_c, body_d - edge_c + tip) head_outline();
-                 along_y(body_d - tip, body_d) head_outline(edge_c); }
-    }
-    // The joint plane cuts the plate square again along its lower edge, which left the one sharp edge on the
-    // part, right where it lands on the base (user, 2026-09-23). Same 45 degree chamfer as the rest of the
-    // rim, and it prints as the elephant-foot chamfer of that edge - the outer face is the bed face.
-    along_x(-1, body_w + 1) let (z0 = base_h + cover_gap)
-        polygon([[body_d - edge_c, z0], [body_d - edge_c, z0 - 1],
-                 [body_d + 2, z0 - 1], [body_d + 2, z0 + edge_c + 2]]);
+    back_rim_chamfer(cover_profile_points(), body_d, edge_c);
     }
 }
 module head_back() head_at() head_back_raw();
@@ -620,14 +639,10 @@ module cass_face(inset = 0) offset(delta = -inset) intersection() {
     translate([body_w / 2, head_cz]) square([body_w - 2 * plan_r, head_h + 10], center = true);
 }
 module cassette_raw() difference() {
-    along_y(-cass_t, 0) cass_face();
+    profile_sweep_y(cassette_profile_points(), -cass_t, 0, front_c = cass_c);
     translate([body_w / 2, 0, head_cz]) along_y(-cass_t - 1, 1) grid_2d(open_sq);
     for (p = mag_xz()) cyl_y(p, -mag[1], eps, mag[0] / 2);              // pockets open towards the head
-    difference() {                                                      // chamfer on the outer bed face
-        along_y(-cass_t - eps, -cass_t + cass_c) cass_face(-1);
-        hull() { along_y(-cass_t - eps, -cass_t + tip) cass_face(cass_c);
-                 along_y(-cass_t + cass_c - tip, -cass_t + cass_c) cass_face(); }
-    }
+
 }
 module cassette() head_at() cassette_raw();
 module cassette_print_pose() translate([0, base_h + head_h, cass_t]) rotate([90, 0, 0]) children();   // grid face on the bed
@@ -708,16 +723,16 @@ module base() difference() {
     for (p = foot_xy) translate([p[0], p[1], -1]) cylinder(d = insert_hole_d, h = insert_depth + 1);
     for (p = foot_xy) translate([p[0] + foot_peg[2], p[1], -eps])
         cylinder(d = foot_peg[0] + foot_peg_cl, h = foot_peg[1] + eps);   // anti-rotation peg holes
-    difference() {                                                      // chamfer on the bottom bed face
-        translate([-1, -1, -eps]) cube([body_w + 2, body_d + 2, edge_c + eps]);
-        hull() { translate([0, 0, -eps]) linear_extrude(tip) base_outline(edge_c);
-                 translate([0, 0, edge_c - tip]) linear_extrude(tip) base_outline(0); }
+    difference() {                                                      // exact bottom-bed chamfer
+        translate([-1, -1, -eps]) cube([body_w + 2, body_d + 2, edge_c + 2 * eps]);
+        offset_sweep(joint_plan_points(0), height = edge_c + 3 * eps, offset = "delta",
+            bottom = os_chamfer(height = edge_c, width = edge_c));
     }
 }
 
 // three open saddles up to the axis; the protection board faces up, foam tape keeps the cell quiet
 module battery_cradle() for (cx = cradle_x) translate([cx - cradle_t / 2, 0, 0]) along_x(0, cradle_t) difference() {
-    rect([bat_cy - bat_d / 2 - cradle_out, floor_t - eps], [bat_cy + bat_d / 2 + cradle_out, bat_cz]);
+    bounds_rect([bat_cy - bat_d / 2 - cradle_out, floor_t - eps], [bat_cy + bat_d / 2 + cradle_out, bat_cz]);
     translate([bat_cy, bat_cz]) circle(d = bat_d + 2 * bat_clear);
 }
 // two ribs under the pin-free long edges, pads on top, solder pins hanging free between them
@@ -871,7 +886,7 @@ module knob_local() difference() {   // z = 0 at the underside (knob_gap off the
     translate([knob_d / 2 - knob_c - knob_mark[1], -knob_mark[0] / 2, knob_len - knob_mark[2]])   // pointer groove, open to the bed
         cube([knob_mark[1], knob_mark[0], knob_mark[2] + eps]);
 }
-module knob() translate([pot_x, -knob_gap, pot_z]) orient([0, -1, 0]) knob_local();
+module knob() translate([pot_x, -knob_gap, pot_z]) axis_orient([0, -1, 0]) knob_local();
 module knob_print_pose() translate([0, 0, knob_len]) mirror([0, 0, 1]) children();   // top face on the bed
 
 // ---------- feet ----------
@@ -927,8 +942,8 @@ module pot_local(nut = true) {       // local z along the shaft, z = 0 at the ou
     }
     translate([0, 0, -pot_mount_t + pot_bush[1] - eps]) cylinder(d = pot_shaft_d, h = pot_shaft_free + eps);
 }
-module pot_env(nut = true) translate([pot_x, 0, pot_z]) orient([0, -1, 0]) rotate([0, 0, -90]) pot_local(nut);
-module pot_nut_env() translate([pot_x, 0, pot_z]) orient([0, -1, 0]) difference() {
+module pot_env(nut = true) translate([pot_x, 0, pot_z]) axis_orient([0, -1, 0]) rotate([0, 0, -90]) pot_local(nut);
+module pot_nut_env() translate([pot_x, 0, pot_z]) axis_orient([0, -1, 0]) difference() {
     union() {
         cylinder(d = pot_washer[0], h = pot_washer[1]);
         translate([0, 0, pot_washer[1] - eps]) cylinder(d = pot_nut[0], h = pot_nut[1] + eps);
@@ -936,13 +951,13 @@ module pot_nut_env() translate([pot_x, 0, pot_z]) orient([0, -1, 0]) difference(
     translate([0, 0, -1]) cylinder(d = pot_bush[0] + 0.1, h = pot_washer[1] + pot_nut[1] + 2);
 }
 module chg_module_env() translate([chg_x0, chg_y0, chg_z0]) {
-    cube([chg_pcb[0], chg_pcb[1], chg_pcb[2]]);                                  // PCB, flat on the lid
-    translate([chg_br[2], 0, -chg_comp_h])                                            // parts, hanging down;
-        cube([chg_pcb[0] - 2 * chg_br[2], chg_pcb[1], chg_comp_h + eps]);             // the ends are bare
+    cube([chg_pcb[0], chg_pcb[2], chg_pcb[1]]);       // PCB upright, normal along y
+    translate([chg_br[2], -chg_comp_h, 0])
+        cube([chg_pcb[0] - 2 * chg_br[2], chg_comp_h + eps, chg_pcb[1]]);
 }
-// insulating pad and heatsink on the back of the board, in the draught through the bay
-module chg_sink_env() translate([chg_sink_cx - chg_sink[0] / 2, chg_cy - chg_sink[1] / 2, chg_z0 + chg_pcb[2]])
-    cube([chg_sink[0], chg_sink[1], chg_sink[3] + chg_sink[2]]);
+// Insulating pad and heatsink on the rear PCB face; both remain clear of the lid.
+module chg_sink_env() translate([chg_sink_cx - chg_sink[0] / 2, chg_y0 + chg_pcb[2], chg_sink_z])
+    cube([chg_sink[0], chg_sink[3] + chg_sink[2], chg_sink[1]]);
 module usbc_env() {
     translate([usbc_xz[0] - usbc[1] / 2, usbc_y0, usbc_xz[1] - usbc[2] / 2]) cube([usbc[1], usbc_board[0], usbc[2]]);
     usbc_stadium(body_d - usbc_protrusion - eps, body_d, 0);
@@ -966,12 +981,12 @@ module screw(len, socket = false) difference() {
 }
 // From the front of the fan into the inserts in the cover's posts: the pair is screwed together on the
 // bench, before it goes into the head
-module screws_fan(socket = false) head_at() for (p = fan_holes()) translate([p[0], head_y[2], p[1]]) orient([0, 1, 0]) screw(len_fan, socket);
-module screws_back(socket = false) head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) orient([0, -1, 0]) screw(len_back, socket);
-module screws_head(socket = false) head_at() for (p = rim_bosses()) translate([p[0], p[1], base_h + wall]) orient([0, 0, -1]) screw(len_head, socket);
+module screws_fan(socket = false) head_at() for (p = fan_holes()) translate([p[0], head_y[2], p[1]]) axis_orient([0, 1, 0]) screw(len_fan, socket);
+module screws_back(socket = false) head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) axis_orient([0, -1, 0]) screw(len_back, socket);
+module screws_head(socket = false) head_at() for (p = rim_bosses()) translate([p[0], p[1], base_h + wall]) axis_orient([0, 0, -1]) screw(len_head, socket);
 module screws_lid(socket = false) for (q = ball_posts())
-    translate([q[0], q[1], ball[3] + ball_lid_t - lid_pocket]) orient([0, 0, -1]) screw(len_lid, socket);
-module screws_feet(socket = false) for (p = foot_xy) translate([p[0], p[1], -foot[2] + foot_head_recess + screw_head_h]) orient([0, 0, 1]) screw(len_foot, socket);
+    translate([q[0], q[1], ball[3] + ball_lid_t - lid_pocket]) axis_orient([0, 0, -1]) screw(len_lid, socket);
+module screws_feet(socket = false) for (p = foot_xy) translate([p[0], p[1], -foot[2] + foot_head_recess + screw_head_h]) axis_orient([0, 0, 1]) screw(len_foot, socket);
 
 // ---------- driver access ----------
 // A Torx bit in a 1/4 inch holder, on the head of every screw and pointing away from it: 7 mm for the
@@ -983,11 +998,11 @@ module driver_at() translate([0, 0, -screw_head_h]) mirror([0, 0, 1]) {
     translate([0, 0, driver[1] - eps]) cylinder(d = driver[2], h = driver[3] + eps);
     translate([0, 0, driver[1] + driver[3] - eps]) cylinder(d = driver[4], h = driver[5] + eps);
 }
-module drivers_fan()  head_at() for (p = fan_holes())   translate([p[0], head_y[2], p[1]]) orient([0, 1, 0]) driver_at();
-module drivers_back() head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) orient([0, -1, 0]) driver_at();
-module drivers_head() head_at() for (p = rim_bosses())  translate([p[0], p[1], base_h + wall]) orient([0, 0, -1]) driver_at();
-module drivers_feet() for (p = foot_xy) translate([p[0], p[1], -foot[2] + foot_head_recess + screw_head_h]) orient([0, 0, 1]) driver_at();
-module drivers_lid()  for (q = ball_posts()) translate([q[0], q[1], ball[3] + ball_lid_t]) orient([0, 0, -1]) driver_at();
+module drivers_fan()  head_at() for (p = fan_holes())   translate([p[0], head_y[2], p[1]]) axis_orient([0, 1, 0]) driver_at();
+module drivers_back() head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) axis_orient([0, -1, 0]) driver_at();
+module drivers_head() head_at() for (p = rim_bosses())  translate([p[0], p[1], base_h + wall]) axis_orient([0, 0, -1]) driver_at();
+module drivers_feet() for (p = foot_xy) translate([p[0], p[1], -foot[2] + foot_head_recess + screw_head_h]) axis_orient([0, 0, 1]) driver_at();
+module drivers_lid()  for (q = ball_posts()) translate([q[0], q[1], ball[3] + ball_lid_t]) axis_orient([0, 0, -1]) driver_at();
 
 // ---------- assembly ----------
 module assembly(explode = 0) {
@@ -1006,6 +1021,7 @@ module assembly(explode = 0) {
 if      (part == "assembly") assembly();
 else if (part == "exploded") assembly(18);
 else if (part == "metrics") echo("PROJECT_METRICS", [
+    ["cass_t", cass_t], ["cass_c", cass_c], ["cass_inset", cass_inset], ["cover_gap", cover_gap],
     ["corner_r", corner_r], ["plan_r", plan_r], ["edge_c", edge_c], ["mag_off", mag_off],
     ["wall", wall], ["tilt", tilt], ["body", [body_w, body_d]], ["head_h", head_h],
     ["fan_insert_front", lug_d - insert_depth], ["fan_thread", len_fan - fan_t],
@@ -1016,6 +1032,8 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["foot_x", [foot_xy[0][0], foot_xy[1][0]]], ["foot_y", [foot_xy[0][1], foot_xy[2][1]]],
     ["foot_size", foot], ["foot_chamfer", foot_c], ["insert_depth", insert_depth], ["insert_hole_d", insert_hole_d],
     ["insert_w_min", insert_w_min], ["opening_sq", open_sq], ["fan_post", [fan_post_d, head_y[4] - head_y[3]]],
+    ["charge_pcb", chg_pcb], ["charge_origin", [chg_x0, chg_y0, chg_z0]],
+    ["charge_components", chg_comp_h], ["charge_sink", chg_sink],
     ["base_h", base_h], ["joint_y", joint_y], ["base_joint_h", base_joint_h],
     ["foot_peg", foot_peg], ["ballast", ball], ["ballast_posts", ball_posts()], ["pt_core", pt_core], ["seat_y", head_y[2]], ["back_y", head_y[4]],
     ["fan_holes", fan_holes()], ["head_bosses", head_bosses()], ["rim_screws", rim_screws]]);
