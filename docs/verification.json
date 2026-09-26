@@ -1,5 +1,5 @@
 {
-  "source_sha256": "fd2fbc0cf9d9d500c3e94c05c317dcb5912706031bdcfc5565e9813130792e07",
+  "source_sha256": "7e90185f184b1b34f1a70f9b1028df8e681000716e65b3594a7d6f6cf688a46d",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -36,10 +36,10 @@
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "d6d7a5de34d9c5a17a16a7d016c21f29fe11dd7fda37de0eb48da7f62714e91e",
+      "sha256": "4f6f2c0bbcebe2b6eb569098c0bb6c54089f107e3a8fbab02ad5ff56f7cb946f",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "d6d7a5de34d9c5a17a16a7d016c21f29fe11dd7fda37de0eb48da7f62714e91e"
+      "committed_sha256": "4f6f2c0bbcebe2b6eb569098c0bb6c54089f107e3a8fbab02ad5ff56f7cb946f"
     },
     "head": {
       "size_mm": [
@@ -209,17 +209,17 @@
           24.2
         ]
       ],
-      "volume_mm3": 8036.1257,
-      "triangles": 746,
+      "volume_mm3": 8167.122,
+      "triangles": 778,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "2022a9db70bd3a4884710003e5f99634114241a966a68ff788e32cd473fce2fe",
+      "sha256": "396e4ae1f493d36398f69ef9dd125457d7d21d88aba249564448af3fca111eb6",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "2022a9db70bd3a4884710003e5f99634114241a966a68ff788e32cd473fce2fe"
+      "committed_sha256": "396e4ae1f493d36398f69ef9dd125457d7d21d88aba249564448af3fca111eb6"
     },
     "filter_support": {
       "size_mm": [
@@ -306,10 +306,10 @@
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "3a411a8cc0ce2b3828f29c7bbe1b1c46a2669a8282e02f789b32daad97341cee",
+      "sha256": "ec668a1ee489552cded63bf95ea779adfc5f94ddac6635c5f7a8c18f662b4dbd",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "3a411a8cc0ce2b3828f29c7bbe1b1c46a2669a8282e02f789b32daad97341cee"
+      "committed_sha256": "ec668a1ee489552cded63bf95ea779adfc5f94ddac6635c5f7a8c18f662b4dbd"
     },
     "usbc_fit_lid": {
       "size_mm": [
@@ -329,17 +329,17 @@
           24.2
         ]
       ],
-      "volume_mm3": 1486.0539,
-      "triangles": 242,
+      "volume_mm3": 1617.0503,
+      "triangles": 274,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "42bf52d164ae213d78beae5f040de039f0562c376f7d0ad6cff3506293c71a1c",
+      "sha256": "353880bb51e1d50dabe43934b1bcb81b150f6ea99497091c2feb6754c6956f70",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "42bf52d164ae213d78beae5f040de039f0562c376f7d0ad6cff3506293c71a1c"
+      "committed_sha256": "353880bb51e1d50dabe43934b1bcb81b150f6ea99497091c2feb6754c6956f70"
     }
   },
   "color_meshes": {},
@@ -622,6 +622,12 @@
       1,
       1.6,
       1.25
+    ],
+    "usb_keeper_brace": [
+      8,
+      8,
+      2,
+      0.2
     ],
     "usb_guides": [
       0.9,
@@ -1142,7 +1148,7 @@
   "intake_lip_mm": 2.25,
   "mat_free_travel_mm": 1.62,
   "mat_squashed_percent": 0.11,
-  "mass_g": 1013.9,
+  "mass_g": 1014.0,
   "centre_of_mass_mm": [
     67.3,
     31.3,
@@ -2437,6 +2443,30 @@
     },
     "inner_support_overlap_mm3": 0.0,
     "central_keeper_fill": 1.0,
+    "keeper_root_braces": {
+      "left": {
+        "material_fill": {
+          "foot": 1.0,
+          "lid_below_foot": 1.0,
+          "web": 1.0,
+          "stem_junction": 1.0
+        },
+        "outer_x_mm": 102.0,
+        "rearward_run_mm": 8,
+        "height_mm": 8
+      },
+      "right": {
+        "material_fill": {
+          "foot": 1.0,
+          "lid_below_foot": 1.0,
+          "web": 1.0,
+          "stem_junction": 1.0
+        },
+        "outer_x_mm": 110.0,
+        "rearward_run_mm": 8,
+        "height_mm": 8
+      }
+    },
     "removable_keeper_to_base_mm": 3.0,
     "keeper_clearance_search_cap_mm": 3,
     "lower_pcb_edge_contact_mm3": 0.038,
