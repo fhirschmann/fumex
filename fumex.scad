@@ -103,10 +103,13 @@ bat_clear = 0.5;
 cradle_x = [12, 40, 68];
 cradle_t = 4;
 cradle_out = 2.5;    // saddle material beyond the cell: every mm here is a mm less ballast trough
-bat_stop_gap = 0.5;  // axial clearance to the ballast lid's right-hand battery stop
-bat_stop_w = 8;      // stop tongue width, with a wider root at the lid
-bat_stop_y = 30;     // front end; the tongue stays below the BMS and its cable exit
-bat_stop_c = 0.4;    // soften both edges against the cell's insulating wrap
+bat_stop_gap = 0.5;  // axial clearance to the base's right-hand battery stop
+bat_stop_w = 3;      // floor-rooted end wall thickness
+bat_stop_y = [30, 51]; // stays ahead of the ballast lid
+bat_stop_top = 29;   // below the BMS and upper cable exit
+bat_stop_c = 0.4;    // soften the top against the cell's insulating wrap
+bat_bms_open = 25;   // measured 20 mm protection board plus 2.5 mm each side
+bat_shoulder_c = 0.4; // ease the axial edges of the removable shoulder seats
 
 /* [PWM fan controller CNY-FA5-PRO: board flat in the bay, potentiometer through the front wall] */
 pwm_pcb = [41.05, 32, 1.6]; // measured length (here along y), width (x), PCB thickness
@@ -191,9 +194,11 @@ usbc_xz = [106, 45]; // above the ballast lid (user, 2026-09-22), high enough th
 usbc_floor = 6;      // rear PCB seat; a short bridge between the two wall gussets
 usbc_cl = 0.2;
 usbc_wall = 2;
-usbc_stop_w = 2.7;   // one side of the inner PCB end takes insertion force; cable centre stays open
-usbc_keeper_w = 8;  // removable stop stem on the ballast lid; base channel stays open for insertion
+usbc_stop_w = 4;     // central PCB-end bearing; both side wire exits stay open
+usbc_keeper_w = 4;  // centered removable L-stop on the ballast lid
 usbc_keeper_gap = 0.4; // stem clears the front of the fixed gusset
+usbc_gusset_lid_gap = 4; // permits the first 3.4 mm service lift above the battery end stop
+usbc_guide_lead = 0.9; // side guides extend just ahead of the PCB, keeping the sloped tips solid
 
 /* [Power switch: measured 14.7 x 20.9 mm rocker, snap-in, in the right side wall] */
 // Behind the PWM board, not above it: that is what lets the board move right and the switch move down
@@ -213,8 +218,8 @@ sw_well = [5, 0.2, 2.2];    // depth below the outer face, floor margin, wall me
 led_d = 3;           // nominal 3 mm breathing LED, glued into the blind pocket from inside
 led_xz = [[78, 21], [90, 21]]; // second holder beside the existing charge indicator; wiring is unspecified
 led_cl = 0.2;        // retain the LEO-AC1 bore and flange bearing ring
-led_skin = 0.8;      // closed front skin, as in LEO-AC1; check visibility through the chosen filament
-led_boss = [7, 5.8]; // boss diameter and rear face from the front; the flange seats on that face
+led_skin = 1.8;      // pockets and LEDs moved 1 mm inward to reduce show-through of the internal holes
+led_boss = [7, 6.8]; // boss diameter and rear face from the front; preserves the LED's original seated depth
 
 /* [Ballast trough with a screwed lid (user, 2026-09-22): loose iron offcuts, no resin] */
 // Only mass behind the centre of mass helps against tipping, so the cell moved forward and everything
@@ -225,14 +230,15 @@ ball = [3, 142, 53, 26];    // interior x from / to (both housing walls), front 
                      // (user, 2026-09-22); the rim stays below the run-outs of the rear head screw bosses
 ball_wall = 2;
 ball_post = 10;      // screw posts for the lid, standing free on the trough floor
-ball_post_x = [10, 135];    // one centred fastener at each end, with straight driver access
-ball_post_y = 63;
+ball_post_x = [10, 117];    // right fastener clears the switch well, PWM removal and head-boss tool shadow
+ball_post_y = [63, 56.8];
+ball_post_front_flat = 3.85; // 1.85 mm insert wall; front at y52.95 avoids a coplanar split against the y53 trough wall
 ball_lid_t = 3;
 lid_pocket = 1.2;    // counterbore in the lid: at head_pocket's 1.9 the head bore on 1.1 mm (audit A5)
 ball_lip = 0;        // no lip over the front wall: the cell has to lift past it (battery_out)
-ball_step = [118.5, 60]; // wider wiring space: 5.5 mm before the switch terminals
+ball_step = [118.5, 64]; // leave the switch wiring and the straight lid-removal route open
 ball_lid_ear_r = 4.6;  // keep the right screw pocket enclosed beside the enlarged switch recess
-ball_switch_corner = [137, 142, 65]; // start of diagonal, housing inner face, rear end of diagonal
+ball_switch_corner = [128, 142, 78]; // diagonal continues into the rear wall, shortening the lid's right end
 ball_rim = 0.4;      // trough walls end this far below the posts, so the lid bears on the two posts
                      // alone and no two faces of the base share the plane z = ball[3]
 
@@ -317,7 +323,7 @@ function rim_bosses() = rim_screws;
 function bat_low(y) = abs(y - bat_cy) >= bat_d / 2 + bat_clear ? 1e6
                     : bat_cz - sqrt(pow(bat_d / 2 + bat_clear, 2) - pow(y - bat_cy, 2));
 // Two side fasteners share the centre line of the trough and clear the curved upper rim.
-function ball_posts() = [for (x = ball_post_x) [x, ball_post_y]];
+function ball_posts() = [for (i = [0:len(ball_post_x) - 1]) [ball_post_x[i], ball_post_y[i]]];
 // both rear corners of the lid meet a rounded housing corner
 function pot_tab_z() = [pot_shaft_d / 2 + pot_tab[3] - pot_tab_cl, pot_bush[0] / 2 + pot_tab[3] + pot_tab[1] + pot_tab_cl];
 
@@ -356,11 +362,12 @@ assert(len_lid - (ball_lid_t - lid_pocket) < insert_depth, "Ballast lid screws r
 assert(len_lid - (ball_lid_t - lid_pocket) >= insert_len, "Ballast lid screws miss full insert engagement");
 assert(ball_post / 2 >= insert_hole_d / 2 + insert_w_min, "Ballast insert posts are too thin");
 assert(ball_lid_ear_r >= head_pocket[0] / 2 + 1.2, "Right lid screw pocket loses its enclosed rim");
-assert(led_skin >= 0.8 && led_skin < wall, "LED window must retain its closed two-line front skin");
+assert(led_skin >= 1.2 && led_skin < wall, "LED front skin must meet the normal wall-thickness threshold");
 assert(min([for (p = foot_xy) bat_low(p[1])]) > foot_boss[1], "Foot boss reaches into the battery");
 assert(bat_stop_gap >= 0.3 && bat_stop_gap <= 0.6, "Battery end stop has excessive axial play");
-assert(bat_stop_w >= 8 && ball_lid_t >= 3, "Battery stop tongue is too slender");
-assert(ball[3] + ball_lid_t <= bat_cz + bat_d / 4 - 1,
+assert(bat_stop_w >= 3 && bat_stop_top > bat_cz + 4, "Battery end wall is too slender or low");
+assert(bat_stop_y[1] <= ball[2] - 0.2, "Fixed battery stop reaches the removable ballast lid");
+assert(bat_stop_top <= bat_cz + bat_d / 4 - 1,
        "Battery stop must stay below the BMS and cable exit");
 assert(foot_boss[1] - insert_depth >= 1.2, "Foot insert pocket floor thinner than three perimeters");
 assert(floor_t - foot_peg[1] >= 3 * 0.4, "Floor under the foot peg holes thinner than three perimeters");
@@ -512,10 +519,49 @@ module back_rim_chamfer(path, y, c) let(sweep_eps = 1 / 1024) difference() {
     profile_sweep_y(offset(path, delta = sweep_eps), y - c - 3 * eps, y, back_c = c + sweep_eps);
 }
 
+// The two front shoulder caps oppose the rear cradle walls. They release with
+// the head, so the cell lifts out freely without loading its upper BMS.
+// A 1.25:1 ramp grows from the head floor in the intake-face-down print pose.
+function shoulder_raw_yz(y, z) = [
+    joint_y + (y - joint_y) * cos(tilt) + (z - base_h) * sin(tilt),
+    base_h - (y - joint_y) * sin(tilt) + (z - base_h) * cos(tilt)];
+module shoulder_untilt() translate([0, joint_y, base_h]) rotate([-tilt, 0, 0])
+    translate([0, -joint_y, -base_h]) children();
+module battery_shoulders_raw() let (
+    r = bat_d / 2 + bat_clear,
+    contact_y = bat_cy - 13.5,
+    contact = shoulder_raw_yz(contact_y, bat_cz + sqrt(r*r - pow(contact_y - bat_cy, 2))),
+    rise = 1.25,
+    start_y = contact.x - rise * (base_h - contact.y),
+    end_y = bat_cy - 11,
+    end_z = base_h - (end_y - start_y) / rise,
+    free_y = bat_cy - bat_bms_open / 2) {
+    assert(bat_bms_open >= bat_bms[0] + 5, "Battery shoulders crowd the protection board");
+    assert(start_y > edge_c, "Shoulder ramp starts behind the front bed chamfer");
+    for (x = [cradle_x[0], cradle_x[len(cradle_x)-1]]) difference() {
+        along_x(x - cradle_t/2, x + cradle_t/2)
+            polygon([[start_y, base_h + 0.2], [start_y, base_h],
+                     [end_y, end_z], [end_y, base_h + 0.2]]);
+        shoulder_untilt() {
+            cyl_x([bat_cy, bat_cz], x - cradle_t/2 - 1, x + cradle_t/2 + 1, r);
+            // Ease only the two axial contact edges, leaving 3.2 mm of full-width seat.
+            cyl_x([bat_cy, bat_cz], x - cradle_t/2 - eps, x - cradle_t/2 + bat_shoulder_c,
+                  r + bat_shoulder_c + eps, r);
+            cyl_x([bat_cy, bat_cz], x + cradle_t/2 - bat_shoulder_c, x + cradle_t/2 + eps,
+                  r, r + bat_shoulder_c + eps);
+            translate([x - cradle_t/2 - 1, free_y, -10])
+                cube([cradle_t + 2, body_d + 20, base_h + 30]);
+        }
+    }
+}
+
 // ---------- head: shell, filter chamber, fan seat (untilted frame) ----------
-module head_raw() difference() {
-    intersection() { plan_prism(); head_body(); }
-    top_corner_blends();
+module head_raw() union() {
+    difference() {
+        intersection() { plan_prism(); head_body(); }
+        top_corner_blends();
+    }
+    battery_shoulders_raw();
 }
 module head_body() difference() {
     union() {
@@ -788,6 +834,7 @@ module base() difference() {
             }
         }
         battery_cradle();
+        battery_end_stop();
         pwm_ribs();
         pwm_bosses();
         led_boss_body();
@@ -871,27 +918,24 @@ module led_boss_body() for (p = led_xz) cyl_y(p, wall - eps, led_boss[1], led_bo
 module led_cut() for (p = led_xz) {
     cyl_y(p, led_skin, led_boss[1] + 1, (led_d + led_cl) / 2); // blind pockets, open only to the bay
 }
-// Rear-open lid slots follow the solid gussets below the USB-C channel.
+// Two narrow wall gussets leave both sides of the central keeper open for wires.
 function usbc_support_x() = [
     [usbc_xz[0] - usbc[1] / 2 - usbc_cl - usbc_wall, usbc_xz[0] - usbc[1] / 2 - usbc_cl],
-    [usbc_xz[0] + usbc[1] / 2 - usbc_stop_w, usbc_xz[0] + usbc[1] / 2 + usbc_cl + usbc_wall]];
-// A 45-degree underside grows out of the back wall, clear of the trough floor.
-// Its front reaches just below the lid so the rear-open lid slots stay closed
-// to loose ballast while still permitting the checked 10 mm vertical lift.
+    [usbc_xz[0] + usbc[1] / 2 + usbc_cl, usbc_xz[0] + usbc[1] / 2 + usbc_cl + usbc_wall]];
+// A 45-degree underside grows from the rear wall entirely above the lid.
 module usbc_gusset(x0, x1, top) let (
-    yi = usbc_y0 - 2, yb = body_d - wall + eps, zfront = ball[3] - ball_rim)
-    along_x(x0, x1) polygon([[yi, zfront], [yb, zfront - (yb - yi)],
+    yi = usbc_y0 - usbc_guide_lead, yb = body_d - wall + eps,
+    zr = ball[3] + ball_lid_t + usbc_gusset_lid_gap)
+    along_x(x0, x1) polygon([[yi, zr + body_d - wall - yi], [yb, zr - eps],
                             [yb, top], [yi, top]]);
-// Between the two gussets the rear PCB seat bridges only 7.85 mm.
+// Between the two gussets the rear PCB seat bridges 10.75 mm.
 // The plug-force stop is on the removable lid, leaving this channel open forwards.
 module usbc_channel() let (
-    legs = usbc_support_x(), yi = usbc_y0 - 2, yb = body_d - wall,
+    legs = usbc_support_x(), yb = body_d - wall,
     zseat = usbc_xz[1] - usbc[2] / 2,
     zb = zseat - usbc_cl - usbc_wall, zt = usbc_xz[1] + usbc[2] / 2 + usbc_cl,
     xr = usbc_xz[0] + usbc[1] / 2 + usbc_cl) {
-    for (x = [legs[0][0], xr]) usbc_gusset(x, x + usbc_wall, zt);
-    // Broad right gusset fills its lid slot; no fixed stop may trap the board here.
-    usbc_gusset(legs[1][0], legs[1][1], zb);
+    for (xs = legs) usbc_gusset(xs[0], xs[1], zt);
     // The board rests on this rear seat; the inner end remains open for its wires.
     translate([legs[0][1] - eps, yb - usbc_floor, zb])
         cube([xr - legs[0][1] + 2 * eps, usbc_floor + eps, zseat - zb]);
@@ -914,47 +958,44 @@ module sw_cuts() {
         translate([body_w - sw_well[0] - sw_panel - 1, sw_yz[0] - h[0] / 2, sw_yz[1] - h[1] / 2]) cube([sw_panel + 2, h[0], h[1]]);
 }
 // Front wall follows the switch well with room for its body, terminals and lid removal.
-module ball_switch_front(extra = 0) polygon([
+module ball_switch_front(extra = 0) intersection() {
+    // The extended diagonal must join the rear wall without growing outside it.
+    translate([-1, -1]) square([body_w + 2, body_d - wall + 2]);
+    polygon([
     [ball_step[0] - ball_wall, ball_step[1] + extra],
     [ball_switch_corner[0], ball_step[1] + extra],
     [ball_switch_corner[1], ball_switch_corner[2] + extra],
     [ball_switch_corner[1], ball_switch_corner[2] + ball_wall + extra],
     [ball_switch_corner[0], ball_step[1] + ball_wall + extra],
     [ball_step[0] - ball_wall, ball_step[1] + ball_wall + extra]]);
+}
 module ballast_walls() {
     translate([ball[0], ball[2], floor_t - eps]) cube([ball_step[0] - ball[0], ball_wall, ball[3] - ball_rim - floor_t + eps]);
     translate([0, 0, floor_t - eps]) linear_extrude(ball[3] - ball_rim - floor_t + eps)
         ball_switch_front();
     translate([ball_step[0] - ball_wall, ball[2], floor_t - eps])
         cube([ball_wall, ball_step[1] - ball[2] + ball_wall, ball[3] - ball_rim - floor_t + eps]);
-    for (q = ball_posts()) translate([q[0], q[1], floor_t - eps]) cylinder(d = ball_post, h = ball[3] - floor_t + eps);
+    for (i = [0:len(ball_posts()) - 1]) let (q = ball_posts()[i])
+        translate([q[0], q[1], floor_t - eps]) difference() {
+            cylinder(d = ball_post, h = ball[3] - floor_t + eps);
+            if (i == 1) translate([-ball_post, -ball_post, -eps])
+                cube([2 * ball_post, ball_post - ball_post_front_flat, ball[3] - floor_t + 3 * eps]);
+        }
 }
 module ballast_screw_holes() for (q = ball_posts())
     translate([q[0], q[1], ball[3] - insert_depth]) cylinder(d = insert_hole_d, h = insert_depth + 1);
 // Lid bears on two insert posts. Its switch notch stays ahead of the entire trough wall.
 module ball_lid() difference() {
-    union() { ball_lid_plate(); battery_end_stop(); usbc_keeper(); chg_brackets(); }
-    ball_lid_service_reliefs();
+    union() { ball_lid_plate(); usbc_keeper(); chg_brackets(); }
     for (q = ball_posts()) translate([q[0], q[1], ball[3] - 1]) {
         cylinder(d = screw_clear_d, h = ball_lid_t + 2);
         translate([0, 0, 1 + ball_lid_t - lid_pocket]) cylinder(d = head_pocket[0], h = lid_pocket + 1);
     }
 }
-// Keep the lower seam narrow; the upper slot lead-outs let the loaded lid roll
-// past the fixed USB ribs. The shallow rear recess clears their connecting seat.
-module ball_lid_service_reliefs() let (z = ball[3]) {
-    for (xs = usbc_support_x()) along_y(usbc_y0 - 2.27, body_d + 1)
-        polygon([[xs[0] - 0.27, z - 0.1], [xs[1] + 0.27, z - 0.1],
-                 [xs[1] + 0.27, z + 0.3], [xs[1] + 0.8, z + 0.83],
-                 [xs[1] + 0.8, z + ball_lid_t + 0.1],
-                 [xs[0] - 0.8, z + ball_lid_t + 0.1],
-                 [xs[0] - 0.8, z + 0.83], [xs[0] - 0.27, z + 0.3]]);
-    translate([100.1, 64.7, z + ball_lid_t - 0.3]) cube([8.8, 6.4, 0.4]);
-}
-// Install the USB board first, then this lid-mounted stop. The central wire end
-// remains open; lifting the lid releases the board without bending its receptacle.
+// Install the USB board first, then this centered lid-mounted L-stop.
+// Wire exits on both sides stay open; removing the lid releases the board.
 module usbc_keeper() let (
-    x0 = usbc_support_x()[1][0], yf = ball[2] + 0.2,
+    x0 = usbc_xz[0] - usbc_keeper_w / 2, yf = ball[2] + 0.2,
     yr = usbc_y0 - 2 - usbc_keeper_gap, yt = usbc_y0 - usbc_cl,
     zb = usbc_xz[1] - usbc[2] / 2 - usbc_cl - usbc_wall,
     zt = usbc_xz[1] + usbc[2] / 2 + usbc_cl) {
@@ -962,36 +1003,31 @@ module usbc_keeper() let (
         cube([usbc_keeper_w, yr - yf, zt - ball[3]]);
     // The short 45-degree arm grows upwards from the stem and clears the gusset.
     // Its front reaches below the PCB underside, independent of component height.
-    along_x(x0, x0 + usbc_stop_w)
+    along_x(usbc_xz[0] - usbc_stop_w / 2, usbc_xz[0] + usbc_stop_w / 2)
         polygon([[yr - 0.2, zb - 0.3], [yt, zb - 0.3 + yt - (yr - 0.2)],
                  [yt, zt], [yr - 0.2, zt]]);
 }
-// A flat extension of the screwed lid stops the cell sliding towards the electronics.
-// It retrofits the existing base; the open saddles still allow removal upwards.
-// Its 3 mm height bears on the cell body below the BMS, keeping the upper cable end open.
+// A rounded end wall grows from the base floor, independent of the removable lid.
+// It bears on the cell body below the BMS and leaves the upper cable end open.
 module battery_end_stop() let (
     x0 = bat_x0 + bat_l + bat_stop_gap, x1 = x0 + bat_stop_w,
-    path = round_corners([[x0, bat_stop_y], [x1, bat_stop_y],
-        [x1, ball[2] - 4], [x1 + 4, ball[2]],
-        [x1 + 4, ball[2] + 4], [x0, ball[2] + 4]], radius = 1))
-    translate([0, 0, ball[3]]) offset_sweep(path, height = ball_lid_t, offset = "delta",
-        bottom = os_chamfer(height = bat_stop_c), top = os_chamfer(height = bat_stop_c));
+    path = round_corners([[x0, bat_stop_y[0]], [x1, bat_stop_y[0]],
+        [x1, bat_stop_y[1]], [x0, bat_stop_y[1]]], radius = 1))
+    translate([0, 0, floor_t - eps]) offset_sweep(path,
+        height = bat_stop_top - floor_t + eps, offset = "delta", top = os_chamfer(height = bat_stop_c));
 module ball_lid_plate() difference() {
-    // 0.2 mm off the two housing walls, and a chamfer where their inner corner is rounded
+    // Narrow seams and a relieved rear corner keep the trough closed.
     translate([0, 0, ball[3]]) linear_extrude(ball_lid_t) union() {
         difference() {
             translate([ball[0] + 0.22, ball[2] - ball_lip])
                 square([ball[1] - ball[0] - 0.42, body_d - wall - 0.2 - ball[2] + ball_lip]);
             translate([ball[0], body_d - wall]) polygon([[0, 0], [0.76, 0], [0, -0.76]]);
             translate([ball[1], body_d - wall]) polygon([[0, 0], [-0.76, 0], [0, -0.76]]);
-            // Rear-open slots let the lid lift 10 mm past the fixed USB support ribs.
-            for (xs = usbc_support_x()) translate([xs[0] - 0.2, usbc_y0 - 2.2])
-                square([xs[1] - xs[0] + 0.4, body_d - usbc_y0 + 3.2]);
             polygon([[ball_step[0], ball[2] - 1], [body_w + 1, ball[2] - 1],
                      [body_w + 1, body_d], [ball_switch_corner[1], ball_switch_corner[2] - 1],
                      [ball_switch_corner[0], ball_step[1] - 1], [ball_step[0], ball_step[1] - 1]]);
         }
-        translate([ball_post_x[1], ball_post_y]) circle(r=ball_lid_ear_r);
+        translate([ball_post_x[1], ball_post_y[1]]) circle(r=ball_lid_ear_r);
     }
     for (q = ball_posts()) translate([q[0], q[1], ball[3] - 1]) {
         cylinder(d = screw_clear_d, h = ball_lid_t + 2);
@@ -1008,9 +1044,9 @@ module usbc_fit_base() translate([-97, -ball[2], 0]) union() {
         translate([97, ball[2], 0]) cube([ball_step[0] - 97, body_d - ball[2], 65]);
     }
     // Fixture-only pads replace the distant screw-post seats omitted by the crop.
-    // Three points hold the coupon lid at its real height, clear of USB fit surfaces.
-    for (p = [[98, ball[2]], [ball_step[0] - 4, ball[2]],
-              [ball_step[0] - ball_wall, ball_step[1] - ball_wall]])
+    // Two pads supplement the real right screw post retained by this crop.
+    // The former middle pad is redundant and split its coplanar post-top face.
+    for (p = [[98, ball[2]], [ball_step[0] - ball_wall, ball_step[1] - ball_wall]])
         translate([p[0], p[1], ball[3] - ball_rim - eps])
             cube([ball_wall, ball_wall, ball_rim + eps]);
 }
@@ -1250,9 +1286,11 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["charge_tie", chg_tie], ["charge_web", [chg_web_gap, chg_web_touch, chg_web_w, chg_web_back]],
     ["lid_screw", [ball_lid_t, lid_pocket, len_lid]],
     ["battery", [bat_x0, bat_cy, bat_cz, bat_d, bat_l, bat_bms]],
-    ["battery_stop", [bat_stop_gap, bat_stop_w, bat_stop_y, bat_stop_c]],
+    ["battery_stop", [bat_stop_gap, bat_stop_w, bat_stop_y, bat_stop_c, bat_stop_top]],
+    ["battery_shoulders", [[cradle_x[0], cradle_x[len(cradle_x)-1]], cradle_t, bat_bms_open, bat_shoulder_c]],
     ["usb_origin", [usbc_xz[0], usbc_y0, usbc_xz[1]]], ["usb_board", usbc_board],
     ["usb_keeper", [usbc_keeper_w, usbc_keeper_gap, usbc_stop_w]],
+    ["usb_guides", [usbc_guide_lead, usbc_gusset_lid_gap]],
     ["led_pocket", [led_xz, led_d, led_cl, led_skin, led_boss]],
     ["base_h", base_h], ["joint_y", joint_y], ["base_joint_h", base_joint_h],
     ["foot_peg", foot_peg], ["ballast", ball], ["ballast_posts", ball_posts()], ["lid_screw_length", len_lid], ["seat_y", head_y[2]], ["back_y", head_y[4]],
