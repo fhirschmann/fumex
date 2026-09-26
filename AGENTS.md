@@ -114,7 +114,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     physical strength, long-term creep, loose-fibre or maximum-speed rubbing test has been performed.
     Do not turn the nominal 5 mm central-bar/frame gap into a guarantee of rotor clearance.
 - The mat is held by the intake lip (opening 117 in a 121.5 chamber, 2.25 mm per side). It is pressed in and pulled out past that lip — a rigid-body path check cannot show this, so `filter_out` is not a checked path but a documented limitation.
-- **Head screws: 2 × M3 × 8 in one row at x 25/120, y 66** (user asked 2026-09-23 whether every screw can
+- **Head screws: 4 × M3 × 8 in one row at x 25/45/118/127, y 66** (user asked 2026-09-23 whether every screw can
   actually be reached - four of four could not). Vertical access inside the head exists only in the plenum
   behind the fan: further forward the filter tube or the fan stands over the rim, and the 5.75 mm channel
   beside the tube takes no bit. y 66 is the minimum that lets the Ø10 base boss reach the back wall it hangs
@@ -124,13 +124,13 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   run-out towards the back wall reached 2.4 mm past the back face.
 - **Driver access is a checked property.** `drivers_*()` put a Torx bit and its holder (4/6.35/13 mm) on
   every screw head; they are ordinary assembly bodies, so the pairwise overlap check is the test. The
-  ALLOWED_OVERLAPS entries for them are assembly stages, not excuses: the head screws go in before the back
+  ALLOWED_OVERLAPS entries for them are assembly stages, not excuses: the four head screws go in before the back
   cover, the ballast lid is closed before the head goes on.
 - **The ballast lid now uses exactly two M3 x 8 screws and two Ruthex RX-M3x5.7 inserts** (user,
   2026-09-23). The Ø10 posts stand at (x, y) = (10, 63) and (135, 63), with Ø4 x 7 mm insert pockets
   opening upwards. This replaces all four plastic-forming screws and their core holes. With the
-  3 mm lid and 1.2 mm head pockets, nominal thread reach is 6.2 mm. Total hardware is 16 inserts,
-  12 M3 x 8 and four M3 x 30 screws. Earlier lid-post positions at x 30/115, 45/90 and 12/40,
+  3 mm lid and 1.2 mm head pockets, nominal thread reach is 6.2 mm. Total hardware is 18 inserts,
+  14 M3 x 8 and four M3 x 30 screws. Earlier lid-post positions at x 30/115, 45/90 and 12/40,
   including the G3 rear-row adjustment to y 66.2, are historical. The head vent slots remain 14 mm long.
 - `head_outline()` is rounded `corner_r` = 6 at the top and `corner_rb` = **0.5** at the two corners on the
   joint plane, and `joint_neck()` carries that arc on into the base rim, so head and base meet without a
@@ -171,7 +171,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   - `bat_cy` is limited by the **tilted** run-outs of the front head screw bosses: built at y 4–14 they reach world y ≈ 18 at z ≈ 30 after the tilt, which is where the cell's shoulder is. 35 clears it, 34 does not (0.14 mm³).
   - Historical four-post layout: each Ø10 corner post lay 3.5 mm off the adjacent walls; at Ø8 it left a sealed sliver void and a second exported body. `ball_rim` = 0.4 kept the walls below the posts to avoid coplanar unions. The current lid instead uses the two insert posts listed above.
   - The 2026-09-22 choice of plastic-forming screws and Ø2.5 core holes was superseded by the user's two-screw, heat-set-insert mounting on 2026-09-23.
-  - The lid has no lip over the front wall: the cell has to lift past it (`battery_out`). The current `lid_off` check moves the lid together with its charge module and heatsink 10 mm up after the head and battery have been removed; complete extraction still needs a tilt.
+  - The lid has a plain top without the former Ø16 mm finger dish (removed at the user's request, 2026-09-23). It has no lip over the front wall: the cell has to lift past it (`battery_out`). The current `lid_off` check moves the lid together with its charge module and heatsink 10 mm up after the head and battery have been removed; complete extraction still needs a tilt.
   - The free space in front of the cell (about 50 cm³) is the wrong side of the centre of mass and is deliberately left empty.
 - Charge module upright on the ballast lid, directly below the plenum slots (user, 2026-09-23: both sides of the board should get air; subsequently, "Wie LEO: Seite mit Kühlkörper frei"). Components face forwards, heatsink backwards. A single holder and cable tie retain only the cool OUT end; the heatsink end stays free. See Electrics below for dimensions and physical-fit limits. The earlier pair of edge holders, flat tray and bay-floor brackets are no longer built.
   - **The air route starts in the plenum:** the six slots in the head floor connect the fan's filtered outlet side to the component and heatsink passages, which lead to the back-wall slots. The surrounding 5.75 mm channel between filter tube and shell also remains open to the plenum. Geometric corridors are checked; flow rate, natural convection and cooling performance are not measured.
@@ -181,16 +181,15 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     here (12 slots, 2 mm wide, 5 mm pitch); the collinear-corner trap that hit the old slot rows did not
     reappear, so `vent[4]` is 0. If it ever does come back, stagger before reaching for anything else.
 - Ballast trough over the full width, lower, with the USB-C socket above it (user, 2026-09-22): nominal x 3–142, y 53–71, rim 26. Its initial 44.5 cm³ / 209 g estimate and 24.5° tip angle at 1.04 kg predate later cut-outs, posts and tipping corrections; use current exports for the usable volume and stability results.
-  - The USB-C channel remains at z 45 and now rests on two vertical ribs from the trough floor.
+  - The USB-C channel remains at z 45 and now rests on two 45-degree gussets from the back wall (user, 2026-09-23). Their underside is z = 83.22 - y: z25.6 at the front, z12.22 at the inner back wall, at least 9.02 mm above the trough floor.
     The right rib is wider and reaches inward to x 108.475, supporting the side stop as well as the
     channel wall. The remaining floor bridge between the ribs spans 7.85 mm. The lid has matching
     slots open to the back, so it can move around the fixed ribs; retain and recheck its 10 mm lift.
-    This replaces the unsupported channel ledge. The two former back-wall cable-tie loops remain removed.
+    The front of each gusset reaches 0.4 mm below the lid, filling its slot at the ballast rim. Shorter gussets ending above the lid would leave an escape opening through those slots. The unsupported ledge and the later floor-length ribs are superseded. The two former back-wall cable-tie loops remain removed.
   - The USB-C channel stays open towards the board's wire end inside the bay. A side stop takes
     insertion load, retaining `usbc_in` without the old continuous end wall across the wiring route.
     The ribs must not close that opening or the connected cable corridors. Do not restore the removed
-    back-wall tie loops. The former shallow `usbc_floor` ledge and rejected 45° gusset describe earlier
-    unsupported layouts, not the current load path through the vertical ribs.
+    back-wall tie loops. The former shallow `usbc_floor` ledge was unsupported; the current gussets carry it from the back wall while the rear-open lid slots preserve the service lift.
   - The wider switch recess uses `ball_step=[118.5,60]` and the existing diagonal through (137,60)
     to (142,65). Measured prototype clearances are 5.50 mm before the terminal envelope, 2.002 mm
     minimum to the body and 2.402 mm from lid to switch. The unchanged Ø10 right insert post limits
@@ -206,8 +205,8 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     rib slots must stay clear throughout the checked lift.
 - The switch well flanks rise 1.25 mm per mm instead of 1.0: at exactly 45° `analyze.py overhangs` counted them.
 - The rocker switch stands upright in the right wall (long side vertical): the base prints bottom down, so its panel cut-out is a sideways hole and the bridge over it is 12.2 mm instead of 19.2 mm.
-- **The LED now sits behind a closed 0.8 mm front skin**, matching LEO-AC1 (user, 2026-09-23).
-  `led_cut()` is a Ø3.2 mm blind bore open only to the bay, from y 0.8 to the rear of the Ø7 boss.
+- **Both LED holders sit behind closed 0.8 mm front skins**, matching LEO-AC1 (user, 2026-09-23).
+  `led_cut()` makes two Ø3.2 mm blind bores at (x,z) = (88,21) and (80,21), open only to the bay, from y 0.8 to the rear of their Ø7 bosses. The second holder was requested on 2026-09-23; its electrical function is unspecified.
   The boss rear face is y 5.8; the LED flange rests there, and the nominal lens starts at y 1.1,
   leaving 0.3 mm before the skin. Insert and glue the LED from inside. This replaces the former
   through-hole and the claim that the front must be open because black PETG cannot transmit light.
@@ -215,7 +214,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   - The 0.8 mm optical skin is an intentional local exception to the usual 1.2 mm wall-thickness
     threshold. Report it separately when `analyze.py thickness` flags it; do not describe the current
     design as unconditionally CLEAN, lower the global threshold, or enlarge the exception beyond
-    this light window to hide unrelated thin walls.
+    these two light windows to hide unrelated thin walls.
 
 ## Electrics — two things that belong in the README and in the build
 
@@ -343,10 +342,25 @@ Not checked: flexible deformation (the mat and the TPU feet are rigid bodies her
 
 ## Lid, switch, USB and front-detail verification (2026-09-23)
 
-- Current follow-up: `docs/detail-refinements-2026-09-23.md`. Source SHA `6bf5fd11fdefd249b418a3faa7921d67a7f2b9f68ec29cc29cbbd020050e2df5`.
+- Earlier detail follow-up: `docs/detail-refinements-2026-09-23.md`, before the subsequent plain-lid and mount updates. Source SHA `6bf5fd11fdefd249b418a3faa7921d67a7f2b9f68ec29cc29cbbd020050e2df5`.
 - Exactly two M3 x 8 lid screws remain at (10,63) and (135,63), centred between the trough's inner front and back faces at y55/71. Both engage Ruthex RX-M3x5.7 inserts through Ø4 x 7 mm pockets. Actual seat material and enclosure fill are 100%; full 5.7 mm insert engagement leaves 0.8 mm to the pocket bottom. The right lid ear keeps its screw pocket enclosed beside the wider switch recess.
 - USB support ribs run from the floor to the channel, verified by full solid probes. Both rear-open lid slots clear their ribs, the PCB contacts its seat at z42.85 and the three wire corridors remain open. The loaded lid's checked service motion is still only 10 mm vertically; full extraction remains unproven.
 - Eight closed print types / eleven pieces; 337 coaxial feature pairs, 496 assembly pairs, nine general sampled paths and the additional 15 mm LED inside-access path pass. Islands, overhangs (100 mm² threshold) and fins are CLEAN. Thickness reports exactly one intended 0.8 mm region at the closed LED window (estimated sampled area 20 mm²); the 1.2 mm threshold is unchanged elsewhere. The head's existing Trimesh numerical warnings leave 65,088 of 65,277 usable samples.
 - All eight individual slices and four arranged plates pass with supports disabled. The base's floating-cantilever warning is gone; the existing head warning remains on its individual and arranged slice. Arranged plates: 472.9 g / 15.4 h; individual jobs: 473.4 g / 16.4 h.
-- Current ballast volume is 40.97 cm³, about 193 g at the assumed packing density. Estimated assembled mass 1009.8 g, front tipping margin 28.6 mm and tip angle 21.3 degrees. These supersede the previous revision's values above.
+- At that detail revision ballast volume was 40.97 cm³, about 193 g at the assumed packing density. Estimated assembled mass 1009.8 g, front tipping margin 28.6 mm and tip angle 21.3 degrees. These supersede the previous revision's values above.
 - All eight documentation views, the STLs, 3MF and both viewer copies are rebuilt. `07_ballast_mount` makes the two fasteners visible; `08_usb_mount` shows the floor-connected channel ribs.
+
+
+## Plain lid, gussets and additional mounts (2026-09-23)
+
+- The redundant Ø16 x 1.5 mm ballast-lid finger dish is removed at both construction levels. The top is plain there.
+- The user requested 45-degree USB-C supports instead of floor-length ribs. `usbc_gusset()` clips the lower support profile to a 45-degree slope from the back wall. `check_usb_support()` measures both actual mesh slopes and the empty space below; the board seat, side stop, wire corridors and rear-open lid slots retain their previous positions.
+- The user requested four head/base screws, with three as a minimum. Four accessible rear-row positions are used: x25/45/118/127, y66. A front row would be covered by the permanent filter tube. x48 was rejected because its boss blocked the loaded lid lift; x129 blocked the right lid screwdriver. All four use Ø10 bosses and Ruthex RX-M3x5.7 inserts. Head-floor openings must preserve a complete bearing pad around every screw, including the old x25 position beside the cable opening.
+- A second matching LED pocket at x80, z21 accompanies the existing charge-indicator pocket at x88, z21. Both retain 0.8 mm front skins. The additional holder has no specified electrical function; do not silently wire it to a signal in the documentation.
+- The PWM anti-rotation-tab cut-out now has `pot_tab_cl=0.4` mm per side instead of 0.2 mm, increasing its width from 2.5 to 2.9 mm. Hardware dimensions are unchanged.
+- The speed knob diameter is 26 mm instead of 28 mm (user, 2026-09-23); the shaft fit, inner sleeve and installed depth are unchanged.
+- The four head screws bear on the actual 0.6 mm counterbore floors, with 2.4 mm of solid bearing material, 5.6 mm thread penetration and 1.4 mm to the pocket bottom. Ø9 mm material pads protect the seats from cable/vent cuts; the shallow 0.6 mm pocket has a closed 0.8 mm rear lip at the head edge. The left pad has a run-out to the cable-opening edge so it grows continuously in the intake-face-down print.
+- The user also owns a small Wera ratchet (2026-09-23). Its exact head/bit dimensions are unspecified. The chosen four head screws retain checked straight-bit access; do not infer that the roughly 4 mm gap under the front filter tube accommodates the ratchet.
+- Final source SHA: `ef984926c92907ff6b44ab8dca544594ecc9b8692bdbae2d17ccce483a763e5b`. The complete export passes eight closed print types, eleven pieces, 374 coaxial pairs, 496 assembly pairs, nine standard sampled paths and the combined 15 mm LED access path. All four head-screw seat/contact/insert-access probes pass. Islands, overhangs and fins are CLEAN; thickness reports only the two intended 0.8 mm LED windows (sampled regions 16 and 12 mm²). The known Trimesh head warning leaves 65,204 of 65,404 valid samples.
+- Current ballast capacity: 42.42 cm³ / about 199 g. Estimated assembled mass: 1019.3 g; front tipping margin: 28.9 mm, angle: 21.7 degrees. The shared skill now records the screw-seat/cut-out pitfall (`6c9b8ec`); project scripts remain unchanged.
+- Final slicing: all eight types and all four plates pass with supports disabled and **no warnings**. The previous head floating-cantilever warning is gone. Arranged plates: 472.3 g / 15.5 h; individual jobs: 472.8 g / 16.5 h. Nine documentation views and both viewer files are regenerated. Evidence and the current change summary are in `docs/mount-updates-2026-09-23.md`.
