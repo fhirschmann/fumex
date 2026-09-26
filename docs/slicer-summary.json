@@ -6,7 +6,7 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "4f6f2c0bbcebe2b6eb569098c0bb6c54089f107e3a8fbab02ad5ff56f7cb946f",
+      "source_sha256": "a4ad29214642627d390432a3d9b37fe2b14fb573f8523fe89a70c8b8ad3bcd79",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -33,8 +33,8 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 5.693,
-      "grams": 220.859,
+      "hours": 5.694,
+      "grams": 220.858,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -79,7 +79,7 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.399,
+      "hours": 2.4,
       "grams": 49.705,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -186,34 +186,11 @@
       "start_gcode_diagnostic": true
     },
     {
-      "part": "battery_bridge",
-      "quantity": 2,
-      "material": "PETG-black",
-      "passed": true,
-      "source_sha256": "83fc4079ba74868f5eba65a0bbfb6cdd9bd701a6b45c34121e43eebf6dfa8b03",
-      "exit_code": 0,
-      "result_code": 0,
-      "warnings": "",
-      "hours": 0.201,
-      "grams": 0.917,
-      "wall_loops": 4,
-      "infill_percent": 20.0,
-      "layer_height": 0.20000000298023224,
-      "effective_settings": {
-        "sparse_infill_pattern": "gyroid",
-        "enable_support": "0",
-        "curr_bed_type": "Textured PEI Plate",
-        "top_shell_layers": "5",
-        "bottom_shell_layers": "5"
-      },
-      "start_gcode_diagnostic": true
-    },
-    {
       "part": "usbc_fit_base",
       "quantity": 0,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "ec668a1ee489552cded63bf95ea779adfc5f94ddac6635c5f7a8c18f662b4dbd",
+      "source_sha256": "3a411a8cc0ce2b3828f29c7bbe1b1c46a2669a8282e02f789b32daad97341cee",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -255,13 +232,13 @@
       "start_gcode_diagnostic": true
     }
   ],
-  "total_parts": 13,
-  "total_grams_individual_plates": 478.0,
-  "total_hours_individual_plates": 17.2,
+  "total_parts": 11,
+  "total_grams_individual_plates": 476.2,
+  "total_hours_individual_plates": 16.8,
   "production_gcode": false,
   "project_3mf": {
     "file": "stl/fumex_all_parts.3mf",
-    "parts": 13,
+    "parts": 11,
     "plates": 4,
     "layout": [
       {
@@ -269,14 +246,12 @@
         "name": "Head",
         "parts": [
           "ball_lid",
-          "battery_bridge",
-          "battery_bridge",
           "filter_support",
           "head"
         ],
         "size_mm": [
           239.6,
-          165.6
+          189.3
         ]
       },
       {
@@ -318,17 +293,17 @@
         ]
       }
     ],
-    "total_hours_plates": 15.9,
-    "total_grams_plates": 477.4,
+    "total_hours_plates": 15.8,
+    "total_grams_plates": 475.8,
     "multicolour_parts": {},
     "multicolour_slices": {},
     "pause_slices": {},
     "plate_slices": {
       "Head": {
         "plate": 1,
-        "hours": 6.31,
+        "hours": 6.23,
         "grams_by_filament": {
-          "1": 237.93
+          "1": 236.23
         },
         "warnings": ""
       },
@@ -358,7 +333,7 @@
       }
     },
     "own_infill_parts": 5,
-    "sha256": "770ba8f5e3ecef48d38f9d6eec3d0e67e0366b511ed1a7a88dfde6ef1d4cf75a"
+    "sha256": "cc2e7e33ed059f552a3f321c6196f92a2962a74c4913167a2a349a5282bd15a6"
   },
   "test_3mf": {
     "file": "stl/fumex_usb_fit.3mf",
@@ -394,7 +369,7 @@
       }
     },
     "own_infill_parts": 0,
-    "sha256": "4a7e2939e5e2ba7044f0f1f433649bedb72190535c1a04e8bf0ef432cad15082",
+    "sha256": "96501b4d36f2d9f508cc6324b35793d0a34d2f5866155e7b9a1aca653c81b970",
     "process": {
       "wall_loops": 4,
       "top_shell_layers": 5,
