@@ -21,6 +21,7 @@ PARTS = {
     "knob": (1, "PETG-grey", 1),
     "foot": (4, "TPU", 1),
     "ball_lid": (1, "PETG-black", 1),
+    "filter_support": (1, "PETG-black", 1),
 }
 FULL_INFILL = set()
 FULL_INFILL_MATERIALS = {"TPU"}
@@ -36,6 +37,7 @@ ASSEMBLY = {
     "ball_lid": "ball_lid();",
     "fan": "fan_env();",
     "filter": "filter_env();",
+    "filter_support": "filter_support();",
     "magnets": "magnets_env();",
     "battery": "battery_env();",
     "pwm_board": "pwm_board_env();",
@@ -43,6 +45,7 @@ ASSEMBLY = {
     "pot_nut": "pot_nut_env();",
     "chg_module": "chg_module_env();",
     "chg_sink": "chg_sink_env();",
+    "chg_tie": "chg_tie_env();",
     "usbc": "usbc_env();",
     "switch": "sw_env();",
     "led": "led_env();",
@@ -70,10 +73,7 @@ ALLOWED_OVERLAPS = [("fan", "screws_fan"),      # screws run through the holes o
                     # and the fan is screwed to the cover on the bench, where its front face is reachable,
                     # before either of them goes into the head
                     ("head", "driver_fan"), ("cassette", "driver_fan"), ("filter", "driver_fan"),
-                    ("screws_back", "driver_lid"), ("driver_back", "driver_lid"),
-                    # the lid screws form their own thread: the shank is wider than the core hole, and that
-                    # hole is a void in the base, so the trough envelope contains it
-                    ("base", "screws_lid"), ("ballast", "screws_lid")]
+                    ("screws_back", "driver_lid"), ("driver_back", "driver_lid")]
 
 # Multicolour: part -> inlay names. Black and grey are whole parts here, no inlays and no prime tower.
 COLOR_PARTS = {}
@@ -85,7 +85,7 @@ PROCESS = dict(wall_loops=4, top_shell_layers=5, bottom_shell_layers=5, infill=2
 FILAMENTS = [dict(material="PETG-black", profile="Generic PETG @BBL H2S", colour="#1A1B1D"),
              dict(material="PETG-grey", profile="Generic PETG @BBL H2S", colour="#8C9196"),
              dict(material="TPU", profile="Generic TPU @BBL H2S", colour="#1A1B1D")]
-PLATES = [("Head", ["head", "ball_lid"]),
+PLATES = [("Head", ["head", "ball_lid", "filter_support"]),
           ("Base and back cover", ["base", "head_back"]),
           ("Grey parts", ["cassette", "knob"]),
           ("TPU feet", ["foot"])]
@@ -97,13 +97,14 @@ SLICER_SUMMARY = "docs/slicer-summary.json"
 # g/mm3; the ballast is iron offcuts potted in epoxy, about 60 % metal by volume
 # loose iron offcuts under a lid, roughly 60 % of the volume actually metal
 MAT = (120, 120, 17)      # the mat the user cut from a cooker hood filter
-DENSITY = {"PETG": 0.90e-3, "TPU": 1.20e-3, "iron-loose": 4.7e-3}
+DENSITY = {"PETG": 0.90e-3, "TPU": 1.20e-3, "nylon": 1.14e-3, "iron-loose": 4.7e-3}
 MASSES_G = {"fan": 185, "battery": 150, "filter": 15, "pwm_board": 12, "chg_module": 3, "chg_sink": 5,
             "usbc": 2, "switch": 5, "led": 0.3, "magnets": 18, "pot": 6, "pot_nut": 2,
-            "screws_fan": 6, "screws_back": 4, "screws_head": 3, "screws_feet": 3, "screws_lid": 3}
+            "screws_fan": 6, "screws_back": 4, "screws_head": 3, "screws_feet": 3, "screws_lid": 1.5}
 # bodies whose mass comes from their volume rather than a data sheet
 BY_VOLUME = {"base": "PETG", "head": "PETG", "head_back": "PETG", "cassette": "PETG", "knob": "PETG",
-             "feet": "TPU", "ball_lid": "PETG", "ballast": "iron-loose"}
+             "feet": "TPU", "ball_lid": "PETG", "filter_support": "PETG", "ballast": "iron-loose",
+             "chg_tie": "nylon"}
 
 LIMITATIONS = ["Hardware envelopes, not detailed vendor CAD",
                "Sampled motion, no continuous swept-volume proof",
@@ -248,10 +249,12 @@ def _air_corridor(points, cylinder, radius=0.6):
 
 def _charger_air_probes(cylinder):
     return {
-        'component_face_space': _air_box([57, 54.6, 33.2], [83, 56.6, 42.2]),
+        # The tie occupies the cool end. The warm component face remains exposed.
+        'component_face_space': _air_box([70, 54.6, 33.2], [83, 56.6, 42.2]),
         'heatsink_rear_space': _air_box([77.6, 67.7, 31.7], [89.6, 69.5, 43.7]),
-        'component_side_route': _air_corridor([[65.5, 59, 60], [65.5, 59, 47], [65.5, 55.5, 45],
-                                           [65.5, 55.5, 37], [50, 55.5, 37], [50, 75, 37]], cylinder),
+        'component_side_route': _air_corridor([[74.5, 59, 60], [74.5, 59, 47], [74.5, 55.5, 45],
+                                           [74.5, 55.5, 37], [74.5, 54.5, 37], [50, 54.5, 37],
+                                           [50, 75, 37]], cylinder),
         'heatsink_side_route': _air_corridor([[83.5, 63, 60], [83.5, 63, 47], [83.5, 68.5, 46],
                                           [83.5, 68.5, 37], [85, 68.5, 37], [85, 75, 37]], cylinder),
     }
@@ -265,7 +268,7 @@ def _charger_air_report(meshes, solids, cylinder):
     result['vertical_pose'] = bool(abs(extent[0] - 32.2) < 0.05 and abs(extent[1] - 3.7) < 0.05
                                    and abs(extent[2] - 11) < 0.05)
     module_bounds, sink_bounds = meshes['chg_module'].bounds, meshes['chg_sink'].bounds
-    spaces = {'component_face_space': ([57, 54.6, 33.2], [83, 56.6, 42.2]),
+    spaces = {'component_face_space': ([70, 54.6, 33.2], [83, 56.6, 42.2]),
               'heatsink_rear_space': ([77.6, 67.7, 31.7], [89.6, 69.5, 43.7])}
     result['face_anchor_gaps_mm'] = {'components': float(module_bounds[0, 1] - 56.6),
                                       'heatsink': float(67.7 - sink_bounds[1, 1])}
@@ -300,6 +303,157 @@ def check_charger_air(ctx):
     assert all(q['components'] == 1 and q['face_space_overlap_mm3'] > 1
                for q in result['route_connections'].values()), 'Disconnected charge-module air corridor'
     return dict(charger_air_access=result)
+
+
+def check_charger_holder(ctx):
+    """Measure the cool-end seats, open hot end and usable tie passages on the meshes."""
+    lid, module, tie = (ctx.solids[n] for n in ("ball_lid", "chg_module", "chg_tie"))
+    pcb = ctx.meshes["chg_module"].bounds
+    x0, z0 = pcb[0, 0], pcb[0, 2]
+    yback = pcb[1, 1]
+    top_lid = ctx.metrics["ballast"][3] + ctx.metrics["lid_screw"][0]
+    holder = lid ^ _air_box([0, 0, top_lid + 0.01], [150, 80, 80])
+    assert holder.volume() > 100, "Charge-module holder is missing"
+    hot = _air_box([x0 + 21.8, 50, top_lid + 0.01], [95, 72, 46])
+    hot_overlap = (holder ^ hot).volume()
+    sink_gap = holder.min_gap(ctx.solids["chg_sink"], 6)
+    assert hot_overlap < 0.01 and sink_gap >= 4.6, \
+        f"Charge-module holder obstructs its hot end: {hot_overlap:.4f} mm3, gap {sink_gap:.3f} mm"
+
+    # Separate physical seats; a contact at one end cannot stand in for the others.
+    contacts = {}
+    for name, delta, region in [
+        ("lower_edge", [0, 0, -0.05], ([x0 + 2.9, 59, z0 - 0.1], [x0 + 11.1, 61, z0 + 0.1])),
+        ("rear_bearing", [0, 0.05, 0], ([x0 + 8.9, yback - 0.1, z0 + 3.4],
+                                      [x0 + 18.1, yback + 0.1, z0 + 7.6])),
+        ("out_end", [-0.05, 0, 0], ([x0 - 0.1, 59.4, z0 + 3.4], [x0 + 0.1, 60.6, z0 + 7.6])),
+    ]:
+        volume = (module.translate(delta) ^ lid ^ _air_box(*region)).volume()
+        assert volume > 0.1, f"Charge-module seat missing: {name}, {volume:.4f} mm3"
+        contacts[name] = round(volume, 5)
+
+    # Probe a slightly inset copy of each tunnel to avoid coplanar facet noise.
+    # These are spaces in the printed lid; the separate band collision check
+    # below proves that the installed tie fits with the board in place as well.
+    tunnels = {
+        "under_board": _air_box([64.87, 55.02, 30.72], [67.93, 68.38, 32.48]),
+        "rear_vertical": _air_box([64.87, 64.02, 30.72], [67.93, 65.78, 44.68]),
+    }
+    overlaps = {n: round((probe ^ lid).volume(), 6) for n, probe in tunnels.items()}
+    assert all(v < 0.01 for v in overlaps.values()), f"Charge tie tunnel blocked: {overlaps}"
+    assert (tunnels["under_board"] ^ tunnels["rear_vertical"]).volume() > 1, "Disconnected tie passages"
+    bounds = np.asarray(tie.bounding_box()).reshape(2, 3)
+    assert abs(bounds[:, 0].mean() - x0 - 12.5) < 0.05, "Charge tie moved off the reviewed cool-end position"
+    assert abs(bounds[1, 0] - bounds[0, 0] - 2.5) < 0.05, "Charge tie has the wrong width"
+    assert bounds[0, 2] < z0 - 1.1 and bounds[1, 2] > pcb[1, 2] + 1.1, "Charge tie does not wrap the board"
+    assert len(tie.decompose()) == 1, "Charge tie band is disconnected"
+    collision = {n: round((tie ^ s).volume(), 6) for n, s in ctx.solids.items()
+                 if n != "chg_tie" and not n.startswith("driver_")}
+    assert not any(v > 0.01 for v in collision.values()), f"Charge tie intersects the assembly: {collision}"
+    forward = (module.translate([0, -0.05, 0]) ^ tie).volume()
+    assert forward > 0.1, "Charge tie does not retain the board against its rear bearing"
+    tie_gap = tie.min_gap(lid, 1)
+    assert 0.25 <= tie_gap <= 0.35, f"Charge tie tunnel clearance is {tie_gap:.3f} mm"
+    return dict(charger_holder=dict(hot_zone_overlap_mm3=round(hot_overlap, 5),
+        holder_to_sink_mm=round(sink_gap, 3), seat_contact_mm3=contacts,
+        tunnel_overlap_mm3=overlaps, tie_to_lid_mm=round(tie_gap, 3),
+        tie_forward_contact_mm3=round(forward, 5)))
+
+
+def check_lid_fasteners(ctx):
+    """Two closed button-head seats and open, accessible Ruthex pockets."""
+    m, solids = ctx.metrics, ctx.solids
+    axes = np.asarray(m["ballast_posts"], float)
+    assert axes.shape == (2, 2) and np.allclose(axes, [[10, 63], [135, 63]], atol=0.01), \
+        f"Ballast lid must have two symmetric screw axes: {axes.tolist()}"
+    thickness, recess, length = m["lid_screw"]
+    entry, depth = m["ballast"][3], m["insert_depth"]
+    seat = entry + thickness - recess
+    penetration = length - (thickness - recess)
+    assert thickness - recess >= 1.2 and 5.7 <= penetration <= depth - 0.5, \
+        f"Ballast lid screw stack is invalid: seat {thickness-recess}, penetration {penetration}"
+    assert len(solids["screws_lid"].decompose()) == 2, "Ballast lid must have exactly two screws"
+    rows = []
+    for x, y in axes:
+        def cyl(z, height, radius):
+            return ctx.cylinder([x, y, z], [0, 0, 1], height, radius, 120)
+        bearing = cyl(entry + 0.01, thickness - recess - 0.02, 3.15) - \
+                  cyl(entry, thickness, 1.75)
+        enclosure = cyl(seat + 0.02, recess - 0.04, 4.4) - cyl(seat, recess, 3.25)
+        bearing_fill = (bearing ^ solids["ball_lid"]).volume() / bearing.volume()
+        enclosure_fill = (enclosure ^ solids["ball_lid"]).volume() / enclosure.volume()
+        assert bearing_fill > 0.995 and enclosure_fill > 0.995, \
+            f"Open or incomplete ballast lid screw seat at {x,y}: {bearing_fill}, {enclosure_fill}"
+        screw = solids["screws_lid"] ^ _air_box([x-4, y-4, 0], [x+4, y+4, 40])
+        sb = screw.bounding_box()
+        assert screw.volume() > 20 and abs(sb[2] - (seat - length)) < 0.02 \
+            and abs(sb[5] - (seat + 1.65)) < 0.02, f"Incorrect lid screw length or seat at {x,y}"
+        contact = (screw.translate([0, 0, -0.05]) ^ solids["ball_lid"]).volume()
+        assert contact > 0.1, f"Lid screw does not bear on its seat at {x,y}"
+        # A straight 6.35-mm tool can reach the insert on the bare base.
+        press = cyl(entry + 0.01, 60, 3.175)
+        access_overlap = (press ^ solids["base"]).volume()
+        assert access_overlap < 0.01, f"Lid insert press access blocked at {x,y}: {access_overlap:.4f} mm3"
+        bore = cyl(entry - depth + 0.01, depth - 0.02, 1.95)
+        assert (bore ^ solids["base"]).volume() < 0.01, f"Lid insert bore is obstructed at {x,y}"
+        assert (bore ^ solids["ballast"]).volume() < 0.01, f"Lid insert bore counted as ballast at {x,y}"
+        rows.append(dict(axis_mm=[x, y], bearing_fill=round(bearing_fill, 5),
+                         enclosed_rim_fill=round(enclosure_fill, 5), screw_contact_mm3=round(contact, 5),
+                         insert_tool_diameter_mm=6.35, insert_access_overlap_mm3=round(access_overlap, 5)))
+    return dict(lid_fasteners=dict(screw_length_mm=length, insert_engagement_mm=5.7,
+                hole_bottom_clearance_mm=round(depth - penetration, 3), seats=rows))
+
+
+def check_usb_wire_access(ctx):
+    """Open inner PCB end and wire corridors around the lateral plug-force stop."""
+    bounds = ctx.meshes["usbc"].bounds
+    cx, y0 = bounds[:, 0].mean(), bounds[0, 1]
+    assert abs(y0 - ctx.metrics["usb_origin"][1]) < 0.03, "USB inner-end reference does not match its mesh"
+    rows = {}
+    for name, lo_y, hi_y, lo_z, hi_z in (
+            ("inner_end", y0 - 2.3, y0 - 0.1, bounds[0, 2] + 0.2, bounds[1, 2] - 0.2),
+            ("below", y0 - 5.5, y0 + 1.3, bounds[0, 2] - 2.4, bounds[0, 2] - 0.4),
+            ("above", y0 - 5.5, y0 + 1.3, bounds[1, 2] + 0.4, bounds[1, 2] + 2.4)):
+        probe = _air_box([cx - 2, lo_y, lo_z], [cx + 2, hi_y, hi_z])
+        collisions = {n: round((probe ^ s).volume(), 6) for n, s in ctx.solids.items()
+                      if not n.startswith("driver_")}
+        collisions = {n: v for n, v in collisions.items() if v > 0.01}
+        assert not collisions, f"USB {name}-board wire corridor blocked: {collisions}"
+        rows[name] = dict(width_mm=4, height_mm=round(hi_z - lo_z, 3),
+                          length_mm=round(hi_y - lo_y, 3), collisions_mm3=collisions)
+    return dict(usb_wire_access=rows)
+
+
+def check_ballast_cover(ctx):
+    """Actual top slices must overlap apart from the narrow assembly seam."""
+    top = ctx.metrics["ballast"][3]
+    ballast = ctx.solids["ballast"].slice(top - 0.01)
+    cover = ctx.solids["ball_lid"].slice(top + 0.1)
+    assert ballast.area() > 1000 and cover.area() > 1000, "Ballast cover probe misses the top section"
+    uncovered = (ballast - cover.offset(0.3)).area()
+    assert uncovered < 0.01, f"Ballast lid leaves a top opening beyond its seam: {uncovered:.3f} mm2"
+    # Measure the required normal dilation, rather than just testing a formula
+    # derived from the nominal clearance. The former 5-mm corner cuts fail here.
+    lo, hi = 0.0, 0.45
+    for _ in range(14):
+        mid = (lo + hi) / 2
+        if (ballast - cover.offset(mid)).area() > 0.01:
+            lo = mid
+        else:
+            hi = mid
+    assert hi <= 0.45, f"Ballast lid seam exceeds 0.45 mm: {hi:.3f} mm"
+    return dict(ballast_top_cover=dict(ballast_section_mm2=round(ballast.area(), 3),
+        uncovered_beyond_seam_mm2=round(uncovered, 5), max_normal_seam_mm=round(hi, 3)))
+
+
+def check_switch_trough_clearance(ctx):
+    # Only the trough step beside the switch; the mounting well at x >= 138.5
+    # intentionally holds the switch and must not be part of this clearance test.
+    step = ctx.solids["base"] ^ _air_box([118, 52.9, 3.21], [138.49, 65, 26.01])
+    assert step.volume() > 100, "Switch/trough clearance probe misses the trough step"
+    gap = step.min_gap(ctx.solids["switch"], 3)
+    assert gap >= 1.2, f"Ballast trough crowds the switch body or pins: {gap:.3f} mm"
+    return dict(switch_trough_clearance_mm=round(gap, 3))
 
 
 
@@ -337,6 +491,73 @@ def check_rim_chamfers(ctx):
     return dict(rim_chamfer_profiles=rows)
 
 
+def check_filter_support(ctx):
+    """Check the separate cross, all four captured ends and its added air blockage."""
+    m = ctx.metrics
+    bar, thickness, span, front, rear, pad, post_inner, clearance = m["mat_support"]
+    cx, cz = m["body"][0] / 2, m["base_h"] + m["head_h"] / 2
+    meshes = {n: head_frame(ctx.meshes[n], m) for n in ("head", "fan", "filter", "filter_support")}
+    solids = {n: ctx.manifold(mesh) for n, mesh in meshes.items()}
+    support = solids["filter_support"]
+
+    # The end posts nearly touch the fan frame by design. Inspect the part inside
+    # the nominal 113-mm rotor disc separately, so those stops cannot hide a bar
+    # reaching towards the impeller. This is an envelope gap, not a measured rotor.
+    rotor_region = ctx.cylinder([cx, front - 1, cz], [0, 1, 0], rear - front + 2, 113 / 2, 180)
+    core = support ^ rotor_region
+    assert core.volume() > 100, "Filter support has no central cross"
+    core_bounds = core.bounding_box()
+    mat_gap = core_bounds[1] - meshes["filter"].bounds[1, 1]
+    fan_gap = solids["fan"].min_gap(core, 6.0)
+    assert 0 < mat_gap <= 2.35, f"Filter support too far behind the mat: {mat_gap:.3f} mm"
+    assert abs(core_bounds[1] - front) < 0.03 and abs(core_bounds[4] - front - thickness) < 0.03, \
+        "Filter support centre is not in its specified support plane"
+    assert fan_gap >= 4.95, f"Filter support approaches the fan envelope: {fan_gap:.3f} mm"
+
+    # Check each captured end independently: a summed contact could pass with
+    # missing seats. The front stop is the head; the rear stop is the fan frame.
+    # No ALLOWED_OVERLAPS entry is used for this part or these probes.
+    stop_rows = []
+    end_inner = post_inner - 1
+    for axis, label in ((0, "horizontal"), (2, "vertical")):
+        for sign in (-1, 1):
+            lo = np.array([cx - pad / 2 - 0.01, front - 0.01, cz - pad / 2 - 0.01])
+            hi = np.array([cx + pad / 2 + 0.01, rear + 0.01, cz + pad / 2 + 0.01])
+            centre = cx if axis == 0 else cz
+            lo[axis], hi[axis] = ((centre - span / 2 - 0.01, centre - end_inner) if sign < 0
+                                  else (centre + end_inner, centre + span / 2 + 0.01))
+            end = support ^ _air_box(lo.tolist(), hi.tolist())
+            assert end.volume() > 20, f"Filter support end missing: {label}/{sign}"
+            row = dict(end=f"{label}_{'negative' if sign < 0 else 'positive'}", volume_mm3=round(end.volume(), 4))
+            for direction, target in ((-1, "head"), (1, "fan")):
+                # 0.1 mm must remain free; a 0.25-mm shift must reach the stop.
+                free = (end.translate([0, direction * clearance / 2, 0]) ^ solids[target]).volume()
+                contact = (end.translate([0, direction * (clearance + 0.05), 0]) ^ solids[target]).volume()
+                assert free < 0.01, f"Filter support end binds before its nominal stop: {row['end']}/{target}"
+                assert contact > 0.01, f"Filter support end has no axial stop: {row['end']}/{target}"
+                row[f"{target}_contact_mm3"] = round(contact, 5)
+            stop_rows.append(row)
+
+    # Rotate the air axis onto Z, then project the actual cross and all its end
+    # posts. Only material within the already open throat counts as added blockage.
+    throat_square = md.CrossSection.square([m["open_sq"], m["open_sq"]], True).translate([cx, -cz])
+    throat = throat_square - solids["head"].rotate([90, 0, 0]).slice(m["head_y"][2] - 0.1)
+    projected = support.rotate([90, 0, 0]).project()
+    shadow = md.CrossSection(projected.to_polygons(), md.FillRule.Positive)
+    blocked = (shadow ^ throat).area()
+    open_area = throat.area()
+    assert open_area > 13000, f"Unexpected filter throat area: {open_area:.1f} mm2"
+    ideal_cross = 2 * m["open_sq"] * bar - bar * bar
+    assert blocked >= ideal_cross * 0.98, "Filter support projection is missing a full-width arm"
+    assert blocked / open_area < 0.05, f"Filter support blocks {100 * blocked / open_area:.2f}% of the throat"
+    return dict(filter_support_checks=dict(
+        mat_centre_gap_mm=round(mat_gap, 3), centre_to_fan_mm=round(fan_gap, 3),
+        end_clearance_mm=clearance, end_stops=stop_rows,
+        throat_area_mm2=round(open_area, 3), blocked_area_mm2=round(blocked, 3),
+        blocked_percent=round(100 * blocked / open_area, 3),
+        remaining_area_mm2=round(open_area - blocked, 3)))
+
+
 def checks(ctx):
     """Project-specific checks after export."""
     m = ctx.metrics
@@ -364,7 +585,7 @@ def checks(ctx):
         ("fan", "head_back", into),                   # and on the spacer posts of the cover
         ("feet", "base", [0, 0, 1]),
         ("pwm_board", "base", [0, 0, -1]),            # board on the rib pads
-        ("chg_module", "ball_lid", [0, 0, -1]),       # upright board rests on two narrow PCB-edge seats
+        ("chg_module", "ball_lid", [0, 0, -1]),       # lower cut edge at the cool OUT end
         ("ball_lid", "base", [0, 0, -1]),             # lid on its posts and walls
     ])
     # Stops: the fan cannot move sideways in its corner guides, the head is located by its screws
@@ -373,21 +594,24 @@ def checks(ctx):
     stops = ctx.stops([("fan_sideways", "fan", "head", [1, 0, 0], 1.5),
                        ("usbc_in", "usbc", "base", [0, -1, 0], 0.6),
                        ("head_on_screws", "head", "screws_head", [1, 0, 0], 0.6),
-                       ("charger_forward", "chg_module", "ball_lid", [0, -1, 0], 0.4),
+                       ("charger_forward", "chg_module", "chg_tie", [0, -1, 0], 0.4),
                        ("charger_backward", "chg_module", "ball_lid", [0, 1, 0], 0.4)])
     # The cell is held in open saddles by foam tape, so it has clearance instead of contact
     # 0.2 for the heatsink: nominal 0.3 in its wall cut-out, less the facets of the rounded corners
     gaps = ctx.clearances([("battery", "base", 0.3), ("battery", "head", 1.0),
-                           ("chg_sink", "fan", 1.5)])
+                           ("chg_sink", "fan", 1.5), ("ball_lid", "switch", 1.2)])
     # Assembly paths, not only end positions. The head is pulled off along the tilted normal.
     up = [0, -math.sin(tilt), math.cos(tilt)]
     out = [0, -math.cos(tilt), -math.sin(tilt)]       # out of the intake face, normal to it
     paths = ctx.paths([
         ("cassette_off", "cassette", ["head", "base", "fan", "filter"], out, 30, 0.5),
         # the fan is bolted to the cover, so it comes off with it
-        ("cover_off", ["head_back", "fan", "screws_fan"], ["head", "base", "chg_module", "chg_sink"],
+        ("cover_off", ["head_back", "fan", "screws_fan"], ["head", "base", "filter_support", "chg_module", "chg_sink", "chg_tie"],
          [-o for o in out], 30, 0.5),
-        # Remove the head first, then lift board and heatsink out of the open-top guides.
+        # The fan frame captures the support's four ends. Remove fan and cover,
+        # then lift the cross straight out of the rear-open head sockets.
+        ("support_out", "filter_support", ["head", "base", "filter"], [-o for o in out], 30, 0.5),
+        # Remove the head and cut/remove the cable tie, then lift the board and heatsink.
         ("chg_off", ["chg_module", "chg_sink"],
          ["base", "ball_lid", "battery", "pwm_board", "usbc", "switch", "led", "pot", "screws_lid"],
          [0, 0, 1], 30, 0.5),
@@ -395,12 +619,12 @@ def checks(ctx):
         # 10 mm up: clear of the trough walls, its posts, the USB-C channel above it and the run-outs of
         # the rear head screw bosses. Out of the bay it comes at an angle, past the switch well box on the
         # right - a tilt, which a rigid axis-aligned path cannot express.
-        ("lid_off", ["ball_lid", "chg_module", "chg_sink"],
+        ("lid_off", ["ball_lid", "chg_module", "chg_sink", "chg_tie"],
          ["base", "ballast", "pwm_board", "usbc", "switch"], [0, 0, 1], 10, 0.5),
-        ("fan_out", ["fan", "screws_fan"], ["head", "base"], [-o for o in out], 40, 0.5),   # cover off first
-        ("head_off", ["head", "head_back", "cassette", "fan", "filter", "magnets"],
+        ("fan_out", ["fan", "screws_fan"], ["head", "base", "filter_support"], [-o for o in out], 40, 0.5),   # cover off first
+        ("head_off", ["head", "head_back", "cassette", "fan", "filter", "filter_support", "magnets"],
          ["base", "battery", "pwm_board", "usbc", "switch", "pot", "led", "ball_lid", "ballast",
-          "chg_module", "chg_sink"], up, 60, 1),
+          "chg_module", "chg_sink", "chg_tie"], up, 60, 1),
         ("battery_out", "battery", ["base", "pwm_board", "usbc", "switch", "ball_lid"], [0, 0, 1], 40, 0.5),
         ("knob_off", "knob", ["base", "pot_nut"], [0, -1, 0], 20, 0.5),
     ])
@@ -412,7 +636,9 @@ def checks(ctx):
         [("head_back", _tilt(m, [p[0], m["head_y"][3], p[1]]), back, depth, d, w) for p in m["fan_holes"]] +
         [("head", _tilt(m, [p[0], m["back_y"], p[1]]), out, depth, d, w) for p in m["head_bosses"]] +
         [("base", _tilt(m, [p[0], p[1], m["base_h"]]), [-u for u in up], depth, d, w) for p in m["rim_screws"]] +
-        [("base", [p[0], p[1], 0], [0, 0, 1], depth, d, w) for p in _foot_xy(m)])
+        [("base", [p[0], p[1], 0], [0, 0, 1], depth, d, w) for p in _foot_xy(m)] +
+        [("base", [p[0], p[1], m["ballast"][3]], [0, 0, -1], depth, d, w)
+         for p in m["ballast_posts"]])
     # Air must not bypass the mat: the chamber lip overlaps it on every side, front and back
     lip = (m["chamber"][0] - m["open_sq"]) / 2
     assert lip >= 2, f"Intake lip only {lip:.2f} mm wide"
@@ -422,10 +648,11 @@ def checks(ctx):
     mat_free = y0 + (m["chamber"][0] - MAT[0]) / (2 * lip) * (y1 - y0) - (m["head_y"][0] + MAT[2])
     fan_gap = m["head_y"][2] - (m["head_y"][0] + MAT[2])
     assert 0 < mat_free < 0.25 * fan_gap, f"Mat travels {mat_free:.1f} mm of the {fan_gap:.1f} mm to the fan"
-    # The corner gussets press into the fleece. Bound how much of the mat that is.
+    # The rigid nominal mat must not be displaced by the head or its rear support.
+    # Flexible bulging towards the central cross is outside this envelope check.
     squashed = (ctx.solids["filter"] ^ ctx.solids["head"]).volume()
     mat = MAT[0] * MAT[1] * MAT[2]
-    assert squashed < 0.05 * mat, f"Gussets displace {squashed / mat:.1%} of the mat"
+    assert squashed < 0.05 * mat, f"Head displaces {squashed / mat:.1%} of the mat"
 
     # Tipping: the head leans forward, so the centre of mass must stay well inside the foot polygon
     total, moment = 0.0, [0.0, 0.0, 0.0]
@@ -451,7 +678,9 @@ def checks(ctx):
                 centre_of_mass_mm=[round(c, 1) for c in com],
                 foot_polygon_mm=poly, tip_margins_mm={k: round(v, 1) for k, v in margins.items()},
                 tip_angle_deg=round(tip_angle, 1), **check_top_corners(ctx), **check_joint_profile(ctx),
-                **check_rim_chamfers(ctx), **check_charger_air(ctx))
+                **check_rim_chamfers(ctx), **check_charger_air(ctx), **check_charger_holder(ctx),
+                **check_lid_fasteners(ctx), **check_usb_wire_access(ctx), **check_ballast_cover(ctx),
+                **check_switch_trough_clearance(ctx), **check_filter_support(ctx))
 
 
 def _tilt(m, point):
@@ -481,6 +710,7 @@ VIEWER = dict(
            ("head", "Head", "black", "#8a9096", "1x", [0, -0.36, 1.35]),
            ("head_back", "Back cover", "black", "#7c8288", "1x", [0, 2.3, 0.6]),
            ("cassette", "Filter cassette", "grey", "#c4c9ce", "1x", [0, -1.55, 1.0]),
+           ("filter_support", "Filter support cross", "black", "#aeb5bb", "1x", [0, 0.15, 1.35]),
            ("knob", "Speed knob", "grey", "#c4c9ce", "1x", [0, -0.6, 0]),
            ("feet", "Feet", "tpu", "#55595e", "4x", [0, 0, -0.6]),
            ("fan_visual", "Fan 120 x 25", "bought", "#6a6f75", "1x", [0, 0.5, 1.35]),
@@ -489,6 +719,7 @@ VIEWER = dict(
            ("pwm_board", "PWM controller", "bought", "#2f5d3a", "1x", [0, -0.2, 0]),
            ("chg_module", "Charge / boost module", "bought", "#2f5d3a", "1x", [0, 0, 0.3]),
            ("chg_sink", "Heatsink", "bought", "#9aa0a6", "1x", [0, 0, 0.3]),
+           ("chg_tie", "Charge-module cable tie", "bought", "#55595e", "1x", [0, 0, 0.3]),
            ("usbc", "USB-C PD trigger", "bought", "#2f5d3a", "1x", [0, 0.8, 0]),
            ("switch", "Rocker switch", "bought", "#3a3d42", "1x", [0.8, 0, 0]),
            ("magnets", "Magnets 10 x 3", "bought", "#9aa0a6", "8x", [0, -1.2, 0.9]),
@@ -496,6 +727,7 @@ VIEWER = dict(
            ("screws_back", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, 2.8, 0.6]),
            ("screws_head", "Screws M3 x 8", "bought", "#9aa0a6", "2x", [0, -0.3, 1.6]),
            ("screws_feet", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, 0, -1.0]),
+           ("screws_lid", "Lid screws M3 x 8", "bought", "#9aa0a6", "2x", [0, 0, 1.1]),
            ("ballast", "Ballast, loose iron", "bought", "#6b6f74", "1x", [0, 0, -0.3]),
            ("ball_lid", "Ballast lid", "black", "#7c8288", "1x", [0, 0, 0.8]),
 ],
@@ -507,6 +739,7 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
          "02_exploded": ("assembly(18);", "60,-360,170,0,0,30"),
          "03_back": ("assembly();", "60,320,150,0,0,205"),
          "04_charger_front": ("color(\"#8a9096\") ball_lid(); color(\"#2f5d3a\") chg_module_env(); "
-                              "color(\"#aeb5bb\") chg_sink_env();", "110,-90,90,70,60,34"),
+                              "color(\"#aeb5bb\") chg_sink_env(); color(\"#55595e\") chg_tie_env();", "110,-90,90,70,60,34"),
          "05_charger_back": ("color(\"#8a9096\") ball_lid(); color(\"#2f5d3a\") chg_module_env(); "
-                             "color(\"#aeb5bb\") chg_sink_env();", "110,180,90,70,60,34")}
+                             "color(\"#aeb5bb\") chg_sink_env(); color(\"#55595e\") chg_tie_env();", "110,180,90,70,60,34"),
+         "06_filter_support": ("color(\"#aeb5bb\") filter_support_raw();", "220,-240,220,72.5,26,120.5")}
