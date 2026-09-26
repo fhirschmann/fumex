@@ -1,5 +1,5 @@
 {
-  "source_sha256": "ef984926c92907ff6b44ab8dca544594ecc9b8692bdbae2d17ccce483a763e5b",
+  "source_sha256": "b21de4cee404bf7ec0729d4387ee1f67255d2660a494efb6897dea5861848cb0",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -29,17 +29,17 @@
           57.2657
         ]
       ],
-      "volume_mm3": 109370.094,
-      "triangles": 10250,
+      "volume_mm3": 109530.4901,
+      "triangles": 11002,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "05c2a9c740531a245e60181d85ba5de88beba3bb355ece1f7d13e60157381339",
+      "sha256": "8483476a5263d1ecf8870796efc198b8802694bc0e7c9cab318b077d2d5eb9e8",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "05c2a9c740531a245e60181d85ba5de88beba3bb355ece1f7d13e60157381339"
+      "committed_sha256": "8483476a5263d1ecf8870796efc198b8802694bc0e7c9cab318b077d2d5eb9e8"
     },
     "head": {
       "size_mm": [
@@ -133,33 +133,33 @@
     },
     "knob": {
       "size_mm": [
-        25.9966,
-        25.9983,
+        24.0,
+        23.9925,
         13.5
       ],
       "bounds_mm": [
         [
-          -12.9966,
-          -12.9991,
+          -12.0,
+          -11.9963,
           0.0
         ],
         [
-          13.0,
-          12.9991,
+          12.0,
+          11.9963,
           13.5
         ]
       ],
-      "volume_mm3": 5751.1076,
-      "triangles": 2316,
+      "volume_mm3": 4695.9316,
+      "triangles": 2228,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "7f766db2306731d9a9476feeb149f6a59ce7f2323475bccb4b7979c4e09e4c63",
+      "sha256": "c406eb2e289007354041ca9da392f83dd45b9691a9835808848bf2bef06dd463",
       "quantity": 1,
       "material": "PETG-grey",
-      "committed_sha256": "7f766db2306731d9a9476feeb149f6a59ce7f2323475bccb4b7979c4e09e4c63"
+      "committed_sha256": "c406eb2e289007354041ca9da392f83dd45b9691a9835808848bf2bef06dd463"
     },
     "foot": {
       "size_mm": [
@@ -254,8 +254,8 @@
   },
   "color_meshes": {},
   "color_parts": {},
-  "assembly_bodies": 32,
-  "assembly_pairs": 496,
+  "assembly_bodies": 33,
+  "assembly_pairs": 528,
   "metrics": {
     "cass_t": 4.5,
     "cass_c": 1.2,
@@ -312,7 +312,49 @@
     ],
     "pot_mount_t": 1.8,
     "front_rim_z": 38.0859,
-    "knob_top_z": 34,
+    "pwm_front": [
+      116,
+      21,
+      1.8,
+      3.5
+    ],
+    "pwm_pcb": [
+      41.05,
+      32,
+      1.6
+    ],
+    "pwm_origin": [
+      100,
+      2.55,
+      13.1
+    ],
+    "pwm_holes": [
+      [
+        103,
+        5.55
+      ],
+      [
+        129,
+        5.55
+      ]
+    ],
+    "pwm_hole_d": 3.2,
+    "pwm_boss_d": 6,
+    "pwm_core": [
+      2,
+      7.4,
+      2.7,
+      0.7
+    ],
+    "pwm_screw": [
+      2.5,
+      8,
+      4.5,
+      2.5
+    ],
+    "floor_t": 3.2,
+    "knob_d": 24,
+    "knob_top_z": 33,
     "fan_axis_pitch": 105,
     "foot_x": [
       18,
@@ -487,35 +529,36 @@
   },
   "intersections": [],
   "alignment": {
-    "features": 246,
+    "features": 271,
     "coaxial_pairs": {
       "ball_lid|ballast": 26,
       "ball_lid|base": 17,
       "ball_lid|driver_lid": 8,
       "ball_lid|screws_lid": 16,
-      "ballast|base": 51,
+      "ballast|base": 63,
       "ballast|feet": 24,
       "ballast|head": 8,
-      "ballast|knob": 1,
       "ballast|led": 4,
-      "ballast|pot_nut": 2,
+      "ballast|pwm_board": 22,
       "ballast|screws_feet": 16,
       "ballast|screws_lid": 8,
+      "ballast|screws_pwm": 8,
       "base|battery": 3,
+      "base|driver_pwm": 6,
       "base|feet": 20,
       "base|head": 12,
-      "base|knob": 2,
       "base|led": 4,
-      "base|pot": 2,
-      "base|pot_nut": 5,
+      "base|pwm_board": 22,
       "base|screws_feet": 8,
       "base|screws_head": 8,
       "base|screws_lid": 4,
+      "base|screws_pwm": 6,
       "cassette|head": 4,
       "cassette|magnets": 8,
       "driver_back|head_back": 8,
       "driver_feet|feet": 8,
       "driver_head|head": 8,
+      "driver_pwm|pwm_board": 4,
       "feet|screws_feet": 16,
       "head_back|screws_back": 16,
       "head_back|screws_fan": 4,
@@ -524,19 +567,18 @@
       "head|screws_back": 4,
       "head|screws_head": 16,
       "knob|pot": 6,
-      "knob|pot_nut": 9,
-      "pot|pot_nut": 2
+      "pwm_board|screws_pwm": 12
     },
     "misaligned": [],
     "allowed_misaligned": 0
   },
   "contact_volumes_mm3": {
-    "head@base": 41.998,
+    "head@base": 41.7328,
     "cassette@head": 278.9567,
     "fan@head": 34.3249,
     "fan@head_back": 7.5396,
     "feet@base": 54.8257,
-    "pwm_board@base": 3.473,
+    "pwm_board@base": 5.1495,
     "chg_module@ball_lid": 0.5565,
     "ball_lid@base": 6.42,
     "usbc@base": 2.5875
@@ -866,11 +908,11 @@
   "intake_lip_mm": 2.25,
   "mat_free_travel_mm": 1.62,
   "mat_squashed_percent": 0.0,
-  "mass_g": 1019.3,
+  "mass_g": 1017.2,
   "centre_of_mass_mm": [
-    68.2,
-    31.9,
-    68.2
+    68.1,
+    32.0,
+    68.3
   ],
   "foot_polygon_mm": [
     10.0,
@@ -879,10 +921,10 @@
     68.0
   ],
   "tip_margins_mm": {
-    "front": 28.9,
-    "back": 36.1,
-    "left": 58.2,
-    "right": 66.8
+    "front": 29.0,
+    "back": 36.0,
+    "left": 58.1,
+    "right": 66.9
   },
   "tip_angle_deg": 21.7,
   "top_corner_normals": [
@@ -1389,6 +1431,126 @@
       }
     ]
   },
+  "pwm_mount": {
+    "pcb_mm": [
+      32,
+      41.05,
+      1.6
+    ],
+    "hole_diameter_mm": 3.2,
+    "hole_pitch_mm": 26,
+    "screw_length_mm": 8,
+    "penetration_mm": 6.4,
+    "pilot_depth_mm": 7.4,
+    "bottom_clearance_mm": 1,
+    "floor_reserve_mm": 2.5,
+    "driver_shaft_mm": [
+      4,
+      25
+    ],
+    "seats": [
+      {
+        "axis_mm": [
+          103.0,
+          5.55
+        ],
+        "pcb_bearing_fill": 1.0,
+        "boss_bearing_fill": 1.0,
+        "pilot_wall_fill": 1.0,
+        "blind_floor_fill": 1.0,
+        "head_contact_mm3": 0.39313,
+        "pcb_contact_mm3": 1.09202,
+        "intentional_thread_overlap_mm3": 10.54268,
+        "excess_overlap_mm3": 0.0
+      },
+      {
+        "axis_mm": [
+          129.0,
+          5.55
+        ],
+        "pcb_bearing_fill": 1.0,
+        "boss_bearing_fill": 1.0,
+        "pilot_wall_fill": 0.99978,
+        "blind_floor_fill": 1.0,
+        "head_contact_mm3": 0.39313,
+        "pcb_contact_mm3": 1.09202,
+        "intentional_thread_overlap_mm3": 10.54262,
+        "excess_overlap_mm3": 0.0
+      }
+    ]
+  },
+  "pwm_removal": {
+    "removed_first": [
+      "head_group",
+      "knob",
+      "screws_pwm",
+      "switch"
+    ],
+    "pivot_mm": [
+      116.0,
+      0.9,
+      24.4
+    ],
+    "stages": [
+      {
+        "stage": "lift_first",
+        "samples": 21,
+        "maximum_overlap_mm3": 0.0
+      },
+      {
+        "stage": "lift_clear",
+        "samples": 29,
+        "maximum_overlap_mm3": 5.2e-05
+      },
+      {
+        "stage": "retract",
+        "samples": 76,
+        "maximum_overlap_mm3": 0.0
+      },
+      {
+        "stage": "pitch",
+        "samples": 71,
+        "maximum_overlap_mm3": 0.0
+      },
+      {
+        "stage": "withdraw",
+        "samples": 80,
+        "maximum_overlap_mm3": 0.0
+      },
+      {
+        "stage": "lift_rear",
+        "samples": 46,
+        "maximum_overlap_mm3": 0.0
+      },
+      {
+        "stage": "clear_rim",
+        "samples": 21,
+        "maximum_overlap_mm3": 0.0
+      },
+      {
+        "stage": "up",
+        "samples": 121,
+        "maximum_overlap_mm3": 0.0
+      }
+    ],
+    "screws": [
+      {
+        "screw": 0,
+        "distance_mm": 60,
+        "step_mm": 0.25,
+        "maximum_unintended_overlap_mm3": 0.0
+      },
+      {
+        "screw": 1,
+        "distance_mm": 60,
+        "step_mm": 0.25,
+        "maximum_unintended_overlap_mm3": 0.0
+      }
+    ],
+    "knob_distance_mm": 20,
+    "knob_step_mm": 0.25,
+    "knob_maximum_overlap_mm3": 0.0
+  },
   "usb_wire_access": {
     "inner_end": {
       "width_mm": 4,
@@ -1513,7 +1675,6 @@
       "battery",
       "pwm_board",
       "pot",
-      "pot_nut",
       "chg_module",
       "chg_sink",
       "chg_tie",
@@ -1524,7 +1685,8 @@
       "screws_back",
       "screws_head",
       "screws_lid",
-      "screws_feet"
+      "screws_feet",
+      "screws_pwm"
     ],
     "expected_thickness_findings": [
       {
@@ -1630,6 +1792,8 @@
   },
   "open_measurements": [
     "Masses of the bought parts are data-sheet or estimated values, not weighed",
+    "PWM mounting: verify the 2.0 mm PETG pilot fit with the real 2.5 x 8 screws and measure their head height (4.5 mm head diameter confirmed; 2.5 mm height is a conservative envelope). Assembly requires a slim 4 mm screwdriver shaft exposed for at least 25 mm.",
+    "PWM service motion is sampled at 0.1 mm / 0.5 degrees (final lift 0.5 mm); remove the head, knob, PCB screws and rocker switch first. The real wiring and flexible leads are not modelled.",
     "LEDs: test visibility through both 0.8 mm black PETG skins; nominal 3 mm body and 3.8 mm flange dimensions remain unmeasured, as in LEO-AC1"
   ],
   "limitations": [
