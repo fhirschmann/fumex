@@ -1,5 +1,5 @@
 {
-  "source_sha256": "360788e7db5519fff73808a99caab239acb91be1d05ffc70e30c71d7af85a674",
+  "source_sha256": "c7acc4e9a0937c17f17683a1ec746642b080b6f3aef036d206d633dd7ac4cb9a",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -29,17 +29,17 @@
           57.9141
         ]
       ],
-      "volume_mm3": 109374.8524,
-      "triangles": 6614,
+      "volume_mm3": 110083.2582,
+      "triangles": 6878,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "19bcfa08767892ef794fa682f5d252c12b1980c9109d5a6fd8271ef47be3d6b1",
+      "sha256": "8ec49fe1b450f6221024055a3b7d5c65acf82bc7ca3ec79ab298823d41032654",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "19bcfa08767892ef794fa682f5d252c12b1980c9109d5a6fd8271ef47be3d6b1"
+      "committed_sha256": "8ec49fe1b450f6221024055a3b7d5c65acf82bc7ca3ec79ab298823d41032654"
     },
     "head": {
       "size_mm": [
@@ -209,17 +209,17 @@
           3.0
         ]
       ],
-      "volume_mm3": 6717.7268,
-      "triangles": 908,
+      "volume_mm3": 6391.8976,
+      "triangles": 1144,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "c02583ae6e61df604425c712affcfdcbf90cc4310ede6abe6a33791a799a93f8",
+      "sha256": "bd304cca1c5ae2d471fa963f93c3277b524b39fb42f9ae2c1a7f9456058957de",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "c02583ae6e61df604425c712affcfdcbf90cc4310ede6abe6a33791a799a93f8"
+      "committed_sha256": "bd304cca1c5ae2d471fa963f93c3277b524b39fb42f9ae2c1a7f9456058957de"
     }
   },
   "color_meshes": {},
@@ -251,12 +251,12 @@
     "knob_top_z": 35,
     "fan_axis_pitch": 105,
     "foot_x": [
-      16,
-      129
+      18,
+      127
     ],
     "foot_y": [
-      8,
-      62
+      10,
+      61
     ],
     "foot_size": [
       18,
@@ -284,19 +284,19 @@
     ],
     "ballast_posts": [
       [
-        6.5,
+        30,
         58.5
       ],
       [
-        6.5,
+        30,
         67.5
       ],
       [
-        138.5,
+        115,
         58.5
       ],
       [
-        138.5,
+        115,
         67.5
       ]
     ],
@@ -397,13 +397,13 @@
     "allowed_misaligned": 0
   },
   "contact_volumes_mm3": {
-    "head@base": 14.3409,
+    "head@base": 14.3134,
     "cassette@head": 295.4165,
     "fan@head": 132.6496,
-    "feet@base": 52.7405,
+    "feet@base": 54.8256,
     "pwm_board@base": 3.4731,
     "chg_module@base": 0.738,
-    "ball_lid@base": 8.1945
+    "ball_lid@base": 12.7233
   },
   "stops": [
     {
@@ -471,7 +471,7 @@
     },
     {
       "name": "lid_off",
-      "length_mm": 18.0,
+      "length_mm": 10.0,
       "collisions": 0,
       "first_mm": null,
       "max_volume_mm3": 0.0
@@ -641,8 +641,8 @@
     {
       "body": "base",
       "at": [
-        16.0,
-        8.0,
+        18.0,
+        10.0,
         0.0
       ],
       "empty_mm3": 0.0,
@@ -652,8 +652,8 @@
     {
       "body": "base",
       "at": [
-        129.0,
-        8.0,
+        127.0,
+        10.0,
         0.0
       ],
       "empty_mm3": 0.0,
@@ -663,8 +663,8 @@
     {
       "body": "base",
       "at": [
-        16.0,
-        62.0,
+        18.0,
+        61.0,
         0.0
       ],
       "empty_mm3": 0.0,
@@ -674,8 +674,8 @@
     {
       "body": "base",
       "at": [
-        129.0,
-        62.0,
+        127.0,
+        61.0,
         0.0
       ],
       "empty_mm3": 0.0,
@@ -685,25 +685,25 @@
   ],
   "intake_lip_mm": 2.25,
   "mat_squashed_percent": 2.3,
-  "mass_g": 1039.3,
+  "mass_g": 1028.1,
   "centre_of_mass_mm": [
-    68.8,
-    30.8,
-    68.2
+    68.5,
+    30.5,
+    68.8
   ],
   "foot_polygon_mm": [
-    7.0,
-    138.0,
-    0.0,
-    70.0
+    9.0,
+    136.0,
+    2.0,
+    69.0
   ],
   "tip_margins_mm": {
-    "front": 30.8,
-    "back": 39.2,
-    "left": 61.8,
-    "right": 69.2
+    "front": 28.5,
+    "back": 38.5,
+    "left": 59.5,
+    "right": 67.5
   },
-  "tip_angle_deg": 24.3,
+  "tip_angle_deg": 22.5,
   "stl_difference_mm3": {
     "base": 0.0,
     "head": -0.0,

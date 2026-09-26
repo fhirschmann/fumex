@@ -95,7 +95,7 @@ pwm_pins = 3;        // solder pins below the PCB (measured 2-3)
 pwm_edge_free = 1.5; // pin-free strips along both long edges (measured)
 pwm_pad = 1.2;       // rib pads under those strips
 pwm_rib = 3;
-pot_x = 108;         // potentiometer axis in the front panel; left enough that the switch pins clear the board
+pot_x = 116;         // potentiometer axis in the front panel (user, 2026-09-23: further right)
 pot_z = 21;          // above the front foot bosses, low enough that the knob clears the front rim
 pot_axis_h = 6.3;    // PCB top to shaft centre
 pot_shaft_d = 5.8;   // measured outside the knurling
@@ -158,13 +158,17 @@ usbc_shell = [8.9, 3.22];
 usbc_shell_bottom = 1.1;
 usbc_plate = usbc_protrusion;   // local wall thickness: PCB edge inside, receptacle face flush outside
 usbc_xz = [106, 45]; // above the ballast lid (user, 2026-09-22), high enough that the lid lifts out under it
-usbc_floor = 6;      // the channel floor reaches only this far from the back wall: a full-length floor
-                     // would be a 198 mm2 flat overhang, and a 45 degree gusset would sit in the trough
+usbc_floor = 6;      // The channel floor reaches only this far from the back wall. A full-length floor
+                     // is a 198 mm2 flat overhang; at 6 mm it is an 85 mm2 ledge, well under the check
+                     // limit and a routine 6 mm cantilever in PETG. A 45 degree gusset under it would
+                     // reach down to z 32 and take away the lift the ballast lid needs (lid_off).
 usbc_cl = 0.2;
 usbc_wall = 2;
 
 /* [Power switch: measured 14.7 x 20.9 mm rocker, snap-in, in the right side wall] */
-sw_yz = [37, 34];    // forward and up: the ballast trough now runs the full width behind it    // centre in the right wall, behind the PWM board and beside the battery
+// Behind the PWM board, not above it: that is what lets the board move right and the switch move down
+// (user, 2026-09-23). The trough's front wall steps back on the right so the switch body fits.
+sw_yz = [50, 26];    // centre in the right wall, behind the PWM board and beside the battery
 sw_cut = [12.2, 19.2];      // measured panel hole; long side upright, so the printed bridge is short
 sw_cut_cl = 0.2;     // PETG holes come out undersize
 sw_bezel = [14.7, 20.9, 2]; // outside width (y), height (z), bezel thickness
@@ -193,11 +197,12 @@ ball = [3, 142, 53, 26];    // interior x from / to (both housing walls), front 
                      // rim and lid underside (z). Full width and lower, with the USB-C socket above it
                      // (user, 2026-09-22); the rim stays below the run-outs of the rear head screw bosses
 ball_wall = 2;
-ball_post = 10;      // screw posts in the four corners; at Ø10, 3.5 mm off both walls, they close the
-                     // corner completely (Ø8 left a sealed sliver void, which exports as a second body)
+ball_post = 10;      // screw posts for the lid, standing free on the trough floor
+ball_post_x = [30, 115];
 ball_lid_t = 3;
 ball_lip = 0;        // no lip over the front wall: the cell has to lift past it (battery_out)
 ball_dish = [16, 1.5];   // finger dish in the lid instead: diameter, depth
+ball_step = [126, 57];  // the front wall steps back to y = 57 from this x on, around the switch body
 ball_rim = 0.4;      // trough walls end this far below the posts, so the lid bears on the four posts
                      // alone and no two faces of the base share the plane z = ball[3]
 // M3 plastic-forming screws straight into the posts, no heat-set inserts (user, 2026-09-22)
@@ -207,9 +212,9 @@ pt_depth = 10;
 /* [Feet: four TPU pads, each screwed with one M3 x 8 from below] */
 foot = [18, 16, 4.5];   // length (x), width (y), height
 // wide apart for stability, and clear of the PWM board above them
-// Pads flush with the front face and clear of the corner radius, so all four sit fully under the housing
-// (user, 2026-09-22). The tipping edge is then y = 0, which the ballast more than makes up for.
-foot_xy = [[16, 8], [129, 8], [16, 62], [129, 62]];
+// All four pads inside the housing outline, and inside the bed chamfer too: flush with the outline they
+// stood proud of the chamfered bottom edge (user, 2026-09-23).
+foot_xy = [[18, 10], [127, 10], [18, 61], [127, 61]];
 // A keying pocket in the bottom face would be a 275 mm2 flat overhang per foot (analyze.py overhangs),
 // so the pad sits flat and a small peg beside the screw stops it turning.
 foot_peg = [3, 2, 7];   // anti-rotation peg on the foot: diameter, length, distance from the screw axis
@@ -274,7 +279,9 @@ function bat_low(y) = abs(y - bat_cy) >= bat_d / 2 + bat_clear ? 1e6
                     : bat_cz - sqrt(pow(bat_d / 2 + bat_clear, 2) - pow(y - bat_cy, 2));
 // x of the two charge-module brackets; the back cover's lip is notched over exactly these
 function chg_bracket_x() = [chg_x0 + chg_br[2] - chg_br[0], chg_x0 + chg_pcb[0] - chg_br[2]];
-function ball_posts() = [for (x = [ball[0] + 3.5, ball[1] - 3.5],
+// well inside, not in the corners: in the corners the head screw bosses sit right over them and you
+// cannot get a driver down to the lid screws (user, 2026-09-23)
+function ball_posts() = [for (x = ball_post_x,
                              y = [ball[2] + ball_wall + 3.5, body_d - wall - 3.5]) [x, y]];
 // both rear corners of the lid meet a rounded housing corner
 function pot_tab_z() = [pot_shaft_d / 2 + pot_tab[3] - pot_tab_cl, pot_bush[0] / 2 + pot_tab[3] + pot_tab[1] + pot_tab_cl];
@@ -540,7 +547,11 @@ module sw_cuts() {
 // front and right wall of the trough (left and back are the housing walls), the four screw posts, and a
 // ledge along the back wall for the lid
 module ballast_walls() {
-    translate([ball[0], ball[2], floor_t - eps]) cube([ball[1] - ball[0], ball_wall, ball[3] - ball_rim - floor_t + eps]);
+    translate([ball[0], ball[2], floor_t - eps]) cube([ball_step[0] - ball[0], ball_wall, ball[3] - ball_rim - floor_t + eps]);
+    translate([ball_step[0] - ball_wall, ball_step[1], floor_t - eps])   // stepped back around the switch
+        cube([ball[1] - ball_step[0] + ball_wall, ball_wall, ball[3] - ball_rim - floor_t + eps]);
+    translate([ball_step[0] - ball_wall, ball[2], floor_t - eps])
+        cube([ball_wall, ball_step[1] - ball[2] + ball_wall, ball[3] - ball_rim - floor_t + eps]);
     for (q = ball_posts()) translate([q[0], q[1], floor_t - eps]) cylinder(d = ball_post, h = ball[3] - floor_t + eps);
 }
 module ballast_screw_holes() for (q = ball_posts())
@@ -553,7 +564,7 @@ module ball_lid() difference() {
             square([ball[1] - ball[0] - 0.4, body_d - wall - 0.2 - ball[2] + ball_lip]);
         translate([ball[0], body_d - wall]) polygon([[0, 0], [5, 0], [0, -5]]);
         translate([ball[1], body_d - wall]) polygon([[0, 0], [-5, 0], [0, -5]]);
-        translate([ball[1] - 5, ball[2] - 1]) square([6, 11]);   // clear of the switch well on the way out
+        translate([ball[1] - 13, ball[2] - 1]) square([14, 11]);   // clear of the switch body and its well
     }
     for (q = ball_posts()) translate([q[0], q[1], ball[3] - 1]) {
         cylinder(d = screw_clear_d, h = ball_lid_t + 2);
@@ -568,11 +579,15 @@ module ball_lid_print_pose() translate([-ball[0], -(ball[2] - ball_lip), -ball[3
 module ballast_env() difference() {
     translate([ball[0], ball[2] + ball_wall, floor_t])
         cube([ball[1] - ball[0], body_d - wall - ball[2] - ball_wall, ball[3] - floor_t]);
+    translate([ball_step[0] - ball_wall - 1, ball[2] - 1, floor_t - 1])   // the stepped-back corner
+        cube([ball[1] - ball_step[0] + ball_wall + 2, ball_step[1] + ball_wall - ball[2] + 1, ball[3] - floor_t + 2]);
     base();
     // the insert pockets of the rear feet are sealed voids under a 2 mm cap: no resin gets in there
     for (p = foot_xy) translate([p[0], p[1], -1]) cylinder(d = insert_hole_d + 0.4, h = insert_depth + 1);
 }
 module tie_loops() for (p = tie_loop_xz) difference() {
+    // no run-out underneath: a 45 degree gusset would reach 6 mm down and take away the lift the ballast
+    // lid needs (lid_off). A 8 x 6 mm ledge is what the slicer calls a floating cantilever here.
     translate([p[0] - tie_loop[0] / 2, body_d - wall - tie_loop[2], p[1] - tie_loop[1] / 2])
         cube([tie_loop[0], tie_loop[2] + eps, tie_loop[1]]);
     translate([p[0] - tie_loop[3] / 2, body_d - wall - tie_loop[4], p[1] - tie_loop[1] / 2 - 1])
