@@ -10,7 +10,7 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 3.717,
+      "hours": 3.711,
       "grams": 119.472,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -33,8 +33,8 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 5.811,
-      "grams": 225.615,
+      "hours": 5.806,
+      "grams": 225.617,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -56,8 +56,8 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.684,
-      "grams": 59.304,
+      "hours": 2.688,
+      "grams": 59.368,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -79,8 +79,8 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.91,
-      "grams": 60.773,
+      "hours": 2.916,
+      "grams": 60.841,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -103,7 +103,7 @@
       "result_code": 0,
       "warnings": "",
       "hours": 0.425,
-      "grams": 4.94,
+      "grams": 4.941,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -126,7 +126,7 @@
       "result_code": 0,
       "warnings": "",
       "hours": 0.231,
-      "grams": 1.539,
+      "grams": 1.54,
       "wall_loops": 4,
       "infill_percent": 100.0,
       "layer_height": 0.20000000298023224,
@@ -148,8 +148,8 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 0.542,
-      "grams": 8.43,
+      "hours": 0.539,
+      "grams": 8.429,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -171,8 +171,8 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 0.38,
-      "grams": 7.047,
+      "hours": 0.383,
+      "grams": 7.054,
       "wall_loops": 4,
       "infill_percent": 100.0,
       "layer_height": 0.20000000298023224,
@@ -233,7 +233,7 @@
     }
   ],
   "total_parts": 11,
-  "total_grams_individual_plates": 491.7,
+  "total_grams_individual_plates": 491.9,
   "total_hours_individual_plates": 17.4,
   "production_gcode": false,
   "project_3mf": {
@@ -304,7 +304,7 @@
       }
     ],
     "total_hours_plates": 16.5,
-    "total_grams_plates": 491.4,
+    "total_grams_plates": 491.5,
     "multicolour_parts": {},
     "multicolour_slices": {},
     "pause_slices": {
@@ -334,21 +334,21 @@
         "plate": 2,
         "hours": 6.76,
         "grams_by_filament": {
-          "1": 194.09
+          "1": 194.16
         },
         "warnings": ""
       },
       "Cassette": {
         "plate": 3,
-        "hours": 2.91,
+        "hours": 2.92,
         "grams_by_filament": {
-          "2": 60.77
+          "2": 60.84
         },
         "warnings": ""
       },
       "Knob": {
         "plate": 4,
-        "hours": 0.43,
+        "hours": 0.42,
         "grams_by_filament": {
           "2": 4.94
         },
@@ -364,7 +364,7 @@
       }
     },
     "own_infill_parts": 5,
-    "sha256": "5ad3c6401d0f281aba91bb0f9c62c3d57bf387935fc181f5d0c62085b949b25b"
+    "sha256": "6e135afd72d606b4d6884364b80c263a789871deb6476f9d30f556ef682bfa2d"
   },
   "test_3mf": {
     "file": "stl/fumex_usb_fit.3mf",
@@ -400,7 +400,7 @@
       }
     },
     "own_infill_parts": 0,
-    "sha256": "d084686b75a8a2b358942b05f4a96ff71e9bfd08c81a381edd47cb5dd41f829b",
+    "sha256": "f23a53fe256857a3df3fc3c7b0b5f07f9003556f3f0730d7222a85e007731d3f",
     "process": {
       "wall_loops": 4,
       "top_shell_layers": 5,
