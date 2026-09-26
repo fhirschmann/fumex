@@ -1,5 +1,5 @@
 {
-  "source_sha256": "e69e098a275363f8a22b825018b95b9c1d4cb6b6a0709e07460daebe60000008",
+  "source_sha256": "79f209acfdfb707f1766b8e4cdad31197906330cbb473d05da0cec372901f45b",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -29,17 +29,17 @@
           57.6462
         ]
       ],
-      "volume_mm3": 103613.261,
-      "triangles": 6132,
+      "volume_mm3": 101558.0011,
+      "triangles": 6212,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "4961cf0276bb4d2a16a01d6e12716bd788680808bf955fa234417c70c0c93806",
+      "sha256": "bf3aad6de2aad06d2f390c3c00b196232cb632ea0ab9447bfca90eee1177a594",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "4961cf0276bb4d2a16a01d6e12716bd788680808bf955fa234417c70c0c93806"
+      "committed_sha256": "bf3aad6de2aad06d2f390c3c00b196232cb632ea0ab9447bfca90eee1177a594"
     },
     "head": {
       "size_mm": [
@@ -66,10 +66,10 @@
       "degenerate_faces": 0,
       "components": 1,
       "backend": "CGAL",
-      "sha256": "6e7180dab90dd325cc1054c091d4a7d036a2e5264b9d1132acb95fb4f2315e96",
+      "sha256": "f777291379d9470733380629a608bdc4afa43c622754e9a96eb4a624f4ee04d5",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "6e7180dab90dd325cc1054c091d4a7d036a2e5264b9d1132acb95fb4f2315e96"
+      "committed_sha256": "f777291379d9470733380629a608bdc4afa43c622754e9a96eb4a624f4ee04d5"
     },
     "head_back": {
       "size_mm": [
@@ -346,7 +346,7 @@
     "fan@head": 132.6504,
     "feet@base": 53.8103,
     "pwm_board@base": 3.473,
-    "chg_module@base": 2.035
+    "chg_module@base": 4.107
   },
   "stops": [
     {
@@ -378,8 +378,8 @@
     {
       "a": "chg_sink",
       "b": "base",
-      "gap_mm": 1.0,
-      "min_mm": 0.8,
+      "gap_mm": 0.243,
+      "min_mm": 0.2,
       "capped": false
     },
     {
@@ -429,6 +429,13 @@
     {
       "name": "knob_off",
       "length_mm": 20.0,
+      "collisions": 0,
+      "first_mm": null,
+      "max_volume_mm3": 0.0
+    },
+    {
+      "name": "chg_out",
+      "length_mm": 38.0,
       "collisions": 0,
       "first_mm": null,
       "max_volume_mm3": 0.0
@@ -636,11 +643,11 @@
   ],
   "intake_lip_mm": 2.25,
   "mat_squashed_percent": 2.3,
-  "mass_g": 819.6,
+  "mass_g": 817.8,
   "centre_of_mass_mm": [
-    68.3,
-    22.4,
-    82.7
+    68.2,
+    22.5,
+    82.8
   ],
   "foot_polygon_mm": [
     1.0,
@@ -649,10 +656,10 @@
     70.0
   ],
   "tip_margins_mm": {
-    "front": 20.4,
-    "back": 47.6,
-    "left": 67.3,
-    "right": 75.7
+    "front": 20.5,
+    "back": 47.5,
+    "left": 67.2,
+    "right": 75.8
   },
   "tip_angle_deg": 13.9,
   "stl_difference_mm3": {
