@@ -22,6 +22,7 @@ wall = 3;            // walls, at least seven 0.4 mm lines
 floor_t = 3.2;       // base floor
 corner_r = 6;
 corner_rb = 2;       // at the joint: small enough that the base rim can follow it, see head_outline()
+neck_r = 2.5;        // the same arc mirrored into the base rim, half a millimetre wider - see joint_neck()
 edge_c = 1.2;        // 45 degree chamfer on the bed edges
 tilt = 15;           // forward lean of the head (user: the housing itself makes the bend)
 base_h = 48;         // joint plane height at mid-depth; the plane rises towards the back
@@ -364,13 +365,18 @@ module head_outline(inset = 0)
 // full width over corner_rb below it. A mirrored copy of the arc would meet the side wall tangentially and
 // leave a zero-volume sliver in the export, so the run-out is a straight 45 degrees.
 module joint_neck() head_at() along_y(-1, body_d + 1) difference() {
-    translate([body_w / 2, base_h - corner_rb / 2 + 0.5]) square([body_w + 40, corner_rb + 1], center = true);
-    hull() { translate([body_w / 2, base_h + 0.5]) square([body_w - 2 * corner_rb, 1 + tip], center = true);
-             translate([body_w / 2, base_h - corner_rb + tip / 2]) square([body_w + 2, tip], center = true); }
-    // Two things here are about the export, not the shape: the run-out ends 1 mm wider than the housing, so
-    // it is not tangent to the outer face of the side wall, and the cut reaches 1 mm above the joint plane,
-    // so its top face is not coplanar with the one joint_halfspace() leaves. Either coincidence left a
-    // zero-volume four-triangle shell beside the base and a second body in the export.
+    translate([body_w / 2, base_h - neck_r + 0.5]) square([body_w + 40, 2 * neck_r + 1], center = true);
+    translate([body_w / 2, base_h - neck_r - 5])
+        rrect([body_w - 2 * corner_rb + 2 * neck_r, 2 * neck_r + 10], neck_r);
+    // The cutter's top corners are an arc of neck_r whose centres sit corner_rb in from the housing edge and
+    // neck_r below the joint plane. So at the joint plane the base is exactly as wide as the head and both
+    // arcs are tangent to the horizontal there: the rounding carries on through the edge instead of breaking
+    // into a straight chamfer (user, 2026-09-23). Built from the numbers rather than by mirroring
+    // head_outline(), because widening that contour moves its bottom edge down with it and the arc lands
+    // half a millimetre off.
+    // neck_r is half a millimetre more than corner_rb so the arc crosses the outer face of the side wall
+    // instead of touching it: tangent there, Manifold exports a zero-volume four-triangle shell. For the same
+    // reason the slab reaches 1 mm above the joint plane, clear of the face joint_halfspace() leaves.
 }
 module head_centre_sq(size, r) translate([body_w / 2, head_cz]) rrect([size, size], r);
 

@@ -1,5 +1,5 @@
 {
-  "source_sha256": "93e489cc330ff7636cae16f00258ba98aae4d983f2a45dceee7379d4397a231d",
+  "source_sha256": "1c32b3ce66e6d10c5bfe795a01edcdda1d21b937295226790ba607b1a9787fcc",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -29,17 +29,17 @@
           57.2657
         ]
       ],
-      "volume_mm3": 107978.1921,
-      "triangles": 6496,
+      "volume_mm3": 107940.772,
+      "triangles": 6542,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "30d20a6e20f03d06b92866d41e23e3f12000b21935e0ea158d69b7b9ab7c6336",
+      "sha256": "2440e0567d0dd3057f2275ba9ba0f5d995d2298d73b95fa1f631bf09ea21e222",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "30d20a6e20f03d06b92866d41e23e3f12000b21935e0ea158d69b7b9ab7c6336"
+      "committed_sha256": "2440e0567d0dd3057f2275ba9ba0f5d995d2298d73b95fa1f631bf09ea21e222"
     },
     "head": {
       "size_mm": [
@@ -404,7 +404,7 @@
     "allowed_misaligned": 0
   },
   "contact_volumes_mm3": {
-    "head@base": 20.1405,
+    "head@base": 19.6421,
     "cassette@head": 295.9047,
     "fan@head": 132.6496,
     "feet@base": 54.8256,
