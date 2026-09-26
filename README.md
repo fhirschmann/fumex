@@ -43,15 +43,21 @@ Eight part types, eleven printed pieces including the four feet.
 | `head` fan and filter housing | 1 | PETG black | 145 × 145 × 70 | intake face on the bed |
 | `base` electronics bay | 1 | PETG black | 145 × 74 × 57.3 | bottom on the bed, open at the top along the 15° joint plane |
 | `head_back` back cover | 1 | PETG black | 145 × 144.7 × 18.3 | outside on the bed |
-| `ball_lid` ballast lid | 1 | PETG black | 138.6 × 17.8 × 13.7 | flat on the bed |
+| `ball_lid` ballast lid and component stops | 1 | PETG black | 138.6 × 40.8 × 21.4 | flat on the bed |
 | `filter_support` support cross | 1 | PETG black | 123 × 123 × 9.8 | mat-facing side on the bed, four posts upwards |
 | `cassette` filter cassette | 1 | PETG grey | 138 × 143 × 4.5 | grid face on the bed |
 | `knob` speed knob | 1 | PETG grey | Ø 24 × 13.5 | top on the bed |
 | `foot` foot | 4 | TPU | 18 × 16 × 6.5 | ground face on the bed, 100 % infill |
 
-All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head, ballast lid and support cross, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.48 kg and 15.7 hours** for the four arranged plates (16.7 hours as individual part jobs; head 222 g, base 119 g, back cover 60 g, cassette 50 g, ballast lid 8 g, support cross 7 g, knob 4.9 g, feet 4 × 1.5 g).
+All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head, ballast lid and support cross, plate 2 base and back cover, plate 3 grey parts, plate 4 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.48 kg and 15.8 hours** for the four arranged plates (16.8 hours as individual part jobs; head 222 g, base 119 g, back cover 60 g, cassette 50 g, ballast lid 9.3 g, support cross 7 g, knob 4.9 g, feet 4 × 1.5 g).
 
 Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid; support cross and TPU feet at 100 % infill.
+
+Before printing the base, use [`stl/fumex_usb_fit.3mf`](stl/fumex_usb_fit.3mf) to check the USB board in small sections of the real base and lid (about **12 g and 70 minutes**). With the lid section removed, lower the board in front of the channel and slide it towards the rear wall. Then place the lid section on its three small fixture pads: its side stop secures the board while leaving the central wire exit open. These two optional test pieces are not part of the full assembly.
+
+The ballast lid also extends beside the right end of the battery, leaving 0.5 mm axial clearance. The left housing wall and this stop prevent lengthwise sliding; foam tape cushions the cell. The battery still lifts out when the head is removed.
+
+![Battery end stop and removable USB-board stop on the ballast lid](img/11_battery_usb_stops.png)
 
 ## Bought parts
 
@@ -103,10 +109,10 @@ battery (JST-PH, built-in BMS) ──► (PTC) ──► rocker switch ──►
 3. Slide the support cross into the head from the open back, with its flat crossed face towards the mat and its four posts towards the fan. Its widened ends fit the four rear-open pockets in the filter tube. No screws or glue are needed.
 4. Lay the back cover on the bench, set the fan on its four posts **blowing towards the cover**, so it pushes the air out through its grid, and screw it down with M3 × 30 from the front of the fan. The cable comes out on the side that will face the head floor.
 5. Place the PWM controller flat on its rib pads, with the potentiometer through the front wall. Insert it before the rocker switch: keep the PCB rear tilted up, feed the shaft through the covered front slot, then lower it onto the pads and bosses. Fasten its two front PCB holes into the floor bosses with the 2.5 × 8 thermoplastic screws, without a nut or washer on the front. Use a driver with a slim shaft no wider than 4 mm for the first 25 mm above the head and tighten gently by hand.
-6. Glue the LED into its blind pocket from inside, with its flange against the rear of the boss and the front skin intact. A second matching pocket sits 12 mm to its left. Fit the USB-C module into its channel in the back wall and snap the rocker switch into the right wall. The USB-C channel rests on two 45° gussets from the back wall and opens into the bay at the wire end; seat the board against its side stop and route the wires through the open end. Keep wires clear of the lid and switch recess.
+6. Glue the LED into its blind pocket from inside, with its flange against the rear of the boss and the front skin intact. A second matching pocket sits 12 mm to its left. With the head and ballast lid removed, lower the USB-C board into the bay in front of its channel, then slide it straight towards the back wall until the receptacle sits in the opening. The channel's two 45° gussets support the board; its front is open during insertion. Route the wires through the central open end and snap the rocker switch into the right wall. Keep wires clear of the lid and switch recess.
 7. Stick the insulating pad onto the metal pad on the back of the charge module and the heatsink onto the pad. Set the board's cool OUT end into the holder on the ballast lid, against its end, bottom and rear supports; components face forwards and the heatsink faces the back wall. Secure it with one 2.5 × 1.2 mm cable tie through the holder and around the board, 11.25–13.75 mm from the OUT end. Check the tie against the actual components and solder joints before tightening. Leave the heatsink end free, leave slack in the wires and keep the air passages open. Cut and replace the tie when removing the board.
-8. Fill the ballast trough behind the battery with iron offcuts — up to about 199 g — and fit the lid around the USB support ribs using its rear-open slots. Fasten it with two M3 × 8, one at each end, into the heat-set inserts. The wider switch recess leaves 5.5 mm in front of the terminals, about 2 mm at the closest point of the switch body and 2.4 mm between the switch and lid. Fill it properly or pack the rest with foam; loose pieces under a half-empty lid rattle.
-9. Lay the battery into its three saddles, protection board up, cable end to the right, a strip of foam tape above and below.
+8. Fill the ballast trough behind the battery with iron offcuts — up to about 199 g. With the battery still out, bring the loaded lid into the bay from the front with its right edge slightly raised. Move it rearwards around the USB support ribs, level it and lower it onto the two screw posts. Its raised side stop now sits just in front of the USB board and prevents it being pushed into the bay; remove the lid before withdrawing that board. Fasten the lid with two M3 × 8, one at each end, into the heat-set inserts. The wider switch recess leaves 5.5 mm in front of the terminals, about 2 mm at the closest point of the switch body and 2.4 mm between the switch and lid. Fill it properly or pack the rest with foam; loose pieces under a half-empty lid rattle.
+9. Lay the battery into its three saddles, protection board up, cable end to the right, a strip of foam tape above and below. Its right end sits beside the lid's flat extension. Keep the battery cable above this stop and check that the insulating wrap is clear of its rounded, bevelled edges.
 10. Push the knob onto the shaft until it bottoms; it then stands 1.2 mm off the wall and turns freely. Keep it as a removable press fit for access to the controller; check retention on the actual shaft.
 11. Set the head onto the base and screw it down with 4 × M3 × 8, reaching in through the open back: two pairs sit in the head floor behind the fan, where a driver can reach the rim. Then lower the fan-and-cover assembly in from the back — the corner guides in the head take it onto its seat — and check that the actual fan frame captures all four support-cross posts. Screw the cover down with 4 × M3 × 8.
 12. Screw the four TPU feet on from below with M3 × 8; the small peg beside each screw stops them turning.
@@ -121,6 +127,9 @@ battery (JST-PH, built-in BMS) ──► (PTC) ──► rocker switch ──►
 ![PWM PCB and two floor bosses, exploded with components omitted](img/10_pwm_mount.png)
 
 To change the mat: pull the cassette off using its side scoops, pinch the flexible mat and pull it past the retaining lip, then press the new one in.
+
+For electronics service, remove the head and battery first. Unscrew the ballast lid, lift it about 11 mm, raise its right edge by about 6°, draw it 20 mm forwards into the empty battery bay and lift it out. Leave enough wire slack for this movement. The USB board then slides forwards out of the rear opening and lifts out. For PWM-controller removal, also remove the knob, its two PCB screws and the rocker switch before tilting and withdrawing the PCB.
+
 ## Design notes
 
 - The base has a 145 × 74 mm footprint. Its upper 8 mm curve inwards to meet the projected outline of the head at the 15° joint, so the head closes the electronics bay without a separate cover or a projecting base lip. The 145 mm width comes from the magnet pockets in the intake face.

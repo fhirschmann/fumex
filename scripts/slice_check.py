@@ -184,6 +184,28 @@ def attribute(tag, key):
     return match.group(1) if match else None
 
 
+def slicer_part_name(raw_name, known_names):
+    """Preserve source names; only remove a CLI copy number when its source is known."""
+    if raw_name in known_names:
+        return raw_name
+    original, separator, copy_number = raw_name.rpartition("_")
+    if separator and copy_number.isdigit() and original in known_names:
+        return original
+    raise ValueError(f"Unknown slicer part name: {raw_name!r}")
+
+
+def project_object_name(piece_names, part_names, colour_parts):
+    """Map an object to an exact part or a complete, explicitly declared colour assembly."""
+    pieces = set(piece_names)
+    if len(pieces) == 1 and next(iter(pieces)) in part_names:
+        return next(iter(pieces))
+    matches = [name for name, inlays in colour_parts.items()
+               if pieces == {f"{name}_{piece}" for piece in ("base", *inlays)}]
+    if len(matches) == 1:
+        return matches[0]
+    raise ValueError(f"Unexpected slicer object parts: {sorted(pieces)}")
+
+
 def plate_counts(group, full_build):
     """Plate entries are part names or (name, count); names take the PARTS quantity in the full build, else one copy."""
     return dict((entry, PARTS[entry][0] if full_build else 1) if isinstance(entry, str) else tuple(entry) for entry in group)
@@ -237,7 +259,8 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
     result = subprocess.run(command, capture_output=True, text=True, cwd=folder)
     (folder / "cli.log").write_text(result.stdout + result.stderr)
     assert result.returncode == 0 and raw.exists(), f"Project 3MF export failed; inspect {folder}"
-    piece_names = "|".join(sorted({"base", *(inlay for inlays in COLOR_PARTS.values() for inlay in inlays)}))
+    known_piece_names = set(PARTS) | {f"{name}_{piece}" for name, inlays in colour_parts.items()
+                                    for piece in ("base", *inlays)}
 
     with zipfile.ZipFile(raw) as source:
         settings = source.read("Metadata/model_settings.config").decode()
@@ -273,8 +296,9 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
             parts = {}
             for part in re.findall(r"<part [^>]*>(.*?)</part>", body, re.S):
                 extruder = re.search(r'key="extruder" value="(\d+)"', part) or re.search(r'key="extruder" value="(\d+)"', body)
-                parts[re.sub(r"_\d+$", "", re.search(r'key="name" value="([^"]+)"', part).group(1))] = extruder.group(1)
-            name = re.sub(rf"_({piece_names})$", "", next(iter(parts)))
+                raw_name = re.search(r'key="name" value="([^"]+)"', part).group(1)
+                parts[slicer_part_name(raw_name, known_piece_names)] = extruder.group(1)
+            name = project_object_name(parts, PARTS, colour_parts)
             if name in colour_parts:
                 expected = {f"{name}_base": str(base_filament(PARTS[name][1])),
                             **{f"{name}_{inlay}": str(INLAY_FILAMENT[inlay]) for inlay in COLOR_PARTS[name]}}

@@ -22,6 +22,8 @@ PARTS = {
     "foot": (4, "TPU", 1),
     "ball_lid": (1, "PETG-black", 1),
     "filter_support": (1, "PETG-black", 1),
+    "usbc_fit_base": (0, "PETG-black", 1),
+    "usbc_fit_lid": (0, "PETG-black", 1),
 }
 FULL_INFILL = {"filter_support"}
 FULL_INFILL_MATERIALS = {"TPU"}
@@ -96,6 +98,9 @@ PLATES = [("Head", ["head", "ball_lid", "filter_support"]),
           ("Grey parts", ["cassette", "knob"]),
           ("TPU feet", ["foot"])]
 PROJECT_3MF = "stl/fumex_all_parts.3mf"
+TEST_PLATES = [("USB insertion fit", ["usbc_fit_base", "usbc_fit_lid"])]
+TEST_3MF = "stl/fumex_usb_fit.3mf"
+TEST_FILAMENT = 1
 SLICER_SUMMARY = "docs/slicer-summary.json"
 
 # Masses used only for the tipping check: printed parts from their mesh volume, bought parts measured
@@ -114,7 +119,7 @@ BY_VOLUME = {"base": "PETG", "head": "PETG", "head_back": "PETG", "cassette": "P
              "chg_tie": "nylon"}
 
 LIMITATIONS = ["Hardware envelopes, not detailed vendor CAD",
-               "Sampled motion, no continuous swept-volume proof",
+               "Service motions are sampled; only the USB-to-base translation has a continuous swept-volume check",
                "No flexible deformation, physical fit, strength or thermal validation",
                "Tipping margin uses estimated part masses and the static centre of mass only",
                "Filter pressure drop and capture distance are not modelled",
@@ -513,7 +518,6 @@ def check_usb_support(ctx):
         'left_wall': ([left[0] + .02, front + .02, top + .02], [left[1] - .02, back - .02, upper - .02]),
         'right_gusset': ([right[0] + .02, front + .02, top + .02], [right[1] - .02, back - .02, lower - .02]),
         'right_wall': ([xmax + .22, front + .02, top + .02], [right[1] - .02, back - .02, upper - .02]),
-        'inner_stop': ([right[0] + .02, front + .02, top + .02], [right[1] - .02, y0 - .22, upper - .02]),
     }
     filled = {}
     for name, (lo, hi) in core_specs.items():
@@ -529,7 +533,24 @@ def check_usb_support(ctx):
         slot_overlap[name] = round(overlap, 6)
     contact = (ctx.solids['usbc'].translate([0, 0, -.05]) ^ ctx.solids['base']).volume()
     assert contact > 1, f'USB board floats above its rear seat: {contact:.4f} mm3'
+    # A fixed front stop formerly trapped the receptacle in the back wall.
+    # Preserve the outer guide but keep the whole moving PCB section open forwards.
+    mouth = _air_box([xmin + .02, front - .02, zseat + .02],
+                    [xmax - .02, y0 - .22, zseat + 4.28])
+    assert (mouth ^ ctx.solids['base']).volume() < .01, 'Fixed USB front stop blocks insertion'
+    keeper = ctx.solids['ball_lid'] ^ _air_box([xmax - 2.7, front - 5, top],
+                                             [xmax + 5, y0, upper + .1])
+    assert keeper.volume() > 400, 'Removable USB stop is missing or too slender'
+    gap = keeper.min_gap(ctx.solids['base'], 2)
+    assert gap >= .19, f'Removable USB keeper rubs the fixed channel: {gap:.4f} mm'
+    # The envelope includes 4.3 mm of components. Test only the first 0.1 mm
+    # above the underside so component height cannot stand in for a PCB edge.
+    pcb_edge = _air_box([xmax - 2.6, y0, zseat], [xmax - .1, y0 + .5, zseat + .1])
+    edge_hit = (pcb_edge.translate([0, -.3, 0]) ^ keeper).volume()
+    assert edge_hit > .02, f'USB keeper misses the actual lower PCB edge: {edge_hit:.5f} mm3'
     return dict(usb_support=dict(gusset_undersides=underside, upper_material_fill=filled,
+                removable_keeper_to_base_mm=round(gap, 4),
+                lower_pcb_edge_contact_mm3=round(edge_hit, 5),
                 minimum_floor_clearance_mm=round(float(front_bottom - (back-front) - floor), 3),
                 slot_overlap_mm3=slot_overlap, pcb_seat_z_mm=round(float(zseat), 3),
                 seat_contact_mm3=round(contact, 5)))
@@ -822,19 +843,88 @@ def check_pwm_mount(ctx):
                 floor_reserve_mm=round(floor_reserve, 3), driver_shaft_mm=[4, 25], seats=rows))
 
 
+def check_loaded_lid_removal(ctx):
+    """Lift, roll and withdraw the loaded lid through the open electronics bay.
+
+    Remove the head, battery and both lid screws first. The USB-C board, PWM
+    controller and rocker switch remain installed. The small roll raises the
+    right edge past the switch well while the USB supports occupy their slots.
+    """
+    m, s = ctx.metrics, ctx.solids
+    assert abs(m['ballast'][3] - 26) < .01 and abs(m['usb_origin'][0] - 106) < .01, \
+        'Revalidate the loaded-lid service path after changing its reference geometry'
+    moving_names = ['ball_lid', 'chg_module', 'chg_sink', 'chg_tie']
+    fixed_names = ['base', 'pwm_board', 'pot', 'usbc', 'switch', 'led', 'ballast', 'feet']
+    moving = md.Manifold.batch_boolean([s[n] for n in moving_names], md.OpType.Add)
+    fixed = md.Manifold.batch_boolean([s[n] for n in fixed_names], md.OpType.Add)
+    lift, roll, forward, final_lift = 11.4, -5.9, 20., 60.
+    pivot = np.array([106., 63., 37.])
+    lifted = moving.translate([0, 0, lift])
+
+    def tilted(angle):
+        return lifted.translate(-pivot).rotate([0, angle, 0]).translate(pivot)
+
+    rolled = tilted(roll)
+    segments = [
+        ('lift', (moving.translate([0, 0, float(d)]) for d in np.linspace(0, lift, 115)),
+         dict(distance_mm=lift, step_mm=.1)),
+        ('roll_right_edge_up', (tilted(float(a)) for a in np.linspace(0, roll, 60)),
+         dict(angle_deg=roll, step_deg=.1, pivot_mm=pivot.tolist())),
+        ('forward', (rolled.translate([0, -float(d), 0]) for d in np.linspace(0, forward, 201)),
+         dict(distance_mm=forward, step_mm=.1)),
+        ('out', (rolled.translate([0, -forward, float(d)]) for d in np.linspace(0, final_lift, 121)),
+         dict(distance_mm=final_lift, step_mm=.5)),
+    ]
+    rows = []
+    for name, poses, specification in segments:
+        peak, count, minimum_gap = 0., 0, 2.
+        for count, q in enumerate(poses, 1):
+            overlap = (q ^ fixed).volume()
+            assert overlap < .01, \
+                f'Loaded lid removal blocked during {name}/{count}: {overlap:.6f} mm3'
+            peak = max(peak, overlap)
+            if name != 'lift':
+                minimum_gap = min(minimum_gap, q.min_gap(fixed, 2.))
+        row = dict(stage=name, samples=count, maximum_overlap_mm3=round(peak, 7), **specification)
+        if name != 'lift':
+            assert minimum_gap >= .15, \
+                f'Loaded lid needs practical clearance during {name}: {minimum_gap:.5f} mm'
+            row['minimum_clearance_mm'] = round(minimum_gap, 5)
+        rows.append(row)
+
+    # The starting lid intentionally bears on its screw posts. Report free
+    # clearances only after lifting; a zero at the initial seat is not a fault.
+    gap_cap = 2.
+    endpoint_gaps = {}
+    for name, q in [('lifted', lifted), ('rolled', rolled),
+                    ('forward', rolled.translate([0, -forward, 0]))]:
+        endpoint_gaps[name] = round(q.min_gap(fixed, gap_cap), 5)
+    final = rolled.translate([0, -forward, final_lift])
+    above_base = final.bounding_box()[2] - s['base'].bounding_box()[5]
+    assert above_base > 10, 'Loaded lid path ends inside the housing instead of fully outside it'
+    ctx.open_items.append('Loaded ballast lid: after removing the head, battery and lid screws, lift 11.4 mm, '
+                          'raise its right edge with a 5.9-degree roll, move 20 mm forwards and lift out. '
+                          'The sampled rigid path requires at least 0.15 mm clearance after the initial lift; '
+                          'real print tolerance, finger access '
+                          'and connected wiring are not validated.')
+    return dict(loaded_lid_removal=dict(moving=moving_names, fixed=fixed_names,
+                removed_first=['head_group', 'battery', 'screws_lid'], stages=rows,
+                endpoint_clearance_mm=endpoint_gaps, clearance_search_cap_mm=gap_cap,
+                final_bottom_above_base_mm=round(above_base, 3)))
+
+
 def check_pwm_removal(ctx):
     """Sample the complete service motion with the real tab and both screws.
 
-    Remove the head, knob, PCB screws and rocker switch first. The battery,
-    loaded ballast lid, USB-C board and LEDs remain fitted. The reverse motion
+    Remove the head, battery, loaded ballast lid, knob, PCB screws and rocker
+    switch first. The USB-C board and LEDs remain fitted. The reverse motion
     installs the controller before the switch; wiring flexibility is unmodelled.
     """
     m, s = ctx.metrics, ctx.solids
     assert np.allclose(m['pwm_origin'], [100, 2.55, 13.1], atol=.01), 'Revalidate PWM service path for changed PCB placement'
     tab_probe = _air_box([114.97, .62, 15.22], [117.03, 1.78, 15.98])
     assert (tab_probe ^ s['pot']).volume() / tab_probe.volume() > .995, 'PWM service path lacks the real potentiometer tab'
-    fixed_names = ['base', 'battery', 'ballast', 'ball_lid', 'usbc', 'led',
-                   'chg_module', 'chg_sink', 'chg_tie', 'screws_lid', 'feet']
+    fixed_names = ['base', 'ballast', 'usbc', 'led', 'feet']
     fixed = md.Manifold.batch_boolean([s[n] for n in fixed_names], md.OpType.Add)
     board = s['pwm_board'] + s['pot']
     pivot = np.array([116, .9, 24.4])
@@ -899,10 +989,88 @@ def check_pwm_removal(ctx):
         assert volume < .01, f'PWM knob removal obstructed at {d:.2f} mm: {volume:.5f} mm3'
         knob_peak = max(knob_peak, volume)
     ctx.open_items.append('PWM service motion is sampled at 0.1 mm / 0.5 degrees (final lift 0.5 mm); '
-                          'remove the head, knob, PCB screws and rocker switch first. The real wiring and flexible leads are not modelled.')
-    return dict(pwm_removal=dict(removed_first=['head_group', 'knob', 'screws_pwm', 'switch'],
+                          'remove the head, battery, loaded ballast lid, knob, PCB screws and rocker switch first. '
+                          'The real wiring and flexible leads are not modelled.')
+    return dict(pwm_removal=dict(removed_first=['head_group', 'battery', 'loaded_ballast_lid', 'knob', 'screws_pwm', 'switch'],
                 pivot_mm=pivot.tolist(), stages=rows, screws=screw_rows,
                 knob_distance_mm=20, knob_step_mm=.25, knob_maximum_overlap_mm3=round(knob_peak, 6)))
+
+
+def check_usb_installation(ctx):
+    """Continuous rigid-body entry through the open bay before other parts are fitted."""
+    usb, base = ctx.solids["usbc"], ctx.solids["base"]
+    mesh = ctx.meshes["usbc"]
+    assert usb.volume() > 1 and len(mesh.faces), "USB installation probe has no moving body"
+    offsets = [np.array(p, dtype=float) for p in ([0, 0, 0], [0, -20, 0], [0, -20, 30])]
+    rows = []
+    for start, end in zip(offsets[:-1], offsets[1:]):
+        # The starting body plus every swept boundary triangle covers the complete
+        # translational sweep. Each triangle sweeps an exact convex prism; hulling
+        # the whole PCB would fill its concave transition to the receptacle.
+        collisions = [usb.translate(start) ^ base]
+        for triangle in mesh.triangles:
+            prism = md.Manifold.hull_points(np.vstack([triangle + start, triangle + end]))
+            if prism.volume() > 1e-9:  # parallel triangles sweep no volume
+                collisions.append(prism ^ base)
+        overlap = md.Manifold.batch_boolean(collisions, md.OpType.Add).volume()
+        assert overlap < .01, \
+            f"USB installation sweep {start.tolist()} to {end.tolist()} blocked: {overlap:.6f} mm3"
+        rows.append(dict(from_offset_mm=start.tolist(), to_offset_mm=end.tolist(),
+                         swept_overlap_mm3=round(overlap, 8)))
+    free_bounds = np.asarray(mesh.bounds) + offsets[-1]
+    base_top = float(ctx.meshes["base"].bounds[1, 2])
+    free_height = float(free_bounds[0, 2] - base_top)
+    assert free_height > 5, \
+        f"USB installation path does not reach outside the base: {free_height:.3f} mm above its top"
+    ctx.summary.append("USB: continuous 20 mm forward / 30 mm upward extraction reaches outside the open base")
+    return dict(usb_installation=dict(
+        assembly_stage="Bare open base, before fitting the ballast lid and other components; install by reversing the path",
+        checked_fixed_bodies=["base"], method="Continuous swept boundary-triangle prisms and starting body",
+        maximum_overlap_mm3=.01, extraction_segments=rows,
+        installation_offsets_mm=[p.tolist() for p in reversed(offsets)],
+        free_end_bounds_mm=np.round(free_bounds, 5).tolist(), base_top_mm=round(base_top, 5),
+        free_end_above_base_mm=round(free_height, 5)))
+
+
+def check_battery_retention(ctx):
+    """Test axial capture on the meshes, including the cell's radial play in its saddles."""
+    battery, lid = ctx.solids["battery"], ctx.solids["ball_lid"]
+    x0, cy, cz, diameter, length, bms = ctx.metrics["battery"]
+    assert abs(diameter - 32.5) < .01 and abs(length - 71.6) < .01, \
+        "Battery envelope no longer matches the measured LEO-AC1 cell"
+    end = float(battery.bounding_box()[3])
+    rim = ctx.metrics["ballast"][3]
+    # Restrict the stop to the new tongue so another part cannot conceal its absence.
+    tongue = lid ^ _air_box([end, cy - 6, rim], [end + 14, cy + 17, rim + 3.01])
+    assert tongue.volume() > 400, "Battery has no substantial right-hand lid stop"
+    gap = battery.min_gap(tongue, 2)
+    assert .45 <= gap <= .55, f"Battery end-stop clearance is {gap:.3f} mm"
+    rows = []
+    # The closed head catches an upward-moving cell within 3 mm. Test the
+    # tongue at the seated position and after 1/2 mm of lift, without foam friction.
+    for dy in (-.4, 0, .4):
+        for dz in (0, 1, 2):
+            moved = battery.translate([0, dy, dz])
+            assert (moved ^ ctx.solids["base"]).volume() < .01, \
+                f"Battery retention probe starts inside the base at {(dy, dz)}"
+            free = (moved.translate([.3, 0, 0]) ^ tongue).volume()
+            hit = (moved.translate([.75, 0, 0]) ^ tongue).volume()
+            assert free < .01, f"Battery stop removes the assembly clearance at {(dy, dz)}"
+            assert hit > 5, f"Battery can slide past its lid stop at {(dy, dz)}: {hit:.4f} mm3"
+            rows.append(dict(offset_yz_mm=[dy, dz], free_at_03_mm3=round(free, 6),
+                             contact_at_075_mm3=round(hit, 5)))
+    # Reserve the space beyond the upper end of the BMS. This is a geometric
+    # opening, not a measurement of the real pack's wires or connector.
+    corridor = _air_box([end + .05, cy - bms[0] / 2, cz + diameter / 4],
+                        [end + 12, cy + bms[0] / 2, cz + diameter / 2 + bms[1]])
+    blocked = (corridor ^ lid).volume()
+    assert blocked < .01, f"Battery stop blocks the upper cable exit: {blocked:.4f} mm3"
+    ctx.summary.append("Battery: axial lid stop holds in nine shifted/lifted poses")
+    ctx.open_items.append("Battery: check the replacement lid's end-stop fit and actual cable exit; "
+                          "the open base intentionally permits upward battery removal")
+    return dict(battery_retention=dict(right_gap_mm=round(gap, 4), shifted_axial_probes=rows,
+                upper_cable_corridor_overlap_mm3=round(blocked, 6),
+                limitation="Rigid translation probes; no foam friction, strength or physical-fit proof"))
 
 
 def checks(ctx):
@@ -940,11 +1108,17 @@ def checks(ctx):
     # There is no register between head and base: the four screws locate it, so that is what is checked
     # usbc_in: pushing a cable into the socket must not push the board into the bay
     stops = ctx.stops([("fan_sideways", "fan", "head", [1, 0, 0], 1.5),
-                       ("usbc_in", "usbc", "base", [0, -1, 0], 0.6),
+                       ("usbc_in", "usbc", "ball_lid", [0, -1, 0], 0.6),
                        ("head_on_screws", "head", "screws_head", [1, 0, 0], 0.6),
+                       ("battery_right", "battery", "ball_lid", [1, 0, 0], 0.8),
+                       ("battery_left", "battery", "base", [-1, 0, 0], 1.25),
+                       ("battery_up_closed", "battery", "head", [0, 0, 1], 3),
+                       ("battery_down", "battery", "base", [0, 0, -1], 0.8),
+                       ("battery_forward", "battery", "base", [0, -1, 0], 0.8),
+                       ("battery_backward", "battery", "base", [0, 1, 0], 0.8),
                        ("charger_forward", "chg_module", "chg_tie", [0, -1, 0], 0.4),
                        ("charger_backward", "chg_module", "ball_lid", [0, 1, 0], 0.4)])
-    # The cell is held in open saddles by foam tape, so it has clearance instead of contact
+    # Foam tape cushions the open saddles; the lid tongue supplies positive axial retention.
     # 0.2 for the heatsink: nominal 0.3 in its wall cut-out, less the facets of the rounded corners
     gaps = ctx.clearances([("battery", "base", 0.3), ("battery", "head", 1.0),
                            ("chg_sink", "fan", 1.5), ("ball_lid", "switch", 1.2)])
@@ -964,9 +1138,8 @@ def checks(ctx):
          ["base", "ball_lid", "battery", "pwm_board", "usbc", "switch", "led", "pot", "screws_lid"],
          [0, 0, 1], 30, 0.5),
         # Remove the head, battery and lid screws before lifting the loaded lid.
-        # 10 mm up: clear of the trough walls, its posts, the USB-C channel above it and the run-outs of
-        # the rear head screw bosses. Out of the bay it comes at an angle, past the switch well box on the
-        # right - a tilt, which a rigid axis-aligned path cannot express.
+        # Retain the initial straight lift as a separate probe; the full lift,
+        # roll and withdrawal is checked in check_loaded_lid_removal().
         ("lid_off", ["ball_lid", "chg_module", "chg_sink", "chg_tie"],
          ["base", "ballast", "pwm_board", "usbc", "switch"], [0, 0, 1], 10, 0.5),
         ("fan_out", ["fan", "screws_fan"], ["head", "base", "filter_support"], [-o for o in out], 40, 0.5),   # cover off first
@@ -974,6 +1147,10 @@ def checks(ctx):
          ["base", "battery", "pwm_board", "usbc", "switch", "pot", "led", "ball_lid", "ballast",
           "chg_module", "chg_sink", "chg_tie"], up, 60, 1),
         ("battery_out", "battery", ["base", "pwm_board", "usbc", "switch", "ball_lid"], [0, 0, 1], 40, 0.5),
+        # Remove the head and loaded ballast lid first. Withdraw the USB board
+        # into the bay, then lift it completely above the rim; reverse to install.
+        ("usbc_out", "usbc", ["base", "battery", "pwm_board", "pot", "switch", "led", "ballast"],
+         [([0, -1, 0], 20, .25), ([0, 0, 1], 30, .25)]),
         ("knob_off", "knob", ["base"], [0, -1, 0], 20, 0.5),
     ])
     # Heat-set insert pockets: core open, datasheet wall and floor ring material. Everything in the head
@@ -1028,7 +1205,8 @@ def checks(ctx):
                 tip_angle_deg=round(tip_angle, 1), **check_top_corners(ctx), **check_joint_profile(ctx),
                 **check_rim_chamfers(ctx), **check_charger_air(ctx), **check_charger_holder(ctx),
                 **check_lid_fasteners(ctx), **check_head_fasteners(ctx), **check_pwm_mount(ctx), **check_pwm_removal(ctx), **check_usb_wire_access(ctx), **check_ballast_cover(ctx),
-                **check_switch_trough_clearance(ctx), **check_filter_support(ctx), **check_led_window(ctx), **check_usb_support(ctx))
+                **check_switch_trough_clearance(ctx), **check_filter_support(ctx), **check_led_window(ctx), **check_usb_support(ctx),
+                **check_battery_retention(ctx), **check_usb_installation(ctx), **check_loaded_lid_removal(ctx))
 
 
 def _tilt(m, point):
@@ -1114,4 +1292,8 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
                           "translate([pwm_x[0]-1, pwm_y0-1, pwm_z0]) cube([pwm_pcb[1]+2, pwm_pcb[0]+2, pwm_pcb[2]]); } "
                           "color(\"#aeb5bb\") translate([0, 0, 5]) pot_env(); "
                           "color(\"#414950\") translate([0, 0, 12]) screws_pwm();",
-                          "180,-90,110,116,21,14")}
+                          "180,-90,110,116,21,14"),
+         "11_battery_usb_stops": ("color(\"#8a9096\") ball_lid(); "
+                                 "color(\"#4a6d3f\") battery_env(); "
+                                 "color(\"#2f5d3a\") usbc_env();",
+                                 "135,-120,160,72.5,45,25")}

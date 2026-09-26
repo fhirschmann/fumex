@@ -1,0 +1,11 @@
+overhangs base: 0 found
+overhangs head: 0 found
+overhangs head_back: 0 found
+overhangs cassette: 0 found
+overhangs knob: 0 found
+overhangs foot: 0 found
+overhangs ball_lid: 0 found
+overhangs filter_support: 0 found
+overhangs usbc_fit_base: 0 found
+overhangs usbc_fit_lid: 0 found
+CLEAN: 0 overhangs findings in 10 meshes -> /Users/fabian/Projects/fumex/build/analysis/overhangs.json
