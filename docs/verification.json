@@ -1,0 +1,677 @@
+{
+  "source_sha256": "e69e098a275363f8a22b825018b95b9c1d4cb6b6a0709e07460daebe60000008",
+  "software": {
+    "numpy": "2.5.3",
+    "trimesh": "5.1.0",
+    "manifold3d": "3.5.3",
+    "scipy": "1.18.1",
+    "rtree": "1.4.1",
+    "networkx": "3.6.1"
+  },
+  "print_parts": 6,
+  "print_quantity": 9,
+  "print_meshes": {
+    "base": {
+      "size_mm": [
+        145.0,
+        72.0,
+        57.6462
+      ],
+      "bounds_mm": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          145.0,
+          72.0,
+          57.6462
+        ]
+      ],
+      "volume_mm3": 103613.261,
+      "triangles": 6132,
+      "watertight": true,
+      "consistent_winding": true,
+      "degenerate_faces": 0,
+      "components": 1,
+      "backend": "CGAL",
+      "sha256": "4961cf0276bb4d2a16a01d6e12716bd788680808bf955fa234417c70c0c93806",
+      "quantity": 1,
+      "material": "PETG-black",
+      "committed_sha256": "4961cf0276bb4d2a16a01d6e12716bd788680808bf955fa234417c70c0c93806"
+    },
+    "head": {
+      "size_mm": [
+        145.0,
+        145.0,
+        72.0
+      ],
+      "bounds_mm": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          145.0,
+          145.0,
+          72.0
+        ]
+      ],
+      "volume_mm3": 217765.606,
+      "triangles": 5102,
+      "watertight": true,
+      "consistent_winding": true,
+      "degenerate_faces": 0,
+      "components": 1,
+      "backend": "CGAL",
+      "sha256": "6e7180dab90dd325cc1054c091d4a7d036a2e5264b9d1132acb95fb4f2315e96",
+      "quantity": 1,
+      "material": "PETG-black",
+      "committed_sha256": "6e7180dab90dd325cc1054c091d4a7d036a2e5264b9d1132acb95fb4f2315e96"
+    },
+    "head_back": {
+      "size_mm": [
+        145.0,
+        141.7,
+        8.0
+      ],
+      "bounds_mm": [
+        [
+          0.0,
+          3.3,
+          0.0
+        ],
+        [
+          145.0,
+          145.0,
+          8.0
+        ]
+      ],
+      "volume_mm3": 55280.9525,
+      "triangles": 10756,
+      "watertight": true,
+      "consistent_winding": true,
+      "degenerate_faces": 0,
+      "components": 1,
+      "backend": "Manifold",
+      "sha256": "473de6b95269002e7e56a80b6bfbe5a21d4385d8a8fe32facd86fdd258bb68c3",
+      "quantity": 1,
+      "material": "PETG-black",
+      "committed_sha256": "473de6b95269002e7e56a80b6bfbe5a21d4385d8a8fe32facd86fdd258bb68c3"
+    },
+    "cassette": {
+      "size_mm": [
+        143.0,
+        143.0,
+        4.5
+      ],
+      "bounds_mm": [
+        [
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          144.0,
+          144.0,
+          4.5
+        ]
+      ],
+      "volume_mm3": 54704.7307,
+      "triangles": 9822,
+      "watertight": true,
+      "consistent_winding": true,
+      "degenerate_faces": 0,
+      "components": 1,
+      "backend": "Manifold",
+      "sha256": "254bf793cea9d81ed2e774de44562f9c8e67c026702f454355814be4c71d5115",
+      "quantity": 1,
+      "material": "PETG-grey",
+      "committed_sha256": "254bf793cea9d81ed2e774de44562f9c8e67c026702f454355814be4c71d5115"
+    },
+    "knob": {
+      "size_mm": [
+        27.9968,
+        27.9984,
+        14.0
+      ],
+      "bounds_mm": [
+        [
+          -13.9968,
+          -13.9992,
+          0.0
+        ],
+        [
+          14.0,
+          13.9992,
+          14.0
+        ]
+      ],
+      "volume_mm3": 7177.6387,
+      "triangles": 2396,
+      "watertight": true,
+      "consistent_winding": true,
+      "degenerate_faces": 0,
+      "components": 1,
+      "backend": "Manifold",
+      "sha256": "1b89a9221fa2e0e2ae965bfd893b9a4fca3c3735770e50dfa27b2b7a03e8cac1",
+      "quantity": 1,
+      "material": "PETG-grey",
+      "committed_sha256": "1b89a9221fa2e0e2ae965bfd893b9a4fca3c3735770e50dfa27b2b7a03e8cac1"
+    },
+    "foot": {
+      "size_mm": [
+        18.0,
+        16.0,
+        6.5
+      ],
+      "bounds_mm": [
+        [
+          -9.0,
+          -8.0,
+          0.0
+        ],
+        [
+          9.0,
+          8.0,
+          6.5
+        ]
+      ],
+      "volume_mm3": 1171.2684,
+      "triangles": 296,
+      "watertight": true,
+      "consistent_winding": true,
+      "degenerate_faces": 0,
+      "components": 1,
+      "backend": "Manifold",
+      "sha256": "adaeaae7a83a4936711036a15ebe54ea2c98971e5b61930fa93e879a94336cc0",
+      "quantity": 4,
+      "material": "TPU",
+      "committed_sha256": "adaeaae7a83a4936711036a15ebe54ea2c98971e5b61930fa93e879a94336cc0"
+    }
+  },
+  "color_meshes": {},
+  "color_parts": {},
+  "assembly_bodies": 22,
+  "assembly_pairs": 231,
+  "metrics": {
+    "wall": 3,
+    "tilt": 15,
+    "body": [
+      145,
+      72
+    ],
+    "head_h": 145,
+    "fan_insert_front": 3,
+    "fan_thread": 5,
+    "head_thread": 5,
+    "chamber": [
+      121.5,
+      17.5
+    ],
+    "open_sq": 117,
+    "magnet_pocket": [
+      10.3,
+      3.2
+    ],
+    "pot_mount_t": 1.8,
+    "front_rim_z": 38.3538,
+    "knob_top_z": 33,
+    "fan_axis_pitch": 105,
+    "foot_x": [
+      10,
+      135
+    ],
+    "foot_y": [
+      10,
+      62
+    ],
+    "foot_size": [
+      18,
+      16,
+      4.5
+    ],
+    "insert_depth": 7,
+    "insert_hole_d": 4,
+    "insert_w_min": 1.6,
+    "opening_sq": 121.5,
+    "lug_leg": 38.8909,
+    "lug_flank": 8.83274,
+    "base_h": 48,
+    "joint_y": 36,
+    "foot_peg": [
+      3,
+      2,
+      7
+    ],
+    "seat_y": 30.7,
+    "back_y": 68,
+    "fan_holes": [
+      [
+        20,
+        68
+      ],
+      [
+        20,
+        173
+      ],
+      [
+        125,
+        68
+      ],
+      [
+        125,
+        173
+      ]
+    ],
+    "head_bosses": [
+      [
+        6.5,
+        58
+      ],
+      [
+        6.5,
+        120.5
+      ],
+      [
+        6.5,
+        186.5
+      ],
+      [
+        138.5,
+        58
+      ],
+      [
+        138.5,
+        120.5
+      ],
+      [
+        138.5,
+        186.5
+      ]
+    ],
+    "rim_screws": [
+      [
+        9,
+        9
+      ],
+      [
+        136,
+        9
+      ],
+      [
+        9,
+        60
+      ],
+      [
+        136,
+        60
+      ]
+    ]
+  },
+  "intersections": [],
+  "alignment": {
+    "features": 135,
+    "coaxial_pairs": {
+      "base|battery": 3,
+      "base|feet": 20,
+      "base|head": 4,
+      "base|knob": 2,
+      "base|led": 4,
+      "base|pot": 2,
+      "base|pot_nut": 5,
+      "base|screws_feet": 8,
+      "base|screws_head": 8,
+      "cassette|head": 4,
+      "cassette|magnets": 8,
+      "feet|screws_feet": 16,
+      "head_back|screws_back": 24,
+      "head|head_back": 12,
+      "head|magnets": 8,
+      "head|screws_back": 6,
+      "head|screws_fan": 4,
+      "head|screws_head": 8,
+      "knob|pot": 6,
+      "knob|pot_nut": 9,
+      "pot|pot_nut": 2
+    },
+    "misaligned": [],
+    "allowed_misaligned": 0
+  },
+  "contact_volumes_mm3": {
+    "head@base": 36.4705,
+    "cassette@head": 295.4148,
+    "fan@head": 132.6504,
+    "feet@base": 53.8103,
+    "pwm_board@base": 3.473,
+    "chg_module@base": 2.035
+  },
+  "stops": [
+    {
+      "name": "fan_sideways",
+      "first_contact_mm": 0.5,
+      "limit_mm": 1.5
+    },
+    {
+      "name": "head_on_screws",
+      "first_contact_mm": 0.25,
+      "limit_mm": 0.6
+    }
+  ],
+  "clearances_mm": [
+    {
+      "a": "battery",
+      "b": "base",
+      "gap_mm": 0.497,
+      "min_mm": 0.3,
+      "capped": false
+    },
+    {
+      "a": "battery",
+      "b": "head",
+      "gap_mm": 2.0,
+      "min_mm": 1.0,
+      "capped": true
+    },
+    {
+      "a": "chg_sink",
+      "b": "base",
+      "gap_mm": 1.0,
+      "min_mm": 0.8,
+      "capped": false
+    },
+    {
+      "a": "fan",
+      "b": "head_back",
+      "gap_mm": 6.0,
+      "min_mm": 5.0,
+      "capped": true
+    }
+  ],
+  "sampled_paths": [
+    {
+      "name": "cassette_off",
+      "length_mm": 30.0,
+      "collisions": 0,
+      "first_mm": null,
+      "max_volume_mm3": 0.0
+    },
+    {
+      "name": "cover_off",
+      "length_mm": 30.0,
+      "collisions": 0,
+      "first_mm": null,
+      "max_volume_mm3": 0.0
+    },
+    {
+      "name": "fan_out",
+      "length_mm": 40.0,
+      "collisions": 0,
+      "first_mm": null,
+      "max_volume_mm3": 0.0
+    },
+    {
+      "name": "head_off",
+      "length_mm": 60.0,
+      "collisions": 0,
+      "first_mm": null,
+      "max_volume_mm3": 0.0
+    },
+    {
+      "name": "battery_out",
+      "length_mm": 40.0,
+      "collisions": 0,
+      "first_mm": null,
+      "max_volume_mm3": 0.0
+    },
+    {
+      "name": "knob_off",
+      "length_mm": 20.0,
+      "collisions": 0,
+      "first_mm": null,
+      "max_volume_mm3": 0.0
+    }
+  ],
+  "insert_probes": [
+    {
+      "body": "head",
+      "at": [
+        20.0,
+        25.7,
+        65.95
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "head",
+      "at": [
+        20.0,
+        -1.47,
+        167.37
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "head",
+      "at": [
+        125.0,
+        25.7,
+        65.95
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "head",
+      "at": [
+        125.0,
+        -1.47,
+        167.37
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "head",
+      "at": [
+        6.5,
+        64.32,
+        65.94
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "head",
+      "at": [
+        6.5,
+        48.15,
+        126.31
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "head",
+      "at": [
+        6.5,
+        31.06,
+        190.06
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "head",
+      "at": [
+        138.5,
+        64.32,
+        65.94
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "head",
+      "at": [
+        138.5,
+        48.15,
+        126.31
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "head",
+      "at": [
+        138.5,
+        31.06,
+        190.06
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "base",
+      "at": [
+        9.0,
+        9.92,
+        41.01
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "base",
+      "at": [
+        136.0,
+        9.92,
+        41.01
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "base",
+      "at": [
+        9.0,
+        59.18,
+        54.21
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "base",
+      "at": [
+        136.0,
+        59.18,
+        54.21
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "base",
+      "at": [
+        10.0,
+        10.0,
+        0.0
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "base",
+      "at": [
+        135.0,
+        10.0,
+        0.0
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "base",
+      "at": [
+        10.0,
+        62.0,
+        0.0
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "base",
+      "at": [
+        135.0,
+        62.0,
+        0.0
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    }
+  ],
+  "intake_lip_mm": 2.25,
+  "mat_squashed_percent": 2.3,
+  "mass_g": 819.6,
+  "centre_of_mass_mm": [
+    68.3,
+    22.4,
+    82.7
+  ],
+  "foot_polygon_mm": [
+    1.0,
+    144.0,
+    2.0,
+    70.0
+  ],
+  "tip_margins_mm": {
+    "front": 20.4,
+    "back": 47.6,
+    "left": 67.3,
+    "right": 75.7
+  },
+  "tip_angle_deg": 13.9,
+  "stl_difference_mm3": {
+    "base": 0.0,
+    "head": 0.0,
+    "head_back": 0.0,
+    "cassette": 0.0,
+    "knob": 0.0,
+    "foot": 0.0
+  },
+  "open_measurements": [
+    "Masses of the bought parts are data-sheet or estimated values, not weighed"
+  ],
+  "limitations": [
+    "Hardware envelopes, not detailed vendor CAD",
+    "Sampled motion, no continuous swept-volume proof",
+    "No flexible deformation, physical fit, strength or thermal validation",
+    "Tipping margin uses estimated part masses and the static centre of mass only",
+    "Filter pressure drop and capture distance are not modelled",
+    "The mat is compressible: it is pressed in and pulled out past the intake lip, which a\n                rigid-body path check cannot show"
+  ]
+}

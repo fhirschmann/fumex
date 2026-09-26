@@ -1,0 +1,244 @@
+{
+  "profile": "Bambu Lab H2S 0.4 nozzle / 0.20mm Standard @BBL H2S, 4 walls, 5/5 top/bottom, no supports; 20 % gyroid, 100 % zig-zag: foot",
+  "parts": [
+    {
+      "part": "base",
+      "quantity": 1,
+      "material": "PETG-black",
+      "passed": true,
+      "source_sha256": "4961cf0276bb4d2a16a01d6e12716bd788680808bf955fa234417c70c0c93806",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 3.355,
+      "grams": 110.413,
+      "wall_loops": 4,
+      "infill_percent": 20.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "gyroid",
+        "enable_support": "0",
+        "curr_bed_type": "Textured PEI Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5"
+      },
+      "start_gcode_diagnostic": true
+    },
+    {
+      "part": "head",
+      "quantity": 1,
+      "material": "PETG-black",
+      "passed": true,
+      "source_sha256": "6e7180dab90dd325cc1054c091d4a7d036a2e5264b9d1132acb95fb4f2315e96",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 6.087,
+      "grams": 231.471,
+      "wall_loops": 4,
+      "infill_percent": 20.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "gyroid",
+        "enable_support": "0",
+        "curr_bed_type": "Textured PEI Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5"
+      },
+      "start_gcode_diagnostic": true
+    },
+    {
+      "part": "head_back",
+      "quantity": 1,
+      "material": "PETG-black",
+      "passed": true,
+      "source_sha256": "473de6b95269002e7e56a80b6bfbe5a21d4385d8a8fe32facd86fdd258bb68c3",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 2.496,
+      "grams": 55.649,
+      "wall_loops": 4,
+      "infill_percent": 20.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "gyroid",
+        "enable_support": "0",
+        "curr_bed_type": "Textured PEI Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5"
+      },
+      "start_gcode_diagnostic": true
+    },
+    {
+      "part": "cassette",
+      "quantity": 1,
+      "material": "PETG-grey",
+      "passed": true,
+      "source_sha256": "254bf793cea9d81ed2e774de44562f9c8e67c026702f454355814be4c71d5115",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 2.462,
+      "grams": 51.834,
+      "wall_loops": 4,
+      "infill_percent": 20.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "gyroid",
+        "enable_support": "0",
+        "curr_bed_type": "Textured PEI Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5"
+      },
+      "start_gcode_diagnostic": true
+    },
+    {
+      "part": "knob",
+      "quantity": 1,
+      "material": "PETG-grey",
+      "passed": true,
+      "source_sha256": "1b89a9221fa2e0e2ae965bfd893b9a4fca3c3735770e50dfa27b2b7a03e8cac1",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 0.471,
+      "grams": 6.416,
+      "wall_loops": 4,
+      "infill_percent": 20.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "gyroid",
+        "enable_support": "0",
+        "curr_bed_type": "Textured PEI Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5"
+      },
+      "start_gcode_diagnostic": true
+    },
+    {
+      "part": "foot",
+      "quantity": 4,
+      "material": "TPU",
+      "passed": true,
+      "source_sha256": "adaeaae7a83a4936711036a15ebe54ea2c98971e5b61930fa93e879a94336cc0",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 0.231,
+      "grams": 1.539,
+      "wall_loops": 4,
+      "infill_percent": 100.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "zig-zag",
+        "enable_support": "0",
+        "curr_bed_type": "Textured PEI Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5"
+      },
+      "start_gcode_diagnostic": true
+    }
+  ],
+  "total_parts": 9,
+  "total_grams_individual_plates": 461.9,
+  "total_hours_individual_plates": 15.8,
+  "production_gcode": false,
+  "project_3mf": {
+    "file": "stl/fumex_all_parts.3mf",
+    "parts": 9,
+    "plates": 4,
+    "layout": [
+      {
+        "plate": 1,
+        "name": "Head",
+        "parts": [
+          "head"
+        ],
+        "size_mm": [
+          145.0,
+          145.0
+        ]
+      },
+      {
+        "plate": 2,
+        "name": "Base and back cover",
+        "parts": [
+          "base",
+          "head_back"
+        ],
+        "size_mm": [
+          145.0,
+          215.7
+        ]
+      },
+      {
+        "plate": 3,
+        "name": "Grey parts",
+        "parts": [
+          "cassette",
+          "knob"
+        ],
+        "size_mm": [
+          173.0,
+          143.0
+        ]
+      },
+      {
+        "plate": 4,
+        "name": "TPU feet",
+        "parts": [
+          "foot",
+          "foot",
+          "foot",
+          "foot"
+        ],
+        "size_mm": [
+          38.0,
+          34.0
+        ]
+      }
+    ],
+    "total_hours_plates": 15.3,
+    "total_grams_plates": 461.7,
+    "multicolour_parts": {},
+    "multicolour_slices": {},
+    "pause_slices": {},
+    "plate_slices": {
+      "Head": {
+        "plate": 1,
+        "hours": 6.09,
+        "grams_by_filament": {
+          "1": 231.48
+        },
+        "warnings": ""
+      },
+      "Base and back cover": {
+        "plate": 2,
+        "hours": 5.75,
+        "grams_by_filament": {
+          "1": 166.0
+        },
+        "warnings": ""
+      },
+      "Grey parts": {
+        "plate": 3,
+        "hours": 2.83,
+        "grams_by_filament": {
+          "2": 58.2
+        },
+        "warnings": ""
+      },
+      "TPU feet": {
+        "plate": 4,
+        "hours": 0.6,
+        "grams_by_filament": {
+          "3": 5.98
+        },
+        "warnings": ""
+      }
+    },
+    "own_infill_parts": 4,
+    "sha256": "6d3a5aff136292c0bffa60cf35e423d8dd5058743e1e380649664ff318ac3943"
+  }
+}
