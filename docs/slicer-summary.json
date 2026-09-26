@@ -6,12 +6,12 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "db58a073ac59571080d55fcd95042d4b9c6c5e7e06a3b0ac4a2a8d61c917d762",
+      "source_sha256": "50453ae93fbaadeb623e9eb6d80cfef684d3c9c69076a6648767cc4f3cc795ff",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 3.432,
-      "grams": 112.607,
+      "hours": 3.761,
+      "grams": 121.509,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -29,12 +29,12 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "0df0630f2a05859507eb97a954d2fee48c3848a5d24a3bee028449e58217d91b",
+      "source_sha256": "43a1c733b82f1af9750aaaac8a9b67e94d2a807b24646985e4c19a4cf7689508",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 6.075,
-      "grams": 231.471,
+      "hours": 5.885,
+      "grams": 230.133,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -52,12 +52,12 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "473de6b95269002e7e56a80b6bfbe5a21d4385d8a8fe32facd86fdd258bb68c3",
+      "source_sha256": "f982c3ab4b6eb12016cb110c219836822badd68bae5710b444c1571d399294e6",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.495,
-      "grams": 55.649,
+      "hours": 2.553,
+      "grams": 59.724,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -138,25 +138,49 @@
         "bottom_shell_layers": "5"
       },
       "start_gcode_diagnostic": true
+    },
+    {
+      "part": "ball_lid",
+      "quantity": 1,
+      "material": "PETG-black",
+      "passed": true,
+      "source_sha256": "8a40d1efde4262524037d0e4ea61ce5389b7391c54dd2e61560fbfd1fe726c02",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 0.265,
+      "grams": 4.803,
+      "wall_loops": 4,
+      "infill_percent": 20.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "gyroid",
+        "enable_support": "0",
+        "curr_bed_type": "Textured PEI Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5"
+      },
+      "start_gcode_diagnostic": true
     }
   ],
-  "total_parts": 9,
-  "total_grams_individual_plates": 464.1,
-  "total_hours_individual_plates": 15.9,
+  "total_parts": 10,
+  "total_grams_individual_plates": 480.6,
+  "total_hours_individual_plates": 16.3,
   "production_gcode": false,
   "project_3mf": {
     "file": "stl/fumex_all_parts.3mf",
-    "parts": 9,
+    "parts": 10,
     "plates": 4,
     "layout": [
       {
         "plate": 1,
         "name": "Head",
         "parts": [
+          "ball_lid",
           "head"
         ],
         "size_mm": [
-          145.0,
+          164.8,
           145.0
         ]
       },
@@ -169,7 +193,7 @@
         ],
         "size_mm": [
           145.0,
-          215.7
+          220.7
         ]
       },
       {
@@ -199,25 +223,25 @@
         ]
       }
     ],
-    "total_hours_plates": 15.3,
-    "total_grams_plates": 463.9,
+    "total_hours_plates": 15.7,
+    "total_grams_plates": 480.2,
     "multicolour_parts": {},
     "multicolour_slices": {},
     "pause_slices": {},
     "plate_slices": {
       "Head": {
         "plate": 1,
-        "hours": 6.07,
+        "hours": 6.05,
         "grams_by_filament": {
-          "1": 231.48
+          "1": 234.87
         },
         "warnings": ""
       },
       "Base and back cover": {
         "plate": 2,
-        "hours": 5.83,
+        "hours": 6.2,
         "grams_by_filament": {
-          "1": 168.2
+          "1": 181.17
         },
         "warnings": ""
       },
@@ -239,6 +263,6 @@
       }
     },
     "own_infill_parts": 4,
-    "sha256": "2993a09f4f1d60492208d81fa5e7e7da3b0e1ee97fb4bd9c694f2ad8a4fbca3b"
+    "sha256": "a6589e697942e094479a6c5bc2db51c28e308bac2587318693f777f643238c4e"
   }
 }
