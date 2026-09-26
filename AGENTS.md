@@ -687,3 +687,16 @@ they do not validate the subsequent geometry.
   body/cavity checker is shared-skill commit `9fedfc0`, covered by 13 regressions and
   the full template pipeline. Actual magnetic force, disc dimensions, plug dimensions
   and flexible wiring remain physical-fit checks. Material profiles were not changed.
+
+
+## First-layer wall count (2026-09-26)
+
+- User requested one wall on the first layer. `PROCESS["settings"]` enables Bambu's
+  `only_one_wall_first_layer = "1"`; the normal `wall_loops = 4` stays unchanged.
+  This applies to every production plate and the USB fit plate. Magnet pauses remain
+  before Z4.6. No model dimensions or plate layouts changed; regenerate both project
+  3MFs through the complete slicer check and rebuild the viewer for publication.
+- Both 3MFs retain this key in `different_settings_to_system` so Bambu Studio keeps
+  the override when loading. All ten individual slices, five production plates and
+  the USB fit plate pass without warnings. Production estimate: 491.5 g / 16.5 h
+  arranged, 491.9 g / 17.4 h individually; rounded README totals are unchanged.

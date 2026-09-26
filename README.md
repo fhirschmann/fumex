@@ -51,7 +51,7 @@ Eight part types, eleven printed pieces including the four feet.
 
 All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_all_parts.3mf): plate 1 head, plate 2 base, back cover, ballast lid and support cross, plate 3 cassette, plate 4 knob, plate 5 TPU feet. Filaments: 1 PETG black, 2 PETG grey, 3 TPU. No part mixes colours, so there is no prime tower. Every part prints without supports. Bambu Studio estimates about **0.49 kg and 16.5 hours** for the five arranged plates (17.4 hours as individual part jobs; head 226 g, base 119 g, back cover 59 g, cassette 61 g, ballast lid 8.4 g, support cross 7 g, knob 4.9 g, feet 4 × 1.5 g).
 
-Print profile: 0.20 mm layers, 4 walls, 5 top/bottom layers, 20 % gyroid; support cross and TPU feet at 100 % infill.
+Print profile: 0.20 mm layers, **1 wall on the first layer**, 4 walls on subsequent layers, 5 top/bottom layers, 20 % gyroid; support cross and TPU feet at 100 % infill.
 
 Before printing the base, use [`stl/fumex_usb_fit.3mf`](stl/fumex_usb_fit.3mf) to check the USB board in small sections of the real base and lid (about **10.0 g and 62 minutes**). With the lid section removed, lower the board in front of the channel and slide it towards the rear wall. Then place the lid section on its two small fixture pads and the retained screw-post seat: its central keeper secures the board from the front and above while leaving both side wire exits open. Two low triangular ribs brace the keeper against the lid. These two optional test pieces are not part of the full assembly.
 
