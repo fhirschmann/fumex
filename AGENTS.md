@@ -206,7 +206,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 - The switch well flanks rise 1.25 mm per mm instead of 1.0: at exactly 45° `analyze.py overhangs` counted them.
 - The rocker switch stands upright in the right wall (long side vertical): the base prints bottom down, so its panel cut-out is a sideways hole and the bridge over it is 12.2 mm instead of 19.2 mm.
 - **Both LED holders sit behind closed 0.8 mm front skins**, matching LEO-AC1 (user, 2026-09-23).
-  `led_cut()` makes two Ø3.2 mm blind bores at (x,z) = (88,21) and (80,21), open only to the bay, from y 0.8 to the rear of their Ø7 bosses. The second holder was requested on 2026-09-23; its electrical function is unspecified.
+  `led_cut()` makes two Ø3.2 mm blind bores at (x,z) = (90,21) and (78,21), open only to the bay, from y 0.8 to the rear of their Ø7 bosses. The second holder was requested on 2026-09-23; its electrical function is unspecified.
   The boss rear face is y 5.8; the LED flange rests there, and the nominal lens starts at y 1.1,
   leaving 0.3 mm before the skin. Insert and glue the LED from inside. This replaces the former
   through-hole and the claim that the front must be open because black PETG cannot transmit light.
@@ -383,3 +383,11 @@ Not checked: flexible deformation (the mat and the TPU feet are rigid bodies her
 - Final analyses: islands, overhangs and fins CLEAN. Thickness finds only the two intentional 0.8 mm LED skins (20/12 mm²); head sampling retains 65,204/65,404 valid rays. All eight parts and four plates slice without supports and with no warnings. Arranged: 471.9 g / 15.6 h; individual jobs: 472.3 g / 16.6 h. Estimated assembled mass 1017.2 g, front margin 29.0 mm and tip angle 21.7 degrees. Report: `docs/pwm-mount-2026-09-23.md`.
 
 - The knob is assembled as a removable press fit; the previous mandatory CA-gel instruction is removed because controller service requires pulling it off. The geometric path does not establish the force needed on the real knurled shaft.
+
+
+## Public GitHub repository and LED spacing (2026-09-23)
+
+- User requested publication on GitHub with the 3D viewer on GitHub Pages, following LEO-AC1. Repository: https://github.com/fhirschmann/fumex; Git remote `github`. Pages serves `main:/docs` at https://fhirschmann.github.io/fumex/. Keep `docs/.nojekyll` and regenerate `docs/index.html` with the shared viewer builder before publishing model updates. The README viewer button and assembly image link to this public URL.
+- The second LED holder moves from x80 to x78, and the charge LED from x88 to x90, both at z21. The pair remains centred at x84. A one-sided move to x76 was rejected because its 15 mm inside insertion path intersected the battery. Centre spacing is now 12 mm instead of 8 mm (user requested more space). Both closed 0.8 mm skins and inside flange seats remain.
+- The project licence header and third-party notice now name FUMEX and ARCTIC; BOSL2 is explicitly excluded from the project's CC BY-NC-SA grant and retains its BSD-2-Clause licence. This corrects leftover LEO-AC1 names without changing the intended project or tool licences.
+- Final publication model SHA `b6aff7a9f9fa3554201d193ca9fee87963f8a676dbf34cea3bda2e38d5a54595`: eight valid print types / eleven pieces, 443 coaxial pairs, 528 assembly pairs, standard and PWM service paths all pass. Islands, overhangs and fins are CLEAN; thickness finds only the two authorised 0.8 mm LED skins (sampled areas 18/10 mm²). All eight parts and four plates slice without supports or warnings; arranged totals remain 471.9 g / 15.6 h. The viewer and all ten documentation views are rebuilt for this revision.
