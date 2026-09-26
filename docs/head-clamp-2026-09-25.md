@@ -1,5 +1,7 @@
 # Direct head-to-base clamping — 2026-09-25
 
+The front fasteners in this snapshot are superseded by [the angled front mounting](front-clamp-2026-09-25.md). The rear mounting remains unchanged.
+
 The previous screw heads did bear on complete rings: a 5.7 mm head over a 3.4 mm clearance hole gives 1.15 mm radial overlap and about 16.44 mm² nominal bearing area. However, a 0.25 mm gap behind each seat interrupted the direct compression path to the insert tongue. Tightening would first deform a seat or tongue. The earlier checks proved head contact, insert engagement and printable geometry, but did not establish a rigid clamp stack or retained preload.
 
 At the user's request, the rear screws now run down through the head floor directly into the base rim. Rear horizontal tongues are removed. The front screws retain their accessible front entry, with the axial gap removed and direct bearing against the base tongues. Guiding clearance remains on the non-clamping faces.
