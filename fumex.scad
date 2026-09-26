@@ -108,6 +108,7 @@ bat_stop_w = 3;      // floor-rooted end wall thickness
 bat_stop_y = [30, 51]; // stays ahead of the ballast lid
 bat_stop_top = 29;   // below the BMS and upper cable exit
 bat_stop_c = 0.4;    // soften the top against the cell's insulating wrap
+bat_stop_link_overlap = 1; // embed the floor-rooted stop connection into the trough front wall
 bat_tie_x = [26, 54]; // two floor-rooted loops between the three existing saddles
 bat_tie_slot = [4, 1.8]; // clear tunnel width and height, for ties up to 3.6 x 1.2 mm
 bat_tie_floor = 1.85; // solid floor remaining below the recessed tie tunnels
@@ -1080,9 +1081,20 @@ module usbc_keeper() let (
 module battery_end_stop() let (
     x0 = bat_x0 + bat_l + bat_stop_gap, x1 = x0 + bat_stop_w,
     path = round_corners([[x0, bat_stop_y[0]], [x1, bat_stop_y[0]],
-        [x1, bat_stop_y[1]], [x0, bat_stop_y[1]]], radius = 1))
+        [x1, bat_stop_y[1]], [x0, bat_stop_y[1]]], radius = 1),
+    wall_top = ball[3] - ball_rim,
+    slope_start = ball[2] - (bat_stop_top - wall_top)) {
     translate([0, 0, floor_t - eps]) offset_sweep(path,
         height = bat_stop_top - floor_t + eps, offset = "delta", top = os_chamfer(height = bat_stop_c));
+    // Join the stop to the fixed trough wall below the removable lid. The full
+    // floor root and 45-degree descending top need no bridge or print supports.
+    assert(slope_start < bat_stop_y[1] - 1 && bat_stop_link_overlap < ball_wall,
+        "Battery stop connection must overlap the rounded stop and trough wall");
+    along_x(x0, x1) polygon([
+        [slope_start, floor_t-eps], [ball[2]+bat_stop_link_overlap, floor_t-eps],
+        [ball[2]+bat_stop_link_overlap, wall_top], [ball[2], wall_top],
+        [slope_start, bat_stop_top]]);
+}
 module ball_lid_plate() difference() {
     // Narrow seams and a relieved rear corner keep the trough closed.
     translate([0, 0, ball[3]]) linear_extrude(ball_lid_t) union() {
