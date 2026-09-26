@@ -1,5 +1,5 @@
 {
-  "source_sha256": "1c32b3ce66e6d10c5bfe795a01edcdda1d21b937295226790ba607b1a9787fcc",
+  "source_sha256": "ec2d5c4eab5398d7dbb4e0b65f782ae867ac1685a2cdbd52cd15a8696bdbe28c",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -29,17 +29,17 @@
           57.2657
         ]
       ],
-      "volume_mm3": 107940.772,
-      "triangles": 6542,
+      "volume_mm3": 108563.6712,
+      "triangles": 6218,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "2440e0567d0dd3057f2275ba9ba0f5d995d2298d73b95fa1f631bf09ea21e222",
+      "sha256": "245eafe935bc81f0a346b9a042c6476a130ab24e4063dd63cde61c67c6763849",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "2440e0567d0dd3057f2275ba9ba0f5d995d2298d73b95fa1f631bf09ea21e222"
+      "committed_sha256": "245eafe935bc81f0a346b9a042c6476a130ab24e4063dd63cde61c67c6763849"
     },
     "head": {
       "size_mm": [
@@ -59,17 +59,17 @@
           70.0
         ]
       ],
-      "volume_mm3": 216801.9992,
-      "triangles": 4924,
+      "volume_mm3": 216273.689,
+      "triangles": 4928,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "1e119c51542cbe7537f818726a984d3836da2894a48022d03340ebfe5fb75e39",
+      "sha256": "f31f4bb53f9147758d7d5e228d5d0c1f5dbf9b9246b2de36fbbeff0eec2a19d9",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "1e119c51542cbe7537f818726a984d3836da2894a48022d03340ebfe5fb75e39"
+      "committed_sha256": "f31f4bb53f9147758d7d5e228d5d0c1f5dbf9b9246b2de36fbbeff0eec2a19d9"
     },
     "head_back": {
       "size_mm": [
@@ -89,47 +89,47 @@
           8.0
         ]
       ],
-      "volume_mm3": 57157.6146,
-      "triangles": 10376,
+      "volume_mm3": 56577.2082,
+      "triangles": 10406,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "2fc6b1c236fc38cfc5a2149b71c162b4f8e1a5b36dec2fc15647ad736d454c35",
+      "sha256": "9c4180de503745c4727ac34a83dfac89b25bbd8b2c232a48f27826f0b419a187",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "2fc6b1c236fc38cfc5a2149b71c162b4f8e1a5b36dec2fc15647ad736d454c35"
+      "committed_sha256": "9c4180de503745c4727ac34a83dfac89b25bbd8b2c232a48f27826f0b419a187"
     },
     "cassette": {
       "size_mm": [
-        143.0,
+        138.0,
         143.0,
         4.5
       ],
       "bounds_mm": [
         [
-          1.0,
+          3.5,
           1.0,
           0.0
         ],
         [
-          144.0,
+          141.5,
           144.0,
           4.5
         ]
       ],
-      "volume_mm3": 54076.9843,
-      "triangles": 9606,
+      "volume_mm3": 51418.1053,
+      "triangles": 9426,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "f59ed61d968b956f6972470b4ea55cab9ddfe50f020083439cb5416bf6a5fbe0",
+      "sha256": "3bf5f6308e16ee9dcdaf9e0d362100c13c31002ee1e279959f48e10f117bea8a",
       "quantity": 1,
       "material": "PETG-grey",
-      "committed_sha256": "f59ed61d968b956f6972470b4ea55cab9ddfe50f020083439cb5416bf6a5fbe0"
+      "committed_sha256": "3bf5f6308e16ee9dcdaf9e0d362100c13c31002ee1e279959f48e10f117bea8a"
     },
     "knob": {
       "size_mm": [
@@ -404,8 +404,8 @@
     "allowed_misaligned": 0
   },
   "contact_volumes_mm3": {
-    "head@base": 19.6421,
-    "cassette@head": 295.9047,
+    "head@base": 19.4478,
+    "cassette@head": 266.5182,
     "fan@head": 132.6496,
     "feet@base": 54.8256,
     "pwm_board@base": 3.4731,
@@ -671,11 +671,11 @@
   "intake_lip_mm": 2.25,
   "mat_free_travel_mm": 1.62,
   "mat_squashed_percent": 2.3,
-  "mass_g": 1026.8,
+  "mass_g": 1024.3,
   "centre_of_mass_mm": [
     68.6,
-    30.6,
-    68.9
+    30.8,
+    68.7
   ],
   "foot_polygon_mm": [
     9.0,
@@ -684,12 +684,12 @@
     69.0
   ],
   "tip_margins_mm": {
-    "front": 28.6,
-    "back": 38.4,
+    "front": 28.8,
+    "back": 38.2,
     "left": 59.6,
     "right": 67.4
   },
-  "tip_angle_deg": 22.6,
+  "tip_angle_deg": 22.7,
   "stl_difference_mm3": {
     "base": 0.0,
     "head": -0.0,

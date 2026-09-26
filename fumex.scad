@@ -21,6 +21,10 @@ body_d = 74;         // outer depth (y): base and head share one footprint, so t
 wall = 3;            // walls, at least seven 0.4 mm lines
 floor_t = 3.2;       // base floor
 corner_r = 6;
+plan_r = 3.5;        // the four vertical edges of the housing. The head has to carry the same radius as
+                     // the base or its corners stand proud of the base's, and it is the magnet pockets in
+                     // the intake face that cap it: at 6 they would fall outside the rounded corner, and
+                     // they cannot move further in without reaching the intake opening (user, 2026-09-23)
 corner_rb = 2;       // at the joint: small enough that the base rim can follow it, see head_outline()
 neck_r = 2.5;        // the same arc mirrored into the base rim, half a millimetre wider - see joint_neck()
 edge_c = 1.2;        // 45 degree chamfer on the bed edges
@@ -77,7 +81,8 @@ cass_c = 2.0;        // 45 degree bevel round its rim instead, so the step is 2.
                      // 2.0 is the limit: at 1 + 2.0 the bevel stops 0.15 mm short of the magnet pockets
 cass_inset = 1;      // flange inside the head outline, leaves a ledge beside the finger scoops
 mag = [10.3, 3.2];   // pocket for a 10 x 3 neodymium disc (skill: +0.3 diameter, +0.2 depth)
-mag_off = 64.2;      // magnet axes from the head centre, on both diagonals
+mag_off = 62.5;      // magnet axes from the head centre, on both diagonals. 10 mm inset: 1.3 mm of material
+                     // to the rounded plan corner and 1.8 mm to the intake opening
 
 /* [Battery, 3.2 V 6000 mAh LiFePO4 pack, lying across the bay] */
 bat_d = 32.5;        // measured cell body without the protection board (LEO-AC1, 2026-09-15)
@@ -347,7 +352,14 @@ module head_at() translate([0, joint_y, base_h]) rotate([tilt, 0, 0]) translate(
 // wall uncut, which the slicer then reports as an empty layer
 module joint_halfspace() head_at() translate([-40, -40, base_h]) cube([body_w + 80, body_d + 80, 400]);
 
-module base_outline(inset = 0) translate([body_w / 2, body_d / 2]) rrect([body_w - 2 * inset, body_d - 2 * inset], max(corner_r - inset, 0.5));
+module base_outline(inset = 0) translate([body_w / 2, body_d / 2]) rrect([body_w - 2 * inset, body_d - 2 * inset], max(plan_r - inset, 0.5));
+// The same footprint as a prism, to give the head the base's vertical edges. The cassette stands cass_t in
+// front of it, so its own prism runs on forward at the width the footprint has at y = 0.
+module plan_prism() translate([0, 0, base_h - 1]) linear_extrude(head_h + 2) base_outline();
+module cass_prism() translate([0, 0, base_h - 1]) linear_extrude(head_h + 2) union() {
+    base_outline();
+    translate([plan_r, -cass_t - 1]) square([body_w - 2 * plan_r, cass_t + 1 + eps]);
+}
 // corner_r at the top, corner_rb at the two corners that sit on the joint plane. They have to be smaller:
 // whatever radius the head has there, the base rim has to follow it or the head's side walls curve away
 // from the base and leave a step. At corner_r = 6 that neck would remove the whole 3 mm side wall of the
@@ -390,7 +402,8 @@ module grid_2d(area, bar = grid_bar, gap = grid_gap) let (n = max(1, floor((area
     }
 
 // ---------- head: shell, filter chamber, fan seat (untilted frame) ----------
-module head_raw() difference() {
+module head_raw() intersection() { plan_prism(); head_body(); }
+module head_body() difference() {
     union() {
         difference() {
             along_y(0, head_y[4]) head_outline();                       // outer shell
@@ -479,6 +492,7 @@ module head_print_pose() translate([0, base_h + head_h, 0]) rotate([90, 0, 0]) c
 
 // ---------- head back cover (untilted frame) ----------
 module head_back_raw() intersection() {
+    plan_prism();
     translate([-1, head_y[4] - lip_h - 1, base_h + cover_gap]) cube([body_w + 2, back_t + lip_h + 2, head_h]);
     difference() {
     union() {
@@ -515,7 +529,8 @@ module head_back_print_pose() translate([0, -base_h, body_d]) rotate([-90, 0, 0]
 // ---------- filter cassette (untilted frame, in front of the intake face) ----------
 // The cassette lies on the intake face and touches no rim, so like the back cover it keeps the radius
 // on all four corners rather than the shell's square bottom (user, 2026-09-23).
-module cassette_raw() difference() {
+module cassette_raw() intersection() { cass_prism(); cassette_body(); }
+module cassette_body() difference() {
     along_y(-cass_t, 0) head_outline(cass_inset);
     translate([body_w / 2, 0, head_cz]) along_y(-cass_t - 1, 1) grid_2d(open_sq);
     for (p = mag_xz()) cyl_y(p, -mag[1], eps, mag[0] / 2);              // pockets open towards the head
