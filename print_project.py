@@ -385,11 +385,10 @@ def check_head_fasteners(ctx):
     """Four direct clamping stacks, complete bearings, insert walls and tool access."""
     m = ctx.metrics
     axes = np.asarray(m['head_axes'], float)
-    expected = [[9.1,10,52,-math.sin(math.radians(40)),0,-math.cos(math.radians(40)),10.3,16],
-                [135.9,10,52,math.sin(math.radians(40)),0,-math.cos(math.radians(40)),10.3,16],
+    expected = [[25.5,6.5,60,0,0,-1,2.3,8], [119.5,6.5,60,0,0,-1,2.3,8],
                 [25,66,48,0,0,-1,2.3,8], [131,66,48,0,0,-1,2.3,8]]
     assert axes.shape == (4,8) and np.allclose(axes, expected, atol=.001), \
-        f'Head needs two sloping front and two downward rear fasteners: {axes.tolist()}'
+        f'Head needs four downward fasteners at the reviewed front and rear axes: {axes.tolist()}'
     local = {n: ctx.manifold(head_frame(ctx.meshes[n], m)) for n in ('head','screws_head','base')}
     screws = local['screws_head'].decompose()
     assert len(screws) == 4, 'Head must have four separate screws'
@@ -405,12 +404,19 @@ def check_head_fasteners(ctx):
         def cyl(t, height, radius, direction=1):
             return ctx.cylinder(entry+axis*t, axis*direction, height, radius, 120)
         bearing = cyl(-bearing_t+.02,bearing_t-.04,3.15)-cyl(-bearing_t,bearing_t,1.75)
-        # A complete lower counterbore rim is required. The upper mouth has an
-        # intentional bevel; it need not enclose the top of the button head.
-        enclosure = cyl(-bearing_t-.22,.2,4.4 if front else 3.9)-cyl(-bearing_t-.23,.22,3.25)
         fill = (bearing ^ local['head']).volume()/bearing.volume()
-        rim_fill = (enclosure ^ local['head']).volume()/enclosure.volume()
-        assert fill > .995 and rim_fill > .995, f'Incomplete screw bearing/rim at {entry}: {fill}, {rim_fill}'
+        assert fill > .995, f'Incomplete screw bearing at {entry}: {fill}'
+        rim_fill, exposed_clearance = None, None
+        if front:
+            # The visible button head has no raised plastic shroud. Include a
+            # 0.55-mm radial ring beyond its 2.85-mm radius above the bearing plane.
+            above_seat = cyl(-bearing_t-1.8,1.78,3.4)
+            exposed_clearance = (above_seat ^ local['head']).volume()
+            assert exposed_clearance < .01, f'Front screw head is still enclosed at {entry}: {exposed_clearance}'
+        else:
+            enclosure = cyl(-bearing_t-.22,.2,3.9)-cyl(-bearing_t-.23,.22,3.25)
+            rim_fill = (enclosure ^ local['head']).volume()/enclosure.volume()
+            assert rim_fill > .995, f'Incomplete rear counterbore rim at {entry}: {rim_fill}'
         backing = cyl(.02,.05,4.1)-cyl(.01,.08,2.1)
         seat_back = cyl(-.07,.05,2.85)-cyl(-.08,.08,2.1)
         backing_fill = (backing ^ local['base']).volume()/backing.volume()
@@ -444,22 +450,24 @@ def check_head_fasteners(ctx):
         rows.append(dict(entry_mm=entry.tolist(), direction=axis.tolist(), screw_length_mm=length,
             bearing_thickness_mm=bearing_t, insert_penetration_mm=round(penetration,3),
             hole_bottom_clearance_mm=round(m['insert_depth']-penetration,3), bearing_fill=round(fill,6),
-            enclosed_lower_rim_fill=round(rim_fill,6), backing_fill=round(backing_fill,6),
+            enclosed_lower_rim_fill=round(rim_fill,6) if rim_fill is not None else None,
+            exposed_head_clearance_overlap_mm3=round(exposed_clearance,6) if exposed_clearance is not None else None,
+            backing_fill=round(backing_fill,6),
             seat_back_fill=round(seat_back_fill,6), backing_gap_mm=round(gap,6),
             insert_core_overlap_mm3=round(core_overlap,6), insert_wall_fill=round(wall_fill,6),
             insert_bottom_fill=round(bottom_fill,6), screw_contact_mm3=round(contact,6), insert_access_overlap_mm3=round(access,6)))
-    return dict(head_fasteners=dict(count=4, screw_lengths_mm=[16,16,8,8], seats=rows))
+    return dict(head_fasteners=dict(count=4, screw_lengths_mm=[8,8,8,8], seats=rows))
 
 
 def check_front_mat_contact(ctx):
-    """Permit only the two deliberately rounded front wells under the soft mat."""
+    """Bound contact from the exposed front screw heads and their bevelled seats."""
     m = ctx.metrics
     local = {n:ctx.manifold(head_frame(ctx.meshes[n],m)) for n in ('head','screws_head','filter')}
-    zones = [_air_box([12,4.8,60.49],[27,15.2,63.21]), _air_box([118,4.8,60.49],[133,15.2,63.21])]
+    zones = [_air_box([19.2,3.19,60.49],[31.8,12.8,63.96]), _air_box([113.2,3.19,60.49],[125.8,12.8,63.96])]
     allowed = zones[0]+zones[1]
     rows = {}
     total = 0.
-    for name, limit in [('head',2.7),('screws_head',2.49)]:
+    for name, limit in [('head',1.8),('screws_head',3.45)]:
         contact = local[name] ^ local['filter']
         volume = contact.volume()
         outside = (contact-allowed).volume()
@@ -469,15 +477,16 @@ def check_front_mat_contact(ctx):
         depth = float(bounded.bounding_box()[5]-60.5) if bounded.volume() > 1e-6 else 0.
         assert outside < .01 and depth <= limit+.002, \
             f'Unexpected mat contact by {name}: outside {outside} mm3, depth {depth} mm'
-        assert all((contact ^ zone).volume() > .1 for zone in zones), f'Missing reviewed local mat contact: {name}'
+        if name == 'screws_head':
+            assert all((contact ^ zone).volume() > .1 for zone in zones), f'Missing reviewed screw-to-mat contact: {name}'
         rows[name] = dict(volume_mm3=round(volume,6), maximum_local_deflection_mm=round(depth,6),
                           outside_allowed_zones_mm3=round(outside,8))
         total += volume
-    assert total < 330, f'Front hardware displaces too much nominal mat volume: {total} mm3'
-    ctx.open_items.append('The soft filter mat bends locally by up to 2.7 mm over two bevelled screw wells; '
+    assert total < 450, f'Front hardware displaces too much nominal mat volume: {total} mm3'
+    ctx.open_items.append('The soft filter mat bends locally by up to 3.45 mm over two exposed screw heads and their bevelled seats; '
                           'only the two measured contact zones are allowed. No compression force or flexible deformation is simulated.')
     return dict(front_mat_contact=dict(contacts=rows, total_nominal_displacement_mm3=round(total,6),
-        allowed_zones_mm=[[[12,4.8,60.49],[27,15.2,63.21]],[[118,4.8,60.49],[133,15.2,63.21]]]))
+        allowed_zones_mm=[[[19.2,3.19,60.49],[31.8,12.8,63.96]],[[113.2,3.19,60.49],[125.8,12.8,63.96]]]))
 
 
 def check_front_ratchet_access(ctx):
@@ -490,8 +499,8 @@ def check_front_ratchet_access(ctx):
     m = ctx.metrics
     axes = np.asarray(m['head_axes'], float)
     assert axes.shape == (4, 8), 'Ratchet check needs per-screw entry, direction, bearing and length'
-    expected = np.array([[9.1, 10, 52, -math.sin(math.radians(40)), 0, -math.cos(math.radians(40)), 10.3, 16],
-                         [135.9, 10, 52, math.sin(math.radians(40)), 0, -math.cos(math.radians(40)), 10.3, 16]])
+    expected = np.array([[25.5, 6.5, 60, 0, 0, -1, 2.3, 8],
+                         [119.5, 6.5, 60, 0, 0, -1, 2.3, 8]])
     assert np.allclose(axes[:2], expected, atol=.001), 'Revalidate ratchet route for changed front screws'
     local = {n: ctx.manifold(head_frame(mesh, m)) for n, mesh in ctx.meshes.items()
              if n not in ('filter', 'cassette') and not n.startswith('driver_')}
@@ -1151,10 +1160,13 @@ def check_pwm_removal(ctx):
         ('lift_first', [pose(lift=d, rear=0) for d in np.linspace(0, 2, 21)]),
         ('lift_clear', [pose(lift=2 + 1.4*u, rear=.5*u) for u in np.linspace(0, 1, 29)]),
         ('retract', [pose(rear=d) for d in np.linspace(.5, 8, 76)]),
-        ('pitch', [pose(rear=8 + max(0, a-15)/20*.6, angle=a, postup=-.6*a/35)
-                   for a in np.linspace(0, 35, 71)]),
-        ('withdraw', [pose(rear=8.6, angle=35, postrear=d, postup=-.6)
+        ('pitch', [pose(rear=8 + max(0, a-15)/5*.6, angle=a, postup=-.6*a/20)
+                   for a in np.linspace(0, 20, 41)]),
+        ('withdraw', [pose(rear=8.6, angle=20, postrear=d, postup=-.6)
                       for d in np.linspace(0, 7.9, 80)]),
+        # Keep the PCB below the front boss until the shaft has left the wall.
+        ('pitch_clear', [pose(rear=8.6, angle=a, postrear=7.9, postup=-.6)
+                         for a in np.linspace(20, 35, 31)]),
         ('lift_rear', [pose(rear=8.6, angle=35, postrear=7.9, postup=-.6+d)
                       for d in np.linspace(0, 4.5, 46)]),
         ('clear_rim', [pose(rear=8.6, angle=35, postrear=7.9+d, postup=3.9)
@@ -1645,7 +1657,7 @@ VIEWER = dict(
            ("magnets", "Magnets 10 x 3", "bought", "#9aa0a6", "8x", [0, -1.2, 0.9]),
            ("screws_fan", "Screws M3 x 30", "bought", "#9aa0a6", "4x", [0, 0.9, 1.35]),
            ("screws_back", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, 2.8, 0.6]),
-           ("screws_head", "Head screws", "bought", "#9aa0a6", "2x M3 x 8 + 2x M3 x 16", [0, -0.3, 1.6]),
+           ("screws_head", "Head screws", "bought", "#9aa0a6", "4x M3 x 8", [0, -0.3, 1.6]),
            ("screws_feet", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, 0, -1.0]),
            ("screws_pwm", "PCB screws 2.5 x 8", "bought", "#9aa0a6", "2x", [0, 0, 0.9]),
            ("screws_lid", "Lid screws M3 x 8", "bought", "#9aa0a6", "2x", [0, 0, 1.1]),

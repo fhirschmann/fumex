@@ -1,5 +1,7 @@
 # Angled front head-to-base screws — 2026-09-25
 
+Historical revision: superseded by the [straight front screws](straight-front-clamp-2026-09-25.md). The measurements below describe the earlier angled arrangement.
+
 All four head screws now fasten down into the base. The front pair uses M3 × 16 at 40° outwards from the downward joint normal; the rear pair retains the M3 × 8 mounting from the [rear-clamp revision](head-clamp-2026-09-25.md). The old high front tongues, front-face screw holes and mating windows are removed.
 
 The user accepts bending the soft filter mat locally over the front screw heads. The sealed head wells end 2.7 mm above the nominal bottom of the mat; the screw heads overlap that nominal envelope by about 2.5 mm. Only these two small contact regions are allowed. Both edges of each well mouth are chamfered. This is a permitted local deformation envelope, not a simulation of fleece stiffness or sealing pressure.
