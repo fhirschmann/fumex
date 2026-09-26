@@ -182,24 +182,26 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 - The mat is held by the intake lip (opening 117 in a 121.5 chamber, 2.25 mm per side). It is pressed in and pulled out past that lip — a rigid-body path check cannot show this, so `filter_out` is not a checked path but a documented limitation.
 - **Head screws: four M3 × 8 across the four corner regions** (user, 2026-09-25). In the
   untilted head frame, front axes are (x, y, z) = (7.5, 0, 68) and (137.5, 0, 68), pointing
-  +y; rear axes are (25, 70, 53.7) and (131, 70, 53.7), pointing -y. The former vertical
-  rear row is removed. Remove the cassette for the front screws and the fan/back-cover assembly
-  for the rear screws; straight tool access is checked without assuming the Wera ratchet's size.
-  - Front seats use a 4.5 mm local face and 2.45 mm counterbore: 2.05 mm bearing, 5.7 mm thread
-    engagement and 1.3 mm pocket-bottom reserve. Rear seats use 3.2/1.85 mm: 1.35 mm bearing,
-    6.4 mm engagement and 0.6 mm reserve. All four have complete bearing rings and accessible
-    Ø4 x 7 mm Ruthex pockets in Ø9.2 mm base tongues, with 2 mm closed ends.
-  - Matching downward-open head windows have 0.25 mm clearance. The raised front axes clear the
-    PWM PCB; their locally thickened faces and 0.35 mm pad widening preserve the lower magnet
-    backing. Rear axes deliberately differ in x to clear both ballast-lid drivers.
-  - Add tongues and roots after both `joint_halfspace()` and `joint_neck()` cut the base shell:
-    applying the neck cutter afterwards severs all four tongues across local z48..49. Root hulls
-    themselves stop at the joint; their front/rear wall anchors begin at `base_top(0)-10` and
-    `base_top(body_d)-24`, providing printable inclined undersides. The CGAL fallback exports
-    the resulting base as one closed body with no degenerate faces.
-  - Rear head pads have flanking print ramps. The back-cover lip has rectangular reliefs centred
-    at x25/131, 12.7 mm wide and spanning local z47..58.55, clearing both pads and ramps; the
-    exterior cover face is unchanged. The cable opening moves to x32..42 to preserve the left seat.
+  +y. Rear insert axes are (25, 66, 48) and (131, 66, 48), pointing -z: those screws clamp
+  directly down into the base, normal to the 15° joint. Remove the cassette for the front screws
+  and the fan/back-cover assembly for the rear screws; straight tool access is checked without
+  assuming the Wera ratchet's size.
+  - Front seats use a 4.5 mm local face and 2.45 mm counterbore: 2.05 mm bearing, 5.95 mm thread
+    engagement and 1.05 mm pocket-bottom reserve. The insert mouth is at y4.5 and directly
+    contacts the head's rear bearing face; there is no axial gap in this clamping stack. The
+    Ø9.2 mm front tongues retain Ø4 x 7 mm Ruthex pockets and 2 mm closed ends.
+  - Rear screw seats are at z50.3, in the z48..51 head floor with 0.7 mm counterbores. Their
+    2.3 mm bearing thickness gives 5.7 mm engagement and 1.3 mm pocket-bottom reserve. The
+    Ø10 x 9 mm base bosses span z39..48, with 7 mm pockets opening at z48 and 2 mm blind floors;
+    their inclined roots join the back wall and print without supports. The 0.8 mm rear pocket
+    lip is only 0.7 mm high and is supported by the full 2.3 mm bearing plate below it.
+  - The front head windows retain 0.25 mm lateral clearance while their axial clamping faces
+    meet. Raised front axes clear the PWM PCB; their locally thickened faces and 0.35 mm pad
+    widening preserve the lower magnet backing. Add the front tongues and roots after the
+    shell's `joint_halfspace()` and `joint_neck()` cuts so the neck cannot sever their connection.
+  - Rear horizontal tongues, matching head windows and flanking print ramps are removed. The
+    back-cover lip instead has small round notches for the downward screw heads; its exterior
+    face is unchanged. The cable opening at x32..42 preserves the left rear bearing seat.
   - Checks cover individual screw seating, insert rings/bottoms, press access and screwdriver
     clearance. `head_off` moves the head with mat, support cross and magnets 60 mm along the
     tilted normal after the cassette, fan/cover and four screws are removed. The battery bridges
@@ -472,7 +474,7 @@ gussets and lid slots are superseded by the current design state above.
 - PCB and component/pin envelopes now distinguish the real holes and the user-confirmed clear mounting pads. `base/screws_pwm` is an intentional thread-forming interference, bounded separately in the mounting check; it must not hide contact outside the pilot annuli. PCB fasteners are driven before installing the head.
 
 - The concealed front opening, tab slot and inner PCB edge slot allow 3.5 mm upward travel for installation. The inner housing recess is capped at z32 and reaches through the actual lofted inner wall; an uncapped R10 sweep left a thin region near z34. The outside remains covered by the Ø24 knob. The actual anti-rotation tab is now part of `pot_env()`, so the motion check includes it.
-- `check_pwm_removal()` checks a complete sampled lift/retract/pitch/extract sequence. For the current 2026-09-25 layout, remove the head group, battery and rocker switch before the loaded ballast lid, then remove the knob and PCB screws; the LEDs and USB board remain. The older sequence with the loaded lid still fitted is superseded because the new keeper obstructs withdrawal. After `clear_rim`, shift the freed controller 6.5 mm left (negative x) before the final 60 mm lift, clearing the rear-right head tongue. The new `side_clear` phase has 66 samples at 0.1 mm; the final lift retains that lateral offset. Reverse the movement to install the PWM controller before fitting the lid and rocker switch. Translation samples are 0.1 mm, rotation 0.5 degrees, final lift 0.5 mm; this remains a sampled rigid-body path with no wires. Both screws have independent 60 mm extraction checks in 0.25 mm steps. Only their intended thread-forming regions are exempted.
+- `check_pwm_removal()` checks a complete sampled lift/retract/pitch/extract sequence. For the current 2026-09-25 layout, remove the head group, battery and rocker switch before the loaded ballast lid, then remove the knob and PCB screws; the LEDs and USB board remain. The older sequence with the loaded lid still fitted is superseded because the new keeper obstructs withdrawal. After `clear_rim`, shift the freed controller 6.5 mm left (negative x) before the final 60 mm lift, clearing the rear-right mounting area. The new `side_clear` phase has 66 samples at 0.1 mm; the final lift retains that lateral offset. Reverse the movement to install the PWM controller before fitting the lid and rocker switch. Translation samples are 0.1 mm, rotation 0.5 degrees, final lift 0.5 mm; this remains a sampled rigid-body path with no wires. Both screws have independent 60 mm extraction checks in 0.25 mm steps. Only their intended thread-forming regions are exempted.
 - The shared skill records the loft/recess cutter pitfall in `PITFALLS.md`, commit `e72f129`; scripts are unchanged.
 
 - Final source SHA `b21de4cee404bf7ec0729d4387ee1f67255d2660a494efb6897dea5861848cb0`. Eight closed print types / eleven pieces, 443 coaxial pairs and 528 assembly pairs pass. Both PCB/boss bearing rings have full material; individual contacts and pilot/thread/tool checks pass. The complete 465-pose PCB service path passes with maximum 0.000052 mm³ numerical overlap.
@@ -523,11 +525,24 @@ they do not validate the subsequent geometry.
 - Both viewer copies are rebuilt from the final assembly exports and are byte-identical; affected documentation views are regenerated. Browser policy still prevents refreshing the open local `file://` tab, which requires a manual reload. Project scripts remain identical to the shared skill.
 
 
-## Battery ties, four-corner joint and USB upper return (2026-09-25)
+## Battery ties, four-corner joint and USB upper return (2026-09-25, previous joint arrangement)
 
+- This snapshot used four horizontal head screws. Its rear tongues/windows and the front axial
+  gap were subsequently superseded by the directly contacting front seats and two downward rear
+  screws described in the active design block above. The recorded SHA, checks and measurements
+  below remain evidence for that earlier revision, not the current joint.
 - Final source SHA256 `e2618ebbf2db47b545d2ba26b4e51981ecd32fe97618b2e99e35e175a1ecc460`. See `docs/tie-corners-2026-09-25.md` for geometry, actual dimensions, assembly sequence and limitations. Updated production parts: base, head, head_back, ball_lid and two new battery_bridge pieces; both USB coupons also change. The base/head/back cover must be used as a matching set.
 - Floor loops retain two ties up to 3.6 x 1.2 mm, nominally 150 mm long. The two loose bridges transfer tie load to the cell shoulders instead of the full-length BMS. Their 25 mm openings have 0.5 mm nominal overhead clearance and 0.3 mm after 0.2 mm settling onto the cylindrical shoulders. The measured head gaps are 0.4 mm to bridges and 0.23707 mm to ties; the local head floor remains 1.3 mm thick. Cushioning is optional and must not raise the cell. Buckle envelope 6 x 4 x 5 mm, in front of the cell. Physical tightening, buckle fit, bridge deflection and PETG creep are unverified.
 - The 4 mm central USB keeper has a 1 mm upper return with a 1.6 mm roof. Upward motion is free at 0.1 mm and captured at 0.6 mm; front-edge lever rotation is captured at 2.9 degrees. Both wire corridors and the complete loaded-lid path remain clear. Real PCB bearing area and cable-lever force need the updated fit print.
 - Final export: eleven closed, single-body print meshes (nine production types / thirteen pieces plus two optional test types), zero degenerate faces, 435 coaxial feature pairs, ten standard paths and 595 assembly pairs PASS. Battery ties/bridges, USB anti-lift, all four head seats and tools, complete PWM and loaded-lid service checks PASS. The 60 mm head-removal path keeps the mat, support cross and magnets with the head while the battery ties and bridges stay fitted.
 - Islands, overhangs, thickness and fins are CLEAN on all eleven meshes at the configured thresholds. CGAL fallback resolves the base, head and base-coupon exports without mesh repair. All eleven individual slices, four production plates and one USB test plate pass with support disabled and no warnings. Production: 481.3 g / 16.1 h as plates, 481.9 g / 17.5 h as individual jobs. USB fit: 9.9 g / 1.04 h. Static assembled estimate 1018.6 g, front margin 28.2 mm and tip angle 21.0 degrees; ballast remains 40.3 cm3 / 189.4 g.
 - Both viewer copies and all twelve documentation views are regenerated. Browser policy still prevents reloading the open local file tab; it needs a manual reload. Shared scripts remain identical. Shared skill improvement `208aae9` documents settled bridge-to-BMS clearance, complete tie/buckle routes and the distinction between geometric capture and unmeasured clamp loads.
+
+
+## Direct rear head-to-base screws and clamped backing (2026-09-25)
+
+- User rejected the rear horizontal tongue fastening and requested screws down into the base. Current dimensions and results: `docs/head-clamp-2026-09-25.md`. The head-fastener geometry in the earlier same-day tie/corners report is superseded; battery and USB changes remain.
+- The old screw heads did have 1.15 mm radial overlap and about 16.44 mm2 bearing area. However, 0.25 mm clearance behind each seat required deformation before clamping. `check_head_fasteners()` now checks a full base material ring directly behind the seat, the matching head-side material and less than 0.01 mm nominal interface gap. All four report zero gap and full material. The new front probes reject the previous published base (0% material) and accept the revised base (100%); saved mesh hashes are in `docs/head-clamp-2026-09-25/backing-regression.json`.
+- Source SHA256 `fd7bafbd62166f591abb133d0b37a50bc666eee8350e060e27a03c67f91f983d`. Base/head/head_back production geometry changes; four M3 x 8 and four head inserts remain. Rear floor seats have 2.3 mm backing and 5.7 mm engagement; front seats 2.05/5.95 mm. Base print envelope is 145 x 74.7589 x 65.6772 mm; its floor footprint is unchanged.
+- Full export PASS: eleven closed single-body print meshes, no degenerate faces, 429 coaxial feature pairs, 595 assembly pairs and ten paths. The cover removal now treats the head screws as fixed obstacles. All four print analyses CLEAN. Eleven individual meshes, four production plates and one USB test plate slice without supports or warnings. Arranged production 479.3 g / 16.0 h; individual 479.8 g / 17.4 h; USB test 9.9 g / 1.04 h. Static mass estimate 1016.5 g, front margin 28.2 mm, tip angle 21.0 degrees.
+- Both viewer copies and all twelve documentation views are rebuilt. View09 now keeps the head and screws assembled; previously lifting only the head made the screw heads appear detached. Shared scripts match; skill commit `a3823d0` records direct backing checks and clear fastener illustrations. Physical preload, PETG creep, pull-out and ultimate strength remain untested.

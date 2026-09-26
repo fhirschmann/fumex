@@ -378,47 +378,65 @@ def check_charger_holder(ctx):
 
 
 def check_head_fasteners(ctx):
-    """Four external-access screws seat on full rings and engage horizontal base inserts."""
+    """Check each head seat and its direct, gap-free support by the inserted base boss."""
     m = ctx.metrics
     axes = np.asarray(m['head_axes'], float)
     assert axes.shape == (4, 5) and np.allclose(axes,
         [[7.5, 0, 68, 4.5, 2.45], [137.5, 0, 68, 4.5, 2.45],
-         [25, 70, 53.7, 3.2, 1.85], [131, 70, 53.7, 3.2, 1.85]]), \
-        f'Head must use four front/rear corner axes: {axes.tolist()}'
-    _, length, seat_d = m['head_screw']
-    _, _, boss_d, gap, tab_depth = m['head_mount']
-    assert tab_depth - m['insert_depth'] >= 2, 'Head inserts need a 2-mm closed tongue end'
+         [25, 66, 48, 3, .7], [131, 66, 48, 3, .7]]), \
+        f'Head must use two front-face and two rear-floor fasteners: {axes.tolist()}'
+    _, length, _ = m['head_screw']
+    tab_depth = m['head_mount'][4]
+    assert tab_depth - m['insert_depth'] >= 2, 'Front inserts need a 2-mm closed tongue end'
     local = {n: ctx.manifold(head_frame(ctx.meshes[n], m)) for n in ('head', 'screws_head', 'base')}
     assert len(local['screws_head'].decompose()) == 4, 'Head must have four separate screws'
     rows = []
-    for x, face, z, thickness, recess in axes:
-        penetration = length - thickness - gap + recess
-        assert thickness - recess >= 1.2 and 5.7-1e-6 <= penetration <= m['insert_depth']-.5, \
-            f'Invalid head screw stack: bearing {thickness-recess}, penetration {penetration}'
-        direction = 1 if face == 0 else -1
-        seat = face + direction * recess
-        mouth = face + direction * (thickness + gap)
-        def cyl(y, height, radius, sign=direction):
-            return ctx.cylinder([x, y, z], [0, sign, 0], height, radius, 120)
-        bearing = cyl(seat + direction*.02, thickness-recess-.04, 3.15) - cyl(seat, thickness, 1.75)
-        enclosure = cyl(face + direction*.02, recess-.04, 4.4) - cyl(face, recess, 3.25)
+    for x, y, z, thickness, recess in axes:
+        front = y == 0
+        axis = np.array([0., 1., 0.]) if front else np.array([0., 0., -1.])
+        entry = np.array([x, thickness, z]) if front else np.array([x, y, z])
+        bearing_t = thickness-recess
+        penetration = length-bearing_t
+        assert bearing_t >= 1.2 and 5.7-1e-6 <= penetration <= m['insert_depth']-.5, \
+            f'Invalid head screw stack: bearing {bearing_t}, penetration {penetration}'
+        def cyl(t, height, radius, direction=1):
+            return ctx.cylinder(entry+axis*t, axis*direction, height, radius, 120)
+        # Counterbores preserve full head-underface support and a closed surrounding rim.
+        bearing = cyl(-bearing_t+.02, bearing_t-.04, 3.15) - cyl(-bearing_t, thickness, 1.75)
+        enclosure = cyl(-thickness+.02, recess-.04, 4.4 if front else 3.9) - cyl(-thickness, recess, 3.25)
         fill = (bearing ^ local['head']).volume() / bearing.volume()
         rim_fill = (enclosure ^ local['head']).volume() / enclosure.volume()
-        assert fill > .995 and rim_fill > .995, f'Incomplete head screw seat at {x,face}: {fill}, {rim_fill}'
-        screw = local['screws_head'] ^ _air_box([x-3, face-12, z-3], [x+3, face+12, z+3])
+        assert fill > .995 and rim_fill > .995, f'Incomplete head screw seat at {x,y}: {fill}, {rim_fill}'
+        # The base must begin immediately behind the seat, not after an assembly gap.
+        # This catches a floating bearing plate even if head contact and insert fit both pass.
+        backing = cyl(.02, .05, 4.1) - cyl(.01, .08, 2.1)
+        backing_fill = (backing ^ local['base']).volume() / backing.volume()
+        seat_back = cyl(-.07, .05, 2.85) - cyl(-.08, .08, 2.1)
+        seat_back_fill = (seat_back ^ local['head']).volume() / seat_back.volume()
+        assert backing_fill > .995 and seat_back_fill > .995, \
+            f'Head seat lacks direct base backing at {x,y}: base {backing_fill}, head {seat_back_fill}'
+        interface = cyl(-.1, .2, 2.85) - cyl(-.11, .22, 2.1)
+        interface_gap = (local['head'] ^ interface).min_gap(local['base'] ^ interface, .5)
+        assert interface_gap < .01, f'Head seat floats above the insert support at {x,y}: {interface_gap} mm'
+        seat = entry-axis*bearing_t
+        window = _air_box([x-3, y-12, z-3], [x+3, y+12, z+3]) if front else \
+                 _air_box([x-3, y-3, z-12], [x+3, y+3, z+12])
+        screw = local['screws_head'] ^ window
         sb = screw.bounding_box()
-        limits = sorted([seat-direction*1.65, seat+direction*length])
-        assert screw.volume() > 20 and abs(sb[1]-limits[0]) < .02 and abs(sb[4]-limits[1]) < .02, \
-            f'Wrong head screw length or seat at {x,face}'
-        contact = (screw.translate([0, direction*.05, 0]) ^ local['head']).volume()
-        assert contact > .1, f'Head screw floats above its bearing at {x,face}'
-        press = cyl(mouth-direction*.02, 60, 3.175, -direction)
+        component = 1 if front else 2
+        limits = sorted([(seat-axis*1.65)[component], (seat+axis*length)[component]])
+        assert screw.volume() > 20 and abs(sb[component]-limits[0]) < .02 \
+            and abs(sb[component+3]-limits[1]) < .02, f'Wrong head screw length or seat at {x,y}'
+        contact = (screw.translate(axis*.05) ^ local['head']).volume()
+        assert contact > .1, f'Head screw floats above its bearing at {x,y}'
+        press = cyl(-.02, 60, 3.175, -1)
         access = (press ^ local['base']).volume()
-        assert access < .01, f'Head insert press access blocked at {x,face}: {access}'
-        rows.append(dict(axis_mm=[x, face, z], insert_penetration_mm=round(penetration,3),
-                         bearing_thickness_mm=round(thickness-recess,3), hole_bottom_clearance_mm=round(m['insert_depth']-penetration,3),
-                         bearing_fill=round(fill, 5), enclosed_rim_fill=round(rim_fill, 5),
-                         screw_contact_mm3=round(contact, 5), insert_access_overlap_mm3=round(access, 5)))
+        assert access < .01, f'Head insert press access blocked at {x,y}: {access}'
+        rows.append(dict(axis_mm=[x, y, z], direction=axis.tolist(), insert_penetration_mm=round(penetration,3),
+                         bearing_thickness_mm=round(bearing_t,3), hole_bottom_clearance_mm=round(m['insert_depth']-penetration,3),
+                         bearing_fill=round(fill,5), enclosed_rim_fill=round(rim_fill,5), backing_fill=round(backing_fill,5),
+                         seat_back_fill=round(seat_back_fill,5), backing_gap_mm=round(interface_gap,6),
+                         screw_contact_mm3=round(contact,5), insert_access_overlap_mm3=round(access,5)))
     return dict(head_fasteners=dict(count=4, screw_length_mm=length, seats=rows))
 
 
@@ -1356,7 +1374,7 @@ def checks(ctx):
     paths = ctx.paths([
         ("cassette_off", "cassette", ["head", "base", "fan", "filter", "screws_head"], out, 30, 0.5),
         # the fan is bolted to the cover, so it comes off with it
-        ("cover_off", ["head_back", "fan", "screws_fan"], ["head", "base", "filter_support", "chg_module", "chg_sink", "chg_tie"],
+        ("cover_off", ["head_back", "fan", "screws_fan"], ["head", "base", "filter_support", "chg_module", "chg_sink", "chg_tie", "screws_head"],
          [-o for o in out], 30, 0.5),
         # The fan frame captures the support's four ends. Remove fan and cover,
         # then lift the cross straight out of the rear-open head sockets.
@@ -1390,9 +1408,9 @@ def checks(ctx):
     probes = ctx.insert_probes(
         [("head_back", _tilt(m, [p[0], m["head_y"][3], p[1]]), back, depth, d, w) for p in m["fan_holes"]] +
         [("head", _tilt(m, [p[0], m["back_y"], p[1]]), out, depth, d, w) for p in m["head_bosses"]] +
-        [("base", _tilt(m, [x, face+sign*(thickness+m["head_mount"][3]), z]),
-          [sign*v for v in back], depth, d, w)
-         for x,face,z,thickness,recess in m["head_axes"] for sign in [1 if face == 0 else -1]] +
+        [("base", _tilt(m, [x, thickness, z] if y == 0 else [x, y, z]),
+          back if y == 0 else [-v for v in up], depth, d, w)
+         for x,y,z,thickness,recess in m["head_axes"]] +
         [("base", [p[0], p[1], 0], [0, 0, 1], depth, d, w) for p in _foot_xy(m)] +
         [("base", [p[0], p[1], m["ballast"][3]], [0, 0, -1], depth, d, w)
          for p in m["ballast_posts"]])
@@ -1518,11 +1536,11 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
                           "170,10,80,106,63,40"),
          "09_head_mount": ("color(\"#717980\") intersection() { base(); "
                            "head_at() translate([-1, -1, base_h - 16]) cube([body_w + 2, body_d + 2, 34]); } "
-                           "color(\"#b8c0c7\") translate([0, -8*sin(tilt), 8*cos(tilt)]) "
+                           "color(\"#b8c0c7\") "
                            "head_at() intersection() { head_raw(); "
                            "translate([-1, -1, base_h - 0.1]) cube([body_w + 2, body_d + 2, 28]); } "
                            "color(\"#414950\") screws_head(socket = true);",
-                           "200,-200,175,72.5,37,52"),
+                           "180,-140,250,72.5,37,52"),
          "10_pwm_mount": ("color(\"#8a9096\") intersection() { base(); "
                           "translate([96, 1, 0]) cube([41, 45, pwm_z0 + 0.1]); } "
                           "color(\"#2f5d3a\") translate([0, 0, 5]) intersection() { pwm_board_env(); "

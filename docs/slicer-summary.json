@@ -6,12 +6,12 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "98c1be206dc38fe0c1aa61d94f398508ee80ec196acfd707a53652d69c65cbf8",
+      "source_sha256": "09fe2f06845a21000ff3d7f3683965304f83a1a824db0a5647252d3d05eafd3c",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 3.949,
-      "grams": 123.809,
+      "hours": 3.896,
+      "grams": 121.693,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -29,12 +29,12 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "7ae56d5e3dc88590908a5a6bf634a86e23f03577407acd86cb2f23cc9f411def",
+      "source_sha256": "a5edf2e0e9607b0971bbf101a3e8b88e5533258eebe6dd7f941a6c07e12ee236",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 5.725,
-      "grams": 220.52,
+      "hours": 5.665,
+      "grams": 220.43,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -52,12 +52,12 @@
       "quantity": 1,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "13d0ea5b526601eed1657bc5b6b8c45fe0735c18430183b6ca33234aa58f4294",
+      "source_sha256": "8114f7eb1376ae4fd4ab3fe1a08c5241bc5fd0bb70f14441e68f713bcec46fd0",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.719,
-      "grams": 59.579,
+      "hours": 2.728,
+      "grams": 59.738,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -79,7 +79,7 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.399,
+      "hours": 2.4,
       "grams": 49.705,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -213,7 +213,7 @@
       "quantity": 0,
       "material": "PETG-black",
       "passed": true,
-      "source_sha256": "a528b95b56495da74f8b003923c8cfa364c1535a382a0599e04b1b3a5df54616",
+      "source_sha256": "3af3babea8f826a2d2edb99b4ef17c2ed167e6c75faaaccac567f9512377e67f",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -256,8 +256,8 @@
     }
   ],
   "total_parts": 13,
-  "total_grams_individual_plates": 481.9,
-  "total_hours_individual_plates": 17.5,
+  "total_grams_individual_plates": 479.8,
+  "total_hours_individual_plates": 17.4,
   "production_gcode": false,
   "project_3mf": {
     "file": "stl/fumex_all_parts.3mf",
@@ -288,7 +288,7 @@
         ],
         "size_mm": [
           145.0,
-          221.2
+          221.5
         ]
       },
       {
@@ -318,25 +318,25 @@
         ]
       }
     ],
-    "total_hours_plates": 16.1,
-    "total_grams_plates": 481.3,
+    "total_hours_plates": 16.0,
+    "total_grams_plates": 479.3,
     "multicolour_parts": {},
     "multicolour_slices": {},
     "pause_slices": {},
     "plate_slices": {
       "Head": {
         "plate": 1,
-        "hours": 6.33,
+        "hours": 6.27,
         "grams_by_filament": {
-          "1": 237.44
+          "1": 237.35
         },
         "warnings": ""
       },
       "Base and back cover": {
         "plate": 2,
-        "hours": 6.48,
+        "hours": 6.43,
         "grams_by_filament": {
-          "1": 183.32
+          "1": 181.37
         },
         "warnings": ""
       },
@@ -358,7 +358,7 @@
       }
     },
     "own_infill_parts": 5,
-    "sha256": "5d5c317312443929dbff7e74bb6e5da9e0d826c7ba4161a3987f8726b02de964"
+    "sha256": "427998fe81a0a933546b9258e376c3a9a4088682ca0ff3fe73207ee00616b4b6"
   },
   "test_3mf": {
     "file": "stl/fumex_usb_fit.3mf",
@@ -394,7 +394,7 @@
       }
     },
     "own_infill_parts": 0,
-    "sha256": "dd86c0fba89a6130555caefa7207833a4ecfb834c6d640ce31401be3fcaccdc6",
+    "sha256": "d1e7f841bc731e7479887cbac339bc7418ecb5d7bc105bc9f867a2111cc138c1",
     "process": {
       "wall_loops": 4,
       "top_shell_layers": 5,
