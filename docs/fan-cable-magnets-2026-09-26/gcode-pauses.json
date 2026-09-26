@@ -1,0 +1,259 @@
+{
+  "source_sha256": "d2d21113b80c1214a133452ce8b9820178cb5de3a1354b2a165ddce98acb4137",
+  "project_3mf_sha256": "5ad3c6401d0f281aba91bb0f9c62c3d57bf387935fc181f5d0c62085b949b25b",
+  "project_3mf": "stl/fumex_all_parts.3mf",
+  "plates": {
+    "head": {
+      "plate": 1,
+      "sliced_archive": "build/slicer-diagnostic/project-3mf/slice-plate-1/sliced.3mf",
+      "gcode_entry": "Metadata/plate_1.gcode",
+      "gcode_sha256": "adb3b3d8f48e4544834af2db57e1c276ee0362312c0a19ecff3ae2b741cc52a9",
+      "pause": {
+        "line": 71824,
+        "layer": 4.6
+      },
+      "first_extrusion_line_in_roof_layer": 71835,
+      "cavities": [
+        {
+          "centre_plate_xy": [
+            107.5,
+            222.5
+          ],
+          "last_floor_extrusion": {
+            "line": 18133,
+            "layer": 1.2,
+            "feature": "Top surface",
+            "command": "G1 X101.014 Y222.32 E.26559"
+          },
+          "first_roof_extrusion": {
+            "line": 74236,
+            "layer": 4.6,
+            "feature": "Bridge",
+            "command": "G1 X107.874 Y229.093 E.27513"
+          },
+          "covering_layers_until_4_8": [
+            0.2,
+            0.4,
+            0.6,
+            0.8,
+            1.0,
+            1.2,
+            4.6,
+            4.8
+          ]
+        },
+        {
+          "centre_plate_xy": [
+            107.5,
+            97.5
+          ],
+          "last_floor_extrusion": {
+            "line": 16242,
+            "layer": 1.2,
+            "feature": "Top surface",
+            "command": "G1 X101.007 Y97.545 E.27509"
+          },
+          "first_roof_extrusion": {
+            "line": 73935,
+            "layer": 4.6,
+            "feature": "Bridge",
+            "command": "G1 X113.564 Y94.913 E.19851"
+          },
+          "covering_layers_until_4_8": [
+            0.2,
+            0.4,
+            0.6,
+            0.8,
+            1.0,
+            1.2,
+            4.6,
+            4.8
+          ]
+        },
+        {
+          "centre_plate_xy": [
+            232.5,
+            222.5
+          ],
+          "last_floor_extrusion": {
+            "line": 15080,
+            "layer": 1.2,
+            "feature": "Top surface",
+            "command": "G1 X226.012 Y222.638 E.27898"
+          },
+          "first_roof_extrusion": {
+            "line": 72331,
+            "layer": 4.6,
+            "feature": "Bridge",
+            "command": "G1 X239.03 Y221.566 E.27948"
+          },
+          "covering_layers_until_4_8": [
+            0.2,
+            0.4,
+            0.6,
+            0.8,
+            1.0,
+            1.2,
+            4.6,
+            4.8
+          ]
+        },
+        {
+          "centre_plate_xy": [
+            232.5,
+            97.5
+          ],
+          "last_floor_extrusion": {
+            "line": 15760,
+            "layer": 1.2,
+            "feature": "Top surface",
+            "command": "G1 X226.014 Y97.32 E.26559"
+          },
+          "first_roof_extrusion": {
+            "line": 73228,
+            "layer": 4.6,
+            "feature": "Bridge",
+            "command": "G1 X231.993 Y104.079 E.28638"
+          },
+          "covering_layers_until_4_8": [
+            0.2,
+            0.4,
+            0.6,
+            0.8,
+            1.0,
+            1.2,
+            4.6,
+            4.8
+          ]
+        }
+      ]
+    },
+    "cassette": {
+      "plate": 3,
+      "sliced_archive": "build/slicer-diagnostic/project-3mf/slice-plate-3/sliced.3mf",
+      "gcode_entry": "Metadata/plate_3.gcode",
+      "gcode_sha256": "9a3b76dfa2563706d803005488c40b5b210535b556f9ff864260513b1480a41d",
+      "pause": {
+        "line": 410877,
+        "layer": 4.6
+      },
+      "first_extrusion_line_in_roof_layer": 410888,
+      "cavities": [
+        {
+          "centre_plate_xy": [
+            232.5,
+            222.5
+          ],
+          "last_floor_extrusion": {
+            "line": 106582,
+            "layer": 1.2,
+            "feature": "Top surface",
+            "command": "G1 X226.015 Y222.635 E.27898"
+          },
+          "first_roof_extrusion": {
+            "line": 424947,
+            "layer": 4.6,
+            "feature": "Bridge",
+            "command": "G1 X237.114 Y217.789 E.27585"
+          },
+          "covering_layers_until_4_8": [
+            0.2,
+            0.4,
+            0.6,
+            0.8,
+            1.0,
+            1.2,
+            4.6,
+            4.8
+          ]
+        },
+        {
+          "centre_plate_xy": [
+            107.5,
+            222.5
+          ],
+          "last_floor_extrusion": {
+            "line": 108620,
+            "layer": 1.2,
+            "feature": "Top surface",
+            "command": "G1 X107.32 Y216.014 E.26559"
+          },
+          "first_roof_extrusion": {
+            "line": 421668,
+            "layer": 4.6,
+            "feature": "Bridge",
+            "command": "G1 X112.073 Y227.25 E.28079"
+          },
+          "covering_layers_until_4_8": [
+            0.2,
+            0.4,
+            0.6,
+            0.8,
+            1.0,
+            1.2,
+            4.6,
+            4.8
+          ]
+        },
+        {
+          "centre_plate_xy": [
+            232.5,
+            97.5
+          ],
+          "last_floor_extrusion": {
+            "line": 111445,
+            "layer": 1.2,
+            "feature": "Top surface",
+            "command": "G1 X226.015 Y97.319 E.24439"
+          },
+          "first_roof_extrusion": {
+            "line": 425071,
+            "layer": 4.6,
+            "feature": "Bridge",
+            "command": "G1 X227.927 Y92.75 E.28078"
+          },
+          "covering_layers_until_4_8": [
+            0.2,
+            0.4,
+            0.6,
+            0.8,
+            1.0,
+            1.2,
+            4.6,
+            4.8
+          ]
+        },
+        {
+          "centre_plate_xy": [
+            107.5,
+            97.5
+          ],
+          "last_floor_extrusion": {
+            "line": 104447,
+            "layer": 1.2,
+            "feature": "Top surface",
+            "command": "G1 X101.015 Y97.537 E.25357"
+          },
+          "first_roof_extrusion": {
+            "line": 422348,
+            "layer": 4.6,
+            "feature": "Bridge",
+            "command": "G1 X102.886 Y102.211 E.27585"
+          },
+          "covering_layers_until_4_8": [
+            0.2,
+            0.4,
+            0.6,
+            0.8,
+            1.0,
+            1.2,
+            4.6,
+            4.8
+          ]
+        }
+      ]
+    }
+  },
+  "result": "PASS",
+  "limitation": "G-code path geometry and pause timing; actual insertion, polarity, size, bonding and magnetic holding force need physical confirmation."
+}

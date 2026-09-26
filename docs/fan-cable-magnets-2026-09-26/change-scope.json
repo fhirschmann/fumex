@@ -1,0 +1,434 @@
+{
+  "reference": "988b0b43824a0a8e14ecfc57a1e810f528026dab",
+  "source_sha256": "d2d21113b80c1214a133452ce8b9820178cb5de3a1354b2a165ddce98acb4137",
+  "verification_source_sha256": "d2d21113b80c1214a133452ce8b9820178cb5de3a1354b2a165ddce98acb4137",
+  "compared_directory": "build/print",
+  "parts": {
+    "base": {
+      "old_sha256": "8a3b9ded2392f70377d480cfb8ffa271249253195a7a0a56134032f91171d490",
+      "new_sha256": "d8df78c21d8629960b43c27376a0e7ed95971f7a29c4bd9a7fcfe4c27a1f5a04",
+      "byte_identical": false,
+      "bounds_mm": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          145.0,
+          74.0,
+          57.26572036743164
+        ]
+      ],
+      "volume_mm3": 109319.90480839439,
+      "watertight": true,
+      "components": 1,
+      "boundary_shells": 1,
+      "cavity_shells": 0,
+      "shell_nesting_valid": true,
+      "shell_errors": [],
+      "committed_export_sha256": "d8df78c21d8629960b43c27376a0e7ed95971f7a29c4bd9a7fcfe4c27a1f5a04",
+      "matches_committed_export": true,
+      "added_mm3": 0.0,
+      "removed_mm3": 0.0
+    },
+    "head": {
+      "old_sha256": "405774119fa3662ff0e4dcd7be3db18e8eb719a08ca36c1eea57bae6695a432f",
+      "new_sha256": "6e1d54be78d3b424180048886b3394afb4de773c3be0eedfd8a8cfe2b07e0f7e",
+      "byte_identical": false,
+      "bounds_mm": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          145.0,
+          145.0,
+          70.0
+        ]
+      ],
+      "volume_mm3": 207409.27768971352,
+      "watertight": true,
+      "components": 1,
+      "boundary_shells": 5,
+      "cavity_shells": 4,
+      "shell_nesting_valid": true,
+      "shell_errors": [],
+      "committed_export_sha256": "6e1d54be78d3b424180048886b3394afb4de773c3be0eedfd8a8cfe2b07e0f7e",
+      "matches_committed_export": true,
+      "added_mm3": 15720.08719628062,
+      "removed_mm3": 3201.2948058563643
+    },
+    "head_back": {
+      "old_sha256": "8114f7eb1376ae4fd4ab3fe1a08c5241bc5fd0bb70f14441e68f713bcec46fd0",
+      "new_sha256": "91adabe402fac25c19bf9bc19cc1e73dae678eccdb85f9123a16b672e487474b",
+      "byte_identical": false,
+      "bounds_mm": [
+        [
+          0.0,
+          0.30000001192092896,
+          0.0
+        ],
+        [
+          145.0,
+          145.0,
+          15.899999618530273
+        ]
+      ],
+      "volume_mm3": 59870.78029986543,
+      "watertight": true,
+      "components": 1,
+      "boundary_shells": 1,
+      "cavity_shells": 0,
+      "shell_nesting_valid": true,
+      "shell_errors": [],
+      "committed_export_sha256": "91adabe402fac25c19bf9bc19cc1e73dae678eccdb85f9123a16b672e487474b",
+      "matches_committed_export": true,
+      "added_mm3": 0.0,
+      "removed_mm3": 480.7507300096128
+    },
+    "cassette": {
+      "old_sha256": "32c90fbbf4a9494c4d4ad982ee74d91c48520018f32c789aa0243979d6a7bf41",
+      "new_sha256": "d9f325ae6bd9fed8e2a653d12a17c6e04a2d83639dc3dc200c7f846578ab1638",
+      "byte_identical": false,
+      "bounds_mm": [
+        [
+          3.5,
+          1.0,
+          0.0
+        ],
+        [
+          141.5,
+          144.0,
+          5.599999904632568
+        ]
+      ],
+      "volume_mm3": 64460.868290566,
+      "watertight": true,
+      "components": 1,
+      "boundary_shells": 5,
+      "cavity_shells": 4,
+      "shell_nesting_valid": true,
+      "shell_errors": [],
+      "committed_export_sha256": "d9f325ae6bd9fed8e2a653d12a17c6e04a2d83639dc3dc200c7f846578ab1638",
+      "matches_committed_export": true,
+      "added_mm3": 12983.16838115124,
+      "removed_mm3": 33.25396164625744
+    },
+    "knob": {
+      "old_sha256": "c406eb2e289007354041ca9da392f83dd45b9691a9835808848bf2bef06dd463",
+      "new_sha256": "c406eb2e289007354041ca9da392f83dd45b9691a9835808848bf2bef06dd463",
+      "byte_identical": true,
+      "bounds_mm": [
+        [
+          -12.0,
+          -11.996270179748535,
+          0.0
+        ],
+        [
+          12.0,
+          11.996270179748535,
+          13.5
+        ]
+      ],
+      "volume_mm3": 4695.931624108911,
+      "watertight": true,
+      "components": 1,
+      "boundary_shells": 1,
+      "cavity_shells": 0,
+      "shell_nesting_valid": true,
+      "shell_errors": [],
+      "committed_export_sha256": "c406eb2e289007354041ca9da392f83dd45b9691a9835808848bf2bef06dd463",
+      "matches_committed_export": true,
+      "added_mm3": 0.0,
+      "removed_mm3": 0.0
+    },
+    "foot": {
+      "old_sha256": "adaeaae7a83a4936711036a15ebe54ea2c98971e5b61930fa93e879a94336cc0",
+      "new_sha256": "adaeaae7a83a4936711036a15ebe54ea2c98971e5b61930fa93e879a94336cc0",
+      "byte_identical": true,
+      "bounds_mm": [
+        [
+          -9.0,
+          -8.0,
+          0.0
+        ],
+        [
+          9.0,
+          8.0,
+          6.5
+        ]
+      ],
+      "volume_mm3": 1171.2683519552645,
+      "watertight": true,
+      "components": 1,
+      "boundary_shells": 1,
+      "cavity_shells": 0,
+      "shell_nesting_valid": true,
+      "shell_errors": [],
+      "committed_export_sha256": "adaeaae7a83a4936711036a15ebe54ea2c98971e5b61930fa93e879a94336cc0",
+      "matches_committed_export": true,
+      "added_mm3": 0.0,
+      "removed_mm3": 0.0
+    },
+    "ball_lid": {
+      "old_sha256": "396e4ae1f493d36398f69ef9dd125457d7d21d88aba249564448af3fca111eb6",
+      "new_sha256": "396e4ae1f493d36398f69ef9dd125457d7d21d88aba249564448af3fca111eb6",
+      "byte_identical": true,
+      "bounds_mm": [
+        [
+          0.2199999988079071,
+          -0.7976365685462952,
+          0.0
+        ],
+        [
+          132.8000030517578,
+          17.799999237060547,
+          24.200000762939453
+        ]
+      ],
+      "volume_mm3": 8167.12199113451,
+      "watertight": true,
+      "components": 1,
+      "boundary_shells": 1,
+      "cavity_shells": 0,
+      "shell_nesting_valid": true,
+      "shell_errors": [],
+      "committed_export_sha256": "396e4ae1f493d36398f69ef9dd125457d7d21d88aba249564448af3fca111eb6",
+      "matches_committed_export": true,
+      "added_mm3": 0.0,
+      "removed_mm3": 0.0
+    },
+    "filter_support": {
+      "old_sha256": "4fed78fc4f48182c16cb8f2ae265359a287b3989dd675cd5e6722c26b16dba9e",
+      "new_sha256": "4fed78fc4f48182c16cb8f2ae265359a287b3989dd675cd5e6722c26b16dba9e",
+      "byte_identical": true,
+      "bounds_mm": [
+        [
+          -61.5,
+          -61.5,
+          0.0
+        ],
+        [
+          61.5,
+          61.5,
+          9.800000190734863
+        ]
+      ],
+      "volume_mm3": 5774.2070439104245,
+      "watertight": true,
+      "components": 1,
+      "boundary_shells": 1,
+      "cavity_shells": 0,
+      "shell_nesting_valid": true,
+      "shell_errors": [],
+      "committed_export_sha256": "4fed78fc4f48182c16cb8f2ae265359a287b3989dd675cd5e6722c26b16dba9e",
+      "matches_committed_export": true,
+      "added_mm3": 0.0,
+      "removed_mm3": 0.0
+    },
+    "usbc_fit_base": {
+      "old_sha256": "3e9a3a79237402dcc5c56aacbed592af1c0ce44d924ef2eaee6b252547e32137",
+      "new_sha256": "9dc7d7147729ce5972ab69bb72cb3fa41320d0975cc6692258a6f4967f3f3ae0",
+      "byte_identical": false,
+      "bounds_mm": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          21.5,
+          21.0,
+          57.26572036743164
+        ]
+      ],
+      "volume_mm3": 7334.4011591882145,
+      "watertight": true,
+      "components": 1,
+      "boundary_shells": 1,
+      "cavity_shells": 0,
+      "shell_nesting_valid": true,
+      "shell_errors": [],
+      "committed_export_sha256": "9dc7d7147729ce5972ab69bb72cb3fa41320d0975cc6692258a6f4967f3f3ae0",
+      "matches_committed_export": true,
+      "added_mm3": 0.0,
+      "removed_mm3": 0.0
+    },
+    "usbc_fit_lid": {
+      "old_sha256": "353880bb51e1d50dabe43934b1bcb81b150f6ea99497091c2feb6754c6956f70",
+      "new_sha256": "353880bb51e1d50dabe43934b1bcb81b150f6ea99497091c2feb6754c6956f70",
+      "byte_identical": true,
+      "bounds_mm": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          21.5,
+          17.799999237060547,
+          24.200000762939453
+        ]
+      ],
+      "volume_mm3": 1617.0502669307255,
+      "watertight": true,
+      "components": 1,
+      "boundary_shells": 1,
+      "cavity_shells": 0,
+      "shell_nesting_valid": true,
+      "shell_errors": [],
+      "committed_export_sha256": "353880bb51e1d50dabe43934b1bcb81b150f6ea99497091c2feb6754c6956f70",
+      "matches_committed_export": true,
+      "added_mm3": 0.0,
+      "removed_mm3": 0.0
+    }
+  },
+  "assembly_mesh_sha256": {
+    "head": "26e16f39485b11f1ed890bcb9fb07a21d1cab423cf5eb4b422f107eda0a8712c",
+    "head_back": "ed4db9eb0f4049c1e47dc58b1adfeb7fb16e693da549202b89eae477339a3aae",
+    "fan": "a3e7e94bc00483098c3938224aaeaf3ac75c1101c58793ecde35de6733cd3c31",
+    "filter_support": "38fe294a63eced79a5e991a897e8670546868cc045860230d4f9ddf8e09dfc29",
+    "screws_fan": "0a05723cf27e3c235366675d0d7dd49e7b5b73c69f98a0ceae16bc295448ef68"
+  },
+  "fan_bounds_local_mm": [
+    [
+      12.5,
+      33.100000718191104,
+      60.49999943426672
+    ],
+    [
+      132.5,
+      58.10000123559347,
+      180.50000638435924
+    ]
+  ],
+  "support_bounds_local_mm": [
+    [
+      11.0,
+      23.099997996979063,
+      59.00000011334606
+    ],
+    [
+      134.0,
+      32.900001835701765,
+      182.0000066598996
+    ]
+  ],
+  "fan_posts": [
+    {
+      "axis_xz": [
+        20,
+        68
+      ],
+      "contact_mm3": 1.8850083853518391,
+      "face_annulus_fill": 1.0000000000000004,
+      "outer_ring_ray_y": [
+        58.10000158915602,
+        74.00000046788378
+      ],
+      "insert_core_overlap": 0.0,
+      "insert_wall_fill": 1.0,
+      "insert_bottom_fill": 1.0
+    },
+    {
+      "axis_xz": [
+        20,
+        173
+      ],
+      "contact_mm3": 1.8850028079703305,
+      "face_annulus_fill": 0.9999999999999999,
+      "outer_ring_ray_y": [
+        58.10000048295234,
+        73.99999920071646
+      ],
+      "insert_core_overlap": 0.0,
+      "insert_wall_fill": 0.9999999999999999,
+      "insert_bottom_fill": 1.0000000000000002
+    },
+    {
+      "axis_xz": [
+        125,
+        68
+      ],
+      "contact_mm3": 1.885008186505781,
+      "face_annulus_fill": 0.999999999999999,
+      "outer_ring_ray_y": [
+        58.10000158915602,
+        74.00000033095685
+      ],
+      "insert_core_overlap": 0.0,
+      "insert_wall_fill": 1.0,
+      "insert_bottom_fill": 0.9999999999999998
+    },
+    {
+      "axis_xz": [
+        125,
+        173
+      ],
+      "contact_mm3": 1.885002609116924,
+      "face_annulus_fill": 1.0000000000000024,
+      "outer_ring_ray_y": [
+        58.10000048295234,
+        73.99999960287755
+      ],
+      "insert_core_overlap": 0.0,
+      "insert_wall_fill": 0.9999999999999999,
+      "insert_bottom_fill": 1.0
+    }
+  ],
+  "nominal_fan_cover_intersection_mm3": 5.376054326911017e-05,
+  "nominal_fan_head_intersection_mm3": 0.0,
+  "geometrically_changed_parts": [
+    "head",
+    "head_back",
+    "cassette"
+  ],
+  "only_intended_parts_changed": true,
+  "rear_floor_webs": [
+    {
+      "x_mm": 56.5,
+      "ray_hits_y_mm": [
+        66.69999771406924,
+        69.99999970184129
+      ],
+      "web_width_mm": 3.300001987772049
+    },
+    {
+      "x_mm": 65.5,
+      "ray_hits_y_mm": [
+        66.69999771406924,
+        69.99999970184129
+      ],
+      "web_width_mm": 3.300001987772049
+    },
+    {
+      "x_mm": 74.5,
+      "ray_hits_y_mm": [
+        66.69999771406924,
+        69.99999970184129
+      ],
+      "web_width_mm": 3.300001987772049
+    },
+    {
+      "x_mm": 83.5,
+      "ray_hits_y_mm": [
+        66.69999771406924,
+        69.99999970184129
+      ],
+      "web_width_mm": 3.300001987772049
+    },
+    {
+      "x_mm": 92.5,
+      "ray_hits_y_mm": [
+        66.69999771406924,
+        69.99999970184129
+      ],
+      "web_width_mm": 3.300001987772049
+    }
+  ],
+  "rear_floor_web_material_fill": 1.0,
+  "cable_to_first_vent_web_material_fill": 1.0,
+  "nominal_floor_to_fan_vertical_gap_mm": 9.49999943426672
+}

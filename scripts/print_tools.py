@@ -88,6 +88,66 @@ def manifold(mesh):
     return solid
 
 
+def material_components(mesh):
+    """Count solid regions, not disconnected boundary surfaces of sealed voids.
+
+    A cavity has an inward-facing shell (negative signed volume). Shell nesting
+    must alternate orientation, so an inverted loose object is not accepted as
+    a cavity. Boolean containment also rejects intersecting/duplicate shells.
+    """
+    shells = mesh.split(only_watertight=False)
+    volumes = np.array([float(shell.volume) for shell in shells])
+    positive = volumes > 1e-9
+    negative = volumes < -1e-9
+    errors = []
+    if not all(shell.is_watertight and shell.is_winding_consistent for shell in shells):
+        errors.append("Boundary shells must be closed and consistently wound")
+    if np.any(~(positive | negative)):
+        errors.append("Zero-volume boundary shell")
+    parents = [[] for _ in shells]
+    solids = {}
+
+    def filled(index):
+        if index not in solids:
+            shell = shells[index].copy()
+            if negative[index]:
+                shell.invert()
+            solids[index] = manifold(shell)
+        return solids[index]
+
+    if not errors and len(shells) > 1:
+        for i, j in itertools.combinations(range(len(shells)), 2):
+            if np.any(np.minimum(shells[i].bounds[1], shells[j].bounds[1]) <=
+                      np.maximum(shells[i].bounds[0], shells[j].bounds[0])):
+                continue
+            try:
+                overlap = (filled(i) ^ filled(j)).volume()
+            except ValueError as error:
+                errors.append(str(error))
+                continue
+            vi, vj = abs(volumes[i]), abs(volumes[j])
+            tolerance = max(1e-7, min(vi, vj) * 1e-6)
+            if overlap <= tolerance:
+                continue
+            if abs(overlap - min(vi, vj)) > tolerance:
+                errors.append(f"Intersecting boundary shells {i}/{j}")
+            elif abs(vi - vj) <= tolerance:
+                errors.append(f"Coincident boundary shells {i}/{j}")
+            elif vi < vj:
+                parents[i].append(j)
+            else:
+                parents[j].append(i)
+        for i, containers in enumerate(parents):
+            parent = min(containers, key=lambda j: abs(volumes[j])) if containers else None
+            if (parent is None and negative[i]) or (parent is not None and positive[i] == positive[parent]):
+                errors.append(f"Invalid boundary-shell orientation at shell {i}")
+    elif not errors and len(shells) == 1 and negative[0]:
+        errors.append("Inverted outer boundary shell")
+    return dict(components=int(np.sum(positive)), boundary_shells=len(shells),
+                cavity_shells=int(np.sum(negative)), shell_nesting_valid=not errors,
+                shell_errors=errors)
+
+
 def mesh_info(mesh):
     return {
         "size_mm": mesh.extents.round(4).tolist(),
@@ -97,13 +157,14 @@ def mesh_info(mesh):
         "watertight": bool(mesh.is_watertight),
         "consistent_winding": bool(mesh.is_winding_consistent),
         "degenerate_faces": int(np.sum(mesh.area_faces < 1e-9)),
-        "components": len(mesh.split(only_watertight=False)),
+        **material_components(mesh),
     }
 
 
 def valid_mesh(info):
     return (info["watertight"] and info["consistent_winding"]
-            and info["degenerate_faces"] == 0 and info["volume_mm3"] > 0)
+            and info["degenerate_faces"] == 0 and info["volume_mm3"] > 0
+            and info["shell_nesting_valid"])
 
 
 def export_one(job):
@@ -353,7 +414,7 @@ def check_color_parts():
             assert mesh.volume > 1 and z1 - z0 <= INLAY_MAX_DEPTH, \
                 f"{name}_{piece}: inlay missing or spanning more than {INLAY_MAX_DEPTH} mm of layers (z {z0:.2f}-{z1:.2f})"
             info[piece] = dict(mm3=round(float(mesh.volume), 2), depth_mm=round(z1 - z0, 3), z_mm=[round(z0, 3), round(z1, 3)],
-                               bodies=len(mesh.split(only_watertight=False)))
+                               bodies=material_components(mesh)["components"])
         report[name] = info
     return report
 

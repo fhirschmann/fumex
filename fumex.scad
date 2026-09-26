@@ -40,18 +40,18 @@ base_joint_wall_extra = 0.15; // extra material inside the transition keeps norm
 
 /* [Head: fan and filter] */
 head_h = 145;        // head height (z) in the untilted frame
-front_t = 3.2;       // intake face
+front_t = 5.6;       // sealed magnets: 1.2 mm front skin, 3.2 mm cavity, 1.2 mm rear skin
 open_sq = 117;       // square opening in the intake face; its lip holds the mat in the chamber
 open_r = 3;
 mat_stop_rise = 1.5;  // flank of the rear lip: 1.5 mm of depth per mm inwards, so it is not an overhang
-mat_support = [4, 5, 123, 20.7, 30.5, 8, 58.5, 0.2];
+mat_support = [4, 5, 123, 23.1, 32.9, 8, 58.5, 0.2];
 // Cross: bar width/depth, outer span, front/rear y, end-pad width, post inner radius, pocket clearance.
 // Printed separately, mat-facing side down; four end posts are trapped between the head and fan frame.
 chamber_sq = 121.5;  // filter chamber, 0.75 mm wider than the hand-cut mat all round
 chamber_d = 17.5;    // the mat is 17 mm (user, cut from a cooker hood mat)
 tube_w = 3;          // wall of the filter chamber inside the shell
 lug_d = 10;          // chamber depth behind the mat; the rear lip runs on to the fan frame's seat
-plenum = 14.3;       // free space behind the fan, also feeding the slots above the charge module
+plenum = 11.9;       // shortened by the thicker intake face; outer housing depth stays unchanged
 back_t = 4;
 lip_h = 4;           // back cover lip reaching into the head
 lip_t = 3;
@@ -71,6 +71,7 @@ scoop = [16, 2];     // finger scoops at both side edges of the intake face: dia
 guide = [2.4, 16];   // L-ribs guiding the fan onto its seat: thickness, leg length
 guide_c = 1.2;       // 45-degree lead-in on the two inner edges at the rear of each guide
 fan_post_d = 8;      // spacer posts on the back cover, carrying the fan and its inserts
+fan_cable_slot = [32, 48, 56.7]; // x limits and front y; open to the rear for lateral cable insertion
 
 /* [Fan: Arctic P12 Pro, 120 x 120 x 25 mm PWM, 0.33 A at 12 V] */
 fan_size = 120;
@@ -81,13 +82,12 @@ fan_blade_d = 113;
 fan_cl = 0.4;        // clearance per side in the corner guides
 
 /* [Filter cassette: grid panel held by four magnet pairs] */
-cass_t = 4.5;        // magnet pocket 3.2 plus 1.3 mm skin - the minimum wall is 1.2, so this is as thin
-                     // as the cassette gets. It cannot be let into the intake face either: that recess
-                     // would be a 5687 mm2 flat overhang in print (user asked, 2026-09-23)
-cass_c = 1.2;        // 45 degree bevel on the finished contour; 3.3 mm of the 4.5 mm rim stays straight.
+cass_t = 5.6;        // sealed magnets: 1.2 mm skins on both sides of the 3.2 mm cavity
+cass_c = 1.2;        // 45 degree bevel on the finished contour; 4.4 mm of the rim stays straight.
                      // The narrowed side contour and the magnet pockets limit the bevel to 1.2 mm.
 cass_inset = 1;      // flange inside the head outline, leaves a ledge beside the finger scoops
-mag = [10.3, 3.2];   // pocket for a 10 x 3 neodymium disc (skill: +0.3 diameter, +0.2 depth)
+mag = [10.3, 3.2];   // enclosed cavity for a 10 x 3 disc; insert during the print pause
+mag_skin = 1.2;     // six solid 0.2 mm layers on each axial side; no glue-in opening
 mag_off = 62.5;      // magnet axes from the head centre, on both diagonals. 10 mm inset: 1.3 mm of material
                      // to the rounded plan corner and 1.8 mm to the intake opening
 
@@ -185,6 +185,7 @@ chg_web_back = 1.6;                 // wall behind the tie tunnel
 // The vent over the board is a row of slots, not one opening: printed with the intake face on the bed
 // the head floor is a vertical wall, so one 38 mm opening leaves a 113 mm2 flat bridge at its far edge.
 chg_vent = [6, 9, 6, 10];    // slot width (x), pitch, count, depth (y) in the head floor over the board
+chg_vent_y = 56.7;          // fixed above the electronics; retain 3.3 mm of rear floor when the fan moves
 
 /* [Ventilation slots in the back wall (user, 2026-09-22), above the ballast lid] */
 vent = [2, 5, 12, 14, 0];     // slot width, pitch, count, height, rise per slot (user: not staggered)
@@ -374,7 +375,10 @@ assert(min([for (q = ball_posts()) abs(q[0] - chg_cx) - chg_pcb[0] / 2 - 2]) > 2
 assert(max(chg_z0 + chg_pcb[1], chg_sink_z + chg_sink[1]) + 5 < base_top(chg_y0 - chg_comp_h),
        "Less than 5 mm over the charge module to the head floor");
 assert(vent_xz[1] > ball[3] + ball_lid_t, "Back wall slots would let the ballast out");
-assert(mag[1] < cass_t - 1.2, "Cassette too thin for the magnet pockets");
+assert(mag_skin >= 1.2 && cass_t >= mag[1] + 2 * mag_skin - eps,
+       "Cassette needs closed skins on both sides of the magnets");
+assert(front_t >= mag[1] + 2 * mag_skin - eps,
+       "Head needs closed skins on both sides of the magnets");
 assert(plan_r + cass_c < body_w / 2 - mag_off - mag[0] / 2, "Cassette bevel cuts into the magnet pockets");
 assert(len_fan - fan_t >= 5, "Fan screws reach less than 5 mm into the insert");
 assert(len_lid - (ball_lid_t - lid_pocket) < insert_depth, "Ballast lid screws reach the pocket floor");
@@ -604,16 +608,18 @@ module head_body() difference() {
     }
     filter_support_pockets();
     for (p = head_bosses()) cyl_y(p, head_y[4] - insert_depth, head_y[4] + eps, insert_hole_d / 2);
-    for (p = mag_xz()) cyl_y(p, -eps, mag[1], mag[0] / 2);              // magnet pockets, open at the intake face
+    for (p = mag_xz()) cyl_y(p, mag_skin, mag_skin + mag[1], mag[0] / 2);
     for (sx = [-1, 1]) cyl_y([body_w / 2 + sx * body_w / 2, head_cz], -eps, scoop[1],
                              scoop[0] / 2 + eps, scoop[0] / 2 - scoop[1]);   // finger scoops at the side edges
     rim_head_windows();
     rim_head_holes();
-    // A 10 mm cable bridge clears the complete rear-left screw bearing.
-    translate([32, head_y[3] + 2, base_h - 1]) cube([10, 10, wall + 2]);
-    for (i = [0:chg_vent[2] - 1])
+    // Lay the cable into the rear-open slot before sliding in the fan/cover assembly.
+    // Skip the adjacent vent to retain a full 5.5 mm web, not a thin slit remnant.
+    translate([fan_cable_slot[0], fan_cable_slot[2], base_h - 1])
+        cube([fan_cable_slot[1] - fan_cable_slot[0], head_y[4] - fan_cable_slot[2] + eps, wall + 2]);
+    for (i = [1:chg_vent[2] - 1])
         translate([chg_cx - ((chg_vent[2] - 1) * chg_vent[1] + chg_vent[0]) / 2 + i * chg_vent[1],
-                   head_y[3] + 1, base_h - 1])
+                   chg_vent_y, base_h - 1])
             cube([chg_vent[0], chg_vent[3], wall + 2]);
     front_rim_chamfer(head_profile_points(), 0, edge_c);
 }
@@ -791,7 +797,7 @@ module cass_face(inset = 0) offset(delta = -inset) intersection() {
 module cassette_raw() difference() {
     profile_sweep_y(cassette_profile_points(), -cass_t, 0, front_c = cass_c);
     translate([body_w / 2, 0, head_cz]) along_y(-cass_t - 1, 1) grid_2d(open_sq);
-    for (p = mag_xz()) cyl_y(p, -mag[1], eps, mag[0] / 2);              // pockets open towards the head
+    for (p = mag_xz()) cyl_y(p, -cass_t + mag_skin, -mag_skin, mag[0] / 2);
 
 }
 module cassette() head_at() cassette_raw();
@@ -1225,7 +1231,11 @@ module fan_visual() head_at() translate([body_w / 2, head_y[2], head_cz]) rotate
 }
 // the hand-cut mat, its corners pressed into the chamber fillets
 module filter_env() head_at() translate([body_w / 2, 0, head_cz]) along_y(front_t, front_t + 17) rrect([120, 120], open_r);
-module magnets_env() for (p = mag_xz()) head_at() { cyl_y(p, 0, 3, mag[0] / 2 - 0.15); cyl_y(p, -3, 0, mag[0] / 2 - 0.15); }
+module magnets_env() for (p = mag_xz()) head_at() {
+    // Each disc rests on the bed-facing cavity floor, leaving 0.2 mm above it.
+    cyl_y(p, mag_skin, mag_skin + 3, mag[0] / 2 - 0.15);
+    cyl_y(p, -cass_t + mag_skin, -cass_t + mag_skin + 3, mag[0] / 2 - 0.15);
+}
 module battery_env() {
     translate([bat_x0, bat_cy, bat_cz]) rotate([0, 90, 0]) cylinder(d = bat_d, h = bat_l);
     translate([bat_x0, bat_cy - bat_bms[0] / 2, bat_cz + bat_d / 4]) cube([bat_l, bat_bms[0], bat_d / 4 + bat_bms[1]]);
@@ -1385,7 +1395,10 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["head_axes", [for (p = rim_bosses()) concat(rim_entry(p), rim_axis(p), [rim_bearing(p), rim_length(p)])]],
     ["chamber", [chamber_sq, chamber_d]], ["open_sq", open_sq],
     ["head_y", head_y], ["mat_stop", mat_stop_y()], ["mat_support", mat_support],
-    ["magnet_pocket", mag], ["pot_mount_t", pot_mount_t], ["front_rim_z", base_top(0)],
+    ["fan_cable_slot", fan_cable_slot],
+    ["charge_vent", [chg_vent_y, chg_vent[3]]],
+    ["magnet_pocket", mag], ["magnet_skin", mag_skin], ["front_t", front_t],
+    ["pot_mount_t", pot_mount_t], ["front_rim_z", base_top(0)],
     ["pwm_front", [pot_x, pot_z, pot_shoulder_y, pwm_install_lift]], ["pwm_pcb", pwm_pcb], ["pwm_origin", [pwm_x[0], pwm_y0, pwm_z0]],
     ["pwm_holes", pwm_holes()], ["pwm_hole_d", pwm_hole_d], ["pwm_boss_d", pwm_boss_d],
     ["pwm_core", [pwm_core_d, pwm_core_depth, pwm_core_entry[0], pwm_core_entry[1]]],

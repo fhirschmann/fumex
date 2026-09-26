@@ -1,0 +1,202 @@
+{
+  "old_mesh_controls": {
+    "head": [
+      {
+        "axis": [
+          10,
+          58
+        ],
+        "missing_skin_mm3": [
+          98.87037271013597,
+          71.36142898775044
+        ]
+      },
+      {
+        "axis": [
+          10,
+          183
+        ],
+        "missing_skin_mm3": [
+          98.87037271013598,
+          71.3614232382689
+        ]
+      },
+      {
+        "axis": [
+          135,
+          58
+        ],
+        "missing_skin_mm3": [
+          98.870372710136,
+          71.3614522093206
+        ]
+      },
+      {
+        "axis": [
+          135,
+          183
+        ],
+        "missing_skin_mm3": [
+          98.87037271013602,
+          71.36143679496489
+        ]
+      }
+    ],
+    "cassette": [
+      {
+        "axis": [
+          10,
+          58
+        ],
+        "missing_skin_mm3": [
+          90.7689501279077,
+          98.87037271013597
+        ]
+      },
+      {
+        "axis": [
+          10,
+          183
+        ],
+        "missing_skin_mm3": [
+          90.76887514329368,
+          98.87037271013598
+        ]
+      },
+      {
+        "axis": [
+          135,
+          58
+        ],
+        "missing_skin_mm3": [
+          90.76894737082054,
+          98.870372710136
+        ]
+      },
+      {
+        "axis": [
+          135,
+          183
+        ],
+        "missing_skin_mm3": [
+          90.76887761945996,
+          98.87037271013602
+        ]
+      }
+    ]
+  },
+  "print_pose_planes": {
+    "head": [
+      {
+        "print_xy": [
+          10,
+          135
+        ],
+        "first_planes": [
+          0.0,
+          1.2,
+          4.4,
+          5.6
+        ]
+      },
+      {
+        "print_xy": [
+          10,
+          10
+        ],
+        "first_planes": [
+          0.0,
+          1.2,
+          4.4,
+          5.6
+        ]
+      },
+      {
+        "print_xy": [
+          135,
+          135
+        ],
+        "first_planes": [
+          0.0,
+          1.2,
+          4.4,
+          5.6
+        ]
+      },
+      {
+        "print_xy": [
+          135,
+          10
+        ],
+        "first_planes": [
+          0.0,
+          1.2,
+          4.4,
+          5.6
+        ]
+      }
+    ],
+    "cassette": [
+      {
+        "print_xy": [
+          10,
+          135
+        ],
+        "first_planes": [
+          0.0,
+          1.2,
+          4.4,
+          5.6
+        ]
+      },
+      {
+        "print_xy": [
+          10,
+          10
+        ],
+        "first_planes": [
+          0.0,
+          1.2,
+          4.4,
+          5.6
+        ]
+      },
+      {
+        "print_xy": [
+          135,
+          135
+        ],
+        "first_planes": [
+          0.0,
+          1.2,
+          4.4,
+          5.6
+        ]
+      },
+      {
+        "print_xy": [
+          135,
+          10
+        ],
+        "first_planes": [
+          0.0,
+          1.2,
+          4.4,
+          5.6
+        ]
+      }
+    ]
+  },
+  "old_cable_opening_overlap_mm3": 232.2552722553596,
+  "actual_check_negative_results": {
+    "head": {
+      "expected_failure": "Sealed magnet cavity blocked: head/10.0/58.0, 27.554931352394465"
+    },
+    "cassette": {
+      "expected_failure": "Sealed magnet cavity blocked: cassette/10.0/58.0, 99.0357122348279"
+    },
+    "cable": {
+      "expected_failure": "Fan cable U opening is narrowed or closed at the rear: 232.25527 mm3"
+    }
+  }
+}

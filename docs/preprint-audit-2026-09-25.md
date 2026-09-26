@@ -1,5 +1,7 @@
 # FUMEX – Audit vor dem Druck
 
+> **Korrektur nach dem realen Druck, 26.09.2026:** Der Nutzer hat fehlende Rückwände der Kopf-Magnettaschen und einen zu kleinen Lüfterkabeldurchlass festgestellt. Dieses Audit hatte nur die radialen Magnetwände geprüft und keinen Steckerweg durch den Durchlass. Die damalige Bewertung deckt diese beiden Stellen nicht ab. Die konstruktive Korrektur und erweiterte Prüfung stehen im [Nachtrag](fan-cable-magnets-2026-09-26.md).
+
 **Stand: 25. September 2026 · geprüfter Commit: `4a11856`**  
 Modell-SHA256: `152bdde96866f33b4eff4f85b12d2b582b43e39602d3c16a702fa8b487168946`
 
