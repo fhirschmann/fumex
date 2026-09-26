@@ -1,0 +1,164 @@
+{
+  "source_sha256": "d2d21113b80c1214a133452ce8b9820178cb5de3a1354b2a165ddce98acb4137",
+  "reference_commit": "988b0b43824a0a8e14ecfc57a1e810f528026dab",
+  "shared_skill_commit": "9fedfc092aeeeb0d04bd14f1aca8fb63c252c88e",
+  "viewer_outputs_identical": true,
+  "files": {
+    "fumex.scad": {
+      "sha256": "d2d21113b80c1214a133452ce8b9820178cb5de3a1354b2a165ddce98acb4137",
+      "bytes": 91846
+    },
+    "print_project.py": {
+      "sha256": "e8be3c8472aded96757c893ab7513c2789a81806bcd94c16f373e81e2011d88a",
+      "bytes": 127551
+    },
+    "scripts/print_tools.py": {
+      "sha256": "578b124526e952b734e2137fb247a6a9a02650981cd65f5fd01afc016440a15f",
+      "bytes": 25812
+    },
+    "docs/index.html": {
+      "sha256": "302c1d65bbd469304e2224e3ac37d59ab31f61eacbce0e1caba28c664e6e652c",
+      "bytes": 4152034
+    },
+    "stl/ball_lid.stl": {
+      "sha256": "396e4ae1f493d36398f69ef9dd125457d7d21d88aba249564448af3fca111eb6",
+      "bytes": 38984
+    },
+    "stl/base.stl": {
+      "sha256": "d8df78c21d8629960b43c27376a0e7ed95971f7a29c4bd9a7fcfe4c27a1f5a04",
+      "bytes": 555284
+    },
+    "stl/cassette.stl": {
+      "sha256": "d9f325ae6bd9fed8e2a653d12a17c6e04a2d83639dc3dc200c7f846578ab1638",
+      "bytes": 466384
+    },
+    "stl/filter_support.stl": {
+      "sha256": "4fed78fc4f48182c16cb8f2ae265359a287b3989dd675cd5e6722c26b16dba9e",
+      "bytes": 76684
+    },
+    "stl/foot.stl": {
+      "sha256": "adaeaae7a83a4936711036a15ebe54ea2c98971e5b61930fa93e879a94336cc0",
+      "bytes": 14884
+    },
+    "stl/head.stl": {
+      "sha256": "6e1d54be78d3b424180048886b3394afb4de773c3be0eedfd8a8cfe2b07e0f7e",
+      "bytes": 492684
+    },
+    "stl/head_back.stl": {
+      "sha256": "91adabe402fac25c19bf9bc19cc1e73dae678eccdb85f9123a16b672e487474b",
+      "bytes": 701284
+    },
+    "stl/knob.stl": {
+      "sha256": "c406eb2e289007354041ca9da392f83dd45b9691a9835808848bf2bef06dd463",
+      "bytes": 111484
+    },
+    "stl/usbc_fit_base.stl": {
+      "sha256": "9dc7d7147729ce5972ab69bb72cb3fa41320d0975cc6692258a6f4967f3f3ae0",
+      "bytes": 32684
+    },
+    "stl/usbc_fit_lid.stl": {
+      "sha256": "353880bb51e1d50dabe43934b1bcb81b150f6ea99497091c2feb6754c6956f70",
+      "bytes": 13784
+    },
+    "stl/fumex_all_parts.3mf": {
+      "sha256": "5ad3c6401d0f281aba91bb0f9c62c3d57bf387935fc181f5d0c62085b949b25b",
+      "bytes": 651726
+    },
+    "stl/fumex_usb_fit.3mf": {
+      "sha256": "d084686b75a8a2b358942b05f4a96ff71e9bfd08c81a381edd47cb5dd41f829b",
+      "bytes": 41294
+    },
+    "img/01_assembly.png": {
+      "sha256": "3d0fd67f6255c2518e8261c86a124735d04b55922cf870d446b9031f0ae28de7",
+      "bytes": 85240
+    },
+    "img/02_exploded.png": {
+      "sha256": "b3838f28ba7ef7c23b5ec37c154444b73aaf0e561ee0d3ca7afad1fb8fb382fd",
+      "bytes": 87138
+    },
+    "img/03_back.png": {
+      "sha256": "347874f3e64e044fe5fc816425fa48433d63330feac08e6cb0d8d3b79374cb84",
+      "bytes": 80500
+    },
+    "img/04_charger_front.png": {
+      "sha256": "aebb9e774767dc2952a8d50410e154e5c5b8bd6b460f6ab6e44780062b550ece",
+      "bytes": 29247
+    },
+    "img/05_charger_back.png": {
+      "sha256": "3950193ffb0c4677c0802b0465494269bed8bc3ffc4130073587725c544f4c26",
+      "bytes": 31244
+    },
+    "img/06_filter_support.png": {
+      "sha256": "16063d3ef6af81de97afe08def20998d663972c17d200544972e04a3f8ce1ed6",
+      "bytes": 35023
+    },
+    "img/07_ballast_mount.png": {
+      "sha256": "595b125e5ab9580427876978f7eba3c81ed57779fb6923e91d3af108ac79a1f7",
+      "bytes": 37862
+    },
+    "img/08_usb_mount.png": {
+      "sha256": "13913240aaf51ffa6afcf77057e4b78c9febb8d4b5279515607dec3fae0e7ed8",
+      "bytes": 64477
+    },
+    "img/09_head_mount.png": {
+      "sha256": "13d5940abe3a6df4c59630058bd634fcaa0453f7decc068ea52a5f5a8b543527",
+      "bytes": 35193
+    },
+    "img/10_pwm_mount.png": {
+      "sha256": "9440d2f41a32ebd45f56cf0de68afa38214af096ae1a0f0bec46c0a5af873cb6",
+      "bytes": 52314
+    },
+    "img/11_battery_usb_stops.png": {
+      "sha256": "36dda0475886cc86973c87cfc30fe6035f6b6a073c959a4adedf5b63c95922b5",
+      "bytes": 65015
+    },
+    "img/12_floor_tie_loops.png": {
+      "sha256": "7bedbe64932193f77f96df09a4eade798535f4108c5cd3cd05db2d6a78aca1e2",
+      "bytes": 37267
+    },
+    "img/13_magnet_section.png": {
+      "sha256": "1c774a36ea1022bbc69cabe4c52848f610a82deb27f0a26d8ee3a54f742f0aba",
+      "bytes": 37155
+    },
+    "img/14_fan_cable_notch.png": {
+      "sha256": "07d25ca18463d117d21741e99bd22f089b962d016987ad216112669e0ca95fb9",
+      "bytes": 50668
+    },
+    "docs/fan-cable-magnets-2026-09-26/change-scope.json": {
+      "sha256": "74f77384ab0e12a4d0b2b40506229811f2065c351c46bdc3ffcad4c3367e4dc3",
+      "bytes": 11930
+    },
+    "docs/fan-cable-magnets-2026-09-26/fins.json": {
+      "sha256": "da317c3d561c673eb6db938da755f16cd2155c863263e8c7648f7ae8f15a44e9",
+      "bytes": 183
+    },
+    "docs/fan-cable-magnets-2026-09-26/gcode-pauses.json": {
+      "sha256": "31cabe8c0a19753cc924595ec43997d48eb038d84b7cb5b9d50a3267bfa71313",
+      "bytes": 6625
+    },
+    "docs/fan-cable-magnets-2026-09-26/islands.json": {
+      "sha256": "da317c3d561c673eb6db938da755f16cd2155c863263e8c7648f7ae8f15a44e9",
+      "bytes": 183
+    },
+    "docs/fan-cable-magnets-2026-09-26/overhangs.json": {
+      "sha256": "da317c3d561c673eb6db938da755f16cd2155c863263e8c7648f7ae8f15a44e9",
+      "bytes": 183
+    },
+    "docs/fan-cable-magnets-2026-09-26/regression-controls.json": {
+      "sha256": "5e5d2ed5375df14a82d9ede4054912113a2702b2fd062b528c5edb9b341ca6b0",
+      "bytes": 3342
+    },
+    "docs/fan-cable-magnets-2026-09-26/slicer-summary.json": {
+      "sha256": "e5d77eb22db557b8b1b08f94e2c91120dca7a3f0467c6ee718effd6cece5d537",
+      "bytes": 10414
+    },
+    "docs/fan-cable-magnets-2026-09-26/thickness.json": {
+      "sha256": "d97222becf55d31ec3b8e39a3a1e744b18e5f66ac0ae1d88a1eecd6bd1b2013f",
+      "bytes": 1626
+    },
+    "docs/fan-cable-magnets-2026-09-26/verification.json": {
+      "sha256": "96192e1b2ba0325c851d78da807d14377a356ad0e71608d294ed06db2fdce2f5",
+      "bytes": 67268
+    }
+  }
+}

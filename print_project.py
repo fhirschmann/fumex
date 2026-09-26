@@ -70,6 +70,7 @@ ASSEMBLY = {
 ALLOWED_OVERLAPS = [("base", "screws_pwm"),     # thread forms into the pilot; independently bounded by check_pwm_mount
                     # PCB is fastened before the head, filter and cover assembly is installed.
                     ("head", "driver_pwm"), ("filter", "driver_pwm"), ("cassette", "driver_pwm"),
+                    ("magnets", "driver_pwm"),  # embedded magnets leave with the removed head and cassette
                     # PWM service removes the complete head and all four head screws first.
                     ("screws_head", "driver_pwm"), ("driver_head", "driver_pwm"),
                     ("filter_support", "driver_pwm"), ("fan", "driver_pwm"),
@@ -100,10 +101,15 @@ PROCESS = dict(wall_loops=4, top_shell_layers=5, bottom_shell_layers=5, infill=2
 FILAMENTS = [dict(material="PETG-black", profile="Generic PETG @BBL H2S", colour="#1A1B1D"),
              dict(material="PETG-grey", profile="Generic PETG @BBL H2S", colour="#8C9196"),
              dict(material="TPU", profile="Generic TPU @BBL H2S", colour="#1A1B1D")]
-PLATES = [("Head", ["head", "ball_lid", "filter_support"]),
-          ("Base and back cover", ["base", "head_back"]),
-          ("Grey parts", ["cassette", "knob"]),
+PLATES = [("Head", ["head"]),
+          ("Base and back cover", ["base", "head_back", "ball_lid", "filter_support"]),
+          ("Cassette", ["cassette"]),
+          ("Knob", ["knob"]),
           ("TPU feet", ["foot"])]
+# At 0.2-mm layers the cavity ends at 4.4 mm; the 4.6-mm layer closes it.
+# Each paused part has its own plate. The shared slicer verifies the actual
+# pause occurs before any extrusion in that layer in the published project.
+PAUSES = {"head": [4.6], "cassette": [4.6]}
 PROJECT_3MF = "stl/fumex_all_parts.3mf"
 TEST_PLATES = [("USB insertion fit", ["usbc_fit_base", "usbc_fit_lid"])]
 TEST_3MF = "stl/fumex_usb_fit.3mf"
@@ -175,14 +181,14 @@ def corner_jumps(local_meshes, width, depth, top, plan_r=3.5, corner_r=6.0,
     return rows
 
 
-def magnet_skin(local_head, cylinder, manifold, axes, depth=3.2, radius=5.15):
+def magnet_skin(local_head, cylinder, manifold, axes, depth=3.2, radius=5.15, start=0):
     solid = manifold(local_head)
     rows = []
     for x, z in axes:
         # 1.21 rather than 1.20 covers the <0.001-mm sag of this 360-sided
-        # inscribed probe. Exclude only 0.001 mm at the open pocket end faces.
-        outer = cylinder([x, 0.001, z], [0, 1, 0], depth - 0.002, radius + 1.21, 360)
-        inner = cylinder([x, 0.001, z], [0, 1, 0], depth - 0.002, radius + 0.01, 360)
+        # inscribed probe. Exclude only 0.001 mm at the cavity end faces.
+        outer = cylinder([x, start + 0.001, z], [0, 1, 0], depth - 0.002, radius + 1.21, 360)
+        inner = cylinder([x, start + 0.001, z], [0, 1, 0], depth - 0.002, radius + 0.01, 360)
         missing = float(((outer - inner) - solid).volume())
         rows.append(dict(axis_xz=[x, z], tested_radial_skin_mm=1.21,
                          missing_mm3=round(missing, 8)))
@@ -201,10 +207,140 @@ def check_top_corners(ctx):
     axes = [(width / 2 + sx * mag_off, centre_z + sz * mag_off)
             for sx in (-1, 1) for sz in (-1, 1)]
     pockets = magnet_skin(local["head"], ctx.cylinder, ctx.manifold, axes,
-                          depth=m["magnet_pocket"][1], radius=m["magnet_pocket"][0] / 2)
+                          depth=m["magnet_pocket"][1], radius=m["magnet_pocket"][0] / 2,
+                          start=m["magnet_skin"])
     assert all(r["max_jump_deg"] <= 15 for r in corners), f"corner crease: {corners}"
     assert all(r["missing_mm3"] < 1e-5 for r in pockets), f"magnet skin missing: {pockets}"
     return dict(top_corner_normals=corners, magnet_radial_skin=pockets)
+
+
+def check_sealed_magnets(ctx):
+    """Prove eight usable closed cavities and both full axial skins on actual meshes."""
+    m = ctx.metrics
+    assert np.allclose(m["magnet_pocket"], [10.3, 3.2], atol=1e-6)
+    assert abs(m["magnet_skin"] - 1.2) < 1e-6
+    assert abs(m["front_t"] - 5.6) < 1e-6 and abs(m["cass_t"] - 5.6) < 1e-6
+    assert PAUSES == {"head": [4.6], "cassette": [4.6]}, "Wrong magnet insertion layer"
+    assert all(group == [part] for _, group in PLATES for part in PAUSES if part in group), \
+        "A magnet pause must not stop another part on the same plate"
+    meshes = {n: head_frame(ctx.meshes[n], m) for n in ("head", "cassette", "magnets")}
+    solids = {n: ctx.manifold(mesh) for n, mesh in meshes.items()}
+    width, cz = m["body"][0], m["base_h"] + m["head_h"] / 2
+    axes = [(width / 2 + sx * m["mag_off"], cz + sz * m["mag_off"])
+            for sx in (-1, 1) for sz in (-1, 1)]
+    rows, cavities = [], []
+    for name, planes in (("head", [0, 1.2, 4.4, 5.6]),
+                         ("cassette", [-5.6, -4.4, -1.2, 0])):
+        solid, mesh = solids[name], meshes[name]
+        for x, z in axes:
+            a, b, c, d = planes
+            # Small geometric insets avoid tessellation/coplanar noise without
+            # allowing an open face or an undersized 10 x 3 mm disc pocket.
+            cavity = ctx.cylinder([x, b + .002, z], [0, 1, 0], c - b - .004, 5.13, 240)
+            cavity_overlap = float((cavity ^ solid).volume())
+            assert cavity_overlap < .001, f"Sealed magnet cavity blocked: {name}/{x}/{z}, {cavity_overlap}"
+            missing = []
+            for lo, hi in ((a, b), (c, d)):
+                skin = ctx.cylinder([x, lo + .002, z], [0, 1, 0], hi - lo - .004, 5.13, 240)
+                missing.append(float((skin - solid).volume()))
+            assert max(missing) < .001, f"Open/thin magnet face: {name}/{x}/{z}, {missing}"
+            # The complete pocket faces must be planar. Seventeen spatially
+            # separate rays also measure the exterior and cavity boundaries;
+            # rear head material may continue into the chamber corner guides.
+            offsets = [(0, 0)] + [(4.9 * math.cos(t), 4.9 * math.sin(t))
+                                  for t in np.linspace(0, 2 * math.pi, 16, endpoint=False)]
+            errors, measured_skins = [], []
+            for dx, dz in offsets:
+                hits, _, _ = mesh.ray.intersects_location([[x + dx, a - 1, z + dz]],
+                                                         [[0, 1, 0]], multiple_hits=True)
+                ys = np.unique(np.round(hits[:, 1], 4)) if len(hits) else np.array([])
+                wanted = planes[:3] if name == "head" else planes
+                assert len(ys) >= len(wanted), f"Missing magnet face: {name}/{x}/{z}, {ys}"
+                error = float(np.max(np.abs(ys[:len(wanted)] - wanted)))
+                assert error < .003, f"Incorrect magnet face planes: {name}/{x}/{z}, {ys}"
+                errors.append(error)
+                measured_skins.append(float(ys[1] - ys[0]))
+                if name == "cassette":
+                    measured_skins.append(float(ys[3] - ys[2]))
+            full_cavity = ctx.cylinder([x, b - .001, z], [0, 1, 0], c - b + .002, 5.151, 240)
+            cavities.append(full_cavity)
+            disc_volume = float((full_cavity ^ solids["magnets"]).volume())
+            assert 230 < disc_volume < 240, f"Missing or incorrect 10 x 3 magnet: {name}/{x}/{z}, {disc_volume}"
+            rows.append(dict(part=name, axis_xz=[x, z], cavity_diameter_depth_mm=[10.3, 3.2],
+                             cavity_overlap_mm3=round(cavity_overlap, 7),
+                             axial_skin_missing_mm3=[round(v, 7) for v in missing],
+                             minimum_measured_outer_skin_mm=round(min(measured_skins), 4),
+                             maximum_face_plane_error_mm=round(max(errors), 5),
+                             magnet_volume_mm3=round(disc_volume, 4)))
+    outside = float((solids["magnets"] - md.Manifold.batch_boolean(cavities, md.OpType.Add)).volume())
+    assert outside < .001 and len(solids["magnets"].decompose()) == 8, \
+        f"Magnet set is not eight discs contained in the sealed cavities: outside {outside} mm3"
+    ctx.summary.append("8 sealed magnet cavities, full 1.2 mm axial skins; insertion pauses before layer 4.6 mm")
+    ctx.open_items.append("Embedded magnets: check actual disc size and polarity before closing the 4.6 mm layer; "
+                          "retention across the two 1.2 mm face skins is not a pull-force test. STL files contain no pause.")
+    return dict(sealed_magnets=dict(cavities=rows, magnet_outside_cavities_mm3=round(outside, 7),
+                pause_before_layer_mm=PAUSES, print_layer_height_mm=.2))
+
+
+def check_fan_cable_opening(ctx):
+    """The connector route is open through the floor and out of the rear edge."""
+    m = ctx.metrics
+    head = ctx.manifold(head_frame(ctx.meshes["head"], m))
+    z0 = m["base_h"]
+    # Independent minimum reviewed opening, including a connected exit beyond
+    # the rear edge. The original 10-mm enclosed hole fails this probe.
+    route = _air_box([32.02, 56.72, z0 - .1], [47.98, 72, z0 + m["wall"] + .1])
+    overlap = float((route ^ head).volume())
+    assert overlap < .001, f"Fan cable U opening is narrowed or closed at the rear: {overlap:.5f} mm3"
+    # Keep substantial floor at both sides; the independent fastener checks
+    # additionally protect the entire rear-left bearing and insert wall.
+    strips = {"left": _air_box([30.5, 58, z0 + .1], [31.8, 64, z0 + m["wall"] - .1]),
+              "right": _air_box([48.2, 58, z0 + .1], [49.5, 64, z0 + m["wall"] - .1])}
+    missing = {name: float((probe - head).volume()) for name, probe in strips.items()}
+    assert max(missing.values()) < .001, f"Fan cable opening removes its side floor: {missing}"
+    # Moving the fan must not drag these vents towards the rear edge and
+    # reduce the continuous rear floor to the former 0.9-mm strip.
+    assert np.allclose(m["charge_vent"], [56.7, 10], atol=1e-6), "Charge vent position changed"
+    rear_web = _air_box([53.6, 66.8, 48.1], [95.4, 69.9, 50.9])
+    rear_web_missing = float((rear_web - head).volume())
+    assert rear_web_missing < .001, f"Plenum vents weaken the rear floor web: {rear_web_missing:.5f} mm3"
+    local = {n: ctx.manifold(head_frame(mesh, m)) for n, mesh in ctx.meshes.items()
+             if not n.startswith("driver_")}
+    cover_group = ("fan", "head_back", "screws_fan", "screws_back")
+    opened = {n: q.translate([0, 40, 0]) if n in cover_group else q for n, q in local.items()}
+    # These are explicitly assumed plug/bundle envelopes. Each rectangular
+    # translation has an exact swept box, so the path is not just sampled.
+    connector_sweeps = {
+        "lower_31_mm": _air_box([33, 57.35, 31], [47, 65.35, 78]),
+        "forward_12_mm": _air_box([33, 45.35, 31], [47, 65.35, 47]),
+    }
+    connector_rows = {}
+    opened_union = md.Manifold.batch_boolean(list(opened.values()), md.OpType.Add)
+    for name, sweep in connector_sweeps.items():
+        hits = {n: float((sweep ^ q).volume()) for n, q in opened.items()}
+        assert max(hits.values()) < .01, f"Fan connector service route blocked: {name}, {hits}"
+        connector_rows[name] = dict(maximum_overlap_mm3=round(max(hits.values()), 7),
+                                   minimum_gap_mm=round(sweep.min_gap(opened_union, 3), 4))
+    cable = _air_box([36, 60, 36], [44, 64, 58])
+    cable_hits = {n: float((cable ^ q).volume()) for n, q in local.items()}
+    assert max(cable_hits.values()) < .01, f"Installed fan cable corridor is blocked: {cable_hits}"
+    # Inverse motion of the reserved cable block against the stationary cover
+    # is exactly equivalent to translating the whole cover +40 -> 0 along Y.
+    inverse_cable_sweep = _air_box([36, 20, 36], [44, 64, 58])
+    insertion_hits = {n: float((inverse_cable_sweep ^ local[n]).volume()) for n in cover_group}
+    assert max(insertion_hits.values()) < .01, f"Fan/cover insertion sweeps across cable corridor: {insertion_hits}"
+    ctx.open_items.append("Fan cable: the rear-open slot has 16 mm nominal width; verify the actual plug, "
+                          "wire bend and edge protection. The 14 x 8 x 16 mm plug and 8 x 4 mm cable "
+                          "route are assumed envelopes; the actual fan outlet and flexible lead are unmeasured.")
+    return dict(fan_cable_opening=dict(nominal_width_mm=16, tested_width_mm=15.96,
+                rear_open_from_y_mm=56.7, opening_overlap_mm3=round(overlap, 7),
+                side_floor_missing_mm3={k:round(v, 7) for k,v in missing.items()},
+                plenum_rear_web_missing_mm3=round(rear_web_missing, 7),
+                connector_dimensions_assumed_mm=[14, 8, 16], cover_held_rearward_mm=40,
+                connector_continuous_sweeps=connector_rows,
+                cable_reserved_bounds_local=[[36, 60, 36], [44, 64, 58]],
+                cable_overlap_mm3=round(max(cable_hits.values()), 7),
+                cover_insertion_cable_overlap_mm3={k:round(v, 7) for k,v in insertion_hits.items()}))
 
 
 def head_frame(mesh, metrics):
@@ -1667,7 +1803,8 @@ def checks(ctx):
                 intake_lip_mm=lip, mat_free_travel_mm=round(mat_free, 2), mat_squashed_percent=round(100 * squashed / mat, 2), mass_g=round(total, 1),
                 centre_of_mass_mm=[round(c, 1) for c in com],
                 foot_polygon_mm=poly, tip_margins_mm={k: round(v, 1) for k, v in margins.items()},
-                tip_angle_deg=round(tip_angle, 1), **check_top_corners(ctx), **check_joint_profile(ctx),
+                tip_angle_deg=round(tip_angle, 1), **check_top_corners(ctx), **check_sealed_magnets(ctx),
+                **check_fan_cable_opening(ctx), **check_joint_profile(ctx),
                 **check_rim_chamfers(ctx), **check_charger_air(ctx), **check_charger_holder(ctx),
                 **check_lid_fasteners(ctx), **check_head_fasteners(ctx), **check_front_mat_contact(ctx), **check_front_ratchet_access(ctx), **check_pwm_mount(ctx), **check_pwm_removal(ctx), **check_usb_wire_access(ctx), **check_ballast_cover(ctx),
                 **check_switch_trough_clearance(ctx), **check_filter_support(ctx), **check_led_window(ctx), **check_usb_support(ctx),
@@ -1771,4 +1908,16 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
                                  "135,-160,135,68,38,28"),
          "12_floor_tie_loops": ("color(\"#aeb5bb\") intersection() { base(); "
                                 "translate([15, 24, 0]) cube([50, 22, 9]); }",
-                                "83,-45,43,40,35,3")}
+                                "83,-45,43,40,35,3"),
+         "13_magnet_section": ("color(\"#717980\") intersection() { head_raw(); "
+                                "translate([10, -7, 174]) cube([15, 15, 18]); } "
+                                "color(\"#c4c9ce\") intersection() { cassette_raw(); "
+                                "translate([10, -7, 174]) cube([15, 15, 18]); } "
+                                "color(\"#c49a55\") intersection() { union() { for (p = mag_xz()) { "
+                                "cyl_y(p, mag_skin, mag_skin + 3, 5); "
+                                "cyl_y(p, -cass_t + mag_skin, -cass_t + mag_skin + 3, 5); } } "
+                                "translate([10, -7, 174]) cube([15, 15, 18]); }",
+                                "-25,-25,207,13,0,183"),
+         "14_fan_cable_notch": ("color(\"#aeb5bb\") intersection() { head_raw(); "
+                                "translate([20, 50, 48]) cube([40, 24, 14]); }",
+                                "8,110,100,40,62,52")}

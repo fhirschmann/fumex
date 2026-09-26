@@ -38,7 +38,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 |---|---|---|
 | Fan Arctic P12 Pro (PST) | 120 × 120 × 25 mm, 185 g, 600–3000 rpm, 77 cfm / 131 m³/h, 6.9 mmH₂O, 12 V, **0.33 A**, start-up 3.3 V, 0 rpm below 5 % PWM, cable 400 + 80 mm, 0–40 °C | data sheet (ACFAN00306A) |
 | Filter mat | cut by the user from a cooker hood mat to about 120 × 120 × 17 mm, white fleece with a dark carbon layer | user, 2026-09-21, hand-cut — the chamber is 121.5 mm and the lip 2.25 mm wide, so ±1 mm on the cut is fine |
-| Magnets | 8 × neodymium disc Ø10 × 3 | user's part, **not yet measured**; pockets are Ø10.3 × 3.2 per the skill's glue-in rule |
+| Magnets | 8 × neodymium disc Ø10 × 3 | user's part, **not yet measured**; enclosed cavities Ø10.3 × 3.2 with 1.2 mm axial skins, inserted at print pauses |
 | Masses for the tipping check | fan 185 g (data sheet), battery 150 g, PWM board 12 g, mat 15 g, magnets 18 g, rest estimated | **estimates**, reported as an open item |
 
 ## Current design state
@@ -142,12 +142,11 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     pressed 6.6 cm3 out of the mat. Removing those gussets reduced `mat_squashed_percent`
     to 0.0; the current front screw seats intentionally raise it to 0.11%, confined to
     the local flexible contacts described below.
-- The cassette stands 4.5 mm proud of the intake face and cannot be let into it: the head prints intake-face-down,
-  so a recess for it would be a 5687 mm2 horizontal ceiling over the chamber. It cannot get thinner either - the
-  magnet pockets are 3.2 deep and `analyze.py thickness` wants 1.2. The final-contour rim bevel is `cass_c` = 1.2 after the G1 audit fix; the narrow side contour
-  limits it at the magnet pockets. Straight rim depth is 3.3 mm.
-  At the joint the cassette therefore reaches 3.9 mm in front of the base face - reported to the user 2026-09-23;
-  the only way to close that is a plinth on the base front, which has not been built.
+- The cassette stands 5.6 mm proud of the intake face. The 3.2 mm cavities have closed
+  1.2 mm skins on both axial sides (user, 2026-09-26); a 1.2 mm final-contour bevel leaves
+  4.4 mm of straight rim. The thicker cassette remains outside the original intake plane.
+  The former 4.5 mm open-pocket version stood 3.9 mm in front of the base at the joint;
+  that earlier projection measurement does not describe the new 5.6 mm cassette.
 - `head_outline(inset, square_bottom)`: the head shell keeps the square bottom corners so its side walls meet the
   base rim without a step; `head_back` and `cassette` pass false and keep the radius all round (user,
   2026-09-23). Neither lands on the base rim - the cover has the head wall behind it carrying the silhouette,
@@ -158,7 +157,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   `head_at()` so it mirrors the chamfer on the cover's lower edge; both sit behind `head_y[4]`, where the rim
   carries no head wall. The cover's lower edge had only 0.9 mm of the rim chamfer left on it, because the
   joint plane cuts that chamfer off `cover_gap` above the outline's own bottom edge; now it is the full 1.2.
-- Filter cassette held by four magnet pairs in open pockets (skill rule: glue one side in, place the counterparts on them, then glue — polarity is then automatic). Two 45° finger scoops in the side edges of the intake face get a finger behind the flange. The redundant half-round mat notches were removed at the user's request on 2026-09-23; the intake lip is continuous.
+- Filter cassette held by four enclosed magnet pairs. Head and cassette each pause before the 4.6 mm layer for inserting four discs, then close the cavities. Mark the same pole on every disc and place the marked face upwards on both print plates; the installed mating faces then attract. No glue is required. Two 45° finger scoops in the side edges of the intake face get a finger behind the flange. The redundant half-round mat notches were removed at the user's request on 2026-09-23; the intake lip is continuous.
 - **The chamber has a rear lip too** (`mat_stop()`, user asked 2026-09-23 what stops the mat falling into the
   fan - nothing did). The mat's back face rested on the four gusset corners only, 7.8 % of it, with 10.5 mm
   of clear air to the fan frame, while the fan pulls it that way with about 1 N at 69 Pa. The lip closes the
@@ -179,18 +178,18 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   Integrating the cross into the intake-face-down head would create long unsupported bridges.
   - `mat_support` defines 4 mm wide, 5 mm deep bars (formerly 2.4 x 3.2). Four concave R4 corners
     round the centre; a 6 mm smoothstep flare meets each 8 mm end pad tangentially. Both cross faces
-    retain 0.4 mm chamfers. The front is y20.7, 0.5 mm behind the nominal mat rear face at y20.2;
-    the back is y25.7, 5 mm before the fan frame at y30.7. With 0.2 mm axial play, the worst nominal
+    retain 0.4 mm chamfers. The front is y23.1, 0.5 mm behind the nominal mat rear face at y22.6;
+    the back is y28.1, 5 mm before the fan frame at y33.1. With 0.2 mm axial play, the worst nominal
     clearances are 0.3 mm to the mat and 4.8 mm to the fan. The checker tests both reserves.
   - Actual projected obstruction is 981.941 mm² of the rounded throat's 13,681.093 mm², or 7.177%,
     leaving 12,699.152 mm² open. The strengthened profile intentionally raises the area gate from
     5% to 8%. This is an area measurement, not a pressure-drop prediction.
-  - The end pads are 8 mm across and 3 mm long radially. Rear-open pockets start at y20.5,
+  - The end pads are 8 mm across and 3 mm long radially. Rear-open pockets start at y22.9,
     extend radially 58.3..61.7 and are 8.4 mm wide; 2.05 mm of tube wall remains outside them.
     The cross span grew from 122 to 123 mm: with the earlier front plane, the old chamfered ends
     missed the tube's front seat. At the new span, each pad has a 0.35 mm radial flat bearing on it.
     Four separate contact probes verify the head and fan stops, and 0.1 mm shifts remain free.
-    The posts end at y30.5, giving 0.2 mm axial clearance to both stops. No glue or screws are needed.
+    The posts end at y32.9, giving 0.2 mm axial clearance to both stops. No glue or screws are needed.
   - Insert it from the rear before the fan-and-cover assembly, mat-facing cross forwards and posts
     backwards. The fan frame traps the posts; verify actual frame contact at radial positions
     58.5..60 mm on all four sides. The full fan envelope cannot prove that these local surfaces exist.
@@ -300,8 +299,8 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     matching-source verification report rather than the former slotted-lid route.
   - The free space in front of the cell (about 50 cm³) is the wrong side of the centre of mass and is deliberately left empty.
 - Charge module upright on the ballast lid, directly below the plenum slots (user, 2026-09-23: both sides of the board should get air; subsequently, "Wie LEO: Seite mit Kühlkörper frei"). Components face forwards, heatsink backwards. A single holder and cable tie retain only the cool OUT end; the heatsink end stays free. See Electrics below for dimensions and physical-fit limits. The earlier pair of edge holders, flat tray and bay-floor brackets are no longer built.
-  - **The air route starts in the plenum:** the six slots in the head floor connect the fan's filtered outlet side to the component and heatsink passages, which lead to the back-wall slots. The surrounding 5.75 mm channel between filter tube and shell also remains open to the plenum. Geometric corridors are checked; flow rate, natural convection and cooling performance are not measured.
-  - The vent is a row of six slots, not one opening: printed intake-face-down the head floor is a vertical wall, and a single 38 mm opening left a 113 mm² flat bridge at its far edge.
+  - **The air route starts in the plenum:** the five slots and rear-open cable notch in the head floor connect the fan's filtered outlet side to the component and heatsink passages, which lead to the back-wall slots. The surrounding 5.75 mm channel between filter tube and shell also remains open to the plenum. Geometric corridors are checked; flow rate, natural convection and cooling performance are not measured.
+  - The vent is a row of five slots beside the wider rear-open cable notch: printed intake-face-down the head floor is a vertical wall, and a single 38 mm opening left a 113 mm² flat bridge at its far edge.
   - Ventilation slots in the back wall (user: slots, not honeycomb, and not staggered) sit above the ballast
     lid - an assert keeps them there, below it they would let the offcuts out. Aligned they export clean
     here (12 slots, 2 mm wide, 5 mm pitch); the collinear-corner trap that hit the old slot rows did not
@@ -396,7 +395,7 @@ two-insert lid, OUT-end holder, USB support ribs, wider switch recess and closed
 - `analyze.py overhangs --min-area 5` lists 27 small downward faces, all of them understood: four Ø3.3 foot peg holes and four Ø4 insert pockets in the bay floor (circular bridges, 6–10 mm²), the six vent slots in the head floor (10.8 mm² each), the two finger scoops in the intake face (45 mm² flat cone ends 2 mm above the bed), the USB-C channel floor (85 mm², a 5.8 mm ledge off the back wall) and the two cable tie loops (28 mm² each, 6 mm off the back wall). None is a floating island; every one of them grows out of a wall or bridges a hole under 15 mm.
 - Before the support-cross addition, the Bambu CLI sliced all seven parts and all four plates without support. The individual `base` and `head` slices each report "floating cantilever", also present before the G2/G3 changes. The base candidates are the USB-C channel ledge and the tie loops. The warning locations have not been conclusively isolated; keep these warnings visible in the report and inspect the small bridges on the first print.
 - Historical decision: gussets under the USB-C floor and former tie loops would eat the lid's lift clearance. A later revision removed the loops and used floor ribs, then low gussets through rear-open lid slots with a 7.85 mm seat bridge. That support layout is also superseded by the elevated narrow guides and unslotted lid described above.
-- The two tall bridges in the design are the rocker switch panel cut-out (12.2 mm, which is why the switch stands upright) and the magnet pockets in the intake face (Ø10.3, in the bed face).
+- The two tall bridges in the design are the rocker switch panel cut-out (12.2 mm, which is why the switch stands upright) and the enclosed magnet cavities (Ø10.3). Their first roof layer follows the magnet insertion pause.
 
 ## Audit of 2026-09-23 (`docs/audit-2026-09-23.md`)
 
@@ -641,3 +640,50 @@ they do not validate the subsequent geometry.
 - Pair-count precision: 34 assembly bodies give 561 possible pairs; 28 documented exceptions leave 533 generic pairwise collision tests. The important thread/mat exceptions have bounded dedicated probes. A lower overhang threshold 5 mm2 finds 31 production patches plus 2 repeats in the USB coupon; the largest is the 10.75-mm USB-seat bridge. This is compatible with the standard 100-mm2 gate and warning-free slices, not an absence of small bridges.
 - Additional rigid-path checks confirm USB insertion with PWM/pot/LEDs already fitted and left battery capture across nine shifted poses. Real-fit limits remain: 0.20–0.27 mm loaded-lid clearance, early PWM gaps around0.192 mm and a tiny conservative pin-envelope intersection 0.0000517 mm3, actual USB upper bearing, omitted wiring/charger tie buckle/switch clips, assumed ratchet dimensions, and approximate potentiometer axis height 6.0 mm in LEO versus model 6.3 mm with 0.2 mm radial bushing play. None is a confirmed new CAD obstruction; use the USB coupon and dry assembly to resolve them.
 - The tipping model's effective printed density gives 1012.8 g/21.0 degrees. Substituting current slicer part masses at unchanged mesh centroids gives 1090.1 g/20.2 degrees and 27.5 mm front margin; both use estimated hardware and unmeasured mass distributions. The audit records this uncertainty instead of silently presenting the original density estimate as a weighed result.
+
+
+## Embedded magnets and fan cable opening (2026-09-26)
+
+- Physical print feedback supersedes the previous audit at these two locations: the head's
+  3.2 mm pocket depth equalled its 3.2 mm intake-face thickness, so the cavities opened
+  through their backs. Radial skin checks did not establish an axial stop. The original
+  10 x 10 mm cable hole also lacked any plug-envelope or threading-path check.
+- Both head and cassette now have four closed Ø10.3 x 3.2 mm cavities with 1.2 mm skins
+  on both axial sides. Head cavities are local Y1.2..4.4; cassette cavities Y-4.4..-1.2.
+  Both print with cavity floors at Z1.2 and roofs starting at Z4.4. At 0.2 mm layer height,
+  `PAUSES` requests a pause before Z4.6, the first closing layer. Each part has its own
+  plate; the other black parts share the base/back plate, followed by knob and TPU plates.
+  Project 3MF stores the pauses; bare STLs do not. Nominal 3 mm discs sit 0.2 mm below the
+  cavity roof. Confirm size, flat seating and polarity before resuming each print.
+- The entire head intake face grows to 5.6 mm, moving mat, support cross and fan 2.4 mm
+  rearwards without intruding into the filter corners. Rear plenum and fan posts shorten
+  to 11.9 mm; the outside head depth remains 70 mm. The support cross has the same printed
+  geometry. Use the matching new head, cassette and back cover; the base is reusable.
+- The cable notch is 16 x 13.3 mm, local X32..48 / Y56.7..70, open through the rear edge.
+  Removing the neighbouring first vent leaves a 5.5 mm web to the next slot. The remaining
+  slots retain Y56.7..66.7 independently of the fan position, leaving a checked 3.3 mm
+  rear floor web. Place the connector into the bay with the fan/cover assembly held back before closing the cover.
+  The unchanged rear-left bearing retains its complete ring. Connector test dimensions
+  are a conservative assumed envelope, not a measurement of the user's Arctic plug.
+- New independent mesh checks cover cavity clearance, both planar axial skins on all
+  eight pockets, magnet containment, the open cable gate, connector insertion with the
+  cover held back, final cable clearance and cover movement. The former meshes are
+  negative regression fixtures. Material-body validation now distinguishes four cavity
+  boundary shells from disconnected printed parts, with generic nesting regressions in
+  the shared skill. See `docs/fan-cable-magnets-2026-09-26.md` for release evidence.
+
+- Final source SHA256 `d2d21113b80c1214a133452ce8b9820178cb5de3a1354b2a165ddce98acb4137`:
+  ten valid single-material-body print meshes; head and cassette each contain four
+  correctly oriented closed cavity shells. Export PASS with 431 coaxial pairs, ten
+  standard paths, full magnetic axial skins and the continuously swept connector route.
+  There are 561 possible assembly pairs and 29 documented assembly-stage/intentional
+  exceptions (532 generic pair tests); PWM fastening removes the head and cassette,
+  including their enclosed magnets. All four standard analyses CLEAN. Ten individual
+  slices, five production plates and the USB test plate pass without geometry warnings
+  or supports. Saved head/cassette pauses are verified before extrusion at layer 4.6.
+  Independent G-code ROI checks at all eight cavities confirm floor extrusion through
+  Z1.2, no crossing extrusion from Z1.4 through Z4.4, then first roof bridges at Z4.6.
+  Production totals: 491.4 g/16.5 h arranged; 491.7 g/17.4 h individually. The generic
+  body/cavity checker is shared-skill commit `9fedfc0`, covered by 13 regressions and
+  the full template pipeline. Actual magnetic force, disc dimensions, plug dimensions
+  and flexible wiring remain physical-fit checks. Material profiles were not changed.
