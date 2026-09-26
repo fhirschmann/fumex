@@ -1,0 +1,19 @@
+base: wall thickness p01 1.374 / p05 2.0 / median 3.0 mm (37002 of 37025 points)
+thickness base: 0 found
+/Users/fabian/Projects/fumex/.venv/lib/python3.14/site-packages/trimesh/triangles.py:550: RuntimeWarning: divide by zero encountered in divide
+  inverse_denominator = 1.0 / (dot00 * dot11 - dot01 * dot01)
+/Users/fabian/Projects/fumex/.venv/lib/python3.14/site-packages/trimesh/triangles.py:555: RuntimeWarning: invalid value encountered in subtract
+  barycentric[:, 0] = 1 - barycentric[:, 1] - barycentric[:, 2]
+head: wall thickness p01 2.4 / p05 2.4 / median 3.0 mm (64919 of 65071 points)
+thickness head: 0 found
+head_back: wall thickness p01 2.003 / p05 2.5 / median 4.0 mm (23684 of 23684 points)
+thickness head_back: 0 found
+cassette: wall thickness p01 1.3 / p05 2.5 / median 4.5 mm (20706 of 20706 points)
+thickness cassette: 0 found
+knob: wall thickness p01 0.217 / p05 1.0 / median 7.503 mm (2000 of 2000 points)
+thickness knob: 0 found
+foot: wall thickness p01 1.65 / p05 1.65 / median 4.5 mm (2000 of 2000 points)
+thickness foot: 0 found
+ball_lid: wall thickness p01 1.1 / p05 1.5 / median 3.0 mm (3262 of 3262 points)
+thickness ball_lid: 0 found
+CLEAN: 0 thickness findings in 7 meshes -> /Users/fabian/Projects/fumex/build/analysis/thickness.json

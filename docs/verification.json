@@ -1,5 +1,5 @@
 {
-  "source_sha256": "be9bd6a8160ec6ac455de6141e1824875a4e8d615f6ecf4f354fff9a2865c471",
+  "source_sha256": "8bcdd56813a043c7c57438e23a3ba295534d669e5e8ea3b35861102f24b92bf7",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -29,17 +29,17 @@
           57.2657
         ]
       ],
-      "volume_mm3": 108325.0555,
-      "triangles": 6022,
+      "volume_mm3": 110335.2072,
+      "triangles": 6006,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "d7aa2da478a6a2b5633c54a342c3eeec068d774162f90487beb55e5f244868cc",
+      "sha256": "c8d5f6c5c67433697810898a76f51b54ebd16f97b9ac5b8671718b8cf1c281bb",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "d7aa2da478a6a2b5633c54a342c3eeec068d774162f90487beb55e5f244868cc"
+      "committed_sha256": "c8d5f6c5c67433697810898a76f51b54ebd16f97b9ac5b8671718b8cf1c281bb"
     },
     "head": {
       "size_mm": [
@@ -119,17 +119,17 @@
           4.5
         ]
       ],
-      "volume_mm3": 51418.1053,
-      "triangles": 9426,
+      "volume_mm3": 51581.3329,
+      "triangles": 9404,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "4c11d5288f5c33e721a53750df3ecaef86b0d150ff8cea986f4ef751091a40a6",
+      "sha256": "2d8a4d584dad3f75d5e7a71ab77ae0582dcdde8c90f334d53b5f294a7ce3b1f0",
       "quantity": 1,
       "material": "PETG-grey",
-      "committed_sha256": "4c11d5288f5c33e721a53750df3ecaef86b0d150ff8cea986f4ef751091a40a6"
+      "committed_sha256": "2d8a4d584dad3f75d5e7a71ab77ae0582dcdde8c90f334d53b5f294a7ce3b1f0"
     },
     "knob": {
       "size_mm": [
@@ -209,23 +209,23 @@
           8.4
         ]
       ],
-      "volume_mm3": 7268.6774,
-      "triangles": 1326,
+      "volume_mm3": 7311.7327,
+      "triangles": 1306,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
       "backend": "Manifold",
-      "sha256": "5cd216fc2e6ee33a40d4b10d23f4d517fa921aaba2ce7b18fad3e927a3331533",
+      "sha256": "74de811ee80bc9a5a93de9f4370ec5d7393e2140eb06c7834a2247072f5bac8d",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "5cd216fc2e6ee33a40d4b10d23f4d517fa921aaba2ce7b18fad3e927a3331533"
+      "committed_sha256": "74de811ee80bc9a5a93de9f4370ec5d7393e2140eb06c7834a2247072f5bac8d"
     }
   },
   "color_meshes": {},
   "color_parts": {},
-  "assembly_bodies": 29,
-  "assembly_pairs": 406,
+  "assembly_bodies": 30,
+  "assembly_pairs": 435,
   "metrics": {
     "wall": 3,
     "tilt": 15,
@@ -274,6 +274,7 @@
       16,
       4.5
     ],
+    "foot_chamfer": 1,
     "insert_depth": 7,
     "insert_hole_d": 4,
     "insert_w_min": 1.6,
@@ -365,11 +366,12 @@
   },
   "intersections": [],
   "alignment": {
-    "features": 239,
+    "features": 247,
     "coaxial_pairs": {
       "ball_lid|ballast": 32,
       "ball_lid|base": 32,
       "ball_lid|driver_lid": 16,
+      "ball_lid|screws_lid": 32,
       "ballast|base": 52,
       "ballast|feet": 24,
       "ballast|head": 4,
@@ -377,6 +379,7 @@
       "ballast|led": 2,
       "ballast|pot_nut": 2,
       "ballast|screws_feet": 16,
+      "ballast|screws_lid": 8,
       "base|battery": 3,
       "base|feet": 20,
       "base|head": 4,
@@ -386,6 +389,7 @@
       "base|pot_nut": 5,
       "base|screws_feet": 8,
       "base|screws_head": 4,
+      "base|screws_lid": 8,
       "cassette|head": 4,
       "cassette|magnets": 8,
       "driver_back|head_back": 8,
@@ -407,19 +411,24 @@
   },
   "contact_volumes_mm3": {
     "head@base": 26.7615,
-    "cassette@head": 266.5163,
+    "cassette@head": 266.5171,
     "fan@head": 35.945,
     "fan@head_back": 7.5396,
     "feet@base": 54.8256,
     "pwm_board@base": 3.4731,
     "chg_module@ball_lid": 2.1945,
-    "ball_lid@base": 12.7233
+    "ball_lid@base": 14.5133
   },
   "stops": [
     {
       "name": "fan_sideways",
       "first_contact_mm": 0.5,
       "limit_mm": 1.5
+    },
+    {
+      "name": "usbc_in",
+      "first_contact_mm": 0.25,
+      "limit_mm": 0.6
     },
     {
       "name": "head_on_screws",
@@ -667,25 +676,25 @@
   "intake_lip_mm": 2.25,
   "mat_free_travel_mm": 1.62,
   "mat_squashed_percent": 0.0,
-  "mass_g": 1010.7,
+  "mass_g": 1007.8,
   "centre_of_mass_mm": [
-    69.7,
-    31.7,
-    68.2
+    69.2,
+    31.6,
+    68.4
   ],
   "foot_polygon_mm": [
-    9.0,
-    136.0,
-    2.0,
-    69.0
+    10.0,
+    135.0,
+    3.0,
+    68.0
   ],
   "tip_margins_mm": {
-    "front": 29.7,
-    "back": 37.3,
-    "left": 60.7,
-    "right": 66.3
+    "front": 28.6,
+    "back": 36.4,
+    "left": 59.2,
+    "right": 65.8
   },
-  "tip_angle_deg": 23.5,
+  "tip_angle_deg": 21.4,
   "stl_difference_mm3": {
     "base": 0.0,
     "head": -0.0,

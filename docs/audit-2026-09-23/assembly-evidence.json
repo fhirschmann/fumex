@@ -1,0 +1,282 @@
+{
+  "source_sha256": "be9bd6a8160ec6ac455de6141e1824875a4e8d615f6ecf4f354fff9a2865c471",
+  "verification_source_sha256": "be9bd6a8160ec6ac455de6141e1824875a4e8d615f6ecf4f354fff9a2865c471",
+  "source_matches_verification": true,
+  "assembly_mesh_sha256": {
+    "ball_lid.stl": "e54b1849fa57c2dfbcec326bc5c9fd2b7686cf232802e89bcafd7df352b035f7",
+    "ballast.stl": "526db9190c5cf8ad8501b8c334a2ee0af279ccf5a2511ee37927fc1dcdb26eb3",
+    "base.stl": "d7aa2da478a6a2b5633c54a342c3eeec068d774162f90487beb55e5f244868cc",
+    "battery.stl": "4b98e9f54b36a7f7284ddc1410248ae5f1f0b86b1d23e0435e5ef2488c510bdf",
+    "cassette.stl": "9c7a1d454aaae841ec7726ab248f9508390fba472f4abbe77ff330b1422b0318",
+    "chg_module.stl": "b361ddef85be56b6a84f3f13d51d22b6bf8a2326078c554e79c37018958b2737",
+    "chg_sink.stl": "fe3d9a6bcd637e9aacd49130bd6c76f065f77d3d0f1aab54df888a61794aebb9",
+    "driver_back.stl": "82e130aac3ff07d52522df4be3d6251baf438ecce11fda8def4a1d79a751bcf1",
+    "driver_fan.stl": "916dbe71e78046cadc96387084fecae5e7b91e0a345463eab28da93158ffc265",
+    "driver_feet.stl": "3d8eecb88ef30fe749a9aea6ff2da759476281267433891dc6a43431ac68717e",
+    "driver_head.stl": "9ae67a922564e5d12bebd430a0bcf416f72b2a964aad3704e5518530df5fa4d9",
+    "driver_lid.stl": "0dc3f588a43709b86bdaf008a01040a7b8bcde871c68c0a633d7179a9120aece",
+    "fan.stl": "07df4e9d600d52b944b304fb871947e62f31482cb6b874f6270ca310cf76d3ff",
+    "feet.stl": "a7a3307a26c4acdff9141c40debadec78b4bb791e29d27340ca41e4a7e4dd075",
+    "filter.stl": "93ec9f09373707af0936c27aba55673ff57e7597a6fe18ace3533c5aa3ece829",
+    "head.stl": "fa0ad571a6d6a869ea7534ca5eef06c9eb53c17606bc2c8ece45c923f0fdcdc3",
+    "head_back.stl": "b060af84fd798cbcb143cac50744252f6988cec85a6bed61d541848e9217fee6",
+    "knob.stl": "500ed4f277e8583cafc5d59ab826fb498d7cc86da7a2139479e504392ec4b205",
+    "led.stl": "2f18ffe951a113bec44025ee7ccff483f7a4e1d843b96161d56386f0f9cf4740",
+    "magnets.stl": "99b75bc6e63fad31028a2c2d761702a47c8bd2cbe58ae5ac08385dc362c051d5",
+    "pot.stl": "9e17519d5d6563039dfcabfc7a94ecca96aa5695198303abdfca64fa20241bc3",
+    "pot_nut.stl": "0d9a82f31021fe98f322619305f2d5283513e2e83af633115c113fdf926a66a5",
+    "pwm_board.stl": "45e6ee0970839e7f8633482de9fec02cdad7c485b366a2cb59768039bbc90c0e",
+    "screws_back.stl": "a6c901b37e47c9d124a35c114336d16cfa28c31aae0d83e61c891a2cb55f92ee",
+    "screws_fan.stl": "7520c53fba19aab36ba24532430bb5dcaeb52e69ccc04bf77f651dd2aeaee486",
+    "screws_feet.stl": "7cac54ba813106135be3445d2dc851db5f1cd59909430658e7ffc4e683539a6d",
+    "screws_head.stl": "3ba9f1a9c9db6895a7b351de3419d9c5370d5311dd9a6ca70e8c76df634a94c9",
+    "switch.stl": "b0188f68b29d6bca4ef1e3391314874a9c35934d93f434796988b603cf40e004",
+    "usbc.stl": "bce547f306b71851ef24eafb03c79b74a6a2cc2c9ebd573df44d527af2531b23"
+  },
+  "collision_threshold_mm3": 0.01,
+  "sweeps": [
+    {
+      "name": "usb_pushed_inward",
+      "moving": [
+        "usbc"
+      ],
+      "fixed": [
+        "base",
+        "head",
+        "battery",
+        "pwm_board",
+        "switch",
+        "ball_lid",
+        "chg_module",
+        "chg_sink"
+      ],
+      "direction": [
+        0,
+        -1,
+        0
+      ],
+      "length_mm": 15,
+      "step_mm": 0.25,
+      "collisions": 0,
+      "first_mm": null,
+      "max_volume_mm3": 0
+    },
+    {
+      "name": "charger_lift_against_actual_tray",
+      "moving": [
+        "chg_module",
+        "chg_sink"
+      ],
+      "fixed": [
+        "ball_lid"
+      ],
+      "direction": [
+        0,
+        0,
+        1
+      ],
+      "length_mm": 10,
+      "step_mm": 0.25,
+      "collisions": 19,
+      "first_mm": 0.25,
+      "max_volume_mm3": 15.000011
+    },
+    {
+      "name": "charger_slide_right_against_actual_tray",
+      "moving": [
+        "chg_module",
+        "chg_sink"
+      ],
+      "fixed": [
+        "ball_lid"
+      ],
+      "direction": [
+        1,
+        0,
+        0
+      ],
+      "length_mm": 10,
+      "step_mm": 0.25,
+      "collisions": 40,
+      "first_mm": 0.25,
+      "max_volume_mm3": 59.102953
+    },
+    {
+      "name": "charger_slide_left_against_actual_tray",
+      "moving": [
+        "chg_module",
+        "chg_sink"
+      ],
+      "fixed": [
+        "ball_lid"
+      ],
+      "direction": [
+        -1,
+        0,
+        0
+      ],
+      "length_mm": 10,
+      "step_mm": 0.25,
+      "collisions": 40,
+      "first_mm": 0.25,
+      "max_volume_mm3": 155.650038
+    },
+    {
+      "name": "fan_cover_screws_as_one_assembly",
+      "moving": [
+        "fan",
+        "head_back",
+        "screws_fan"
+      ],
+      "fixed": [
+        "head",
+        "base",
+        "screws_head",
+        "chg_module",
+        "chg_sink"
+      ],
+      "direction": [
+        0,
+        0.9659258262890683,
+        0.25881904510252074
+      ],
+      "length_mm": 60,
+      "step_mm": 0.5,
+      "collisions": 0,
+      "first_mm": null,
+      "max_volume_mm3": 0
+    },
+    {
+      "name": "lid_charger_heatsink_10mm_lift",
+      "moving": [
+        "ball_lid",
+        "chg_module",
+        "chg_sink"
+      ],
+      "fixed": [
+        "base",
+        "ballast",
+        "pwm_board",
+        "usbc",
+        "switch"
+      ],
+      "direction": [
+        0,
+        0,
+        1
+      ],
+      "length_mm": 10,
+      "step_mm": 0.25,
+      "collisions": 0,
+      "first_mm": null,
+      "max_volume_mm3": 0
+    },
+    {
+      "name": "pwm_pot_straight_retraction",
+      "moving": [
+        "pwm_board",
+        "pot"
+      ],
+      "fixed": [
+        "base",
+        "battery",
+        "usbc",
+        "ball_lid",
+        "switch"
+      ],
+      "direction": [
+        0,
+        1,
+        0
+      ],
+      "length_mm": 13,
+      "step_mm": 0.25,
+      "collisions": 51,
+      "first_mm": 0.5,
+      "max_volume_mm3": 1925.399834
+    },
+    {
+      "name": "pwm_pot_straight_retraction_switch_removed",
+      "moving": [
+        "pwm_board",
+        "pot"
+      ],
+      "fixed": [
+        "base",
+        "battery",
+        "usbc",
+        "ball_lid"
+      ],
+      "direction": [
+        0,
+        1,
+        0
+      ],
+      "length_mm": 13,
+      "step_mm": 0.25,
+      "collisions": 15,
+      "first_mm": 9.5,
+      "max_volume_mm3": 1159.79982
+    }
+  ],
+  "ballast_opening": {
+    "probe_bounds_mm": [
+      [
+        129.1,
+        59.25,
+        25
+      ],
+      [
+        138.1,
+        62.75,
+        31
+      ]
+    ],
+    "proven_clear_opening_area_mm2": 31.5,
+    "intersection_volumes_mm3": {
+      "ballast": 31.5,
+      "base": 0.0,
+      "ball_lid": 0.0,
+      "switch": 0.0,
+      "chg_module": 0.0,
+      "chg_sink": 0.0
+    }
+  },
+  "lid_screw_stack_mm": {
+    "requested_under_head_length": 12,
+    "lid_thickness": 3,
+    "counterbore_depth": 1.9,
+    "remaining_lid_under_head": 1.1,
+    "needed_blind_hole_depth_before_tip_allowance": 10.9,
+    "modelled_pilot_hole_depth": 10,
+    "nominal_tip_beyond_pilot_bottom": 0.9,
+    "note": "Actual forming-screw tip/head geometry is unspecified and is not modelled."
+  },
+  "head_screw_pose_mm": {
+    "head_underside_untilted_z": 51,
+    "counterbore_floor_untilted_z": 50.4,
+    "nominal_gap_below_head": 0.6,
+    "thread_entry_after_seating": 5.6,
+    "thread_entry_reported": 5,
+    "corrected_screw_intersections_mm3": {
+      "base": 0.0,
+      "head": 3e-06,
+      "fan": 0.0,
+      "head_back": 0.0
+    },
+    "corrected_driver_intersections_mm3": {
+      "base": 0.0,
+      "head": 0.0,
+      "fan": 0.0,
+      "cassette": 0.0,
+      "chg_module": 0.0,
+      "chg_sink": 0.0
+    }
+  },
+  "limitations": [
+    "Rigid exported envelopes only; wiring, connectors and elastic deformation are absent.",
+    "A blocked straight charger or PWM path is not proof that every tilted or flexible assembly path is impossible.",
+    "The 10 mm loaded-lid lift does not prove its complete extraction from the bay.",
+    "USB displacement is a geometric lack of retention; adhesive or a separately specified retaining part could address it."
+  ]
+}

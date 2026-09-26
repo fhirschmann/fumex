@@ -185,6 +185,26 @@ All seven parts print without supports. Evidence and the remaining soft spots:
 - Deliberately **not** fixed: a 45° gusset under the USB-C channel floor or under the tie loops would reach 6 mm down and eat exactly the clearance the ballast lid needs to lift out (`lid_off`). A 6 mm ledge in PETG is routine; the lid coming out is not negotiable.
 - The two tall bridges in the design are the rocker switch panel cut-out (12.2 mm, which is why the switch stands upright) and the magnet pockets in the intake face (Ø10.3, in the bed face).
 
+## Audit of 2026-09-23 (`docs/audit-2026-09-23.md`)
+
+An external audit of commit `a90c581`. What it found and what happened to it:
+
+| ID | Finding | Status |
+|---|---|---|
+| A1 | The switch notch in the ballast lid opened the trough into the electronics, 9 x 3.5 mm | fixed: `ball_switch_fill()` closes the trough under the notch, behind the switch body |
+| A2 | The USB-C board could be pushed 15 mm into the bay by a cable | fixed: the channel keeps a 2 mm end wall (the inner cut starts at the board, not 3 mm in front of it) with a notch for the wires; new `usbc_in` stop |
+| A3 | Assembly step named the wrong fan direction, and "fleece side first" contradicts the parts list | fixed in README: blowing towards the cover, and the mat's end position is named instead of the order |
+| A4 | The tab over the charge module made both straight insertion and straight removal impossible; `chg_off` did not include the lid | fixed: tab removed, board drops straight into the tray; `chg_off` now has `ball_lid` as an obstacle |
+| A5 | M3 x 12 reached 0.9 mm past the core hole and the head bore on a 1.1 mm ring | fixed: `lid_pocket` = 1.2 (ring 1.8 mm), screws M3 x 10, `screws_lid` are assembly bodies now, and an assert ties the length to `pt_depth` |
+| G1 | The cassette's side bevel was cut off by the plan prism - 4.5 mm of square wall on both long sides | fixed: `cass_face()` is the finished contour and the bevel comes off THAT. `cass_c` 2.0 -> 1.2, because the bevel now starts at `plan_r` and has to clear the magnet pockets |
+| S1 | Tip angle ignored the foot height and used the full pad outline | fixed: lever arm from the sole, contact patch inset by `foot_chamfer`. 23.5 -> 21.4 degrees |
+| V1 | `cover_off` left the fan behind although it is bolted to the cover; `filter/head` exception was left over from the gussets | fixed: `cover_off` and `fan_out` move fan and screws with the cover; exception dropped, mat displacement is 0.0 anyway |
+| D1 | README and AGENTS carried stale numbers | fixed: part sizes, insert count, ballast volume, masses, tip angle, footprint |
+| G2 | The top head corners are the intersection of an R3.5 plan radius and an R6 elevation radius, which is not a tangential 3D corner - about 38 degrees of normal jump | **not fixed.** A real corner blend needs a swept fillet, and the radii are already capped by the magnet pockets and the wall. Accepted as a form edge |
+| G3 | `plan_prism()` uses the base footprint in the head's own frame, so after the 15 degree tilt the two footprints are not identical at the joint: about 1.26 mm of base lip front and back | **not fixed.** The side edges - the ones the user pointed at - do run through. Closing the front and back would mean deriving both parts from one contour defined in world coordinates |
+
+Everything the audit lists as "verify on the real part" stays open: magnet force, knob press fit, switch body depth, the charge module's actual pad layout against the tray's end ledges, insert pull-out, bridge quality on the small overhangs, and every thermal and airflow figure.
+
 ## Open items
 
 - Magnets Ø10 × 3 not measured; holding force through the printed faces not tested. Print the fit test before committing to the full print.
