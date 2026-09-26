@@ -1,0 +1,14 @@
+Slice head: PASS
+Slice base: PASS
+Slice head_back: PASS
+Slice cassette: PASS
+Slice foot: PASS
+Slice knob: PASS
+Slice ball_lid: PASS
+fumex_all_parts.3mf: 10 parts on 4 plates, slicing every plate before publishing
+Slice plate Head: PASS, filament use {1: 229.6} g
+Slice plate Base and back cover: PASS, filament use {1: 178.97} g
+Slice plate Grey parts: PASS, filament use {2: 55.95} g
+Slice plate TPU feet: PASS, filament use {3: 5.98} g
+Project 3MF published -> stl/fumex_all_parts.3mf
+PASS: 7 slices; 10 parts; 470.9 g; 16.1 h; project 3MF with 4 plates: 470.5 g; 15.4 h as plates
