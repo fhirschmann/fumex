@@ -147,8 +147,7 @@ chg_br = [3.6, 1.4, 2, 2.5];  // end brackets: thickness (x; 3 left only 1 mm be
 chg_vent = [4, 6.4, 6, 14, 0.5];   // slot width (x), pitch, count, depth (y), stagger per slot
 
 /* [Ventilation slots in the back wall (user, 2026-09-22), above the ballast lid] */
-vent = [2, 5, 12, 16, 0.8];   // slot width, pitch, count, height, rise per slot (staggered, or their
-                     // corners are collinear in the back face and every backend leaves a degenerate triangle)
+vent = [2, 5, 12, 16, 0];     // slot width, pitch, count, height, rise per slot (user: not staggered)
 vent_xz = [22, 32];  // left end and lower edge of the row
 
 /* [USB-C charging socket: PD trigger module (pads 1-4 open = 5 V) in the back wall] */

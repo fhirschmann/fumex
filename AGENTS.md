@@ -55,7 +55,10 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   - Two grooved end brackets take the short edges of the board; the long edges are no good, the board carries parts up to them. Brackets 3.6 mm thick (at 3 the 2 mm groove left 1 mm of wall) and only as deep as parts plus PCB, because the heatsink is wider than the board and hangs free behind them. The board sits 2 mm off the floor so the heatsink, which is 1.5 mm taller than the board at each edge, clears it.
   - **The vent works because the head already has a channel:** between the filter tube (127.5) and the shell (139) a 5.75 mm gap runs all round, closed at the front by the intake face and open at the back into the plenum, under the fan. Slots in the head floor meet it, so the fan pushes filtered air down into the bay and out of the back wall slots; with the fan off the same path is a chimney. Nothing bypasses the mat.
   - The vent is a row of six slots, not one opening: printed intake-face-down the head floor is a vertical wall, and a single 38 mm opening left a 113 mm² flat bridge at its far edge.
-  - Ventilation slots in the back wall (user: slots, not honeycomb) sit above the ballast lid - an assert keeps them there, below it they would let the offcuts out.
+  - Ventilation slots in the back wall (user: slots, not honeycomb, and not staggered) sit above the ballast
+    lid - an assert keeps them there, below it they would let the offcuts out. Aligned they export clean
+    here (12 slots, 2 mm wide, 5 mm pitch); the collinear-corner trap that hit the old slot rows did not
+    reappear, so `vent[4]` is 0. If it ever does come back, stagger before reaching for anything else.
 - Ballast trough over the full width, lower, with the USB-C socket above it (user, 2026-09-22): x 3–142, y 53–71, rim 26, 44.5 cm³ or about 209 g. 24.5° of tip angle at 1.04 kg.
   - Everything above the lid has to leave it 10 mm of lift: the USB-C channel went to z 45 and the cable tie loops to z 45. The channel's floor is only `usbc_floor` = 6 mm deep, because a full-length floor at that height is a 198 mm² flat overhang and a 45° gusset would stand in the trough.
   - The switch moved to y 37 / z 34: its well box reached into the trough's front wall, and higher up its bezel poked through the joint plane. Its pins in turn forced the PWM board 4 mm left (`pot_x` 108).
