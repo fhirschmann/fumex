@@ -1,5 +1,5 @@
 {
-  "source_sha256": "de7e0253853cb4c4a4d02d9a472bb979e3978a6be3a9c51b0d79e99fb47493dd",
+  "source_sha256": "8695eb4437d058d49848b10a04ae8135ce3d4d442b0cfda0f1f98323dbe0237a",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
