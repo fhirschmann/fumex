@@ -13,12 +13,12 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "6e846ec6603aa41f2e3dc79ca4766e23f01189c9514d1381aa9c802ba3364e58",
+      "source_sha256": "0088ea0a20c28cdb91ba64c7d549a38cf8f0659f6f208a959aa4c5486232b0e9",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 3.728,
-      "grams": 119.654,
+      "hours": 3.714,
+      "grams": 119.569,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -71,7 +71,7 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.689,
+      "hours": 2.688,
       "grams": 59.368,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -197,12 +197,12 @@
     {
       "part": "filter_support",
       "quantity": 1,
-      "material": "PETG-black",
+      "material": "PETG-grey",
       "passed": true,
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "d2908945797102c165785faeeaca6b7584c178ffc5274c0f61520994ce2c5f5d",
+      "source_sha256": "67f6d270d0323cafd79b3b8c5486ffde8433429fb64c7d4cd155f8305b336307",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -229,7 +229,7 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "068a2cf38c5fa3162ecda69c00a659c6932c8e8220da314509fbd53d5400b244",
+      "source_sha256": "b13d644abc80fc40e14b636df845f5f683be473d3b85599335b2c9ffae51a48e",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -277,13 +277,13 @@
     }
   ],
   "total_parts": 11,
-  "total_grams_individual_plates": 491.6,
+  "total_grams_individual_plates": 491.5,
   "total_hours_individual_plates": 17.4,
   "production_gcode": false,
   "project_3mf": {
     "file": "stl/fumex_all_parts.3mf",
     "parts": 11,
-    "plates": 5,
+    "plates": 6,
     "layout": [
       {
         "plate": 1,
@@ -298,31 +298,41 @@
       },
       {
         "plate": 2,
-        "name": "Base and support cross",
+        "name": "Base",
         "parts": [
-          "base",
-          "filter_support"
+          "base"
         ],
         "size_mm": [
           145.0,
-          168.8
+          74.0
         ]
       },
       {
         "plate": 3,
-        "name": "Grey covers",
+        "name": "Cassette",
         "parts": [
-          "ball_lid",
-          "cassette",
-          "head_back"
+          "cassette"
         ],
         "size_mm": [
-          285.0,
-          165.3
+          143.0,
+          138.0
         ]
       },
       {
         "plate": 4,
+        "name": "Grey covers and support",
+        "parts": [
+          "ball_lid",
+          "filter_support",
+          "head_back"
+        ],
+        "size_mm": [
+          201.3,
+          239.5
+        ]
+      },
+      {
+        "plate": 5,
         "name": "Knob",
         "parts": [
           "knob"
@@ -337,7 +347,7 @@
         ]
       },
       {
-        "plate": 5,
+        "plate": 6,
         "name": "TPU feet",
         "parts": [
           "foot",
@@ -351,7 +361,7 @@
         ]
       }
     ],
-    "total_hours_plates": 16.7,
+    "total_hours_plates": 16.8,
     "total_grams_plates": 493.3,
     "multicolour_parts": {
       "knob": [
@@ -360,7 +370,7 @@
     },
     "multicolour_slices": {
       "Knob": {
-        "plate": 4,
+        "plate": 5,
         "hours": 0.55,
         "grams_by_filament": {
           "2": 6.37,
@@ -385,7 +395,7 @@
           }
         ]
       },
-      "Grey covers": {
+      "Cassette": {
         "plate": 3,
         "pause_before_layer_mm": [
           4.6
@@ -415,11 +425,11 @@
           "wall_loops": "4"
         }
       },
-      "Base and support cross": {
+      "Base": {
         "plate": 2,
-        "hours": 3.97,
+        "hours": 3.71,
         "grams_by_filament": {
-          "1": 126.15
+          "1": 119.57
         },
         "warnings": "",
         "process_overrides": {
@@ -428,11 +438,24 @@
           "wall_loops": "4"
         }
       },
-      "Grey covers": {
+      "Cassette": {
         "plate": 3,
-        "hours": 5.8,
+        "hours": 2.92,
         "grams_by_filament": {
-          "2": 128.53
+          "2": 60.86
+        },
+        "warnings": "",
+        "process_overrides": {
+          "enable_support": "0",
+          "only_one_wall_first_layer": "1",
+          "wall_loops": "4"
+        }
+      },
+      "Grey covers and support": {
+        "plate": 4,
+        "hours": 3.23,
+        "grams_by_filament": {
+          "2": 74.24
         },
         "warnings": "",
         "process_overrides": {
@@ -442,7 +465,7 @@
         }
       },
       "Knob": {
-        "plate": 4,
+        "plate": 5,
         "hours": 0.55,
         "grams_by_filament": {
           "2": 6.37,
@@ -456,7 +479,7 @@
         }
       },
       "TPU feet": {
-        "plate": 5,
+        "plate": 6,
         "hours": 0.6,
         "grams_by_filament": {
           "3": 5.98
@@ -470,7 +493,7 @@
       }
     },
     "own_infill_parts": 5,
-    "sha256": "9ef80837c26d77fe4f8be59faa037b3809f949f5a3c7c344cbbc53c2187e39ac"
+    "sha256": "4649766ae0f500292f0a30198022b2b88b9a7d41dceea6932ee940460e2a2ca3"
   },
   "test_3mf": {
     "file": "stl/fumex_usb_fit.3mf",
@@ -515,7 +538,7 @@
       }
     },
     "own_infill_parts": 0,
-    "sha256": "3645367f7c61e83498c94dc399fd516956cc850fa771454dea5bd7b40959a177",
+    "sha256": "afafea8025f40d61688dcfdbc6f0fa301c2c027c49974604ed37e1ecc968c864",
     "process": {
       "wall_loops": 4,
       "top_shell_layers": 5,

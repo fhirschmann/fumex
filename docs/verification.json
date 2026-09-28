@@ -1,5 +1,5 @@
 {
-  "source_sha256": "8af777e4b417c29a9750ecd9a2564c5d60e102417ac7bac0df69d412be3ff7d0",
+  "source_sha256": "7f72614137f5de59d5c862275ab7e72ba9a5a2b3b75d14c428e4877bb0866d31",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -29,8 +29,8 @@
           57.2657
         ]
       ],
-      "volume_mm3": 109507.2106,
-      "triangles": 11408,
+      "volume_mm3": 109432.8591,
+      "triangles": 11232,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
@@ -40,10 +40,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "6e846ec6603aa41f2e3dc79ca4766e23f01189c9514d1381aa9c802ba3364e58",
+      "sha256": "0088ea0a20c28cdb91ba64c7d549a38cf8f0659f6f208a959aa4c5486232b0e9",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "6e846ec6603aa41f2e3dc79ca4766e23f01189c9514d1381aa9c802ba3364e58"
+      "committed_sha256": "0088ea0a20c28cdb91ba64c7d549a38cf8f0659f6f208a959aa4c5486232b0e9"
     },
     "head": {
       "size_mm": [
@@ -278,10 +278,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "d2908945797102c165785faeeaca6b7584c178ffc5274c0f61520994ce2c5f5d",
+      "sha256": "67f6d270d0323cafd79b3b8c5486ffde8433429fb64c7d4cd155f8305b336307",
       "quantity": 1,
-      "material": "PETG-black",
-      "committed_sha256": "d2908945797102c165785faeeaca6b7584c178ffc5274c0f61520994ce2c5f5d"
+      "material": "PETG-grey",
+      "committed_sha256": "67f6d270d0323cafd79b3b8c5486ffde8433429fb64c7d4cd155f8305b336307"
     },
     "usbc_fit_base": {
       "size_mm": [
@@ -312,10 +312,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "068a2cf38c5fa3162ecda69c00a659c6932c8e8220da314509fbd53d5400b244",
+      "sha256": "b13d644abc80fc40e14b636df845f5f683be473d3b85599335b2c9ffae51a48e",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "068a2cf38c5fa3162ecda69c00a659c6932c8e8220da314509fbd53d5400b244"
+      "committed_sha256": "b13d644abc80fc40e14b636df845f5f683be473d3b85599335b2c9ffae51a48e"
     },
     "usbc_fit_lid": {
       "size_mm": [
@@ -1257,7 +1257,7 @@
   "intake_lip_mm": 2.25,
   "mat_free_travel_mm": 1.62,
   "mat_squashed_percent": 0.08,
-  "mass_g": 1035.0,
+  "mass_g": 1034.9,
   "centre_of_mass_mm": [
     67.4,
     30.7,
@@ -2175,13 +2175,13 @@
       "sections": [
         {
           "local_z_mm": 45,
-          "area_mm2": 65.123,
-          "minimum_mm2": 64
+          "area_mm2": 38.464,
+          "minimum_mm2": 38
         },
         {
           "local_z_mm": 47,
-          "area_mm2": 88.423,
-          "minimum_mm2": 87
+          "area_mm2": 71.771,
+          "minimum_mm2": 71
         }
       ],
       "underside": [
@@ -2214,13 +2214,13 @@
       "sections": [
         {
           "local_z_mm": 45,
-          "area_mm2": 65.08,
-          "minimum_mm2": 64
+          "area_mm2": 38.421,
+          "minimum_mm2": 38
         },
         {
           "local_z_mm": 47,
-          "area_mm2": 88.327,
-          "minimum_mm2": 87
+          "area_mm2": 71.676,
+          "minimum_mm2": 71
         }
       ],
       "underside": [
@@ -2238,6 +2238,58 @@
         }
       ],
       "underside_angle_deg": 47.726
+    }
+  ],
+  "front_base_silhouette": [
+    {
+      "x_mm": 25.5,
+      "tested_offsets_mm": [
+        -4.55,
+        -4.0,
+        -2.0,
+        0.0,
+        2.0,
+        4.0,
+        4.55
+      ],
+      "reference_offsets_mm": [
+        -8,
+        8
+      ],
+      "world_z_range_mm": [
+        33,
+        38.3
+      ],
+      "z_step_mm": 0.1,
+      "compared_rays": 378,
+      "maximum_profile_error_mm": 0.0,
+      "maximum_outward_step_mm": 0.0,
+      "neighbour_profile_spread_mm": 0.0
+    },
+    {
+      "x_mm": 119.5,
+      "tested_offsets_mm": [
+        -4.55,
+        -4.0,
+        -2.0,
+        0.0,
+        2.0,
+        4.0,
+        4.55
+      ],
+      "reference_offsets_mm": [
+        -8,
+        8
+      ],
+      "world_z_range_mm": [
+        33,
+        38.3
+      ],
+      "z_step_mm": 0.1,
+      "compared_rays": 378,
+      "maximum_profile_error_mm": 0.0,
+      "maximum_outward_step_mm": 0.0,
+      "neighbour_profile_spread_mm": 0.0
     }
   ],
   "front_mat_contact": {

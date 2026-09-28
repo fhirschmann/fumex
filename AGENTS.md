@@ -22,7 +22,8 @@ Internal notes for coding agents (Claude, Codex). The README is public and stays
 ## User constraints and preferences
 
 - Bench tool, no child-safety requirement. Plain and functional: no logo, no QR code, no decorative grooves (user, 2026-09-21).
-- Two colours, part by part: base, head and support cross in Bambu PETG black; cassette, back cover, ballast lid and knob in grey (back cover and ballast lid changed at the user's request on 2026-09-28). The grey knob now has a dark housing-colour pointer inlay (user, 2026-09-28); only its separate plate uses a prime tower. Other parts remain single-colour.
+- Two colours, part by part: base and head in Bambu PETG black; cassette, back cover, ballast lid, support cross and knob in grey (back cover, ballast lid and support cross changed at the user's request on 2026-09-28). The grey knob has a dark housing-colour pointer inlay (user, 2026-09-28); only its separate plate uses a prime tower. Other parts remain single-colour.
+- Current production layout (user, 2026-09-28): plate 1 head, plate 2 base, plate 3 cassette, plate 4 grey back cover / ballast lid / support cross, plate 5 knob, plate 6 TPU feet. Head and cassette have separate magnet-pause plates again; the earlier shared cassette/cover/lid plate is superseded. The grey support cross retains 100% infill.
 - **The viewer colours are deliberately not the filament colours** (user, 2026-09-22): black PETG renders as a
   silhouette on screen and the geometry disappears, so `VIEWER["parts"]` uses lifted greys. Do not "correct"
   them back to #1a1b1d; the real colours live in `FILAMENTS`, the plate names and the README.
@@ -158,7 +159,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   `head_at()` so it mirrors the chamfer on the cover's lower edge; both sit behind `head_y[4]`, where the rim
   carries no head wall. The cover's lower edge had only 0.9 mm of the rim chamfer left on it, because the
   joint plane cuts that chamfer off `cover_gap` above the outline's own bottom edge; now it is the full 1.2.
-- Filter cassette held by four enclosed magnet pairs. Head and cassette each pause before the 4.6 mm layer for inserting four discs, then close the cavities. Mark the same pole on every disc and place the marked face upwards on both print plates; the installed mating faces then attract. No glue is required. Two 45° finger scoops in the side edges of the intake face get a finger behind the flange. The redundant half-round mat notches were removed at the user's request on 2026-09-23; the intake lip is continuous.
+- Filter cassette held by four enclosed magnet pairs. Head and cassette each pause on their own plates 1 and 3 before the 4.6 mm layer for inserting four discs, then close the cavities. The grey back cover, ballast lid and support cross share plate 4 without an insertion pause. Mark the same pole on every disc and place the marked face upwards on both magnet plates; the installed mating faces then attract. No glue is required. Two 45° finger scoops in the side edges of the intake face get a finger behind the flange. The redundant half-round mat notches were removed at the user's request on 2026-09-23; the intake lip is continuous.
 - **The chamber has a rear lip too** (`mat_stop()`, user asked 2026-09-23 what stops the mat falling into the
   fan - nothing did). The mat's back face rested on the four gusset corners only, 7.8 % of it, with 10.5 mm
   of clear air to the fan frame, while the fan pulls it that way with about 1 N at 69 Pa. The lip closes the
@@ -174,7 +175,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     no backing grid. The current support cross below supersedes that geometric finding; bowing and loose
     fibres remain unmodelled, and `fan_visual()` is not a measured blade envelope.
 - **A separate reinforced support cross backs the mat** (`filter_support`, user, 2026-09-23). It is the eighth
-  print type, making eleven physical printed pieces including the four feet: black PETG, 123 x 123 x 9.8 mm,
+  print type, making eleven physical printed pieces including the four feet: grey PETG, 123 x 123 x 9.8 mm,
   printed with the mat-facing side flat on the bed and the four end posts upright, at 100% infill.
   Integrating the cross into the intake-face-down head would create long unsupported bridges.
   - `mat_support` defines 4 mm wide, 5 mm deep bars (formerly 2.4 x 3.2). Four concave R4 corners
@@ -219,6 +220,9 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     at world z = 31.2 + 1.1 y for support-free printing and PWM clearance. The deeper
     narrow wall attachment has no broad pedestal feet; the slope shortens the extension
     locally, so this is not a full extra 6 mm of cylinder everywhere.
+    Its additional wall link is clipped to the actual curved `base_joint_envelope()`
+    so it cannot project beyond the front face. Only the link is clipped; the working
+    post and downward sweep retain their complete geometry.
     The original head clearance template is unchanged; its 15 mm downward sweep
     encloses the extension. Rear bosses remain Ø10 x 9 mm with existing cover notches.
   - The head has short Ø12.2 mm caps from local z59.5 to z62.3,
@@ -822,7 +826,7 @@ they do not validate the subsequent geometry.
   insert-pocket wall thickness and verifying the complete service path after reinforcement.
   Project scripts remain identical to the shared skill.
 
-## Grey covers and closer USB side fit (2026-09-28)
+## Grey covers and closer USB side fit (2026-09-28; historical plate layout)
 
 - The user requests a grey back cover and ballast lid, matching the cassette and knob.
   Both use `PETG-grey` (filament 2) in production, with matching OpenSCAD assembly colours,
@@ -916,7 +920,11 @@ they do not validate the subsequent geometry.
   blocks refreshing the local file URL; the open local tabs require a manual reload.
 
 
-## Restored narrow front insert posts with deeper wall roots (2026-09-28)
+## Restored narrow front insert posts with deeper wall roots (2026-09-28; before front-face cleanup)
+
+- The source measurements and five-plate release results in this section describe the
+  preceding revision. The later front-face cleanup and six-plate layout below supersede
+  its wall-connector detail, black support-cross colour and shared cassette/cover plate.
 
 - The user's correction clarifies that only the broad reinforcement feet were unwanted.
   Removing the insert posts and their screws was an incorrect interpretation. Restore
@@ -965,3 +973,59 @@ they do not validate the subsequent geometry.
   diagnostics. The shared grey plate, dark knob pointer and both magnet pauses
   with 30 mm bed movement remain unchanged. Both viewer files and affected
   documentation images are rebuilt; local file-URL tabs require a manual reload.
+
+
+## Front-face cleanup, separate cassette plate and grey support cross (2026-09-28)
+
+- The user requests removal of the small protruding pedestal left at the front-wall
+  attachment. This is a local surface correction: retain the functional front insert
+  posts, their pockets and seats, and all four M3 x 8 head fasteners. The earlier
+  instruction to remove the broad reinforcement feet does not authorize removing
+  the working fastening interface or changing the already printed head.
+- The added wall link had been bounded by a vertical extrusion of `base_outline()`.
+  That footprint reaches y0, but the actual curved `base_joint_envelope()` begins
+  at y1.2505 at world z38. The mismatch left 74.354 mm3 of exterior stock across
+  the two links. Clip only the added link to the true curved housing envelope;
+  preserve the functional bosses, their downward sweeps and the existing head.
+  This diagnosis comes from an independent geometry comparison, not a wall-thickness
+  failure. Check the local silhouette against the neighbouring unmodified wall as
+  well as the retained attachment material and complete assembly path.
+- The cassette returns to its own production plate 3. The head remains alone on
+  plate 1; both keep their 4.6 mm magnet-insertion pauses and 30 mm bed lowering.
+  This supersedes the shared cassette/back-cover/ballast-lid pause plate.
+- The support cross changes from black to grey PETG, retaining its geometry, spring
+  grip and 100% infill. It now shares plate 4 with the grey back cover and ballast lid.
+  The base prints alone on plate 2. Plate 5 holds the grey knob and dark pointer with
+  its prime tower; plate 6 holds the TPU feet. There are six production plates.
+- Filament slots remain 1 dark PETG, 2 grey PETG, 3 TPU and 4 dark PETG for the knob
+  pointer. Slots 1 and 4 use the same dark spool. The non-magnet grey plate has no
+  insertion pause. Retain the existing print orientations and first-layer wall rule.
+- Shared-skill commit `ad70b4f` records clipping root connectors to the actual curved
+  housing envelope and independently checking the exterior silhouette, while preserving
+  functional above-joint posts and the already printed mating part.
+- Final source SHA256: `7f72614137f5de59d5c862275ab7e72ba9a5a2b3b75d14c428e4877bb0866d31`.
+  Full export passes for ten print meshes, one multicolour part, 431 coaxial feature
+  pairs, nine standard paths and 561 assembly pairs. All four head fasteners,
+  ratchet access, retained root material and complete PWM service route pass.
+  The front silhouette check compares 378 rays per post against the neighbouring
+  wall; maximum profile error is below 0.000001 mm. The preceding protruding
+  revision fails this check with a 1.250523 mm outward step.
+- Independent final-mesh comparison removes exactly 74.351513 mm3 of exterior
+  stock, adds none and leaves the complete above-joint geometry unchanged.
+  Interior difference is 0.0000031 mm3 numerical noise. All nine other print
+  meshes are geometrically unchanged; head, back cover, lid and knob remain
+  byte-identical. The base is one watertight body with no degenerate faces.
+  Islands, overhangs, thickness and fins are CLEAN for the changed base.
+  These are geometric checks, not a measured breaking-load result.
+- All ten individual slices, six production plates and the USB fit plate pass
+  without supports or slicer warnings. Base: 119.569 g / 3.714 h. Production:
+  493.3 g / 16.8 h arranged, or 491.5 g / 17.4 h as individual single-colour
+  diagnostics. The grey cover/support plate occupies 201.3 x 239.5 mm and uses
+  74.24 g / 3.23 h. The support cross remains 100% infill with filament slot 2.
+  Only plates 1 and 3 pause before 4.6 mm; their actual G-code moves from
+  z4.4 to z34.4 and restores z4.4. First-layer single walls and later four-wall
+  settings are retained on all plates. The USB fit plate remains 10.02 g / 1.04 h.
+- Rebuilt `build/viewer.html`, `docs/index.html` and affected assembly/detail images.
+  Source, STL, slicer and project-file hashes agree; both viewer copies are identical.
+  Local file-URL browser tabs require a manual reload because browser automation
+  blocks that URL scheme. The published HTTPS viewer is checked after deployment.

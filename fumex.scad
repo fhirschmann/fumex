@@ -573,17 +573,20 @@ module rim_front_base_raw(p, clearance = 0) hull() {
         cube([rim_boss_d+2*clearance, wall+2*clearance, base_h-rim_front_root_z]);
 }
 // This extension is in world coordinates; keep the original head cutter unchanged.
-// A narrow wall overlap closes the gap created by the tilted downward sweep.
+// Keep the narrow wall overlap inside the actual curved base silhouette.
 module rim_front_base_extension(p) difference() {
     union() {
         head_at() hull()
             for (drop = [0, rim_front_extension])
                 translate([0, 0, -drop]) rim_front_base_raw(p);
         difference() {
-            head_at() translate([p[0]-rim_boss_d/2+eps, -2,
+            intersection() {
+                base_joint_envelope();
+                head_at() translate([p[0]-rim_boss_d/2+eps, -2,
                                  rim_front_root_z-rim_front_extension])
                 cube([rim_boss_d-2*eps, wall+2.5,
                       base_h-rim_front_root_z+rim_front_extension+eps]);
+            }
             joint_halfspace();
         }
     }
@@ -1457,7 +1460,7 @@ module assembly(explode = 0) {
     color("#2b2d30") head_at() translate([0, 0, explode * 1.4]) head_raw();
     color("#8c9196") head_at() translate([0, explode * 2.4, explode * 1.4]) head_back_raw();
     color("#8c9196") head_at() translate([0, -explode * 1.6, explode * 1.4]) cassette_raw();
-    color("#70767c") head_at() translate([0, explode * 0.5, explode * 1.4]) filter_support_raw();
+    color("#8c9196") head_at() translate([0, explode * 0.5, explode * 1.4]) filter_support_raw();
     color("#5a5f66") translate([0, -explode * 0.8, explode * 1.4]) filter_env();
     translate([0, -explode * 0.6, 0]) knob_at() {
         color("#8c9196") knob_base_local();

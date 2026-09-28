@@ -21,7 +21,7 @@ PARTS = {
     "knob": (1, "PETG-grey", 1),
     "foot": (4, "TPU", 1),
     "ball_lid": (1, "PETG-grey", 1),
-    "filter_support": (1, "PETG-black", 1),
+    "filter_support": (1, "PETG-grey", 1),
     "usbc_fit_base": (0, "PETG-black", 1),
     "usbc_fit_lid": (0, "PETG-black", 1),
 }
@@ -106,13 +106,14 @@ FILAMENTS = [dict(material="PETG-black", profile="Generic PETG @BBL H2S", colour
              # Logical inlay slot; map it to the same dark PETG spool as the housing.
              dict(material="PETG-black", profile="Generic PETG @BBL H2S", inlay="pointer", colour="#1A1B1D")]
 PLATES = [("Head", ["head"]),
-          ("Base and support cross", ["base", "filter_support"]),
-          ("Grey covers", ["cassette", "head_back", "ball_lid"]),
+          ("Base", ["base"]),
+          ("Cassette", ["cassette"]),
+          ("Grey covers and support", ["head_back", "ball_lid", "filter_support"]),
           ("Knob", ["knob"]),
           ("TPU feet", ["foot"])]
 # At 0.2-mm layers the cavity ends at 4.4 mm; the 4.6-mm layer closes it.
-# The cassette shares a grey plate with the back cover and ballast lid; its
-# insertion pause stops that whole plate. The head has its own black plate.
+# Each magnet part has a separate plate, so the insertion pause does not stop
+# an unrelated cover or support part.
 PAUSES = {"head": [4.6], "cassette": [4.6]}
 PAUSE_LIFT_MM = 30  # Lower the H2S bed for insertion, then restore its actual pre-pause Z.
 PROJECT_3MF = "stl/fumex_all_parts.3mf"
@@ -228,9 +229,7 @@ def check_sealed_magnets(ctx):
     assert PAUSES == {"head": [4.6], "cassette": [4.6]}, "Wrong magnet insertion layer"
     paused_plates = {part: [group for _, group in PLATES if part in group] for part in PAUSES}
     assert paused_plates['head'] == [['head']], "The head needs its separate black magnet plate"
-    assert len(paused_plates['cassette']) == 1 \
-        and set(paused_plates['cassette'][0]) == {'cassette', 'head_back', 'ball_lid'}, \
-        "The cassette pause must cover the user-approved grey-cover plate"
+    assert paused_plates['cassette'] == [['cassette']], "The cassette needs its separate grey magnet plate"
     assert PAUSE_LIFT_MM == 30, "Magnet insertion requires the user's 30-mm bed drop"
     meshes = {n: head_frame(ctx.meshes[n], m) for n in ("head", "cassette", "magnets")}
     solids = {n: ctx.manifold(mesh) for n, mesh in meshes.items()}
@@ -711,8 +710,10 @@ def check_front_boss_extensions(ctx):
         width = bounds[3]-bounds[0]
         assert 9.15 <= width <= 9.22, f'Front cylinder width changed at x{x}: {width}'
         sections = []
-        region = md.CrossSection.square([16, 20]).translate([x-8, -3])
-        for z, minimum in ((45, 64), (47, 87)):
+        # Keep the section inside the front surface. Exterior wall-link
+        # protrusions must not count as useful connection stock.
+        region = md.CrossSection.square([16, 14]).translate([x-8, 0])
+        for z, minimum in ((45, 38), (47, 71)):
             area = (local.slice(z) ^ region).area()
             assert area >= minimum, f'Lower front root section too small at x{x}, z{z}: {area}'
             sections.append(dict(local_z_mm=z, area_mm2=round(area, 3), minimum_mm2=minimum))
@@ -733,6 +734,41 @@ def check_front_boss_extensions(ctx):
                          measured_width_mm=round(width, 5), sections=sections,
                          underside=underside_rows, underside_angle_deg=round(math.degrees(math.atan(rise)), 3)))
     return dict(front_boss_extensions=rows)
+
+
+def check_front_base_silhouette(ctx):
+    """Compare each boss's exterior to the uninterrupted front wall beside it."""
+    mesh = ctx.meshes['base']
+    heights = np.linspace(33, 38.3, 54)
+    offsets = np.array([-8, -4.55, -4, -2, 0, 2, 4, 4.55, 8])
+    rows = []
+    for x in (25.5, 119.5):
+        # The outermost rays hit undisturbed wall. Intermediate rays cover
+        # the narrow post footprint up to its edges, below the head joint.
+        origins = np.array([[x+dx, -10, z] for z in heights for dx in offsets])
+        hits, ray_ids, _ = mesh.ray.intersects_location(origins, np.tile([0, 1, 0], (len(origins), 1)),
+                                                       multiple_hits=True)
+        front_y = np.full(len(origins), np.inf)
+        np.minimum.at(front_y, ray_ids, hits[:, 1])
+        assert np.all(np.isfinite(front_y)) and np.all((front_y >= -.01) & (front_y < 2)), \
+            f'Front wall profile is missing near x{x}'
+        profile = front_y.reshape(len(heights), len(offsets))
+        references = profile[:, [0, -1]]
+        reference_spread = float(np.max(np.ptp(references, axis=1)))
+        assert reference_spread < .002, f'Neighbouring front wall profiles disagree near x{x}: {reference_spread}'
+        reference = references.mean(axis=1)
+        errors = reference[:, None]-profile[:, 1:-1]
+        worst = np.unravel_index(np.argmax(np.abs(errors)), errors.shape)
+        max_error = float(np.max(np.abs(errors)))
+        assert max_error < .005, \
+            f'Front root breaks the outside wall silhouette at x{x+offsets[worst[1]+1]:.2f}, ' \
+            f'z{heights[worst[0]]:.2f}: outward step {errors[worst]:.6f} mm'
+        rows.append(dict(x_mm=x, tested_offsets_mm=offsets[1:-1].tolist(), reference_offsets_mm=[-8, 8],
+                         world_z_range_mm=[33, 38.3], z_step_mm=.1, compared_rays=len(heights)*(len(offsets)-2),
+                         maximum_profile_error_mm=round(max_error, 7),
+                         maximum_outward_step_mm=round(float(np.max(errors)), 7),
+                         neighbour_profile_spread_mm=round(reference_spread, 7)))
+    return dict(front_base_silhouette=rows)
 
 
 def check_front_mat_contact(ctx):
@@ -2133,7 +2169,7 @@ def checks(ctx):
                 tip_angle_deg=round(tip_angle, 1), **check_top_corners(ctx), **check_sealed_magnets(ctx),
                 **check_fan_cable_opening(ctx), **check_joint_profile(ctx),
                 **check_rim_chamfers(ctx), **check_charger_air(ctx), **check_charger_holder(ctx),
-                **check_lid_fasteners(ctx), **check_head_fasteners(ctx), **check_removed_front_braces(ctx), **check_front_boss_extensions(ctx), **check_front_mat_contact(ctx), **check_front_ratchet_access(ctx), **check_pwm_mount(ctx), **check_pwm_removal(ctx), **check_usb_wire_access(ctx), **check_ballast_cover(ctx),
+                **check_lid_fasteners(ctx), **check_head_fasteners(ctx), **check_removed_front_braces(ctx), **check_front_boss_extensions(ctx), **check_front_base_silhouette(ctx), **check_front_mat_contact(ctx), **check_front_ratchet_access(ctx), **check_pwm_mount(ctx), **check_pwm_removal(ctx), **check_usb_wire_access(ctx), **check_ballast_cover(ctx),
                 **check_switch_trough_clearance(ctx), **check_filter_support(ctx), **check_led_window(ctx), **check_usb_side_fit(ctx), **check_usb_support(ctx),
                 **check_battery_retention(ctx), **check_battery_ties(ctx), **check_usb_installation(ctx), **check_usb_fit(ctx), **check_loaded_lid_removal(ctx))
 
@@ -2165,7 +2201,7 @@ VIEWER = dict(
            ("head", "Head", "black", "#8a9096", "1x", [0, -0.36, 1.35]),
            ("head_back", "Back cover", "grey", "#c4c9ce", "1x", [0, 2.3, 0.6]),
            ("cassette", "Filter cassette", "grey", "#c4c9ce", "1x", [0, -1.55, 1.0]),
-           ("filter_support", "Filter support cross", "black", "#aeb5bb", "1x", [0, 0.15, 1.35]),
+           ("filter_support", "Filter support cross", "grey", "#c4c9ce", "1x", [0, 0.15, 1.35]),
            ("knob", "Speed knob", "grey", "#c4c9ce", "1x", [0, -0.6, 0]),
            ("feet", "Feet", "tpu", "#55595e", "4x", [0, 0, -0.6]),
            ("fan_visual", "Fan 120 x 25", "bought", "#6a6f75", "1x", [0, 0.5, 1.35]),
@@ -2202,7 +2238,7 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
                               "color(\"#aeb5bb\") chg_sink_env(); color(\"#55595e\") chg_tie_env();", "110,-90,90,70,60,34"),
          "05_charger_back": ("color(\"#c4c9ce\") ball_lid(); color(\"#2f5d3a\") chg_module_env(); "
                              "color(\"#aeb5bb\") chg_sink_env(); color(\"#55595e\") chg_tie_env();", "110,180,90,70,60,34"),
-         "06_filter_support": ("color(\"#aeb5bb\") filter_support_raw();", "220,-240,220,72.5,26,120.5"),
+         "06_filter_support": ("color(\"#c4c9ce\") filter_support_raw();", "220,-240,220,72.5,26,120.5"),
          # Exploded only along Z: the two screw heads and both lid holes stay visible.
          "07_ballast_mount": ("color(\"#717980\") intersection() { base(); "
                               "translate([0, ball[2] - 1, 0]) cube([body_w, body_d - ball[2] + 1, ball[3] + 0.2]); } "
@@ -2251,6 +2287,6 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
          "14_fan_cable_notch": ("color(\"#aeb5bb\") intersection() { head_raw(); "
                                 "translate([20, 50, 48]) cube([40, 24, 14]); }",
                                 "8,110,100,40,62,52"),
-         "15_filter_clip": ("color(\"#aeb5bb\") intersection() { filter_support_raw(); "
+         "15_filter_clip": ("color(\"#c4c9ce\") intersection() { filter_support_raw(); "
                              "translate([body_w/2+50, mat_support[3]-1, head_cz-7]) cube([14, 13, 14]); }",
                              "156,70,155,130,28,120.5")}
