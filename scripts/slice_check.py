@@ -17,6 +17,7 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
 import shutil
@@ -77,6 +78,8 @@ assert CENTRE_PLATES <= {title for title, _ in PLATES}, f"CENTRE_PLATES names un
 # Print pauses (e.g. to embed magnets or lay mesh): part -> print_z of the first layer printed after the pause.
 # A pause stops its whole plate, so give such parts their own plate.
 PAUSES = getattr(P, "PAUSES", {})
+# Extra nozzle/bed clearance while inserting hardware; zero keeps the stock machine pause.
+PAUSE_LIFT_MM = float(getattr(P, "PAUSE_LIFT_MM", 30))
 PROJECT_3MF = ROOT / getattr(P, "PROJECT_3MF", f"{STL_DIR.relative_to(ROOT).as_posix()}/{ROOT.name}_all_parts.3mf")
 # Test prints (fit tests, samples) as their own project: plates of part names or (name, count), one copy by default
 TEST_PLATES = getattr(P, "TEST_PLATES", [])
@@ -128,8 +131,25 @@ for name, inlays in COLOR_PARTS.items():
     assert all(inlay in INLAY_FILAMENT for inlay in inlays), f"{name}: no FILAMENTS slot for {inlays}"
     assert infill(name, PARTS[name][1]) == DEFAULT_INFILL, f"{name}: multicolour parts with own infill are not supported yet"
 
+def insertion_pause_gcode(native_gcode, lift_mm, relative_e=True):
+    """Lower a Bambu bed for insertion, preserving its native parking/resume operation."""
+    assert math.isfinite(lift_mm) and lift_mm >= 0, "PAUSE_LIFT_MM must be finite and nonnegative"
+    if not lift_mm:
+        return native_gcode
+    assert native_gcode.strip() == "M400 U1", "Extra pause clearance requires the stock Bambu M400 U1 pause"
+    e_mode = "M83" if relative_e else "M82"
+    return "\n".join(["; INSERTION_PAUSE_BEGIN", "M400", "G91", f"G1 Z{lift_mm:g} F600", "M400",
+                      "G90", e_mode, native_gcode.strip(), "G91", f"G1 Z{-lift_mm:g} F600", "M400",
+                      "G90", e_mode, "; INSERTION_PAUSE_END"])
+
+
 machine = resolve(PRINTER["machine"])
 machine["curr_bed_type"] = PRINTER["bed"]
+native_pause_gcode = machine.get("machine_pause_gcode", "M400 U1")
+native_pause_gcode = (native_pause_gcode[0] if isinstance(native_pause_gcode, list) else native_pause_gcode).strip()
+relative_e = str(machine.get("use_relative_e_distances", "1")) == "1"
+if PAUSES:
+    machine["machine_pause_gcode"] = insertion_pause_gcode(native_pause_gcode, PAUSE_LIFT_MM, relative_e)
 (profiles / "machine.json").write_text(json.dumps(machine, indent=2))
 
 
@@ -524,13 +544,20 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
         if index - 1 in pause_plates:
             with zipfile.ZipFile(plate_dir / "sliced.3mf") as sliced:
                 name = next(n for n in sliced.namelist() if re.fullmatch(r"Metadata/plate_\d+\.gcode", n))
-                found = pause_heights(sliced.read(name).decode(errors="replace"), pause_gcode)
+                gcode_text = sliced.read(name).decode(errors="replace")
+                actual_settings = json.loads(sliced.read("Metadata/project_settings.config"))
+                assert actual_settings["machine_pause_gcode"] == pause_gcode, "Lost insertion-pause printer override"
+                assert str(actual_settings["use_relative_e_distances"]) == str(int(relative_e)), "Unexpected extrusion mode"
+                found = pause_heights(gcode_text, native_pause_gcode)
             wanted = pause_plates[index - 1]
             # Bambu emits the pause at the layer change: in the layer at the requested height, before it extrudes
             assert [z for z, _ in found] == wanted and not any(e for _, e in found), \
                 f"Plate {title}: pauses {found} (layer, extruded before), wanted at the start of {wanted}"
-            pauses[title] = dict(plate=index, pause_before_layer_mm=wanted)
-            print(f"Slice pause plate {title}: PASS, pause before layer {wanted} mm", flush=True)
+            clearance = verify_pause_lifts(gcode_text, PAUSE_LIFT_MM, float(machine["printable_height"]), relative_e)
+            assert not PAUSE_LIFT_MM or [r["layer_mm"] for r in clearance] == wanted, "Missing insertion clearance"
+            pauses[title] = dict(plate=index, pause_before_layer_mm=wanted, extra_clearance_mm=PAUSE_LIFT_MM,
+                                 clearance_moves=clearance)
+            print(f"Slice pause plate {title}: PASS, pause before layer {wanted} mm; {PAUSE_LIFT_MM:g} mm extra clearance", flush=True)
         plate_slices[title] = dict(plate=index, hours=round(plate.get("total_predication", 0) / 3600, 2),
                                    grams_by_filament=grams, warnings=plate.get("warning_message"),
                                    process_overrides=process_overrides)
@@ -558,7 +585,7 @@ def custom_gcode_xml(pause_plates, gcode):
     lines = ['<?xml version="1.0" encoding="utf-8"?>', "<custom_gcodes_per_layer>"]
     for index, heights in sorted(pause_plates.items()):
         lines += ["<plate>", f'<plate_info id="{index + 1}"/>']
-        lines += [f'<layer top_z="{z:g}" type="1" extruder="1" color="" extra="" gcode="{gcode}"/>' for z in heights]
+        lines += [f'<layer top_z="{z:g}" type="1" extruder="1" color="" extra="" gcode={quoteattr(gcode)}/>' for z in heights]
         lines += ['<mode value="MultiAsSingle"/>', "</plate>"]
     return "\n".join(lines + ["</custom_gcodes_per_layer>"]) + "\n"
 
@@ -566,13 +593,90 @@ def custom_gcode_xml(pause_plates, gcode):
 def pause_heights(gcode_text, pause_gcode):
     """For every pause in sliced G-code: (Z_HEIGHT of the layer it sits in, whether that layer extruded before it)."""
     found, layer, extruded = [], None, False
+    e_relative, e_position = False, 0.0
     for line in gcode_text.splitlines():
+        line = line.strip()
         if line.startswith("; Z_HEIGHT:"):
             layer, extruded = float(line.split(":")[1]), False
-        elif line.strip() == pause_gcode and layer is not None:
+        command = line.split(";", 1)[0].strip()
+        if command == pause_gcode and layer is not None:
             found.append((layer, extruded))
-        elif re.match(r"G[123] .*E\d*\.?\d+", line) and not re.search(r"E-", line):
-            extruded = True
+        elif command in ("G90", "G91", "M82", "M83"):
+            e_relative = command in ("G91", "M83")
+        elif re.match(r"(?:G[0123]|G92)\s", command):
+            axis = re.search(r"(?:^|\s)E([+-]?\d*\.?\d+)", command)
+            if axis:
+                value = float(axis[1])
+                if command.startswith("G92 "):
+                    e_position = value
+                else:
+                    delta = value if e_relative else value - e_position
+                    e_position = e_position + value if e_relative else value
+                    extruded = extruded or delta > 1e-8
+    return found
+
+
+def verify_pause_lifts(gcode_text, lift_mm, printable_height, relative_e=True):
+    """Check actual pre-pause Z, balanced clearance, modes and the next motion's feed rate.
+
+    The layer marker is not the physical Z: Bambu may postpone the layer move until after
+    the pause. This checks emitted commands; native firmware parking is not simulated.
+    """
+    if not lift_mm:
+        return []
+    lines = [line.strip() for line in gcode_text.splitlines()]
+    expected = insertion_pause_gcode("M400 U1", lift_mm, relative_e).splitlines()
+    absolute, e_relative, z, layer, feed = True, None, None, None, None
+    active, found = None, []
+    for i, line in enumerate(lines):
+        if line.startswith("; Z_HEIGHT:"):
+            layer = float(line.split(":")[1])
+        if line == "; INSERTION_PAUSE_BEGIN":
+            assert active is None and z is not None and layer is not None, "Unknown/nested insertion-pause position"
+            assert absolute and e_relative == relative_e, "Unexpected pre-pause coordinate or extrusion mode"
+            # Bambu may remove a redundant F600 from the return move; check the modal feed below.
+            normalize = lambda block: [re.sub(r" F600$", "", item) for item in block]
+            assert normalize(lines[i:i + len(expected)]) == normalize(expected), "Altered or incomplete insertion-pause motion block"
+            assert 0 <= z and z + lift_mm <= printable_height - 2, \
+                f"Insertion pause at actual Z{z:g} + {lift_mm:g} exceeds the {printable_height - 2:g} mm clearance limit; reduce PAUSE_LIFT_MM"
+            active = dict(layer_mm=layer, before_z_mm=round(z, 5), paused_z_mm=None, restored_z_mm=None)
+        command = line.split(";", 1)[0].strip()
+        if command in ("G90", "G91"):
+            absolute = command == "G90"
+            # Marlin's coordinate commands reset the extrusion override; restore it explicitly.
+            e_relative = not absolute
+        elif command in ("M82", "M83"):
+            e_relative = command == "M83"
+        elif re.match(r"(?:G[0123]|G92)\s", command):
+            speed = re.search(r"(?:^|\s)F(\d*\.?\d+)", command)
+            if speed:
+                feed = float(speed[1])
+            axis = re.search(r"(?:^|\s)Z(-?\d*\.?\d+)", command)
+            if axis:
+                if active is not None:
+                    assert feed == 600, "Insertion-pause Z movement has the wrong feed rate"
+                value = float(axis[1])
+                z = value if absolute or command.startswith("G92 ") else (z + value if z is not None else None)
+        if command == "M400 U1" and active is not None:
+            assert absolute and e_relative == relative_e, "Native pause entered in the wrong mode"
+            assert abs(z - active["before_z_mm"] - lift_mm) < 1e-4, "Wrong insertion clearance"
+            active["paused_z_mm"] = round(z, 5)
+        if line == "; INSERTION_PAUSE_END":
+            assert active is not None and active["paused_z_mm"] is not None, "Missing native insertion pause"
+            assert absolute and e_relative == relative_e, "Pause failed to restore coordinate/extrusion modes"
+            assert abs(z - active["before_z_mm"]) < 1e-4, "Pause failed to restore the original physical Z"
+            # The added Z moves use F600. Do not silently change the following print/travel speed.
+            for following in lines[i + 1:]:
+                following = following.split(";", 1)[0].strip()
+                if re.match(r"G[0123]\s", following):
+                    assert re.search(r"(?:^|\s)F\d", following), "First post-pause motion must reset the feed rate"
+                    break
+            else:
+                raise AssertionError("No motion after insertion pause")
+            active["restored_z_mm"] = round(z, 5)
+            found.append(active)
+            active = None
+    assert active is None, "Unfinished insertion-pause motion block"
     return found
 
 

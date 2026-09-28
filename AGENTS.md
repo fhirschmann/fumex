@@ -749,3 +749,28 @@ they do not validate the subsequent geometry.
   remain on separate plates (user reconfirmed due to the black/grey colour change).
 - Both viewer copies and all fifteen views have been regenerated. Source changes affect only
   the head/cassette magnet bores and the removable cross; printed socket dimensions are retained.
+
+## Magnet-pause bed clearance (2026-09-28)
+
+- User requested more hand clearance for inserting magnets and asked to retain the preference
+  in the shared printing skill. `PAUSE_LIFT_MM = 30` now wraps the stock H2S `M400 U1` pause
+  in a relative +30 / -30 mm Z pair at F600 (10 mm/s), with motion waits and explicit G90/M83
+  restoration. Positive Z lowers the H2S bed. No extra XY parking or homing is added.
+- The pause still occurs before extrusion on the Z4.6 closing layer, on separate head and
+  cassette plates. The actual pre-pause position is Z4.4, not the new layer's marker: the
+  added moves are Z4.4 -> Z34.4 -> Z4.4. The native firmware parking/resume routine remains
+  responsible for its own movements. Its physical behavior has not been tested here.
+- Shared slicing checks track actual linear and arc Z moves, reject lifts within 2 mm of
+  the machine's Z limit, verify the exact balanced block and extrusion mode, and require
+  an explicit feed rate on the first following move. Bambu may remove the redundant F600
+  from the return move; the check verifies its inherited modal feed rate instead.
+- `machine_pause_gcode` is stored in the project printer profile and listed in
+  `different_settings_to_system`, so opening the 3MF retains it. The multiline layer-pause
+  XML is escaped. Plain STLs and individual diagnostic slices do not carry the saved pauses.
+  No model geometry or plate layout changes in this revision.
+- Shared skill commit `5fe7325` includes the 30 mm default, mode-aware pause detection,
+  17 new pause regressions (32 unit tests total), and a successful complete template run
+  with a real insertion pause. FUMEX's ten diagnostic slices, five production plates and
+  USB test plate pass without slicer warnings; both actual magnet pauses verify the
+  Z4.4 -> Z34.4 -> Z4.4 movement. Estimates remain 491.0 g / 16.5 h arranged.
+  Both viewer copies were rebuilt; their unchanged hash reflects unchanged geometry.

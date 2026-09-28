@@ -112,6 +112,7 @@ PLATES = [("Head", ["head"]),
 # Each paused part has its own plate. The shared slicer verifies the actual
 # pause occurs before any extrusion in that layer in the published project.
 PAUSES = {"head": [4.6], "cassette": [4.6]}
+PAUSE_LIFT_MM = 30  # Lower the H2S bed for insertion, then restore its actual pre-pause Z.
 PROJECT_3MF = "stl/fumex_all_parts.3mf"
 TEST_PLATES = [("USB insertion fit", ["usbc_fit_base", "usbc_fit_lid"])]
 TEST_3MF = "stl/fumex_usb_fit.3mf"
