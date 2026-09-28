@@ -38,7 +38,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 |---|---|---|
 | Fan Arctic P12 Pro (PST) | 120 × 120 × 25 mm, 185 g, 600–3000 rpm, 77 cfm / 131 m³/h, 6.9 mmH₂O, 12 V, **0.33 A**, start-up 3.3 V, 0 rpm below 5 % PWM, cable 400 + 80 mm, 0–40 °C | data sheet (ACFAN00306A) |
 | Filter mat | cut by the user from a cooker hood mat to about 120 × 120 × 17 mm, white fleece with a dark carbon layer | user, 2026-09-21, hand-cut — the chamber is 121.5 mm and the lip 2.25 mm wide, so ±1 mm on the cut is fine |
-| Magnets | 8 × neodymium disc Ø10 × 3 | user's part, **not yet measured**; enclosed cavities Ø10.3 × 3.2 with 1.2 mm axial skins, inserted at print pauses |
+| Magnets | 8 × neodymium disc Ø10 × 3 | nominal disc size, **not yet measured**; user's proven Tinkercad cavity diameter Ø10.04 (2026-09-28), depth 3.2 and axial skins 1.2 mm; insert at print pauses |
 | Masses for the tipping check | fan 185 g (data sheet), battery 150 g, PWM board 12 g, mat 15 g, magnets 18 g, rest estimated | **estimates**, reported as an open item |
 
 ## Current design state
@@ -184,16 +184,23 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   - Actual projected obstruction is 981.941 mm² of the rounded throat's 13,681.093 mm², or 7.177%,
     leaving 12,699.152 mm² open. The strengthened profile intentionally raises the area gate from
     5% to 8%. This is an area measurement, not a pressure-drop prediction.
-  - The end pads are 8 mm across and 3 mm long radially. Rear-open pockets start at y22.9,
-    extend radially 58.3..61.7 and are 8.4 mm wide; 2.05 mm of tube wall remains outside them.
-    The cross span grew from 122 to 123 mm: with the earlier front plane, the old chamfered ends
-    missed the tube's front seat. At the new span, each pad has a 0.35 mm radial flat bearing on it.
-    Four separate contact probes verify the head and fan stops, and 0.1 mm shifts remain free.
-    The posts end at y32.9, giving 0.2 mm axial clearance to both stops. No glue or screws are needed.
-  - Insert it from the rear before the fan-and-cover assembly, mat-facing cross forwards and posts
-    backwards. The fan frame traps the posts; verify actual frame contact at radial positions
-    58.5..60 mm on all four sides. The full fan envelope cannot prove that these local surfaces exist.
-    Removing the fan and cover releases the cross; ordinary mat changes remain through the front.
+  - The nominal pads remain 8 mm across and 3 mm long radially. Rear-open head pockets start at
+    y22.9, extend radially 58.3..61.7 and remain 8.4 mm wide; printed heads are compatible.
+    The cross span is 123 mm, retaining the front bearing and the y32.9 rear tips. The head
+    and fan stops still bound axial travel to 0.2 mm each way, but do not themselves clamp.
+  - **Fan-independent spring grip (user, 2026-09-28):** the former loose cross did not grip the
+    open head. Each pad now has two 2.1 mm tangentially thick cheeks, a 3.8 mm central slot
+    and a 0.9 mm radial relief separating it from the 5 mm cross bar. A full 1.6 mm front
+    foot joins both cheeks to the arm. Slot-root radii are 0.6 mm centrally and 0.45 mm radially.
+    The eight side ribs reach a free width of 8.7 mm at y31.9..32.1, giving 0.15 mm nominal
+    compression per cheek in the unchanged sockets. Their 1.4 mm leading and 0.8 mm trailing
+    ramps allow insertion and removal. These are friction springs, not undercut snap hooks.
+  - Insert from the rear before the fan/cover, mat-facing cross forwards. Align all four pads
+    and press evenly; verify grip with the open head turned over. Pull evenly to remove after
+    taking the fan/cover off. The fan remains a secondary rear stop; its real contact patches
+    at radial positions 58.5..60 mm are still unmeasured. Ordinary mat changes are from the front.
+    Nominal interference and geometric deformation checks do not prove friction force or PETG creep.
+    Only the new cross needs printing for this grip; no change to the existing head sockets is needed.
   - The cross reduces the unsupported mat span but its PETG bars and the mat can still bend. No
     physical strength, long-term creep, loose-fibre or maximum-speed rubbing test has been performed.
     Do not turn the nominal 5 mm central-bar/frame gap into a guarantee of rotor clearance.
@@ -700,3 +707,45 @@ they do not validate the subsequent geometry.
   the override when loading. All ten individual slices, five production plates and
   the USB fit plate pass without warnings. Production estimate: 491.5 g / 16.5 h
   arranged, 491.9 g / 17.4 h individually; rounded README totals are unchanged.
+
+## Cross spring grip and tighter magnet fit (2026-09-28)
+
+- User confirmed that the loose support cross was being tried in the open head and requested
+  grip before fitting the fan. The new cross uses eight spring cheeks on its four end pads;
+  the existing head sockets stay 8.4 mm wide. Do not enlarge `mat_support[5]` to change the
+  grip, because that would also enlarge `filter_support_pockets()` and lose retrofit compatibility.
+  `mat_clip` independently sets the 8.7 mm free width and 0.15 mm interference per cheek.
+- The full 1.6 mm front foot remains connected to the arm. A 3.8 mm central slot leaves
+  2.1 mm cheeks; the separate 0.9 mm radial slot releases them from the 5 mm cross bar.
+  Root fillets are 0.6 / 0.45 mm. The gross root-to-tip length is 8.2 mm, but the effective
+  lever to the rib is approximately 6.6–7.4 mm once its position and root transitions are
+  considered. Neither this geometry nor its kinematic clearance check predicts holding force.
+- The user supplied Ø10.04 mm as the successful Tinkercad magnet-pocket diameter. Both head
+  and cassette adopt it; depth 3.2 mm, 1.2 mm axial skins and the Z4.6 insertion pauses stay.
+  Nominal magnets remain independent Ø10 x 3 mm envelopes. Radial rays on three cavity
+  planes reject the old Ø10.3 mm holes; separate disc probes reject accidental shrinking of
+  the hardware envelope. The user has not supplied actual magnet measurements.
+- Reprint only the cross to add spring grip to an existing head. Tighter magnet cavities
+  require the new head and cassette. The base, back cover, ballast lid, knob, feet and USB
+  fit coupons have no intended geometry change. First-layer wall count remains one; normal
+  walls remain four; the cross stays solid PETG and all supports remain disabled.
+- Shared skill note `97d6937` distinguishes captured loose parts from retention in the open
+  assembly stage, explains the radial relief required for the real spring length, and requires
+  bounded interference plus a locally deflected insertion envelope. The project also adopts
+  the current shared slicer, retaining the requested first-layer setting in diagnostic/test jobs.
+- Final verification source SHA256 `c4930f45065ccac14310cadf64c1cdb1deac2b4ec8c2bfcc79207e58f7872851`: ten valid print meshes,
+  431 coaxial feature pairs, nine standard service paths plus the continuous compressed-cross
+  path, and 531 generic collision pairs out of 561 (30 bounded/stage exclusions).
+  All four analyses are CLEAN on the three changed meshes. Spring overlap is 2.094856 mm3
+  confined to eight contact ribs; each penetrates nominally 0.15 mm. The kinematic proxy moves
+  each rib inward 0.17 mm, keeps the roots fixed and clears the complete 30 mm withdrawal;
+  it does not represent physical spring stiffness. Old loose-cross and oversized-magnet-hole
+  regression fixtures are rejected. Current estimated mass is 1034.8 g with a 20.4-degree
+  front tipping angle and 27.7 mm front margin.
+- All ten individual slices, five production plates and the USB fit plate pass without geometry
+  warnings or supports. Production totals are 491.0 g / 16.5 h arranged and 491.4 g / 17.4 h
+  individually. The replacement cross is 6.554 g / 0.367 h at 100% infill. First-layer one-wall,
+  normal four-wall settings and both Z4.6 pauses persist in the 3MF files. Head and cassette
+  remain on separate plates (user reconfirmed due to the black/grey colour change).
+- Both viewer copies and all fifteen views have been regenerated. Source changes affect only
+  the head/cassette magnet bores and the removable cross; printed socket dimensions are retained.

@@ -1,5 +1,5 @@
 {
-  "source_sha256": "d2d21113b80c1214a133452ce8b9820178cb5de3a1354b2a165ddce98acb4137",
+  "source_sha256": "c4930f45065ccac14310cadf64c1cdb1deac2b4ec8c2bfcc79207e58f7872851",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -40,10 +40,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "d8df78c21d8629960b43c27376a0e7ed95971f7a29c4bd9a7fcfe4c27a1f5a04",
+      "sha256": "c94d4a749e7258b1ea7095241ecdaf0eeb6d7fd63d7b4fb683d977f7a62b1b83",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "d8df78c21d8629960b43c27376a0e7ed95971f7a29c4bd9a7fcfe4c27a1f5a04"
+      "committed_sha256": "c94d4a749e7258b1ea7095241ecdaf0eeb6d7fd63d7b4fb683d977f7a62b1b83"
     },
     "head": {
       "size_mm": [
@@ -63,8 +63,8 @@
           70.0
         ]
       ],
-      "volume_mm3": 207409.2777,
-      "triangles": 9852,
+      "volume_mm3": 207462.4093,
+      "triangles": 9836,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
@@ -74,10 +74,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
-      "sha256": "6e1d54be78d3b424180048886b3394afb4de773c3be0eedfd8a8cfe2b07e0f7e",
+      "sha256": "15b4422dc0087921c3783643f1de30e20f42ebb419f9779500be9ee262c67ea8",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "6e1d54be78d3b424180048886b3394afb4de773c3be0eedfd8a8cfe2b07e0f7e"
+      "committed_sha256": "15b4422dc0087921c3783643f1de30e20f42ebb419f9779500be9ee262c67ea8"
     },
     "head_back": {
       "size_mm": [
@@ -131,8 +131,8 @@
           5.6
         ]
       ],
-      "volume_mm3": 64460.8683,
-      "triangles": 9326,
+      "volume_mm3": 64513.9999,
+      "triangles": 9310,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
@@ -142,10 +142,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
-      "sha256": "d9f325ae6bd9fed8e2a653d12a17c6e04a2d83639dc3dc200c7f846578ab1638",
+      "sha256": "a5b3c7fcc3a008a9e981d737eeff570b424acf699ffb5957493c387e9c82dcf3",
       "quantity": 1,
       "material": "PETG-grey",
-      "committed_sha256": "d9f325ae6bd9fed8e2a653d12a17c6e04a2d83639dc3dc200c7f846578ab1638"
+      "committed_sha256": "a5b3c7fcc3a008a9e981d737eeff570b424acf699ffb5957493c387e9c82dcf3"
     },
     "knob": {
       "size_mm": [
@@ -259,7 +259,7 @@
         [
           -61.5,
           -61.5,
-          0.0
+          -0.0
         ],
         [
           61.5,
@@ -267,8 +267,8 @@
           9.8
         ]
       ],
-      "volume_mm3": 5774.207,
-      "triangles": 1532,
+      "volume_mm3": 5316.645,
+      "triangles": 2508,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
@@ -277,11 +277,11 @@
       "cavity_shells": 0,
       "shell_nesting_valid": true,
       "shell_errors": [],
-      "backend": "Manifold",
-      "sha256": "4fed78fc4f48182c16cb8f2ae265359a287b3989dd675cd5e6722c26b16dba9e",
+      "backend": "CGAL",
+      "sha256": "ecb2051e8a4d531359eabd05d91028b77f1c2bff0508b8ffb53d405842fe679c",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "4fed78fc4f48182c16cb8f2ae265359a287b3989dd675cd5e6722c26b16dba9e"
+      "committed_sha256": "ecb2051e8a4d531359eabd05d91028b77f1c2bff0508b8ffb53d405842fe679c"
     },
     "usbc_fit_base": {
       "size_mm": [
@@ -312,10 +312,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "9dc7d7147729ce5972ab69bb72cb3fa41320d0975cc6692258a6f4967f3f3ae0",
+      "sha256": "724914e9f2b3d00cc51a3bc27c0dfcee407a779a7721d4e59e0a06432e833ba1",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "9dc7d7147729ce5972ab69bb72cb3fa41320d0975cc6692258a6f4967f3f3ae0"
+      "committed_sha256": "724914e9f2b3d00cc51a3bc27c0dfcee407a779a7721d4e59e0a06432e833ba1"
     },
     "usbc_fit_lid": {
       "size_mm": [
@@ -455,6 +455,15 @@
       58.5,
       0.2
     ],
+    "mat_clip": [
+      0.35,
+      1.6,
+      3.8,
+      0.9,
+      0.6,
+      1.4,
+      0.8
+    ],
     "fan_cable_slot": [
       32,
       48,
@@ -465,7 +474,7 @@
       10
     ],
     "magnet_pocket": [
-      10.3,
+      10.04,
       3.2
     ],
     "magnet_skin": 1.2,
@@ -755,7 +764,7 @@
   },
   "intersections": [],
   "alignment": {
-    "features": 273,
+    "features": 277,
     "coaxial_pairs": {
       "ball_lid|ballast": 26,
       "ball_lid|base": 17,
@@ -900,13 +909,6 @@
     },
     {
       "name": "cover_off",
-      "length_mm": 30.0,
-      "collisions": 0,
-      "first_mm": null,
-      "max_volume_mm3": 0.0
-    },
-    {
-      "name": "support_out",
       "length_mm": 30.0,
       "collisions": 0,
       "first_mm": null,
@@ -1165,7 +1167,7 @@
   "intake_lip_mm": 2.25,
   "mat_free_travel_mm": 1.62,
   "mat_squashed_percent": 0.08,
-  "mass_g": 1035.3,
+  "mass_g": 1034.8,
   "centre_of_mass_mm": [
     67.4,
     30.7,
@@ -1257,8 +1259,16 @@
           58.0
         ],
         "cavity_diameter_depth_mm": [
-          10.3,
+          10.04,
           3.2
+        ],
+        "measured_cavity_diameter_range_mm": [
+          10.02237,
+          10.04
+        ],
+        "measured_disc_diameter_range_mm": [
+          9.98244,
+          10.0
         ],
         "cavity_overlap_mm3": 0.0,
         "axial_skin_missing_mm3": [
@@ -1276,8 +1286,16 @@
           183.0
         ],
         "cavity_diameter_depth_mm": [
-          10.3,
+          10.04,
           3.2
+        ],
+        "measured_cavity_diameter_range_mm": [
+          10.02237,
+          10.04
+        ],
+        "measured_disc_diameter_range_mm": [
+          9.98244,
+          10.0
         ],
         "cavity_overlap_mm3": 0.0,
         "axial_skin_missing_mm3": [
@@ -1295,8 +1313,16 @@
           58.0
         ],
         "cavity_diameter_depth_mm": [
-          10.3,
+          10.04,
           3.2
+        ],
+        "measured_cavity_diameter_range_mm": [
+          10.02237,
+          10.04001
+        ],
+        "measured_disc_diameter_range_mm": [
+          9.98245,
+          10.0
         ],
         "cavity_overlap_mm3": 0.0,
         "axial_skin_missing_mm3": [
@@ -1314,8 +1340,16 @@
           183.0
         ],
         "cavity_diameter_depth_mm": [
-          10.3,
+          10.04,
           3.2
+        ],
+        "measured_cavity_diameter_range_mm": [
+          10.02237,
+          10.04001
+        ],
+        "measured_disc_diameter_range_mm": [
+          9.98245,
+          10.0
         ],
         "cavity_overlap_mm3": 0.0,
         "axial_skin_missing_mm3": [
@@ -1333,8 +1367,16 @@
           58.0
         ],
         "cavity_diameter_depth_mm": [
-          10.3,
+          10.04,
           3.2
+        ],
+        "measured_cavity_diameter_range_mm": [
+          10.02237,
+          10.04
+        ],
+        "measured_disc_diameter_range_mm": [
+          9.98244,
+          10.0
         ],
         "cavity_overlap_mm3": 0.0,
         "axial_skin_missing_mm3": [
@@ -1352,8 +1394,16 @@
           183.0
         ],
         "cavity_diameter_depth_mm": [
-          10.3,
+          10.04,
           3.2
+        ],
+        "measured_cavity_diameter_range_mm": [
+          10.02237,
+          10.04
+        ],
+        "measured_disc_diameter_range_mm": [
+          9.98244,
+          10.0
         ],
         "cavity_overlap_mm3": 0.0,
         "axial_skin_missing_mm3": [
@@ -1371,8 +1421,16 @@
           58.0
         ],
         "cavity_diameter_depth_mm": [
-          10.3,
+          10.04,
           3.2
+        ],
+        "measured_cavity_diameter_range_mm": [
+          10.02237,
+          10.04001
+        ],
+        "measured_disc_diameter_range_mm": [
+          9.98245,
+          10.0
         ],
         "cavity_overlap_mm3": 0.0,
         "axial_skin_missing_mm3": [
@@ -1390,8 +1448,16 @@
           183.0
         ],
         "cavity_diameter_depth_mm": [
-          10.3,
+          10.04,
           3.2
+        ],
+        "measured_cavity_diameter_range_mm": [
+          10.02237,
+          10.04001
+        ],
+        "measured_disc_diameter_range_mm": [
+          9.98245,
+          10.0
         ],
         "cavity_overlap_mm3": 0.0,
         "axial_skin_missing_mm3": [
@@ -2501,33 +2567,389 @@
     "end_stops": [
       {
         "end": "horizontal_negative",
-        "volume_mm3": 273.2527,
+        "volume_mm3": 158.1786,
         "head_contact_mm3": 0.1358,
-        "fan_contact_mm3": 0.59997
+        "fan_contact_mm3": 0.31641
       },
       {
         "end": "horizontal_positive",
-        "volume_mm3": 273.2527,
+        "volume_mm3": 158.1786,
         "head_contact_mm3": 0.1358,
-        "fan_contact_mm3": 0.59997
+        "fan_contact_mm3": 0.31641
       },
       {
         "end": "vertical_negative",
-        "volume_mm3": 273.2526,
-        "head_contact_mm3": 0.1358,
-        "fan_contact_mm3": 0.59995
+        "volume_mm3": 158.1784,
+        "head_contact_mm3": 0.13581,
+        "fan_contact_mm3": 0.3164
       },
       {
         "end": "vertical_positive",
-        "volume_mm3": 273.2527,
+        "volume_mm3": 158.1784,
         "head_contact_mm3": 0.13581,
-        "fan_contact_mm3": 0.59999
+        "fan_contact_mm3": 0.31641
       }
     ],
     "throat_area_mm2": 13681.093,
     "blocked_area_mm2": 981.941,
     "blocked_percent": 7.177,
-    "remaining_area_mm2": 12699.152
+    "remaining_area_mm2": 12699.152,
+    "spring_clips": {
+      "springs": [
+        {
+          "end_angle_deg": 0,
+          "side": -1,
+          "overlap_mm3": 0.261862,
+          "nominal_interference_mm": 0.15,
+          "ramp_widths_y_mm": [
+            [
+              30.5,
+              8.0
+            ],
+            [
+              31.2,
+              8.35
+            ],
+            [
+              31.9,
+              8.7
+            ],
+            [
+              32.1,
+              8.7
+            ],
+            [
+              32.5,
+              8.35
+            ],
+            [
+              32.89,
+              8.00875
+            ]
+          ],
+          "root_and_slot_probe_errors_mm3": {
+            "solid_foot": 0.0,
+            "root_connection": 0.0,
+            "central_slot": 0.0,
+            "radial_relief": 0.0,
+            "cheek_-1": 0.0,
+            "rounded_root_-1": 0.0,
+            "cheek_1": 0.0,
+            "rounded_root_1": 0.0
+          }
+        },
+        {
+          "end_angle_deg": 0,
+          "side": 1,
+          "overlap_mm3": 0.26184,
+          "nominal_interference_mm": 0.15,
+          "ramp_widths_y_mm": [
+            [
+              30.5,
+              8.0
+            ],
+            [
+              31.2,
+              8.35
+            ],
+            [
+              31.9,
+              8.7
+            ],
+            [
+              32.1,
+              8.7
+            ],
+            [
+              32.5,
+              8.35
+            ],
+            [
+              32.89,
+              8.00875
+            ]
+          ],
+          "root_and_slot_probe_errors_mm3": {
+            "solid_foot": 0.0,
+            "root_connection": 0.0,
+            "central_slot": 0.0,
+            "radial_relief": 0.0,
+            "cheek_-1": 0.0,
+            "rounded_root_-1": 0.0,
+            "cheek_1": 0.0,
+            "rounded_root_1": 0.0
+          }
+        },
+        {
+          "end_angle_deg": 90,
+          "side": -1,
+          "overlap_mm3": 0.261862,
+          "nominal_interference_mm": 0.15,
+          "ramp_widths_y_mm": [
+            [
+              30.5,
+              8.0
+            ],
+            [
+              31.2,
+              8.35
+            ],
+            [
+              31.9,
+              8.7
+            ],
+            [
+              32.1,
+              8.7
+            ],
+            [
+              32.5,
+              8.35
+            ],
+            [
+              32.89,
+              8.00875
+            ]
+          ],
+          "root_and_slot_probe_errors_mm3": {
+            "solid_foot": 0.0,
+            "root_connection": 0.0,
+            "central_slot": 0.0,
+            "radial_relief": 0.0,
+            "cheek_-1": 0.0,
+            "rounded_root_-1": 0.0,
+            "cheek_1": 0.0,
+            "rounded_root_1": 0.0
+          }
+        },
+        {
+          "end_angle_deg": 90,
+          "side": 1,
+          "overlap_mm3": 0.261862,
+          "nominal_interference_mm": 0.15,
+          "ramp_widths_y_mm": [
+            [
+              30.5,
+              8.0
+            ],
+            [
+              31.2,
+              8.35
+            ],
+            [
+              31.9,
+              8.7
+            ],
+            [
+              32.1,
+              8.7
+            ],
+            [
+              32.5,
+              8.35
+            ],
+            [
+              32.89,
+              8.00875
+            ]
+          ],
+          "root_and_slot_probe_errors_mm3": {
+            "solid_foot": 0.0,
+            "root_connection": 0.0,
+            "central_slot": 0.0,
+            "radial_relief": 0.0,
+            "cheek_-1": 0.0,
+            "rounded_root_-1": 0.0,
+            "cheek_1": 0.0,
+            "rounded_root_1": 0.0
+          }
+        },
+        {
+          "end_angle_deg": 180,
+          "side": -1,
+          "overlap_mm3": 0.261843,
+          "nominal_interference_mm": 0.15,
+          "ramp_widths_y_mm": [
+            [
+              30.5,
+              8.0
+            ],
+            [
+              31.2,
+              8.35
+            ],
+            [
+              31.9,
+              8.7
+            ],
+            [
+              32.1,
+              8.7
+            ],
+            [
+              32.5,
+              8.35
+            ],
+            [
+              32.89,
+              8.00875
+            ]
+          ],
+          "root_and_slot_probe_errors_mm3": {
+            "solid_foot": 0.0,
+            "root_connection": 0.0,
+            "central_slot": 0.0,
+            "radial_relief": 0.0,
+            "cheek_-1": 0.0,
+            "rounded_root_-1": 0.0,
+            "cheek_1": 0.0,
+            "rounded_root_1": 0.0
+          }
+        },
+        {
+          "end_angle_deg": 180,
+          "side": 1,
+          "overlap_mm3": 0.261862,
+          "nominal_interference_mm": 0.15,
+          "ramp_widths_y_mm": [
+            [
+              30.5,
+              8.0
+            ],
+            [
+              31.2,
+              8.35
+            ],
+            [
+              31.9,
+              8.7
+            ],
+            [
+              32.1,
+              8.7
+            ],
+            [
+              32.5,
+              8.35
+            ],
+            [
+              32.89,
+              8.00875
+            ]
+          ],
+          "root_and_slot_probe_errors_mm3": {
+            "solid_foot": 0.0,
+            "root_connection": 0.0,
+            "central_slot": 0.0,
+            "radial_relief": 0.0,
+            "cheek_-1": 0.0,
+            "rounded_root_-1": 0.0,
+            "cheek_1": 0.0,
+            "rounded_root_1": 0.0
+          }
+        },
+        {
+          "end_angle_deg": 270,
+          "side": -1,
+          "overlap_mm3": 0.261862,
+          "nominal_interference_mm": 0.15,
+          "ramp_widths_y_mm": [
+            [
+              30.5,
+              8.0
+            ],
+            [
+              31.2,
+              8.35
+            ],
+            [
+              31.9,
+              8.7
+            ],
+            [
+              32.1,
+              8.7
+            ],
+            [
+              32.5,
+              8.35
+            ],
+            [
+              32.89,
+              8.00875
+            ]
+          ],
+          "root_and_slot_probe_errors_mm3": {
+            "solid_foot": 0.0,
+            "root_connection": 0.0,
+            "central_slot": 0.0,
+            "radial_relief": 0.0,
+            "cheek_-1": 0.0,
+            "rounded_root_-1": 0.0,
+            "cheek_1": 0.0,
+            "rounded_root_1": 0.0
+          }
+        },
+        {
+          "end_angle_deg": 270,
+          "side": 1,
+          "overlap_mm3": 0.261862,
+          "nominal_interference_mm": 0.15,
+          "ramp_widths_y_mm": [
+            [
+              30.5,
+              8.0
+            ],
+            [
+              31.2,
+              8.35
+            ],
+            [
+              31.9,
+              8.7
+            ],
+            [
+              32.1,
+              8.7
+            ],
+            [
+              32.5,
+              8.35
+            ],
+            [
+              32.89,
+              8.00875
+            ]
+          ],
+          "root_and_slot_probe_errors_mm3": {
+            "solid_foot": 0.0,
+            "root_connection": 0.0,
+            "central_slot": 0.0,
+            "radial_relief": 0.0,
+            "cheek_-1": 0.0,
+            "rounded_root_-1": 0.0,
+            "cheek_1": 0.0,
+            "rounded_root_1": 0.0
+          }
+        }
+      ],
+      "unintended_overlap_mm3": 0.0,
+      "total_preload_overlap_mm3": 2.094856,
+      "compressed_peak_motion_mm": 0.17,
+      "compressed_free_width_mm": 8.36,
+      "fixed_root_top_y_mm": 25.3,
+      "service_path": {
+        "translation_local_mm": [
+          0,
+          30,
+          0
+        ],
+        "assembly_stage": "Fan and cover removed; slide with compressed cheeks, relax after socket exit",
+        "swept_overlap_upper_bound_mm3": 0.0,
+        "released_overlap_mm3": 0.0,
+        "method": "Continuous boundary-triangle sweep of the locally compressed mesh; reverse for insertion"
+      }
+    }
   },
   "led_window": {
     "windows": [
@@ -3171,6 +3593,7 @@
     "Ratchet envelope is assumed: 22 mm head diameter, 14 mm head thickness, 87 mm overall length, 14 mm handle width; 25 mm bit, 2 mm engagement, 4 mm neck for 6 mm above the screw face. Actual tool dimensions are not measured.",
     "PWM mounting: verify the 2.0 mm PETG pilot fit with the real 2.5 x 8 screws and measure their head height (4.5 mm head diameter confirmed; 2.5 mm height is a conservative envelope). Assembly requires a slim 4 mm screwdriver shaft exposed for at least 25 mm.",
     "PWM service motion is sampled at 0.1 mm / 0.5 degrees (final lift 0.5 mm); remove the head, battery, loaded ballast lid, knob, PCB screws and rocker switch first. The real wiring and flexible leads are not modelled.",
+    "Filter cross: 0.15 mm interference per spring cheek is a geometric preload, not a measured retention force or PETG creep result. The compressed service mesh is a kinematic proxy, not an elastic material simulation.",
     "LEDs: test visibility through both 1.8 mm PETG skins with the actual filament; nominal 3 mm body and 3.8 mm flange dimensions remain unmeasured, as in LEO-AC1",
     "USB upper return captures the measured module envelope; bare PCB thickness and component-free bearing area are unmeasured. Check contact and cable-lever resistance on the fit print.",
     "Battery: check the base end-stop fit and actual cable exit; release both ties before upward battery removal",

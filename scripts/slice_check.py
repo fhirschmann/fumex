@@ -2,7 +2,7 @@
 """Diagnostic Bambu Studio slicing and the multi-plate project 3MF (skill openscad-print-project).
 
 1. Slices every print STL on its own with the installed system profiles (PRINTER, PROCESS, FILAMENTS in
-   print_project.py): no supports, default infill, solid for FULL_INFILL parts and FULL_INFILL_MATERIALS.
+   print_project.py): supports off unless explicitly enabled, default infill, solid for FULL_INFILL parts and FULL_INFILL_MATERIALS.
 2. Builds PROJECT_3MF: every part of the full build on the fixed PLATES, each plate centred; multicolour
    parts as one object per copy with their inlay filaments, parts at the left edge and the prime tower
    to their right (CENTRE_PLATES: parts centred, tower behind or in front of them). Every plate is sliced (layout, instances, effective settings); multicolour plates also prove the inlays print.
@@ -21,7 +21,11 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+from xml.sax.saxutils import quoteattr
 import zipfile
+
+import numpy as np
+import trimesh
 
 from print_tools import BUILD, COLOR_DIR, COLOR_PARTS, P, PARTS, ROOT, STL_DIR
 
@@ -41,8 +45,25 @@ PRINTER = dict(machine="Bambu Lab H2S 0.4 nozzle", process="0.20mm Standard @BBL
                bed="Textured PEI Plate") | getattr(P, "PRINTER", {})
 # PROCESS["settings"]: further Bambu process keys for every part, e.g. {"infill_direction": "0"} (first-layer lines
 # along x, parallel to a long bed face; Bambu alternates solid layers by 90 degrees from there)
-PROCESS = dict(wall_loops=4, top_shell_layers=5, bottom_shell_layers=5, infill=25,
-               pattern="gyroid") | getattr(P, "PROCESS", {})
+def merge_process(base, overrides):
+    """Keep shared settings through project/test overrides, including the legacy first-wall alias."""
+    merged = base | overrides
+    settings = dict(base.get("settings", {}))
+    key = "only_one_wall_first_layer"
+    if key in overrides:
+        settings[key] = str(int(overrides[key]))
+    settings.update(overrides.get("settings", {}))
+    for flag in (key, "enable_support"):
+        if flag in settings:
+            settings[flag] = str(int(settings[flag]))
+    merged.pop(key, None)
+    merged["settings"] = settings
+    return merged
+
+
+PROCESS = merge_process(dict(wall_loops=4, top_shell_layers=5, bottom_shell_layers=5, infill=25,
+                             pattern="gyroid", settings={"only_one_wall_first_layer": "1", "enable_support": "0"}),
+                        getattr(P, "PROCESS", {}))
 FULL_INFILL = set(getattr(P, "FULL_INFILL", ()))
 FULL_INFILL_MATERIALS = set(getattr(P, "FULL_INFILL_MATERIALS", ("TPU",)))
 # Filament slots of the project 3MF, 1-based in list order; inlay slots name their inlay or a tuple of inlays sharing the slot
@@ -59,13 +80,16 @@ PAUSES = getattr(P, "PAUSES", {})
 PROJECT_3MF = ROOT / getattr(P, "PROJECT_3MF", f"{STL_DIR.relative_to(ROOT).as_posix()}/{ROOT.name}_all_parts.3mf")
 # Test prints (fit tests, samples) as their own project: plates of part names or (name, count), one copy by default
 TEST_PLATES = getattr(P, "TEST_PLATES", [])
-TEST_PROCESS = PROCESS | getattr(P, "TEST_PROCESS", {})
+TEST_PROCESS = merge_process(PROCESS, getattr(P, "TEST_PROCESS", {}))
 TEST_FILAMENT = getattr(P, "TEST_FILAMENT", None)
 TEST_3MF = ROOT / getattr(P, "TEST_3MF", f"{STL_DIR.relative_to(ROOT).as_posix()}/{ROOT.name}_test_prints.3mf")
 SUMMARY = ROOT / getattr(P, "SLICER_SUMMARY", "docs/slicer-summary.json")
 INLAY_FILAMENT = {inlay: i for i, f in enumerate(FILAMENTS, 1)
                   for inlay in ((f["inlay"],) if isinstance(f.get("inlay"), str) else f.get("inlay", ()))}
 DEFAULT_INFILL = int(PROCESS["infill"])
+# Keep already chosen STL orientations and centre their actual geometry explicitly.
+# Useful when the arranger's projected brim margin rejects an otherwise valid print pose.
+FIXED_PRINT_POSES = bool(getattr(P, "FIXED_PRINT_POSES", False))
 
 
 def base_filament(material):
@@ -118,6 +142,15 @@ def write_process(name, settings, density):
     (profiles / name).write_text(json.dumps(process, indent=2))
 
 
+def verify_process_overrides(actual, profile):
+    """Confirm saved/sliced profiles retain the requested wall count and process overrides."""
+    wanted = json.loads(profile.read_text())
+    keys = {"wall_loops", *PROCESS["settings"], *TEST_PROCESS["settings"]} & wanted.keys()
+    for key in keys:
+        assert actual.get(key) == wanted[key], f"Process setting {key}: {actual.get(key)!r}, wanted {wanted[key]!r}"
+    return {key: actual[key] for key in sorted(keys)}
+
+
 for density in {infill(n, m) for n, (_, m, _) in PARTS.items()} | {DEFAULT_INFILL}:
     write_process(f"process-{density}.json", PROCESS, density)
 if TEST_PLATES:
@@ -129,20 +162,63 @@ for slot, filament in enumerate(FILAMENTS, 1):
     (profiles / f"filament-{slot}.json").write_text(json.dumps(profile, indent=2))
 
 
+def centred_diagnostic_3mf(source, target, printer):
+    """Package one STL at the bed centre without rotating, scaling or relaxing slicer checks."""
+    mesh = trimesh.load_mesh(source, process=False)
+    low, high = mesh.bounds
+    bed = [[float(value) for value in point.split("x")] for point in printer["printable_area"]]
+    bed_low = [min(point[axis] for point in bed) for axis in range(2)]
+    bed_high = [max(point[axis] for point in bed) for axis in range(2)]
+    extent = high - low
+    limit = [*(bed_high[axis] - bed_low[axis] for axis in range(2)), float(printer["printable_height"])]
+    assert all(size <= maximum + 1e-4 for size, maximum in zip(extent, limit)), \
+        f"{source.name}: fixed print pose {extent.tolist()} exceeds {limit}"
+    delta = [(bed_low[axis] + bed_high[axis] - low[axis] - high[axis]) / 2 for axis in range(2)] + [-low[2]]
+    # STL repeats vertices per triangle. 3MF needs shared indices for closed adjacency;
+    # otherwise Bambu can discard a small valid mesh as empty. Weld exact duplicates only.
+    unique_vertices, vertex_index = np.unique(mesh.vertices, axis=0, return_inverse=True)
+    vertices = ''.join(f'<vertex x="{v[0]:.9g}" y="{v[1]:.9g}" z="{v[2]:.9g}"/>' for v in unique_vertices)
+    triangles = ''.join(f'<triangle v1="{face[0]}" v2="{face[1]}" v3="{face[2]}"/>'
+                        for face in vertex_index[mesh.faces])
+    transform = '1 0 0 0 1 0 0 0 1 ' + ' '.join(f'{value:.9g}' for value in delta)
+    model = ('<?xml version="1.0" encoding="UTF-8"?>'
+             '<model unit="millimeter" xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">'
+             f'<resources><object id="1" type="model" name={quoteattr(source.stem)}><mesh>'
+             f'<vertices>{vertices}</vertices><triangles>{triangles}</triangles></mesh></object></resources>'
+             f'<build><item objectid="1" transform="{transform}"/></build></model>')
+    with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr('[Content_Types].xml',
+                         '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+                         '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+                         '<Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/></Types>')
+        archive.writestr('_rels/.rels',
+                         '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+                         '<Relationship Target="/3D/3dmodel.model" Id="rel0" '
+                         'Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/></Relationships>')
+        archive.writestr('3D/3dmodel.model', model)
+    return dict(mode="fixed_centred", translation_mm=[float(value) for value in delta],
+                bounds_mm=(mesh.bounds + delta).tolist())
+
+
 def run(name):
     quantity, material, _ = PARTS[name]
     folder = out / name
     folder.mkdir(exist_ok=True)
     source = STL_DIR / f"{name}.stl"
+    slice_input = source
+    positioning = dict(mode="automatic")
+    if FIXED_PRINT_POSES:
+        slice_input = folder / f"{name}-CENTRED.3mf"
+        positioning = centred_diagnostic_3mf(source, slice_input, machine)
     # never read a result of an earlier run
     for stale in (folder / "result.json", folder / f"{name}-DIAGNOSTIC.3mf"):
         stale.unlink(missing_ok=True)
     command = [str(executable), "--datadir", str(folder / "config"), "--debug", "2",
                "--load-settings", f"{profiles / 'machine.json'};{profiles / f'process-{infill(name, material)}.json'}",
                "--load-filaments", str(profiles / f"filament-{base_filament(material)}.json"),
-               "--orient", "0", "--arrange", "1", "--slice", "0",
+               "--orient", "0", "--arrange", "0" if FIXED_PRINT_POSES else "1", "--slice", "0",
                # --outputdir must be absolute, otherwise the CLI exits with 243
-               "--export-3mf", f"{name}-DIAGNOSTIC.3mf", "--outputdir", str(folder), str(source)]
+               "--export-3mf", f"{name}-DIAGNOSTIC.3mf", "--outputdir", str(folder), str(slice_input)]
     result = subprocess.run(command, capture_output=True, text=True, cwd=folder)
     log = result.stdout + result.stderr
     (folder / "cli.log").write_text(log)
@@ -155,7 +231,9 @@ def run(name):
     if passed:
         with zipfile.ZipFile(folder / f"{name}-DIAGNOSTIC.3mf") as archive:
             settings = json.loads(archive.read("Metadata/project_settings.config"))
+            verify_process_overrides(settings, profiles / f"process-{infill(name, material)}.json")
     row = dict(part=name, quantity=quantity, material=material, passed=passed,
+               positioning=positioning,
                source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
                exit_code=result.returncode, result_code=data.get("return_code"),
                warnings=plate.get("warning_message"),
@@ -165,7 +243,7 @@ def run(name):
                layer_height=data.get("layer_height"),
                effective_settings={key: settings.get(key) for key in
                                    ("sparse_infill_pattern", "enable_support", "curr_bed_type",
-                                    "top_shell_layers", "bottom_shell_layers")},
+                                    "top_shell_layers", "bottom_shell_layers", *PROCESS["settings"])},
                start_gcode_diagnostic="Invalid T command" in log)
     print(f"Slice {name}: {'PASS' if passed else 'FAIL'}", flush=True)
     return row
@@ -247,7 +325,20 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
             if density != DEFAULT_INFILL:
                 entry["print_params"] = dict(sparse_infill_density=f"{density}%", sparse_infill_pattern=pattern(density))
             objects.append(entry)
-        plates.append(dict(plate_name=title, need_arrange=True, objects=objects))
+        # One complete object needs no packing; our explicit centring below preserves its pose.
+        # Multi-object plates still use the arranger to avoid overlaps before centring the group.
+        need_arrange = not (FIXED_PRINT_POSES and sum(group.values()) == 1)
+        if not need_arrange:
+            # Bambu adds the plate-grid origin later, but classifies objects by their bounds.
+            # Put the complete object inside its local bed before that classification; colour
+            # pieces must share the same translation rather than being centred separately.
+            name = next(iter(group))
+            low, high = trimesh.load_mesh(STL_DIR / f"{name}.stl", process=False).bounds
+            bed = np.array([[float(value) for value in point.split("x")] for point in machine["printable_area"]])
+            delta = [*((bed.min(axis=0) + bed.max(axis=0)) / 2 - (low[:2] + high[:2]) / 2), -low[2]]
+            for entry in objects:
+                entry.update({f"pos_{axis}": [float(value)] for axis, value in zip("xyz", delta)})
+        plates.append(dict(plate_name=title, need_arrange=need_arrange, objects=objects))
     (folder / "assemble.json").write_text(json.dumps(dict(plates=plates), indent=2, ensure_ascii=False))
     raw = folder / "raw.3mf"
     raw.unlink(missing_ok=True)
@@ -427,6 +518,9 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
         grams = {f["id"]: round(f["total_used_g"], 2) for f in plate.get("filaments", [])}
         assert result.returncode == 0 and data.get("return_code") == 0 and "slicing result conflict" not in log, \
             f"Plate {title} does not slice; see {plate_dir}"
+        with zipfile.ZipFile(plate_dir / "sliced.3mf") as sliced:
+            process_overrides = verify_process_overrides(
+                json.loads(sliced.read("Metadata/project_settings.config")), process_file)
         if index - 1 in pause_plates:
             with zipfile.ZipFile(plate_dir / "sliced.3mf") as sliced:
                 name = next(n for n in sliced.namelist() if re.fullmatch(r"Metadata/plate_\d+\.gcode", n))
@@ -438,7 +532,8 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
             pauses[title] = dict(plate=index, pause_before_layer_mm=wanted)
             print(f"Slice pause plate {title}: PASS, pause before layer {wanted} mm", flush=True)
         plate_slices[title] = dict(plate=index, hours=round(plate.get("total_predication", 0) / 3600, 2),
-                                   grams_by_filament=grams, warnings=plate.get("warning_message"))
+                                   grams_by_filament=grams, warnings=plate.get("warning_message"),
+                                   process_overrides=process_overrides)
         if not coloured:
             print(f"Slice plate {title}: PASS, filament use {grams} g", flush=True)
             continue
@@ -492,8 +587,10 @@ solid = sorted(n for n in PARTS if infill(n, PARTS[n][1]) == 100)
 with ThreadPoolExecutor(max_workers=2) as pool:
     results = list(pool.map(run, PARTS))
 summary = dict(profile=f"{PRINTER['machine']} / {PRINTER['process']}, {PROCESS['wall_loops']} walls, "
-                       f"{PROCESS['top_shell_layers']}/{PROCESS['bottom_shell_layers']} top/bottom, no supports; "
+                       f"{PROCESS['top_shell_layers']}/{PROCESS['bottom_shell_layers']} top/bottom, "
+                       f"{'supports enabled' if PROCESS['settings']['enable_support'] == '1' else 'no supports'}; "
                        f"{DEFAULT_INFILL} % {PROCESS['pattern']}, 100 % zig-zag: {', '.join(solid) or 'none'}",
+               process_overrides=PROCESS["settings"],
                parts=results, total_parts=sum(r["quantity"] for r in results),
                total_grams_individual_plates=round(sum(r["quantity"] * r["grams"] for r in results), 1),
                total_hours_individual_plates=round(sum(r["quantity"] * r["hours"] for r in results), 1),
@@ -503,11 +600,12 @@ assert all(r["passed"] for r in results), f"Slicing failed; inspect {out}"
 assert all(r["wall_loops"] == PROCESS["wall_loops"] for r in results), "Wrong diagnostic wall count"
 assert all(r["infill_percent"] == infill(r["part"], r["material"]) for r in results), "Wrong diagnostic infill"
 assert all(r["effective_settings"]["sparse_infill_pattern"] == pattern(infill(r["part"], r["material"])) for r in results)
-assert all(r["effective_settings"]["enable_support"] == "0" for r in results)
+assert all(r["effective_settings"]["enable_support"] == PROCESS["settings"]["enable_support"] for r in results), "Wrong diagnostic support setting"
 summary["project_3mf"] = build_project_3mf()
 if TEST_PLATES:
     summary["test_3mf"] = build_project_3mf(TEST_PLATES, TEST_3MF, "test-3mf", full_build=False, process_file=profiles / "process-test.json", mono=TEST_FILAMENT)
     summary["test_3mf"]["process"] = {key: TEST_PROCESS[key] for key in ("wall_loops", "top_shell_layers", "bottom_shell_layers", "infill")}
+    summary["test_3mf"]["process_overrides"] = TEST_PROCESS["settings"]
 write_summary(summary)
 test = summary.get("test_3mf")
 print(f"PASS: {len(results)} slices; {summary['total_parts']} parts; "

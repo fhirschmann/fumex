@@ -68,6 +68,7 @@ ASSEMBLY = {
 }
 # the fan and the pot are solid envelopes, their screws and shaft run through them
 ALLOWED_OVERLAPS = [("base", "screws_pwm"),     # thread forms into the pilot; independently bounded by check_pwm_mount
+                    ("head", "filter_support"),  # only the eight spring bumps, bounded by check_filter_support
                     # PCB is fastened before the head, filter and cover assembly is installed.
                     ("head", "driver_pwm"), ("filter", "driver_pwm"), ("cassette", "driver_pwm"),
                     ("magnets", "driver_pwm"),  # embedded magnets leave with the removed head and cassette
@@ -182,7 +183,7 @@ def corner_jumps(local_meshes, width, depth, top, plan_r=3.5, corner_r=6.0,
     return rows
 
 
-def magnet_skin(local_head, cylinder, manifold, axes, depth=3.2, radius=5.15, start=0):
+def magnet_skin(local_head, cylinder, manifold, axes, depth=3.2, radius=5.02, start=0):
     solid = manifold(local_head)
     rows = []
     for x, z in axes:
@@ -218,7 +219,7 @@ def check_top_corners(ctx):
 def check_sealed_magnets(ctx):
     """Prove eight usable closed cavities and both full axial skins on actual meshes."""
     m = ctx.metrics
-    assert np.allclose(m["magnet_pocket"], [10.3, 3.2], atol=1e-6)
+    assert np.allclose(m["magnet_pocket"], [10.04, 3.2], atol=1e-6)
     assert abs(m["magnet_skin"] - 1.2) < 1e-6
     assert abs(m["front_t"] - 5.6) < 1e-6 and abs(m["cass_t"] - 5.6) < 1e-6
     assert PAUSES == {"head": [4.6], "cassette": [4.6]}, "Wrong magnet insertion layer"
@@ -229,20 +230,35 @@ def check_sealed_magnets(ctx):
     width, cz = m["body"][0], m["base_h"] + m["head_h"] / 2
     axes = [(width / 2 + sx * m["mag_off"], cz + sz * m["mag_off"])
             for sx in (-1, 1) for sz in (-1, 1)]
+
+    def radial_distances(mesh, x, ys, z):
+        directions = np.array([[math.cos(t), 0, math.sin(t)]
+                               for t in np.linspace(0, 2 * math.pi, 16, endpoint=False)])
+        origins = np.repeat([[x, y, z] for y in ys], len(directions), axis=0)
+        directions = np.tile(directions, (len(ys), 1))
+        hits, ray_ids, _ = mesh.ray.intersects_location(origins, directions, multiple_hits=True)
+        distances = np.full(len(origins), np.inf)
+        np.minimum.at(distances, ray_ids, np.linalg.norm(hits - origins[ray_ids], axis=1))
+        assert np.all(np.isfinite(distances)), "Missing radial magnet boundary"
+        return distances
+
     rows, cavities = [], []
     for name, planes in (("head", [0, 1.2, 4.4, 5.6]),
                          ("cassette", [-5.6, -4.4, -1.2, 0])):
         solid, mesh = solids[name], meshes[name]
         for x, z in axes:
             a, b, c, d = planes
-            # Small geometric insets avoid tessellation/coplanar noise without
-            # allowing an open face or an undersized 10 x 3 mm disc pocket.
-            cavity = ctx.cylinder([x, b + .002, z], [0, 1, 0], c - b - .004, 5.13, 240)
+            # The 53-sided CAD circle has <0.009 mm radial sag. A 0.012 mm
+            # probe inset avoids that tessellation, independently of the disc size.
+            cavity = ctx.cylinder([x, b + .002, z], [0, 1, 0], c - b - .004, 5.008, 240)
             cavity_overlap = float((cavity ^ solid).volume())
             assert cavity_overlap < .001, f"Sealed magnet cavity blocked: {name}/{x}/{z}, {cavity_overlap}"
+            pocket_radii = radial_distances(mesh, x, [b + .2, (b + c) / 2, c - .2], z)
+            assert pocket_radii.min() > 5.008 and pocket_radii.max() < 5.023, \
+                f"Incorrect 10.04 mm cavity diameter: {name}/{x}/{z}, {pocket_radii}"
             missing = []
             for lo, hi in ((a, b), (c, d)):
-                skin = ctx.cylinder([x, lo + .002, z], [0, 1, 0], hi - lo - .004, 5.13, 240)
+                skin = ctx.cylinder([x, lo + .002, z], [0, 1, 0], hi - lo - .004, 5.008, 240)
                 missing.append(float((skin - solid).volume()))
             assert max(missing) < .001, f"Open/thin magnet face: {name}/{x}/{z}, {missing}"
             # The complete pocket faces must be planar. Seventeen spatially
@@ -263,11 +279,21 @@ def check_sealed_magnets(ctx):
                 measured_skins.append(float(ys[1] - ys[0]))
                 if name == "cassette":
                     measured_skins.append(float(ys[3] - ys[2]))
-            full_cavity = ctx.cylinder([x, b - .001, z], [0, 1, 0], c - b + .002, 5.151, 240)
+            full_cavity = ctx.cylinder([x, b - .001, z], [0, 1, 0], c - b + .002, 5.021, 240)
             cavities.append(full_cavity)
             disc_volume = float((full_cavity ^ solids["magnets"]).volume())
             assert 230 < disc_volume < 240, f"Missing or incorrect 10 x 3 magnet: {name}/{x}/{z}, {disc_volume}"
-            rows.append(dict(part=name, axis_xz=[x, z], cavity_diameter_depth_mm=[10.3, 3.2],
+            disc_radii = radial_distances(meshes["magnets"], x, [b + .1, b + 1.5, b + 2.9], z)
+            assert disc_radii.min() > 4.988 and disc_radii.max() < 5.003, \
+                f"Magnet disc is not diameter 10 mm: {name}/{x}/{z}, {disc_radii}"
+            disc_hits, _, _ = meshes["magnets"].ray.intersects_location(
+                [[x, b - .1, z]], [[0, 1, 0]], multiple_hits=True)
+            disc_ys = np.unique(np.round(disc_hits[:, 1], 4))
+            assert len(disc_ys) >= 2 and np.allclose(disc_ys[:2], [b, b + 3], atol=.003), \
+                f"Magnet disc is not 3 mm tall on the cavity floor: {name}/{x}/{z}, {disc_ys}"
+            rows.append(dict(part=name, axis_xz=[x, z], cavity_diameter_depth_mm=[10.04, 3.2],
+                             measured_cavity_diameter_range_mm=(2 * np.array([pocket_radii.min(), pocket_radii.max()])).round(5).tolist(),
+                             measured_disc_diameter_range_mm=(2 * np.array([disc_radii.min(), disc_radii.max()])).round(5).tolist(),
                              cavity_overlap_mm3=round(cavity_overlap, 7),
                              axial_skin_missing_mm3=[round(v, 7) for v in missing],
                              minimum_measured_outer_skin_mm=round(min(measured_skins), 4),
@@ -1104,14 +1130,123 @@ def check_rim_chamfers(ctx):
     return dict(rim_chamfer_profiles=rows)
 
 
+def _filter_support_compressed(ctx, support, cx, cz):
+    """Kinematic mesh proxy: fixed round roots, 0.17-mm inward cheek motion at both bump peaks."""
+    # Split first: otherwise moving a remote vertex could drag a long triangle
+    # through the supposedly fixed root below the deformation boundary.
+    above_root, root = support.split_by_plane([0, 1, 0], 25.3)
+    tip, flex = above_root.split_by_plane([0, 1, 0], 31.9)
+    pieces = [root]
+    for chunk in (flex, tip):
+        data = chunk.to_mesh()
+        original = np.asarray(data.vert_properties)[:, :3].astype(float)
+        moved = original.copy()
+        for angle in (0, 90, 180, 270):
+            a = math.radians(angle)
+            radial = np.array([math.cos(a), 0, -math.sin(a)])
+            tangent = np.array([math.sin(a), 0, math.cos(a)])
+            relative = original - [cx, 0, cz]
+            r, t = relative @ radial, relative @ tangent
+            cheek = (r > 58.49) & (r < 61.51) & (np.abs(t) > 1.89)
+            travel = .17 * np.clip((original[:, 1] - 25.3) / 6.6, 0, 1)
+            moved[cheek] -= (np.sign(t[cheek]) * travel[cheek])[:, None] * tangent
+        mesh = trimesh.Trimesh(vertices=moved, faces=np.asarray(data.tri_verts), process=False)
+        pieces.append(ctx.manifold(mesh))
+    compressed = md.Manifold.batch_boolean(pieces, md.OpType.Add)
+    assert compressed.status() == md.Error.NoError and len(compressed.decompose()) == 1, \
+        "Compressed filter cross is not a connected closed solid"
+    fixed_zone = _air_box([cx - 80, 22, cz - 80], [cx + 80, 25.299, cz + 80])
+    before, after = support ^ fixed_zone, compressed ^ fixed_zone
+    root_change = float((before - after).volume() + (after - before).volume())
+    assert root_change < .001, f"Compression moves the spring roots: {root_change:.6f} mm3"
+    assert abs(compressed.volume() - support.volume()) < .01, "Compression changes material volume"
+    return compressed
+
+
+def _filter_support_clips(ctx, support, head, cx, cz):
+    """Eight finite interferences, intact roots, open reliefs and a compressed service path."""
+    assert np.allclose(ctx.metrics["mat_clip"], [.35, 1.6, 3.8, .9, .6, 1.4, .8]), \
+        "Filter clip dimensions differ from the reviewed replacement cross"
+    rows, allowed = [], []
+    for angle in (0, 90, 180, 270):
+        local = support.translate([-cx, 0, -cz]).rotate([0, -angle, 0])
+        local_head = head.translate([-cx, 0, -cz]).rotate([0, -angle, 0])
+        mm = local.to_mesh()
+        mesh = trimesh.Trimesh(vertices=np.asarray(mm.vert_properties)[:, :3], faces=mm.tri_verts, process=False)
+        hm = local_head.to_mesh()
+        housing = trimesh.Trimesh(vertices=np.asarray(hm.vert_properties)[:, :3], faces=hm.tri_verts, process=False)
+        profile = []
+        for y, expected in ((30.5, 8), (31.2, 8.35), (31.9, 8.7), (32.1, 8.7), (32.5, 8.35), (32.89, 8.00875)):
+            hits, _, _ = mesh.ray.intersects_location([[60, y, -6]], [[0, 0, 1]], multiple_hits=True)
+            assert len(hits) >= 4, f"Filter end {angle} lacks separated spring cheeks"
+            width = float(np.ptp(hits[:, 2]))
+            assert abs(width - expected) < .005, f"Incorrect clip entry/exit ramp: {angle}/{y}, {width}"
+            profile.append([y, round(width, 5)])
+        hits, _, _ = housing.ray.intersects_location([[60, 32, -7]], [[0, 0, 1]], multiple_hits=True)
+        walls = [max(hits[hits[:, 2] < 0, 2]), min(hits[hits[:, 2] > 0, 2])]
+        assert np.allclose(walls, [-4.2, 4.2], atol=.003), f"Existing head socket changed: {angle}/{walls}"
+        probes = {
+            "solid_foot": (_air_box([58.55, 23.102, -3.4], [61.05, 24.698, 3.4]), True),
+            "root_connection": (_air_box([57.4, 23.52, -3.2], [58.65, 24.68, 3.2]), True),
+            "central_slot": (_air_box([57.65, 25.32, -1.88], [61.6, 33, 1.88]), False),
+            "radial_relief": (_air_box([57.62, 25.17, -4.9], [58.48, 33, 4.9]), False),
+        }
+        for side in (-1, 1):
+            t0, t1 = sorted([side * 1.92, side * 3.95])
+            probes[f"cheek_{side}"] = (_air_box([58.52, 25.32, t0], [61.08, 32.84, t1]), True)
+            t0, t1 = sorted([side * 1.70, side * 1.72])
+            probes[f"rounded_root_{side}"] = (_air_box([59, 24.78, t0], [60.5, 24.80, t1]), True)
+        material = {}
+        for label, (probe, filled) in probes.items():
+            error = float((probe - local).volume() if filled else (probe ^ local).volume())
+            assert error < min(.001, probe.volume() * .001), \
+                f"Filter spring {angle}/{label} lacks material or clearance: {error:.6f}"
+            material[label] = round(error, 7)
+        for side in (-1, 1):
+            lo, hi = sorted([side * 4.199, side * 4.352])
+            band = _air_box([58.68, 30.48, lo], [61.32, 32.92, hi])
+            overlap = local ^ local_head ^ band
+            volume = float(overlap.volume())
+            assert .20 < volume < .33, f"Filter clip {angle}/{side} has no bounded preload: {volume:.6f}"
+            bounds = np.asarray(overlap.bounding_box()).reshape(2, 3)
+            penetration = max(abs(bounds[:, 2])) - 4.2
+            assert .145 < penetration < .155, f"Wrong filter spring deflection demand: {penetration}"
+            allowed.append(band.rotate([0, angle, 0]).translate([cx, 0, cz]))
+            rows.append(dict(end_angle_deg=angle, side=side, overlap_mm3=round(volume, 6),
+                             nominal_interference_mm=round(penetration, 5), ramp_widths_y_mm=profile,
+                             root_and_slot_probe_errors_mm3=material))
+    overlap = support ^ head
+    outside = float((overlap - md.Manifold.batch_boolean(allowed, md.OpType.Add)).volume())
+    assert outside < .001, f"Filter cross intersects head outside its eight bumps: {outside:.6f} mm3"
+    compressed = _filter_support_compressed(ctx, support, cx, cz)
+    assert float((compressed ^ head).volume()) < .001, "Compressed cross still jams in the head"
+    compressed_gap = float(compressed.min_gap(head, .1))
+    assert compressed_gap >= .015, f"Compressed spring cheeks lack test clearance: {compressed_gap:.5f} mm"
+    # The peak is actually displaced by 0.17 mm, rather than merely scaled
+    # from a free-tip motion at a different axial location.
+    cb = compressed.translate([-cx, 0, -cz]) ^ _air_box([58.7, 31.95, -5], [61.3, 32.05, 5])
+    assert abs(cb.bounding_box()[5] - cb.bounding_box()[2] - 8.36) < .005, "Insufficient compression at bump peak"
+    ctx.open_items.append("Filter cross: 0.15 mm interference per spring cheek is a geometric preload, "
+                          "not a measured retention force or PETG creep result. The compressed service "
+                          "mesh is a kinematic proxy, not an elastic material simulation.")
+    return compressed, dict(springs=rows, unintended_overlap_mm3=round(outside, 7),
+                            total_preload_overlap_mm3=round(overlap.volume(), 6),
+                            compressed_peak_motion_mm=.17, compressed_free_width_mm=8.36,
+                            compressed_head_clearance_mm=round(compressed_gap, 6),
+                            fixed_root_top_y_mm=25.3)
+
+
 def check_filter_support(ctx):
     """Check the separate cross, all four captured ends and its added air blockage."""
     m = ctx.metrics
     bar, thickness, span, front, rear, pad, post_inner, clearance = m["mat_support"]
     cx, cz = m["body"][0] / 2, m["base_h"] + m["head_h"] / 2
-    meshes = {n: head_frame(ctx.meshes[n], m) for n in ("head", "fan", "filter", "filter_support")}
+    assert np.allclose(m["mat_support"], [4, 5, 123, 23.1, 32.9, 8, 58.5, .2]), \
+        "Filter-support replacement changed the existing head/socket interface"
+    meshes = {n: head_frame(ctx.meshes[n], m) for n in ("head", "base", "fan", "filter", "filter_support")}
     solids = {n: ctx.manifold(mesh) for n, mesh in meshes.items()}
     support = solids["filter_support"]
+    compressed, clip_report = _filter_support_clips(ctx, support, solids["head"], cx, cz)
 
     # The end posts nearly touch the fan frame by design. Inspect the part inside
     # the nominal 113-mm rotor disc separately, so those stops cannot hide a bar
@@ -1130,7 +1265,7 @@ def check_filter_support(ctx):
 
     # Check each captured end independently: a summed contact could pass with
     # missing seats. The front stop is the head; the rear stop is the fan frame.
-    # No ALLOWED_OVERLAPS entry is used for this part or these probes.
+    # Use compressed cheeks: tangential preload must not impersonate an axial stop.
     stop_rows = []
     end_inner = post_inner - 1
     for axis, label in ((0, "horizontal"), (2, "vertical")):
@@ -1140,7 +1275,7 @@ def check_filter_support(ctx):
             centre = cx if axis == 0 else cz
             lo[axis], hi[axis] = ((centre - span / 2 - 0.01, centre - end_inner) if sign < 0
                                   else (centre + end_inner, centre + span / 2 + 0.01))
-            end = support ^ _air_box(lo.tolist(), hi.tolist())
+            end = compressed ^ _air_box(lo.tolist(), hi.tolist())
             assert end.volume() > 20, f"Filter support end missing: {label}/{sign}"
             row = dict(end=f"{label}_{'negative' if sign < 0 else 'positive'}", volume_mm3=round(end.volume(), 4))
             for direction, target in ((-1, "head"), (1, "fan")):
@@ -1151,6 +1286,24 @@ def check_filter_support(ctx):
                 assert contact > 0.01, f"Filter support end has no axial stop: {row['end']}/{target}"
                 row[f"{target}_contact_mm3"] = round(contact, 5)
             stop_rows.append(row)
+
+    # The fan and cover are removed. The starting body and all swept boundary
+    # triangles cover the complete +Y30 translation, including between poses.
+    fixed = md.Manifold.batch_boolean([solids[n] for n in ("head", "base", "filter")], md.OpType.Add)
+    data = compressed.to_mesh()
+    vertices, faces = np.asarray(data.vert_properties)[:, :3], np.asarray(data.tri_verts)
+    path_overlap_bound = float((compressed ^ fixed).volume())
+    for triangle in vertices[faces]:
+        prism = md.Manifold.hull_points(np.vstack([triangle, triangle + [0, 30, 0]]))
+        if prism.volume() > 1e-9:
+            path_overlap_bound += max(0, float((prism ^ fixed).volume()))
+    assert path_overlap_bound < .01, f"Compressed filter-support service route blocked: {path_overlap_bound:.6f} mm3"
+    released_overlap = float((support.translate([0, 30, 0]) ^ fixed).volume())
+    assert released_overlap < .01, "Cross cannot relax after leaving the head sockets"
+    clip_report["service_path"] = dict(translation_local_mm=[0, 30, 0],
+        assembly_stage="Fan and cover removed; slide with compressed cheeks, relax after socket exit",
+        swept_overlap_upper_bound_mm3=round(path_overlap_bound, 8), released_overlap_mm3=round(released_overlap, 8),
+        method="Continuous boundary-triangle sweep of the locally compressed mesh; reverse for insertion")
 
     # Rotate the air axis onto Z, then project the actual cross and all its end
     # posts. Only material within the already open throat counts as added blockage.
@@ -1172,7 +1325,7 @@ def check_filter_support(ctx):
         end_clearance_mm=clearance, end_stops=stop_rows,
         throat_area_mm2=round(open_area, 3), blocked_area_mm2=round(blocked, 3),
         blocked_percent=round(100 * blocked / open_area, 3),
-        remaining_area_mm2=round(open_area - blocked, 3)))
+        remaining_area_mm2=round(open_area - blocked, 3), spring_clips=clip_report))
 
 
 def check_pwm_mount(ctx):
@@ -1686,7 +1839,7 @@ def checks(ctx):
     assert m["opening_sq"] >= 113, "Air passage narrower than the swept blade diameter"
     assert m["fan_post"][0] / 2 >= m["insert_hole_d"] / 2 + m["insert_w_min"], \
         "Fan posts too thin around their inserts"
-    assert m["magnet_pocket"] == [10.3, 3.2], "Magnet pockets no longer fit a 10 x 3 disc"
+    assert m["magnet_pocket"] == [10.04, 3.2], "Magnet pockets no longer match the user's proven 10.04 x 3.2 mm fit"
 
     # Contact, not just freedom from overlap
     tilt = math.radians(m["tilt"])
@@ -1727,9 +1880,7 @@ def checks(ctx):
         # the fan is bolted to the cover, so it comes off with it
         ("cover_off", ["head_back", "fan", "screws_fan"], ["head", "base", "filter_support", "chg_module", "chg_sink", "chg_tie", "screws_head"],
          [-o for o in out], 30, 0.5),
-        # The fan frame captures the support's four ends. Remove fan and cover,
-        # then lift the cross straight out of the rear-open head sockets.
-        ("support_out", "filter_support", ["head", "base", "filter"], [-o for o in out], 30, 0.5),
+        # check_filter_support proves the cross's compressed spring-cheek path.
         # Remove the head and cut/remove the cable tie, then lift the board and heatsink.
         ("chg_off", ["chg_module", "chg_sink"],
          ["base", "ball_lid", "battery", "pwm_board", "usbc", "switch", "led", "pot", "screws_lid"],
@@ -1921,4 +2072,7 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
                                 "-25,-25,207,13,0,183"),
          "14_fan_cable_notch": ("color(\"#aeb5bb\") intersection() { head_raw(); "
                                 "translate([20, 50, 48]) cube([40, 24, 14]); }",
-                                "8,110,100,40,62,52")}
+                                "8,110,100,40,62,52"),
+         "15_filter_clip": ("color(\"#aeb5bb\") intersection() { filter_support_raw(); "
+                             "translate([body_w/2+50, mat_support[3]-1, head_cz-7]) cube([14, 13, 14]); }",
+                             "156,70,155,130,28,120.5")}

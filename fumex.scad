@@ -46,7 +46,10 @@ open_r = 3;
 mat_stop_rise = 1.5;  // flank of the rear lip: 1.5 mm of depth per mm inwards, so it is not an overhang
 mat_support = [4, 5, 123, 23.1, 32.9, 8, 58.5, 0.2];
 // Cross: bar width/depth, outer span, front/rear y, end-pad width, post inner radius, pocket clearance.
-// Printed separately, mat-facing side down; four end posts are trapped between the head and fan frame.
+// Printed separately, mat-facing side down. Keep these socket dimensions compatible with printed heads.
+mat_clip = [0.35, 1.6, 3.8, 0.9, 0.6, 1.4, 0.8];
+// Side bulge, solid foot, central slot, radial relief, slot-root radius, lead ramp, rear ramp (mm).
+// Eight spring cheeks grip the unchanged 8.4-mm sockets at a free width of 8.7 mm.
 chamber_sq = 121.5;  // filter chamber, 0.75 mm wider than the hand-cut mat all round
 chamber_d = 17.5;    // the mat is 17 mm (user, cut from a cooker hood mat)
 tube_w = 3;          // wall of the filter chamber inside the shell
@@ -86,7 +89,7 @@ cass_t = 5.6;        // sealed magnets: 1.2 mm skins on both sides of the 3.2 mm
 cass_c = 1.2;        // 45 degree bevel on the finished contour; 4.4 mm of the rim stays straight.
                      // The narrowed side contour and the magnet pockets limit the bevel to 1.2 mm.
 cass_inset = 1;      // flange inside the head outline, leaves a ledge beside the finger scoops
-mag = [10.3, 3.2];   // enclosed cavity for a 10 x 3 disc; insert during the print pause
+mag = [10.04, 3.2];  // user's proven Tinkercad fit for a 10 x 3 disc; insert during the print pause
 mag_skin = 1.2;     // six solid 0.2 mm layers on each axial side; no glue-in opening
 mag_off = 62.5;      // magnet axes from the head centre, on both diagonals. 10 mm inset: 1.3 mm of material
                      // to the rounded plan corner and 1.8 mm to the intake opening
@@ -356,6 +359,12 @@ assert(mat_support[3] > front_t + 17 && mat_support[3] + mat_support[1] <= head_
 assert(mat_support[4] <= head_y[2] - mat_support[7], "Filter support posts collide with the fan");
 assert(tube_sq / 2 - mat_support[2] / 2 - mat_support[7] >= 2,
        "Filter support pockets leave too little tube wall");
+assert(mat_clip[0] > mat_support[7] && mat_clip[0] - mat_support[7] <= 0.2,
+       "Cross springs need positive, limited socket interference");
+assert(mat_clip[1] >= 1.6 && (mat_support[5] - mat_clip[2]) / 2 >= 2.05,
+       "Cross spring feet or cheeks are too thin");
+assert(mat_clip[3] >= 0.8 && mat_clip[4] >= 0.5 && mat_clip[5] > mat_clip[0] && mat_clip[6] > mat_clip[0],
+       "Cross springs need open relief, rounded roots and printable lead ramps");
 // where the insert pocket starts, the gusset flank must still clear the insert by the datasheet wall
 assert(fan_post_d / 2 >= insert_hole_d / 2 + insert_w_min, "Fan posts too thin for the inserts");
 assert(guide_c > 0 && guide[0] - guide_c >= 1.2, "Fan guide lead-in leaves less than three perimeters");
@@ -656,13 +665,52 @@ function filter_support_profile() = let (
     outline = union([for (a = [0:90:270]) rot(a, p = filter_support_arm())])[0],
     radii = [for (p = outline) abs(abs(p.x) - w / 2) < eps && abs(abs(p.y) - w / 2) < eps ? 4 : 0])
     move([body_w / 2, head_cz], p = round_corners(outline, radius = radii));
+module filter_clip_at() for (a = [0:90:270])
+    translate([body_w / 2, 0, head_cz]) rotate([0, a, 0]) children();
+// Extrude a tangential/axial profile along the radial direction of one end pad.
+module filter_clip_prism(points, r0, length) translate([r0, 0, 0]) rotate([0, 90, 0])
+    linear_extrude(height = length) polygon([for (p = points) [-p.x, p.y]]);
+module filter_clip_relief() let (
+    foot = mat_support[3] + mat_clip[1], half_slot = mat_clip[2] / 2,
+    root_r = mat_clip[4], r0 = mat_support[6] - mat_clip[3],
+    r1 = mat_support[2] / 2 + 1, end = mat_support[4] + 1
+) {
+    // Round the inner slot floor; the uncut 1.6-mm foot anchors both cheeks.
+    hull() for (s = [-1, 1])
+        translate([r0 - eps, foot + root_r, s * (half_slot - root_r)]) rotate([0, 90, 0])
+            cylinder(r = root_r, h = r1 - r0 + 2 * eps, $fn = 24);
+    translate([r0 - eps, foot + root_r, -half_slot])
+        cube([r1 - r0 + 2 * eps, end - foot - root_r, 2 * half_slot]);
+    // Without this radial slot the 5-mm cross bar would shorten the springs to 4.8 mm.
+    let (r = mat_clip[3] / 2, z0 = -mat_support[5] / 2 - 1) {
+        translate([r0 + r, foot + r, z0]) cylinder(r = r, h = mat_support[5] + 2, $fn = 24);
+        translate([r0, foot + r, z0]) cube([mat_clip[3], end - foot - r, mat_support[5] + 2]);
+    }
+}
+module filter_clip_bumps() let (
+    half_pad = mat_support[5] / 2, end = mat_support[4],
+    peak = end - mat_clip[6] - 0.2, r0 = mat_support[6] + 0.2,
+    length = mat_support[2] / 2 - mat_support[6] - 0.4
+) for (s = [-1, 1])
+    filter_clip_prism([for (p = [[half_pad - 0.2, peak - mat_clip[5]],
+                                 [half_pad, peak - mat_clip[5]],
+                                 [half_pad + mat_clip[0], peak],
+                                 [half_pad + mat_clip[0], end - mat_clip[6]],
+                                 [half_pad, end], [half_pad - 0.2, end]]) [s * p.x, p.y]], r0, length);
 module filter_support_raw() {
-    profile_sweep_y(filter_support_profile(), mat_support[3], mat_support[3] + mat_support[1],
-                    front_c = 0.4, back_c = 0.4);
-    for (a = [0:90:270]) translate([body_w / 2, 0, head_cz]) rotate([0, a, 0])
-        translate([mat_support[6], mat_support[3] + mat_support[1] - 0.6, -mat_support[5] / 2])
-            cube([mat_support[2] / 2 - mat_support[6],
-                  mat_support[4] - mat_support[3] - mat_support[1] + 0.6, mat_support[5]]);
+    difference() {
+        union() {
+            profile_sweep_y(filter_support_profile(), mat_support[3], mat_support[3] + mat_support[1],
+                            front_c = 0.4, back_c = 0.4);
+            filter_clip_at() {
+                translate([mat_support[6], mat_support[3] + mat_support[1] - 0.6, -mat_support[5] / 2])
+                    cube([mat_support[2] / 2 - mat_support[6],
+                          mat_support[4] - mat_support[3] - mat_support[1] + 0.6, mat_support[5]]);
+                filter_clip_bumps();
+            }
+        }
+        filter_clip_at() filter_clip_relief();
+    }
 }
 module filter_support_pockets() let (c = mat_support[7])
     for (a = [0:90:270]) translate([body_w / 2, 0, head_cz]) rotate([0, a, 0])
@@ -1233,8 +1281,8 @@ module fan_visual() head_at() translate([body_w / 2, head_y[2], head_cz]) rotate
 module filter_env() head_at() translate([body_w / 2, 0, head_cz]) along_y(front_t, front_t + 17) rrect([120, 120], open_r);
 module magnets_env() for (p = mag_xz()) head_at() {
     // Each disc rests on the bed-facing cavity floor, leaving 0.2 mm above it.
-    cyl_y(p, mag_skin, mag_skin + 3, mag[0] / 2 - 0.15);
-    cyl_y(p, -cass_t + mag_skin, -cass_t + mag_skin + 3, mag[0] / 2 - 0.15);
+    cyl_y(p, mag_skin, mag_skin + 3, 5);
+    cyl_y(p, -cass_t + mag_skin, -cass_t + mag_skin + 3, 5);
 }
 module battery_env() {
     translate([bat_x0, bat_cy, bat_cz]) rotate([0, 90, 0]) cylinder(d = bat_d, h = bat_l);
@@ -1395,6 +1443,7 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["head_axes", [for (p = rim_bosses()) concat(rim_entry(p), rim_axis(p), [rim_bearing(p), rim_length(p)])]],
     ["chamber", [chamber_sq, chamber_d]], ["open_sq", open_sq],
     ["head_y", head_y], ["mat_stop", mat_stop_y()], ["mat_support", mat_support],
+    ["mat_clip", mat_clip],
     ["fan_cable_slot", fan_cable_slot],
     ["charge_vent", [chg_vent_y, chg_vent[3]]],
     ["magnet_pocket", mag], ["magnet_skin", mag_skin], ["front_t", front_t],
