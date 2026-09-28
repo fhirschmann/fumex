@@ -165,7 +165,7 @@ knob_slit = [1, 6];
 knob_flutes = 18;
 knob_flute = [2, 1.2];
 knob_c = 1.2;
-knob_mark = [1.6, 7.5, 0.8];   // pointer groove in the top face (single colour, no inlay)
+knob_mark = [1.6, 7.5, 0.8];   // flush dark pointer in the first four print layers
 
 /* [Charge/boost module: eletechsup LFUPSMA, 12 V variant, in the bay under a vent] */
 // The board stands on its long edge above the ballast lid, components towards the front and
@@ -282,13 +282,10 @@ screw_clear_d = 3.4;
 screw_head_d = 5.7;
 screw_head_h = 1.65;
 head_pocket = [6.4, 1.9];
-// All four screws clamp directly down into base inserts, normal to the head joint.
+// Preserve all four head-seat references; only the rear pair is currently fastened.
 rim_screws = [[25.5, 6.5], [119.5, 6.5], [25, 66], [131, 66]];
 rim_front_entry_z = 60;     // raised base insert face, directly behind the front wall
-rim_front_root_z = 46;      // short support-free root joins the front wall below the joint
-rim_front_brace = [[24, 21.8], [18, 31.2]]; // left/right: width and underside Z at Y0
-rim_brace_rise = 1.1;       // underside Z/Y slope, printable without supports
-rim_brace_joint_gap = 0.1;  // added stock stays below the existing head interface
+rim_front_root_z = 46;      // retained only by the existing head's clearance template
 rim_front_cap_d = 12.2;
 rim_front_cap_c = 0.3;
 rim_front_bearing = 1.6;    // 0.7 mm recess leaves 6.4 mm of the M3 x 8 in the 7 mm pocket
@@ -342,6 +339,7 @@ function head_bosses() = [for (sx = [-1, 1], z = [base_h + boss_bottom, base_h +
                           [body_w / 2 + sx * (body_w / 2 - boss_inset), z]];
 function rim_bosses() = rim_screws;
 function rim_dir(p) = p[1] < body_d / 2 ? 1 : -1;
+function rim_fasteners() = [for (p = rim_bosses()) if (rim_dir(p) < 0) p];
 function rim_entry(p) = [p[0], p[1], rim_dir(p) > 0 ? rim_front_entry_z : base_h];
 function rim_axis(p) = [0, 0, -1];
 function rim_bearing(p) = rim_dir(p) > 0 ? rim_front_bearing : wall - rim_recess;
@@ -414,12 +412,8 @@ assert(bat_stop_top <= bat_cz + bat_d / 4 - 1,
        "Battery stop must stay below the BMS and cable exit");
 assert(foot_boss[1] - insert_depth >= 1.2, "Foot insert pocket floor thinner than three perimeters");
 assert(floor_t - foot_peg[1] >= 3 * 0.4, "Floor under the foot peg holes thinner than three perimeters");
-assert(min([for (p = rim_bosses()) rim_length(p) - rim_bearing(p)]) >= insert_len - eps,
+assert(min([for (p = rim_fasteners()) rim_length(p) - rim_bearing(p)]) >= insert_len - eps,
        "Head screws must engage the complete 5.7 mm insert");
-assert(min([for (b = rim_front_brace) b[0]]) >= 18 && rim_brace_rise >= 1.1 && rim_brace_joint_gap >= 0.1,
-       "Front post roots need broad support-free feet below the head joint");
-assert(rim_front_brace[1][1] + (pwm_y0+1)*rim_brace_rise >= pwm_z0+pwm_total_h+3.4+0.5,
-       "Front root braces must clear the initial PWM service lift");
 
 // ---------- helpers ----------
 module rrect(size, r) offset(r = r) offset(delta = -r) square(size, center = true);
@@ -571,20 +565,11 @@ module back_rim_chamfer(path, y, c) let(sweep_eps = 1 / 1024) difference() {
 // Local z follows the screw axis; t is the distance into the base from its insert entry.
 module rim_at(p, t = 0) translate(rim_entry(p) + rim_axis(p) * t)
     rotate([180, 0, 0]) children();
-module rim_front_boss(p) rim_at(p) cylinder(d = rim_boss_d, h = rim_boss_depth);
+// Legacy front-root outline remains solely as the existing head's release cutter.
 module rim_front_base_raw(p, clearance = 0) hull() {
     rim_at(p) cylinder(d = rim_boss_d+2*clearance, h = rim_boss_depth);
     translate([p[0]-rim_boss_d/2-clearance, -clearance, rim_front_root_z])
         cube([rim_boss_d+2*clearance, wall+2*clearance, base_h-rim_front_root_z]);
-}
-// Spread the raised post's load into a wider, deeper front-wall foot. Keep the
-// added stock below the joint so already printed heads retain their exact fit.
-module rim_front_base_brace(p) let (b = rim_front_brace[p[0] < body_w/2 ? 0 : 1]) difference() {
-    along_x(p[0]-b[0]/2, p[0]+b[0]/2)
-        polygon([[1, b[1]+rim_brace_rise], [1, 60],
-                 [12, 60], [12, b[1]+12*rim_brace_rise]]);
-    head_at() translate([-1, -20, base_h-rim_brace_joint_gap])
-        cube([body_w+2, body_d+40, 100]);
 }
 // A short solid bearing cap closes the tube floor around the raised insert boss.
 // The head is recessed by the same 0.7 mm as at the rear, with its upper part exposed.
@@ -954,7 +939,7 @@ module base() difference() {
     sw_cuts();
     vent_slots();
     ballast_screw_holes();
-    for (p = rim_bosses()) head_at() rim_at(p, -eps)
+    for (p = rim_fasteners()) head_at() rim_at(p, -eps)
         cylinder(d = insert_hole_d, h = insert_depth + eps);
     for (p = foot_xy) translate([p[0], p[1], -1]) cylinder(d = insert_hole_d, h = insert_depth + 1);
     for (p = foot_xy) translate([p[0] + foot_peg[2], p[1], -eps])
@@ -1231,17 +1216,8 @@ module ballast_env() difference() {
     // the insert pockets of the rear feet are sealed voids under a 2 mm cap: no resin gets in there
     for (p = foot_xy) translate([p[0], p[1], -1]) cylinder(d = insert_hole_d + 0.4, h = insert_depth + 1);
 }
-// The raised front bosses and their short wall roots stay together above the joint.
-// Clip only to the vertical exterior; clipping roots at the joint would disconnect them.
-module rim_boss_bodies() for (p = rim_bosses()) if (rim_dir(p) > 0) {
-    intersection() {
-        union() {
-            head_at() rim_front_base_raw(p);
-            rim_front_base_brace(p);
-        }
-        translate([0, 0, -1]) linear_extrude(101) base_outline();
-    }
-} else difference() {
+// Front insert posts and their entire roots are removed at the user's request.
+module rim_boss_bodies() for (p = rim_fasteners()) difference() {
     intersection() {
         base_joint_envelope();
         head_at() let (dy = body_d - wall - p[1]) hull() {
@@ -1270,10 +1246,13 @@ module knob_local() difference() {   // z = 0 at the underside (knob_gap off the
     }
     translate([0, 0, knob_sleeve_z - eps]) cylinder(d = pot_shaft_d + 2 * knob_bore_cl, h = knob_bore_top - knob_sleeve_z + eps);
     translate([-knob_slit[0] / 2, -knob_stem_d / 2 - 1, knob_sleeve_z - eps]) cube([knob_slit[0], knob_stem_d + 2, knob_slit[1] + eps]);
-    translate([knob_d / 2 - knob_c - knob_mark[1], -knob_mark[0] / 2, knob_len - knob_mark[2]])   // pointer groove, open to the bed
-        cube([knob_mark[1], knob_mark[0], knob_mark[2] + eps]);
 }
-module knob() translate([pot_x, -knob_gap, pot_z]) axis_orient([0, -1, 0]) knob_local();
+module knob_pointer_zone() translate([knob_d / 2 - knob_c - knob_mark[1], -knob_mark[0] / 2, knob_len - knob_mark[2]])
+    cube([knob_mark[1], knob_mark[0], knob_mark[2] + eps]);
+module knob_base_local() difference() { knob_local(); knob_pointer_zone(); }
+module knob_pointer_local() intersection() { knob_local(); knob_pointer_zone(); }
+module knob_at() translate([pot_x, -knob_gap, pot_z]) axis_orient([0, -1, 0]) children();
+module knob() knob_at() knob_local();
 module knob_print_pose() translate([0, 0, knob_len]) mirror([0, 0, 1]) children();   // top face on the bed
 
 // ---------- feet ----------
@@ -1383,7 +1362,7 @@ module screw(len, socket = false) difference() {
 // bench, before it goes into the head
 module screws_fan(socket = false) head_at() for (p = fan_holes()) translate([p[0], head_y[2], p[1]]) axis_orient([0, 1, 0]) screw(len_fan, socket);
 module screws_back(socket = false) head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) axis_orient([0, -1, 0]) screw(len_back, socket);
-module screws_head(socket = false) head_at() for (p = rim_bosses())
+module screws_head(socket = false) head_at() for (p = rim_fasteners())
     rim_at(p, -rim_bearing(p)) screw(rim_length(p), socket);
 module screws_lid(socket = false) for (q = ball_posts())
     translate([q[0], q[1], ball[3] + ball_lid_t - lid_pocket]) axis_orient([0, 0, -1]) screw(len_lid, socket);
@@ -1429,9 +1408,8 @@ module front_ratchet_at(p, swing = 0) let (
 ]) front_ratchet_local(swing);
 module drivers_fan()  head_at() for (p = fan_holes())   translate([p[0], head_y[2], p[1]]) axis_orient([0, 1, 0]) driver_at();
 module drivers_back() head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) axis_orient([0, -1, 0]) driver_at();
-module drivers_head() head_at() for (p = rim_bosses())
-    if (rim_dir(p) > 0) front_ratchet_at(p);
-    else rim_at(p, -rim_bearing(p)) driver_at();
+module drivers_head() head_at() for (p = rim_fasteners())
+    rim_at(p, -rim_bearing(p)) driver_at();
 module drivers_feet() for (p = foot_xy) translate([p[0], p[1], -foot[2] + foot_head_recess + screw_head_h]) axis_orient([0, 0, 1]) driver_at();
 module drivers_lid()  for (q = ball_posts()) translate([q[0], q[1], ball[3] + ball_lid_t - lid_pocket]) axis_orient([0, 0, -1]) driver_at();
 
@@ -1452,7 +1430,10 @@ module assembly(explode = 0) {
     color("#8c9196") head_at() translate([0, -explode * 1.6, explode * 1.4]) cassette_raw();
     color("#70767c") head_at() translate([0, explode * 0.5, explode * 1.4]) filter_support_raw();
     color("#5a5f66") translate([0, -explode * 0.8, explode * 1.4]) filter_env();
-    color("#8c9196") translate([0, -explode * 0.6, 0]) knob();
+    translate([0, -explode * 0.6, 0]) knob_at() {
+        color("#8c9196") knob_base_local();
+        color("#2b2d30") knob_pointer_local();
+    }
     color("#8c9196") translate([0, 0, explode * 0.8]) ball_lid();
     color("#414950") translate([0, -explode * 0.3, explode * 0.4]) battery_ties_env();
     color("#1a1b1d") translate([0, 0, -explode * 0.6]) place_feet();
@@ -1467,11 +1448,10 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["corner_r", corner_r], ["plan_r", plan_r], ["edge_c", edge_c], ["mag_off", mag_off],
     ["wall", wall], ["tilt", tilt], ["body", [body_w, body_d]], ["head_h", head_h],
     ["fan_insert_front", lug_d - insert_depth], ["fan_thread", len_fan - fan_t],
-    ["head_thread", min([for (p = rim_bosses()) rim_length(p) - rim_bearing(p)])],
+    ["head_thread", min([for (p = rim_fasteners()) rim_length(p) - rim_bearing(p)])],
     ["head_screw", [rim_recess, len_head, rim_seat_d]],
     ["head_mount", [0, rim_front_entry_z+rim_front_bearing+rim_recess, rim_boss_d, rim_fit_gap, rim_boss_depth]],
-    ["head_front_brace", [rim_front_brace, rim_brace_rise, rim_brace_joint_gap]],
-    ["head_axes", [for (p = rim_bosses()) concat(rim_entry(p), rim_axis(p), [rim_bearing(p), rim_length(p)])]],
+    ["head_axes", [for (p = rim_fasteners()) concat(rim_entry(p), rim_axis(p), [rim_bearing(p), rim_length(p)])]],
     ["chamber", [chamber_sq, chamber_d]], ["open_sq", open_sq],
     ["head_y", head_y], ["mat_stop", mat_stop_y()], ["mat_support", mat_support],
     ["mat_clip", mat_clip],
@@ -1510,6 +1490,8 @@ else if (part == "head") head_print_pose() head_raw();
 else if (part == "head_back") head_back_print_pose() head_back_raw();
 else if (part == "cassette") cassette_print_pose() cassette_raw();
 else if (part == "knob") knob_print_pose() knob_local();
+else if (part == "knob_base") knob_print_pose() knob_base_local();
+else if (part == "knob_pointer") knob_print_pose() knob_pointer_local();
 else if (part == "foot") foot_print_pose() foot_local();
 else if (part == "ball_lid") ball_lid_print_pose() ball_lid();
 else if (part == "filter_support") filter_support_print();

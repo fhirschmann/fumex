@@ -22,7 +22,7 @@ Internal notes for coding agents (Claude, Codex). The README is public and stays
 ## User constraints and preferences
 
 - Bench tool, no child-safety requirement. Plain and functional: no logo, no QR code, no decorative grooves (user, 2026-09-21).
-- Two colours, part by part: base, head and support cross in Bambu PETG black; cassette, back cover, ballast lid and knob in grey (back cover and ballast lid changed at the user's request on 2026-09-28). No inlays inside a part, so no prime tower.
+- Two colours, part by part: base, head and support cross in Bambu PETG black; cassette, back cover, ballast lid and knob in grey (back cover and ballast lid changed at the user's request on 2026-09-28). The grey knob now has a dark housing-colour pointer inlay (user, 2026-09-28); only its separate plate uses a prime tower. Other parts remain single-colour.
 - **The viewer colours are deliberately not the filament colours** (user, 2026-09-22): black PETG renders as a
   silhouette on screen and the geometry disappears, so `VIEWER["parts"]` uses lifted greys. Do not "correct"
   them back to #1a1b1d; the real colours live in `FILAMENTS`, the plate names and the README.
@@ -206,7 +206,8 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     physical strength, long-term creep, loose-fibre or maximum-speed rubbing test has been performed.
     Do not turn the nominal 5 mm central-bar/frame gap into a guarantee of rotor clearance.
 - The mat is held by the intake lip (opening 117 in a 121.5 chamber, 2.25 mm per side). It is pressed in and pulled out past that lip — a rigid-body path check cannot show this, so `filter_out` is not a checked path but a documented limitation.
-- **Head screws: four M3 x 8, all straight down into the base in the same direction**
+- **Current head fastening: two rear M3 x 8 only (2026-09-28).** The user explicitly requested removing both defective front insert platforms completely for now, including their wall roots and braces. There is no substitute front mount. This temporary state supersedes the earlier minimum-three/four-corner request; do not describe it as complete four-corner fastening. The existing head seats, clearances and holes stay unchanged.
+- **Historical four-screw layout; front base features below are now removed:**
   (user, 2026-09-25). In the untilted head frame every axis is (0,0,-1), normal to the
   joint plane; the shared housing tilt is unchanged. Front insert entries are
   (25.5,6.5,60) and (119.5,6.5,60), behind the front wall. Rear entries remain
@@ -214,11 +215,11 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   6.4 mm screw penetration and 0.6 mm pocket reserve; rear seats retain 2.3 mm
   material, 5.7 mm penetration and 1.3 mm reserve in the 7 mm insert pockets.
   This supersedes the previous 40-degree outward front axes and M3 x 16 screws.
-  - Front base bosses are Ø9.2 x 9 mm with Ø4 x 7 mm Ruthex pockets and 2 mm blind ends.
+  - Removed front base bosses were Ø9.2 x 9 mm with Ø4 x 7 mm Ruthex pockets and 2 mm blind ends.
     Their short hull roots join the front wall and remain above the joint where needed;
     clipping the entire root at the joint would leave the raised bosses disconnected.
     The outer base outline clips only the outside, preserving the complete insert-wall
-    and blind-floor probes. Additional sloping feet reinforce both wall roots below the joint (2026-09-28):
+    and blind-floor probes. The subsequently added, now also removed, sloping feet had these dimensions:
     24 mm wide and deeper on the left, 18 mm wide above the PWM board on the right; the upper posts and existing head windows stay unchanged. Rear bosses remain Ø10 x 9 mm with the existing cover notches.
   - The head has short Ø12.2 mm caps from local z59.5 to z62.3,
     connected to the lower filter tube. A Ø9.7 mm guide opening below the insert face
@@ -250,15 +251,15 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     This staged route clears the raised front boss; pitching directly to 35 degrees
     at the previous position does not. The full actual-mesh route includes the PCB,
     potentiometer and tab, with separate removal checks for both PCB screws and knob.
-- **Driver access is checked in the applicable assembly stage.** Most screws use a
-  straight Torx-bit/holder envelope. Front head screws use the conservative ratchet
-  above. Assembly-stage exclusions only cover parts removed for that operation; fixed
+- **Driver access is checked in the applicable assembly stage.** Active screws use a
+  straight Torx-bit/holder envelope. The historical front ratchet envelope above is inactive
+  while the front mounts are removed. Assembly-stage exclusions only cover parts removed for that operation; fixed
   housing and electronics remain obstacles. Tool geometry is not a physical-fit test.
 - **The ballast lid now uses exactly two M3 x 8 screws and two Ruthex RX-M3x5.7 inserts** (user,
   2026-09-23). The Ø10 posts stand at (x, y) = (10, 63) and (117, 56.8), with Ø4 x 7 mm insert pockets
   opening upwards. This replaces all four plastic-forming screws and their core holes. With the
-  3 mm lid and 1.2 mm head pockets, nominal thread reach is 6.2 mm. Total hardware is 18 inserts,
-  14 M3 x 8 and four M3 x 30 screws. The right post moved inwards and forwards on 2026-09-24 so
+  3 mm lid and 1.2 mm head pockets, nominal thread reach is 6.2 mm. Total current hardware is 16 inserts,
+  12 M3 x 8 and four M3 x 30 screws (front head mounts removed on 2026-09-28). The right post moved inwards and forwards on 2026-09-24 so
   the screwdriver clears the head-mount bosses; the intermediate (130,63) position did not.
   Earlier positions at x30/115, 45/90, 12/40 and (135,63), including the G3 rear-row adjustment
   to y66.2, are historical. The head vent slots remain 14 mm long.
@@ -778,7 +779,7 @@ they do not validate the subsequent geometry.
   Both viewer copies were rebuilt; their unchanged hash reflects unchanged geometry.
 
 
-## Reinforced front insert roots (2026-09-28)
+## Historical front insert reinforcement (2026-09-28; subsequently removed)
 
 - The user reports that the printed front head-mount posts break at the connection to the
   base front wall, not around the inserts. The original 9.2 mm wide hull started from only
@@ -827,7 +828,8 @@ they do not validate the subsequent geometry.
   Both use `PETG-grey` (filament 2) in production, with matching OpenSCAD assembly colours,
   lifted-grey viewer colours and documentation images. Plate 2 now holds the black base
   and support cross; plate 4 holds the grey back cover, ballast lid and knob. The head
-  and cassette retain their separate magnet-pause plates 1 and 3. USB fit coupons remain
+  and cassette retained their separate magnet-pause plates 1 and 3 at this revision.
+  The later shared-cover plate below supersedes this layout. USB fit coupons remain
   a single-colour test on filament 1. The cover and lid geometry is unchanged.
 - The user measured this USB PCB as 10.06 mm wide and reported excessive lateral play.
   That measurement supersedes the inherited LEO-AC1 width of 10.35 mm for this project.
@@ -856,3 +858,59 @@ they do not validate the subsequent geometry.
   120.859 g / 3.789 h, USB test 10.0 g / 1.04 h. README rounded estimates remain valid.
   Both viewer files and all affected images are regenerated. The two pause plates retain
   their 4.6 mm insertion layer and 30 mm bed movement; first-layer walls remain one.
+
+
+## Removed front platforms, shared cover plate and dark knob pointer (2026-09-28)
+
+- The user requests complete removal of the faulty front base insert platforms for now.
+  Both posts, their short hull roots, the later broad reinforcement feet, front insert
+  holes, two screws and their tool envelopes are removed. Only the two original rear
+  M3 x 8 head fasteners remain. This is an intentional temporary state, superseding
+  the earlier minimum-three/four-corner request for this revision; complete joint
+  strength has not been established. Hardware now totals 16 Ruthex inserts, 12 M3 x 8
+  and four M3 x 30 screws, plus the two existing thermoplastic PWM screws.
+- The existing head stays geometrically unchanged: its front bearing caps and windows
+  remain unused. `rim_bosses()` retains all four historical references for those head
+  features; `rim_fasteners()` selects only the rear pair for base posts, holes, active
+  screws, tools and metrics. `rim_front_base_raw()` survives solely as the old head
+  clearance template. The removed reinforcement is no longer a source module.
+- `check_removed_front_mounts()` independently checks empty front post, foot, screw
+  and tool regions. The prior base fails its post probes. Both rear clamps retain
+  complete bearing, insert wall and blind-floor checks, 5.7 mm screw penetration and
+  1.3 mm pocket reserve. Mat overlap is limited to the retained front head seats
+  (201.140253 mm3, at most 1.8 mm); head screws have no mat overlap.
+- The grey cassette, back cover and ballast lid share production plate 3. Their
+  placement must pass the actual H2S plate slice. The cassette's 4.6 mm magnet pause
+  pauses all three parts, with the same checked 30 mm bed lowering and return. The
+  black head remains on its separate magnet plate 1; base/cross are on plate 2.
+- The grey knob has a flush dark pointer matching the housing filament, filling the
+  former 1.6 x 7.5 x 0.8 mm groove. Its outside, shaft sleeve, bore and print pose stay
+  unchanged. The pointer occupies the first four 0.2 mm layers, 9.6 mm3 in one body.
+  Knob colour coverage has zero overlap and zero union difference. Plate 4 holds
+  only this two-colour knob and its prime tower; TPU feet remain on plate 5.
+  Logical filament 4 uses the same dark PETG profile and colour as slot 1, which
+  remains an untagged base slot. Map both to the same physical AMS spool. Viewer
+  colours retain the established lifted greys, including the housing-colour pointer.
+- Shared-skill commit `6c77d6d` documents that logical base and inlay slots need
+  separate roles even when using the same spool, and permits explicitly requested
+  same-colour mixed pause plates when their actual pause/resume movements are checked.
+- Final source SHA256: `948738a7fa2b685da7ceb4431a0e5d048dce1e5e6e1a5d4457f2481eeaeb63d6`.
+  Export passes for ten print meshes, one multicolour part, 397 coaxial feature
+  pairs, nine standard paths and 561 assembly pairs. Islands, overhangs, thickness
+  and fins are CLEAN for the changed base and knob; the pointer inlay is CLEAN.
+  Static tipping estimates are 27.9 mm front margin and 20.5 degrees at 1030.2 g.
+- All ten individual slices, five production plates and the USB test plate pass
+  without supports or slicer warnings. The grey cover layout occupies 285 x 165.3 mm
+  on the 340 x 320 mm H2S bed. Actual slices preserve both insertion pauses before
+  4.6 mm, with the bed moving from print Z4.4 to Z34.4 and back. The knob plate uses
+  6.37 g grey and 0.68 g dark PETG, including purge/prime material, in 0.55 h.
+  Base: 117.552 g / 3.602 h. Production: 491.2 g / 16.6 h on arranged plates;
+  single-colour individual diagnostics total 489.5 g / 17.3 h. The USB test remains
+  10.02 g / 1.04 h. All plates preserve one first-layer wall and four later walls.
+- Independent comparison against `4248800` finds 3779.850 mm3 removed only at the
+  two former front platforms and roots; outside them the Boolean delta is numerical
+  noise below 0.001 mm3. Head, back cover and ballast lid are byte-identical, and
+  every other unchanged part is geometrically identical. The grey knob base is
+  exactly the old grooved knob; only its dark pointer fills that groove.
+  Both viewer files and affected documentation images are rebuilt. Browser policy
+  blocks refreshing the local file URL; the open local tabs require a manual reload.

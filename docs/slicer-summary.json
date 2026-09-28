@@ -13,12 +13,12 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "6f5f9b1df107ab9965eb1745e149360e73710b3c9673bc2e2f210c0a577cd465",
+      "source_sha256": "c20153e1968e541a01095a27a94c7ef641656d03ffe80db87378d8b3559bb79a",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 3.789,
-      "grams": 120.859,
+      "hours": 3.602,
+      "grams": 117.552,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -45,7 +45,7 @@
       "result_code": 0,
       "warnings": "",
       "hours": 5.803,
-      "grams": 225.585,
+      "grams": 225.586,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -98,7 +98,7 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.914,
+      "hours": 2.913,
       "grams": 60.862,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -121,12 +121,12 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "c406eb2e289007354041ca9da392f83dd45b9691a9835808848bf2bef06dd463",
+      "source_sha256": "d82651ca43c281b9f688183230a3bac2faa020db5b8b960cee486254dc4c49b6",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 0.425,
-      "grams": 4.941,
+      "hours": 0.423,
+      "grams": 4.942,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -202,7 +202,7 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "0088cef278724831fa4bdef1e7a09a99f01d26de93a84c0ed9481e6d5b7c7b7e",
+      "source_sha256": "d8e463e77c0bfa7c8a4003085b84340e3e60aee403c5f0cd8efb439e0abfb6ff",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -229,7 +229,7 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "96d14fcebae5359119cf67c046c378f83698da387015a8ee354282d9c3ef0f09",
+      "source_sha256": "6db5c9d4d6247cdc493120f5f4f2d5a6470d33412728ffc5649e1befff5248b0",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -277,8 +277,8 @@
     }
   ],
   "total_parts": 11,
-  "total_grams_individual_plates": 492.8,
-  "total_hours_individual_plates": 17.4,
+  "total_grams_individual_plates": 489.5,
+  "total_hours_individual_plates": 17.3,
   "production_gcode": false,
   "project_3mf": {
     "file": "stl/fumex_all_parts.3mf",
@@ -310,26 +310,30 @@
       },
       {
         "plate": 3,
-        "name": "Cassette",
+        "name": "Grey covers",
         "parts": [
-          "cassette"
+          "ball_lid",
+          "cassette",
+          "head_back"
         ],
         "size_mm": [
-          143.0,
-          138.0
+          285.0,
+          165.3
         ]
       },
       {
         "plate": 4,
-        "name": "Back cover, lid and knob",
+        "name": "Knob",
         "parts": [
-          "ball_lid",
-          "head_back",
           "knob"
         ],
         "size_mm": [
-          171.0,
-          165.3
+          24.0,
+          24.0
+        ],
+        "prime_tower_xy": [
+          52.0,
+          130.0
         ]
       },
       {
@@ -348,9 +352,23 @@
       }
     ],
     "total_hours_plates": 16.6,
-    "total_grams_plates": 492.4,
-    "multicolour_parts": {},
-    "multicolour_slices": {},
+    "total_grams_plates": 491.2,
+    "multicolour_parts": {
+      "knob": [
+        "pointer"
+      ]
+    },
+    "multicolour_slices": {
+      "Knob": {
+        "plate": 4,
+        "hours": 0.55,
+        "grams_by_filament": {
+          "2": 6.37,
+          "4": 0.68
+        },
+        "warnings": ""
+      }
+    },
     "pause_slices": {
       "Head": {
         "plate": 1,
@@ -367,7 +385,7 @@
           }
         ]
       },
-      "Cassette": {
+      "Grey covers": {
         "plate": 3,
         "pause_before_layer_mm": [
           4.6
@@ -399,9 +417,9 @@
       },
       "Base and support cross": {
         "plate": 2,
-        "hours": 4.03,
+        "hours": 3.85,
         "grams_by_filament": {
-          "1": 127.35
+          "1": 124.04
         },
         "warnings": "",
         "process_overrides": {
@@ -410,11 +428,11 @@
           "wall_loops": "4"
         }
       },
-      "Cassette": {
+      "Grey covers": {
         "plate": 3,
-        "hours": 2.92,
+        "hours": 5.8,
         "grams_by_filament": {
-          "2": 60.86
+          "2": 128.53
         },
         "warnings": "",
         "process_overrides": {
@@ -423,11 +441,12 @@
           "wall_loops": "4"
         }
       },
-      "Back cover, lid and knob": {
+      "Knob": {
         "plate": 4,
-        "hours": 3.22,
+        "hours": 0.55,
         "grams_by_filament": {
-          "2": 72.62
+          "2": 6.37,
+          "4": 0.68
         },
         "warnings": "",
         "process_overrides": {
@@ -451,7 +470,7 @@
       }
     },
     "own_infill_parts": 5,
-    "sha256": "30e3019e986b5e1b93f5c776420699d120907066be1934309164d4feaaac2c03"
+    "sha256": "186d974d56e277567eb102735feafd0feb32efca0c44279fd8d3914218810e1d"
   },
   "test_3mf": {
     "file": "stl/fumex_usb_fit.3mf",
@@ -473,7 +492,11 @@
     ],
     "total_hours_plates": 1.0,
     "total_grams_plates": 10.0,
-    "multicolour_parts": {},
+    "multicolour_parts": {
+      "knob": [
+        "pointer"
+      ]
+    },
     "multicolour_slices": {},
     "pause_slices": {},
     "plate_slices": {
@@ -492,7 +515,7 @@
       }
     },
     "own_infill_parts": 0,
-    "sha256": "ed82d44d8b6cd5d0d2502f8b70beaf272e5de9f62da98c9d697626c271895c9b",
+    "sha256": "bb70ef4a51a42de5da9a62ba43cf7c01b705daec1545f1fbc078e29dfa3e86a9",
     "process": {
       "wall_loops": 4,
       "top_shell_layers": 5,
