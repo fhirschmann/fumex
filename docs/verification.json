@@ -1,5 +1,5 @@
 {
-  "source_sha256": "61f4dff845d1437bf6ce3110dd4a673716e2964726ece6d9483f60394f5637aa",
+  "source_sha256": "dd8a0f902c218ef0dc0a7108f2577ca003be1c5fa861cfa293b20470bb0be6cf",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -29,8 +29,8 @@
           57.2657
         ]
       ],
-      "volume_mm3": 111369.6309,
-      "triangles": 11428,
+      "volume_mm3": 111366.3461,
+      "triangles": 11436,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
@@ -40,10 +40,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "8c51ed52f4c8041a682824d5d61503b8afd0f2428f59b136a073c614cf4f2d4c",
+      "sha256": "6f5f9b1df107ab9965eb1745e149360e73710b3c9673bc2e2f210c0a577cd465",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "8c51ed52f4c8041a682824d5d61503b8afd0f2428f59b136a073c614cf4f2d4c"
+      "committed_sha256": "6f5f9b1df107ab9965eb1745e149360e73710b3c9673bc2e2f210c0a577cd465"
     },
     "head": {
       "size_mm": [
@@ -110,7 +110,7 @@
       "backend": "Manifold",
       "sha256": "91adabe402fac25c19bf9bc19cc1e73dae678eccdb85f9123a16b672e487474b",
       "quantity": 1,
-      "material": "PETG-black",
+      "material": "PETG-grey",
       "committed_sha256": "91adabe402fac25c19bf9bc19cc1e73dae678eccdb85f9123a16b672e487474b"
     },
     "cassette": {
@@ -246,7 +246,7 @@
       "backend": "Manifold",
       "sha256": "396e4ae1f493d36398f69ef9dd125457d7d21d88aba249564448af3fca111eb6",
       "quantity": 1,
-      "material": "PETG-black",
+      "material": "PETG-grey",
       "committed_sha256": "396e4ae1f493d36398f69ef9dd125457d7d21d88aba249564448af3fca111eb6"
     },
     "filter_support": {
@@ -278,10 +278,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "cb0fc38e32890165d431274a3a1c9622db5586de20fefa326160c9e493cae88f",
+      "sha256": "0088cef278724831fa4bdef1e7a09a99f01d26de93a84c0ed9481e6d5b7c7b7e",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "cb0fc38e32890165d431274a3a1c9622db5586de20fefa326160c9e493cae88f"
+      "committed_sha256": "0088cef278724831fa4bdef1e7a09a99f01d26de93a84c0ed9481e6d5b7c7b7e"
     },
     "usbc_fit_base": {
       "size_mm": [
@@ -301,8 +301,8 @@
           57.2657
         ]
       ],
-      "volume_mm3": 7334.4012,
-      "triangles": 652,
+      "volume_mm3": 7331.1164,
+      "triangles": 660,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
@@ -312,10 +312,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "d0c8879fc7d59e21dcc8b7a8e35c1d58a435e29063b3d8e5b04787d000c7435b",
+      "sha256": "96d14fcebae5359119cf67c046c378f83698da387015a8ee354282d9c3ef0f09",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "d0c8879fc7d59e21dcc8b7a8e35c1d58a435e29063b3d8e5b04787d000c7435b"
+      "committed_sha256": "96d14fcebae5359119cf67c046c378f83698da387015a8ee354282d9c3ef0f09"
     },
     "usbc_fit_lid": {
       "size_mm": [
@@ -652,7 +652,7 @@
     ],
     "usb_board": [
       12.88,
-      10.35,
+      10.06,
       4.3
     ],
     "usb_keeper": [
@@ -674,6 +674,12 @@
     "usb_guides": [
       0.9,
       4
+    ],
+    "usb_side_fit": [
+      10.06,
+      0.1,
+      0.8,
+      0.2
     ],
     "led_pocket": [
       [
@@ -829,7 +835,7 @@
     "pwm_board@base": 5.1495,
     "chg_module@ball_lid": 0.5565,
     "ball_lid@base": 6.1373,
-    "usbc@base": 2.5875
+    "usbc@base": 2.515
   },
   "stops": [
     {
@@ -3123,6 +3129,127 @@
     ],
     "expected_thickness_findings": []
   },
+  "usb_side_fit": {
+    "measured_board_width_mm": 10.06,
+    "nominal_straight_channel_mm": 10.26,
+    "total_lateral_play_mm": 0.2,
+    "entry_length_mm": 0.8,
+    "entry_widening_per_side_mm": 0.2,
+    "channel_measurements": [
+      {
+        "region": "lead_start",
+        "y_mm": 58.77,
+        "inner_x_mm": {
+          "left": 100.68482,
+          "right": 111.31518
+        },
+        "channel_width_mm": 10.63037,
+        "side_clearance_mm": 0.28519,
+        "wall_thickness_mm": {
+          "left": 1.81481,
+          "right": 1.81481
+        }
+      },
+      {
+        "region": "lead_middle",
+        "y_mm": 59.12,
+        "inner_x_mm": {
+          "left": 100.77124,
+          "right": 111.22876
+        },
+        "channel_width_mm": 10.45753,
+        "side_clearance_mm": 0.19877,
+        "wall_thickness_mm": {
+          "left": 1.90123,
+          "right": 1.90123
+        }
+      },
+      {
+        "region": "lead_end",
+        "y_mm": 59.47,
+        "inner_x_mm": {
+          "left": 100.85766,
+          "right": 111.14234
+        },
+        "channel_width_mm": 10.28469,
+        "side_clearance_mm": 0.11234,
+        "wall_thickness_mm": {
+          "left": 1.98765,
+          "right": 1.98765
+        }
+      },
+      {
+        "region": "pcb_front",
+        "y_mm": 59.92,
+        "inner_x_mm": {
+          "left": 100.87,
+          "right": 111.13
+        },
+        "channel_width_mm": 10.25999,
+        "side_clearance_mm": 0.1,
+        "wall_thickness_mm": {
+          "left": 2.0,
+          "right": 2.0
+        }
+      },
+      {
+        "region": "pcb_middle",
+        "y_mm": 65.31,
+        "inner_x_mm": {
+          "left": 100.87,
+          "right": 111.13
+        },
+        "channel_width_mm": 10.25999,
+        "side_clearance_mm": 0.1,
+        "wall_thickness_mm": {
+          "left": 2.0,
+          "right": 2.0
+        }
+      },
+      {
+        "region": "guide_rear",
+        "y_mm": 70.7,
+        "inner_x_mm": {
+          "left": 100.87,
+          "right": 111.13
+        },
+        "channel_width_mm": 10.25999,
+        "side_clearance_mm": 0.1,
+        "wall_thickness_mm": {
+          "left": 2.0,
+          "right": 2.0
+        }
+      },
+      {
+        "region": "wall_recess",
+        "y_mm": 72.3,
+        "inner_x_mm": {
+          "left": 100.87,
+          "right": 111.13
+        },
+        "channel_width_mm": 10.25999,
+        "side_clearance_mm": 0.1,
+        "wall_thickness_mm": {
+          "left": 100.36804,
+          "right": 33.36264
+        }
+      }
+    ],
+    "lateral_stops": {
+      "left": {
+        "free_at_008_mm3": 0.0,
+        "contact_at_013_mm3": 1.62649,
+        "shifted_front_keeper_contact_mm3": 0.038,
+        "shifted_upper_return_contact_mm3": 0.087162
+      },
+      "right": {
+        "free_at_008_mm3": 0.0,
+        "contact_at_013_mm3": 1.62649,
+        "shifted_front_keeper_contact_mm3": 0.038,
+        "shifted_upper_return_contact_mm3": 0.087162
+      }
+    }
+  },
   "usb_support": {
     "gusset_undersides": {
       "left": {
@@ -3219,7 +3346,7 @@
     },
     "minimum_lid_gap_mm": 4.0,
     "pcb_seat_z_mm": 42.85,
-    "seat_contact_mm3": 2.5875
+    "seat_contact_mm3": 2.515
   },
   "battery_retention": {
     "retained_by": "base",
@@ -3441,12 +3568,12 @@
     ],
     "free_end_bounds_mm": [
       [
-        100.825,
+        100.97,
         39.62,
         72.85
       ],
       [
-        111.175,
+        111.03,
         54.0,
         77.16313
       ]
@@ -3457,7 +3584,7 @@
   "usb_fit": {
     "nominal_overlap_mm3": {
       "base_lid": 0.0,
-      "base_usb": 0.0,
+      "base_usb": -0.0,
       "lid_usb": 0.0
     },
     "supports": {
@@ -3479,7 +3606,7 @@
     },
     "pcb_edge_free_overlap_mm3": 0.0,
     "pcb_edge_stop_contact_mm3": 0.038,
-    "pcb_seat_contact_mm3": 2.587502,
+    "pcb_seat_contact_mm3": 2.514999,
     "assembly_stage": "Insert the bought USB board into the bare coupon, then seat the coupon lid at z26",
     "method": "Continuous swept boundary-triangle prisms and starting body; lid removed for board insertion",
     "extraction_segments": [
@@ -3689,6 +3816,7 @@
     "PWM service motion is sampled at 0.1 mm / 0.5 degrees (final lift 0.5 mm); remove the head, battery, loaded ballast lid, knob, PCB screws and rocker switch first. The real wiring and flexible leads are not modelled.",
     "Filter cross: 0.15 mm interference per spring cheek is a geometric preload, not a measured retention force or PETG creep result. The compressed service mesh is a kinematic proxy, not an elastic material simulation.",
     "LEDs: test visibility through both 1.8 mm PETG skins with the actual filament; nominal 3 mm body and 3.8 mm flange dimensions remain unmeasured, as in LEO-AC1",
+    "USB lateral clearance is nominal CAD clearance for the measured 10.06-mm board; the fit coupon must confirm the printed 10.26-mm channel and insertion friction.",
     "USB upper return captures the measured module envelope; bare PCB thickness and component-free bearing area are unmeasured. Check contact and cable-lever resistance on the fit print.",
     "Battery: check the base end-stop fit and actual cable exit; release both ties before upward battery removal",
     "Battery ties: fit two bands up to 3.6 x 1.2 mm, nominally at least 150 mm long; verify the actual buckle fits the 6 x 4 x 5 mm front envelope. Thread before inserting the pack. Tighten gently without crushing the wrapped electronics; there is no separate BMS pressure bridge. Cut ties before service. This geometric check does not prove clamp force, wrap integrity or flexible strap behaviour.",

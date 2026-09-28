@@ -16,11 +16,11 @@ METRICS_TAG = "PROJECT_METRICS"       # part="metrics" echoes this tag with [key
 PARTS = {
     "base": (1, "PETG-black", 1),
     "head": (1, "PETG-black", 1),
-    "head_back": (1, "PETG-black", 1),
+    "head_back": (1, "PETG-grey", 1),
     "cassette": (1, "PETG-grey", 1),
     "knob": (1, "PETG-grey", 1),
     "foot": (4, "TPU", 1),
-    "ball_lid": (1, "PETG-black", 1),
+    "ball_lid": (1, "PETG-grey", 1),
     "filter_support": (1, "PETG-black", 1),
     "usbc_fit_base": (0, "PETG-black", 1),
     "usbc_fit_lid": (0, "PETG-black", 1),
@@ -104,9 +104,9 @@ FILAMENTS = [dict(material="PETG-black", profile="Generic PETG @BBL H2S", colour
              dict(material="PETG-grey", profile="Generic PETG @BBL H2S", colour="#8C9196"),
              dict(material="TPU", profile="Generic TPU @BBL H2S", colour="#1A1B1D")]
 PLATES = [("Head", ["head"]),
-          ("Base and back cover", ["base", "head_back", "ball_lid", "filter_support"]),
+          ("Base and support cross", ["base", "filter_support"]),
           ("Cassette", ["cassette"]),
-          ("Knob", ["knob"]),
+          ("Back cover, lid and knob", ["head_back", "ball_lid", "knob"]),
           ("TPU feet", ["foot"])]
 # At 0.2-mm layers the cavity ends at 4.4 mm; the 4.6-mm layer closes it.
 # Each paused part has its own plate. The shared slicer verifies the actual
@@ -899,6 +899,80 @@ def check_usb_wire_access(ctx):
     return dict(usb_wire_access=rows)
 
 
+def check_usb_side_fit(ctx):
+    """Measure the PCB guide channel and bound lateral motion on the actual meshes."""
+    board_width, side_gap, lead_length, lead_opening = ctx.metrics['usb_side_fit']
+    assert np.allclose([board_width, side_gap, lead_length, lead_opening],
+                       [10.06, .1, .8, .2], atol=.001), \
+        'USB lateral fit must match the measured 10.06-mm board and 0.1-mm side clearance'
+    bounds = ctx.meshes['usbc'].bounds
+    cx, y0, zseat = bounds[:, 0].mean(), bounds[0, 1], bounds[0, 2]
+    actual_board_width = float(bounds[1, 0] - bounds[0, 0])
+    assert abs(actual_board_width - 10.06) < .005, \
+        f'USB bought-part envelope width differs from the measured board: {actual_board_width:.5f} mm'
+    front = y0 - ctx.metrics['usb_guides'][0]
+    back = ctx.metrics['body'][1] - ctx.metrics['wall']
+    top = zseat + ctx.metrics['usb_board'][2]
+    assert front + lead_length <= y0 - .09, 'USB lead-in must finish before the installed PCB edge'
+    # Rays start inside the empty channel. Their first two hits identify each
+    # inner and outer guide face independently of the nominal channel formula.
+    samples = [('lead_start', front + .05), ('lead_middle', front + lead_length / 2),
+               ('lead_end', front + lead_length - .05), ('pcb_front', y0 + .3),
+               ('pcb_middle', (y0 + back) / 2), ('guide_rear', back - .3),
+               ('wall_recess', y0 + ctx.metrics['usb_board'][0] - .2)]
+    channel_rows = []
+    for label, y in samples:
+        inner, thicknesses = {}, {}
+        for side, direction in (('left', -1), ('right', 1)):
+            hits, _, _ = ctx.meshes['base'].ray.intersects_location(
+                np.array([[cx, y, top - .35]]), np.array([[direction, 0, 0]]), multiple_hits=True)
+            distances = np.sort(direction * (hits[:, 0] - cx))
+            distances = np.unique(np.round(distances[distances > .001], 6))
+            assert len(distances) >= 2, f'USB {side} {label} has no complete guide or recess wall'
+            inner[side] = float(cx + direction * distances[0])
+            thicknesses[side] = float(distances[1] - distances[0])
+        opening = 2 * lead_opening * max(0, 1 - (y - front) / lead_length)
+        expected_width = 10.26 + opening
+        measured_width = inner['right'] - inner['left']
+        assert abs(measured_width - expected_width) < .01, \
+            f'USB {label} channel width {measured_width:.5f} mm differs from {expected_width:.5f} mm'
+        assert abs((inner['left'] + inner['right']) / 2 - cx) < .005, \
+            f'USB {label} channel is not centered on the board'
+        if label != 'wall_recess':
+            expected_wall = 2 - opening / 2
+            assert all(abs(t - expected_wall) < .01 for t in thicknesses.values()), \
+                f'USB {label} guide wall thickness differs from the complete 2-mm wall: {thicknesses}'
+        channel_rows.append(dict(region=label, y_mm=round(float(y), 5),
+            inner_x_mm={k: round(v, 5) for k, v in inner.items()},
+            channel_width_mm=round(measured_width, 5),
+            side_clearance_mm=round((measured_width - actual_board_width) / 2, 5),
+            wall_thickness_mm={k: round(v, 5) for k, v in thicknesses.items()}))
+    lateral_stops = {}
+    usb, base, lid = (ctx.solids[n] for n in ('usbc', 'base', 'ball_lid'))
+    for side, sign in (('left', -1), ('right', 1)):
+        free = (usb.translate([sign * .08, 0, 0]) ^ base).volume()
+        hit = (usb.translate([sign * .13, 0, 0]) ^ base).volume()
+        assert free < .0001 and hit > .05, \
+            f'USB {side} travel is not stopped near 0.1 mm: {free:.6f}/{hit:.6f} mm3'
+        # Neither limit of permitted sideways play may bypass the centered
+        # front keeper or upper return. Both probes come from the PCB envelope.
+        edge = _air_box([cx - 1.9, y0, zseat], [cx + 1.9, y0 + .5, zseat + .1])
+        upper = _air_box([cx - 1.9, y0 + .02, top - .1], [cx + 1.9, y0 + .25, top])
+        edge_hit = (edge.translate([sign * .1, -.3, 0]) ^ lid).volume()
+        upper_hit = (upper.translate([sign * .1, 0, .6]) ^ lid).volume()
+        assert edge_hit > .03 and upper_hit > .03, \
+            f'USB {side} lateral play bypasses the removable keeper: {edge_hit:.6f}/{upper_hit:.6f} mm3'
+        lateral_stops[side] = dict(free_at_008_mm3=round(free, 6), contact_at_013_mm3=round(hit, 6),
+            shifted_front_keeper_contact_mm3=round(edge_hit, 6), shifted_upper_return_contact_mm3=round(upper_hit, 6))
+    ctx.open_items.append('USB lateral clearance is nominal CAD clearance for the measured 10.06-mm board; '
+                          'the fit coupon must confirm the printed 10.26-mm channel and insertion friction.')
+    ctx.summary.append('USB lateral fit: measured 10.06-mm board in a 10.26-mm straight channel; '
+                       'both 0.1-mm side stops, tapered entry and shifted keeper capture verified')
+    return dict(usb_side_fit=dict(measured_board_width_mm=round(actual_board_width, 5),
+        nominal_straight_channel_mm=10.26, total_lateral_play_mm=.2, entry_length_mm=lead_length,
+        entry_widening_per_side_mm=lead_opening, channel_measurements=channel_rows, lateral_stops=lateral_stops))
+
+
 def check_usb_support(ctx):
     """Two side guides and a removable central stop with an upper module return."""
     bounds = ctx.meshes['usbc'].bounds
@@ -913,7 +987,9 @@ def check_usb_support(ctx):
     roof_top = upper + reach * roof_rise + roof_t
     top = ctx.metrics['ballast'][3]
     lid_top = top + ctx.metrics['lid_screw'][0]
-    sides = [('left', [xmin - 2.2, xmin - .2]), ('right', [xmax + .2, xmax + 2.2])]
+    _, side_gap, _, lead_opening = ctx.metrics['usb_side_fit']
+    sides = [('left', [xmin - 2 - side_gap, xmin - side_gap]),
+             ('right', [xmax + side_gap, xmax + side_gap + 2])]
     underside, filled = {}, {}
     for name, (lo, hi) in sides:
         ys = np.array([front + .5, (front + back) / 2, back - .35])
@@ -952,9 +1028,15 @@ def check_usb_support(ctx):
                                  [yb, intercept - yb - .03], [ya, intercept - ya - .03]])
         core_profile = np.array([[ya, intercept - ya + .03], [yb, intercept - yb + .03],
                                  [yb, upper - .03], [ya, upper - .03]])
-        probes = [md.CrossSection([profile], md.FillRule.NonZero).extrude(hi - lo - .06).transform(
-            [[0, 0, 1, lo + .03], [1, 0, 0, 0], [0, 1, 0, 0]])
-            for profile in (free_profile, core_profile)]
+        # The small entry taper removes the inner edge only at the guide front.
+        # Test its faces separately in check_usb_side_fit; the continuous root
+        # core here stays outside that intentionally removed strip.
+        core_lo = lo + .03 + (lead_opening if name == 'right' else 0)
+        core_hi = hi - .03 - (lead_opening if name == 'left' else 0)
+        probes = [md.CrossSection([profile], md.FillRule.NonZero).extrude(x1 - x0).transform(
+            [[0, 0, 1, x0], [1, 0, 0, 0], [0, 1, 0, 0]])
+            for profile, x0, x1 in ((free_profile, lo + .03, hi - .03),
+                                   (core_profile, core_lo, core_hi))]
         overlap = (probes[0] ^ ctx.solids['base']).volume()
         fill = (probes[1] ^ ctx.solids['base']).volume() / probes[1].volume()
         assert overlap < .01, f'USB {name} has material below its guide: {overlap:.4f} mm3'
@@ -2017,7 +2099,7 @@ def checks(ctx):
                 **check_fan_cable_opening(ctx), **check_joint_profile(ctx),
                 **check_rim_chamfers(ctx), **check_charger_air(ctx), **check_charger_holder(ctx),
                 **check_lid_fasteners(ctx), **check_head_fasteners(ctx), **check_front_boss_roots(ctx), **check_front_mat_contact(ctx), **check_front_ratchet_access(ctx), **check_pwm_mount(ctx), **check_pwm_removal(ctx), **check_usb_wire_access(ctx), **check_ballast_cover(ctx),
-                **check_switch_trough_clearance(ctx), **check_filter_support(ctx), **check_led_window(ctx), **check_usb_support(ctx),
+                **check_switch_trough_clearance(ctx), **check_filter_support(ctx), **check_led_window(ctx), **check_usb_side_fit(ctx), **check_usb_support(ctx),
                 **check_battery_retention(ctx), **check_battery_ties(ctx), **check_usb_installation(ctx), **check_usb_fit(ctx), **check_loaded_lid_removal(ctx))
 
 
@@ -2046,7 +2128,7 @@ VIEWER = dict(
     # id, label, group, colour, quantity, explode direction (mm per slider mm)
     parts=[("base", "Base", "black", "#8a9096", "1x", [0, 0, 0]),
            ("head", "Head", "black", "#8a9096", "1x", [0, -0.36, 1.35]),
-           ("head_back", "Back cover", "black", "#7c8288", "1x", [0, 2.3, 0.6]),
+           ("head_back", "Back cover", "grey", "#c4c9ce", "1x", [0, 2.3, 0.6]),
            ("cassette", "Filter cassette", "grey", "#c4c9ce", "1x", [0, -1.55, 1.0]),
            ("filter_support", "Filter support cross", "black", "#aeb5bb", "1x", [0, 0.15, 1.35]),
            ("knob", "Speed knob", "grey", "#c4c9ce", "1x", [0, -0.6, 0]),
@@ -2069,7 +2151,7 @@ VIEWER = dict(
            ("screws_pwm", "PCB screws 2.5 x 8", "bought", "#9aa0a6", "2x", [0, 0, 0.9]),
            ("screws_lid", "Lid screws M3 x 8", "bought", "#9aa0a6", "2x", [0, 0, 1.1]),
            ("ballast", "Ballast, loose iron", "bought", "#6b6f74", "1x", [0, 0, -0.3]),
-           ("ball_lid", "Ballast lid", "black", "#7c8288", "1x", [0, 0, 0.8]),
+           ("ball_lid", "Ballast lid", "grey", "#c4c9ce", "1x", [0, 0, 0.8]),
 ],
     bodies={"fan_visual": "fan_visual();"},
     output="build/viewer.html",
@@ -2078,20 +2160,20 @@ VIEWER = dict(
 VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
          "02_exploded": ("assembly(18);", "60,-360,170,0,0,30"),
          "03_back": ("assembly();", "60,320,150,0,0,205"),
-         "04_charger_front": ("color(\"#8a9096\") ball_lid(); color(\"#2f5d3a\") chg_module_env(); "
+         "04_charger_front": ("color(\"#c4c9ce\") ball_lid(); color(\"#2f5d3a\") chg_module_env(); "
                               "color(\"#aeb5bb\") chg_sink_env(); color(\"#55595e\") chg_tie_env();", "110,-90,90,70,60,34"),
-         "05_charger_back": ("color(\"#8a9096\") ball_lid(); color(\"#2f5d3a\") chg_module_env(); "
+         "05_charger_back": ("color(\"#c4c9ce\") ball_lid(); color(\"#2f5d3a\") chg_module_env(); "
                              "color(\"#aeb5bb\") chg_sink_env(); color(\"#55595e\") chg_tie_env();", "110,180,90,70,60,34"),
          "06_filter_support": ("color(\"#aeb5bb\") filter_support_raw();", "220,-240,220,72.5,26,120.5"),
          # Exploded only along Z: the two screw heads and both lid holes stay visible.
          "07_ballast_mount": ("color(\"#717980\") intersection() { base(); "
                               "translate([0, ball[2] - 1, 0]) cube([body_w, body_d - ball[2] + 1, ball[3] + 0.2]); } "
-                              "color(\"#b8c0c7\") translate([0, 0, 8]) ball_lid(); "
+                              "color(\"#c4c9ce\") translate([0, 0, 8]) ball_lid(); "
                               "color(\"#414950\") translate([0, 0, 16]) screws_lid(socket = true);",
                               "100,-180,240,72.5,63,24"),
          "08_usb_mount": ("color(\"#8a9096\") intersection() { base(); "
                           "translate([97, 57.4, 29]) cube([20, 17.6, 25]); } "
-                          "color(\"#b8c0c7\") intersection() { ball_lid(); "
+                          "color(\"#c4c9ce\") intersection() { ball_lid(); "
                           "translate([97, 52, 26]) cube([20, 20, 27]); } "
                           "color(\"#2f5d3a\") usbc_env();",
                           "170,10,80,106,63,40"),
@@ -2111,7 +2193,7 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
                           "180,-90,110,116,21,14"),
          "11_battery_usb_stops": ("color(\"#717980\") intersection() { base(); "
                                  "translate([3.2, 14, 0]) cube([115, 59, 48]); } "
-                                 "color(\"#8a9096\") ball_lid(); "
+                                 "color(\"#c4c9ce\") ball_lid(); "
                                  "color(\"#4a6d3f\") battery_env(); "
                                  "color(\"#414950\") battery_ties_env(); "
                                  "color(\"#2f5d3a\") usbc_env();",

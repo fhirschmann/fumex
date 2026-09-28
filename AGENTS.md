@@ -22,7 +22,7 @@ Internal notes for coding agents (Claude, Codex). The README is public and stays
 ## User constraints and preferences
 
 - Bench tool, no child-safety requirement. Plain and functional: no logo, no QR code, no decorative grooves (user, 2026-09-21).
-- Two colours, part by part: housing parts in Bambu PETG black, the parts you touch (cassette, knob) in grey. No inlays inside a part, so no prime tower.
+- Two colours, part by part: base, head and support cross in Bambu PETG black; cassette, back cover, ballast lid and knob in grey (back cover and ballast lid changed at the user's request on 2026-09-28). No inlays inside a part, so no prime tower.
 - **The viewer colours are deliberately not the filament colours** (user, 2026-09-22): black PETG renders as a
   silhouette on screen and the geometry disappears, so `VIEWER["parts"]` uses lifted greys. Do not "correct"
   them back to #1a1b1d; the real colours live in `FILAMENTS`, the plate names and the README.
@@ -39,6 +39,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 | Fan Arctic P12 Pro (PST) | 120 × 120 × 25 mm, 185 g, 600–3000 rpm, 77 cfm / 131 m³/h, 6.9 mmH₂O, 12 V, **0.33 A**, start-up 3.3 V, 0 rpm below 5 % PWM, cable 400 + 80 mm, 0–40 °C | data sheet (ACFAN00306A) |
 | Filter mat | cut by the user from a cooker hood mat to about 120 × 120 × 17 mm, white fleece with a dark carbon layer | user, 2026-09-21, hand-cut — the chamber is 121.5 mm and the lip 2.25 mm wide, so ±1 mm on the cut is fine |
 | Magnets | 8 × neodymium disc Ø10 × 3 | nominal disc size, **not yet measured**; user's proven Tinkercad cavity diameter Ø10.04 (2026-09-28), depth 3.2 and axial skins 1.2 mm; insert at print pauses |
+| USB-C PD module PCB width | 10.06 mm | measured on this board by the user, 2026-09-28; supersedes LEO-AC1's 10.35 mm width for FUMEX only |
 | Masses for the tipping check | fan 185 g (data sheet), battery 150 g, PWM board 12 g, mat 15 g, magnets 18 g, rest estimated | **estimates**, reported as an open item |
 
 ## Current design state
@@ -99,8 +100,8 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     insertion while the upper 4 mm keeper and both cable exits remain unchanged.
     They print as part of the lid without supports and also appear in the fit coupon.
   - Two narrow 2 mm side-guide gussets carry the USB channel from the rear wall, at
-    x98.625..100.625 and x111.375..113.375. The old broad inner right gusset is removed; the rear
-    seat now bridges 10.75 mm. The **lid has no USB slots or seat recess**. Both support undersides
+    x98.87..100.87 and x111.13..113.13. The old broad inner right gusset is removed; the rear
+    seat now bridges 10.26 mm for the user's measured 10.06 mm PCB. The **lid has no USB slots or seat recess**. Both support undersides
     follow z = 104 - y, ending at z33 at the inner rear wall y71: 4 mm above the continuous z29 lid.
     The guides start at y58.72, with underside z45.28 and top z47.35; their lead is 0.9 mm ahead
     of the PCB. `check_usb_support()` measures the actual slopes, empty space below, complete guide
@@ -319,7 +320,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     belong in the matching-source verification report.
   - The USB-C channel remains at z45 on two narrow 45-degree side-guide gussets from the back wall.
     Their underside is z33 at y71, 4 mm above the unslotted lid, and the guides begin at y58.72.
-    The rear seat spans 10.75 mm between them. The broad inner right gusset and earlier low gussets
+    The rear seat spans 10.26 mm between them. The broad inner right gusset and earlier low gussets
     that filled rear-open lid slots are superseded.
   - The removable central 4 mm L-stop catches the lower PCB edge; two lateral wire corridors stay
     free. `usbc_in` remains required with the lid fitted. Neither guide may close these corridors or
@@ -819,3 +820,39 @@ they do not validate the subsequent geometry.
 - Shared-skill commit `4bfbb89` records checking the wall connection independently of
   insert-pocket wall thickness and verifying the complete service path after reinforcement.
   Project scripts remain identical to the shared skill.
+
+## Grey covers and closer USB side fit (2026-09-28)
+
+- The user requests a grey back cover and ballast lid, matching the cassette and knob.
+  Both use `PETG-grey` (filament 2) in production, with matching OpenSCAD assembly colours,
+  lifted-grey viewer colours and documentation images. Plate 2 now holds the black base
+  and support cross; plate 4 holds the grey back cover, ballast lid and knob. The head
+  and cassette retain their separate magnet-pause plates 1 and 3. USB fit coupons remain
+  a single-colour test on filament 1. The cover and lid geometry is unchanged.
+- The user measured this USB PCB as 10.06 mm wide and reported excessive lateral play.
+  That measurement supersedes the inherited LEO-AC1 width of 10.35 mm for this project.
+  The previous 10.75 mm guide channel left 0.69 mm total nominal play. The new channel
+  and rear wall recess are 10.26 mm wide: 0.10 mm clearance on each side. Dedicated
+  `usbc_side_cl` keeps the existing 0.2 mm vertical and receptacle allowances unchanged.
+  Both 2 mm guide walls move inward by 0.245 mm. A 0.8 mm lead-in opens each inner edge
+  by about 0.2 mm at the mouth and finishes 0.1 mm ahead of the installed PCB front.
+- `check_usb_side_fit()` measures the actual inner and outer faces at the tapered entry,
+  front/middle/rear of the seated PCB and the rear wall recess. It checks the independently
+  measured PCB envelope, free lateral movement at 0.08 mm and stop contact at 0.13 mm
+  in both directions. Front and upper keeper capture remain effective at both 0.1 mm
+  lateral limits. The old 10.75 mm channel fails this check. Existing wire, support,
+  loaded-lid and continuous board insertion checks remain active; real printed friction
+  and dimensional tolerance still require the matching USB fit coupon.
+- Shared-skill commit `22d62e9` records measuring lateral PCB play independently from
+  insertion-stop capture and separating guide, vertical and connector clearances.
+- Final source SHA256: `dd8a0f902c218ef0dc0a7108f2577ca003be1c5fa861cfa293b20470bb0be6cf`.
+  Full export passes with ten print meshes, 431 coaxial feature pairs, nine standard
+  assembly paths and the new lateral USB checks. Independent comparison against `5f84b11`
+  finds geometry changes only in the base USB region and its matching fit coupon; all
+  eight other print meshes are unchanged, including the head, back cover and ballast lid.
+  Base and coupon pass islands, overhangs, thickness and fins. All ten individual slices,
+  five production plates and the test plate pass without supports or slicer warnings.
+  Production remains 492.4 g / 16.6 h arranged and 492.8 g / 17.4 h individually; base
+  120.859 g / 3.789 h, USB test 10.0 g / 1.04 h. README rounded estimates remain valid.
+  Both viewer files and all affected images are regenerated. The two pause plates retain
+  their 4.6 mm insertion layer and 30 mm bed movement; first-layer walls remain one.

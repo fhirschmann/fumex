@@ -195,7 +195,7 @@ vent = [2, 5, 12, 14, 0];     // slot width, pitch, count, height, rise per slot
 vent_xz = [34, 32];  // left end and lower edge of the row
 
 /* [USB-C charging socket: PD trigger module (pads 1-4 open = 5 V) in the back wall] */
-usbc_board = [12.88, 10.35, 4.30];  // measured: length without the receptacle (y), width (x), height (z)
+usbc_board = [12.88, 10.06, 4.30];  // width measured on this board, 2026-09-28; length/height from LEO-AC1
 usbc_protrusion = 1.5;
 usbc = [usbc_board[0] + usbc_protrusion, usbc_board[1], usbc_board[2]];
 usbc_shell = [8.9, 3.22];
@@ -204,6 +204,8 @@ usbc_plate = usbc_protrusion;   // local wall thickness: PCB edge inside, recept
 usbc_xz = [106, 45]; // above the ballast lid (user, 2026-09-22), high enough that the lid lifts out under it
 usbc_floor = 6;      // rear PCB seat; a short bridge between the two wall gussets
 usbc_cl = 0.2;
+usbc_side_cl = 0.1; // close lateral sliding fit; independent of vertical and receptacle clearance
+usbc_entry = [0.8, 0.2]; // front lead-in length and extra clearance per side
 usbc_wall = 2;
 usbc_stop_w = 4;     // central PCB-end bearing; both side wire exits stay open
 usbc_keeper_w = 4;  // centered removable L-stop on the ballast lid
@@ -387,6 +389,8 @@ assert(min([for (q = ball_posts()) abs(q[0] - chg_cx) - chg_pcb[0] / 2 - 2]) > 2
 assert(max(chg_z0 + chg_pcb[1], chg_sink_z + chg_sink[1]) + 5 < base_top(chg_y0 - chg_comp_h),
        "Less than 5 mm over the charge module to the head floor");
 assert(vent_xz[1] > ball[3] + ball_lid_t, "Back wall slots would let the ballast out");
+assert(usbc_side_cl > 0 && usbc_entry[0] < usbc_guide_lead && usbc_wall - usbc_entry[1] >= 1.6,
+       "USB lead-in must finish before the PCB and retain solid guide walls");
 assert(mag_skin >= 1.2 && cass_t >= mag[1] + 2 * mag_skin - eps,
        "Cassette needs closed skins on both sides of the magnets");
 assert(front_t >= mag[1] + 2 * mag_skin - eps,
@@ -1045,29 +1049,36 @@ module led_cut() for (p = led_xz) {
 }
 // Two narrow wall gussets leave both sides of the central keeper open for wires.
 function usbc_support_x() = [
-    [usbc_xz[0] - usbc[1] / 2 - usbc_cl - usbc_wall, usbc_xz[0] - usbc[1] / 2 - usbc_cl],
-    [usbc_xz[0] + usbc[1] / 2 + usbc_cl, usbc_xz[0] + usbc[1] / 2 + usbc_cl + usbc_wall]];
+    [usbc_xz[0] - usbc[1] / 2 - usbc_side_cl - usbc_wall, usbc_xz[0] - usbc[1] / 2 - usbc_side_cl],
+    [usbc_xz[0] + usbc[1] / 2 + usbc_side_cl, usbc_xz[0] + usbc[1] / 2 + usbc_side_cl + usbc_wall]];
 // A 45-degree underside grows from the rear wall entirely above the lid.
 module usbc_gusset(x0, x1, top) let (
     yi = usbc_y0 - usbc_guide_lead, yb = body_d - wall + eps,
     zr = ball[3] + ball_lid_t + usbc_gusset_lid_gap)
     along_x(x0, x1) polygon([[yi, zr + body_d - wall - yi], [yb, zr - eps],
                             [yb, top], [yi, top]]);
-// Between the two gussets the rear PCB seat bridges 10.75 mm.
+// Between the two gussets the rear PCB seat bridges 10.26 mm.
 // The plug-force stop is on the removable lid, leaving this channel open forwards.
 module usbc_channel() let (
     legs = usbc_support_x(), yb = body_d - wall,
     zseat = usbc_xz[1] - usbc[2] / 2,
     zb = zseat - usbc_cl - usbc_wall, zt = usbc_xz[1] + usbc[2] / 2 + usbc_cl,
-    xr = usbc_xz[0] + usbc[1] / 2 + usbc_cl) {
+    xr = usbc_xz[0] + usbc[1] / 2 + usbc_side_cl) difference() {
+    union() {
     for (xs = legs) usbc_gusset(xs[0], xs[1], zt);
     // The board rests on this rear seat; the inner end remains open for its wires.
     translate([legs[0][1] - eps, yb - usbc_floor, zb])
         cube([xr - legs[0][1] + 2 * eps, usbc_floor + eps, zseat - zb]);
+    }
+    // A wider mouth leads into the close side fit before the installed PCB starts.
+    for (s = [-1, 1]) let (edge = usbc_xz[0] + s * (usbc[1] / 2 + usbc_side_cl),
+                           yi = usbc_y0 - usbc_guide_lead)
+        linear_extrude(100) polygon([[edge, yi-eps],
+            [edge + s * usbc_entry[1], yi-eps], [edge, yi+usbc_entry[0]]]);
 }
 module usbc_cuts() {
-    translate([usbc_xz[0] - usbc[1] / 2 - usbc_cl, body_d - wall - 1, usbc_xz[1] - usbc[2] / 2 - usbc_cl])
-        cube([usbc[1] + 2 * usbc_cl, wall - usbc_plate + 1, usbc[2] + 2 * usbc_cl]);  // recess from inside, plate left outside
+    translate([usbc_xz[0] - usbc[1] / 2 - usbc_side_cl, body_d - wall - 1, usbc_xz[1] - usbc[2] / 2 - usbc_cl])
+        cube([usbc[1] + 2 * usbc_side_cl, wall - usbc_plate + 1, usbc[2] + 2 * usbc_cl]);  // recess from inside, plate left outside
     usbc_stadium(body_d - usbc_plate - 1, body_d + 1, usbc_cl);
 }
 module usbc_stadium(y0, y1, grow) along_y(y0, y1) translate([usbc_xz[0], usbc_xz[1] - usbc[2] / 2 + usbc_shell_bottom + usbc_shell[1] / 2]) hull()
@@ -1437,12 +1448,12 @@ module drivers_pwm() for (p = pwm_holes())
 module assembly(explode = 0) {
     color("#2b2d30") base();
     color("#2b2d30") head_at() translate([0, 0, explode * 1.4]) head_raw();
-    color("#2b2d30") head_at() translate([0, explode * 2.4, explode * 1.4]) head_back_raw();
+    color("#8c9196") head_at() translate([0, explode * 2.4, explode * 1.4]) head_back_raw();
     color("#8c9196") head_at() translate([0, -explode * 1.6, explode * 1.4]) cassette_raw();
     color("#70767c") head_at() translate([0, explode * 0.5, explode * 1.4]) filter_support_raw();
     color("#5a5f66") translate([0, -explode * 0.8, explode * 1.4]) filter_env();
     color("#8c9196") translate([0, -explode * 0.6, 0]) knob();
-    color("#5a5f66") translate([0, 0, explode * 0.8]) ball_lid();
+    color("#8c9196") translate([0, 0, explode * 0.8]) ball_lid();
     color("#414950") translate([0, -explode * 0.3, explode * 0.4]) battery_ties_env();
     color("#1a1b1d") translate([0, 0, -explode * 0.6]) place_feet();
     color("#3f4247") fan_visual();
@@ -1488,6 +1499,7 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["usb_keeper", [usbc_keeper_w, usbc_keeper_gap, usbc_stop_w]], ["usb_keeper_top", usbc_keeper_top],
     ["usb_keeper_brace", usbc_keeper_brace],
     ["usb_guides", [usbc_guide_lead, usbc_gusset_lid_gap]],
+    ["usb_side_fit", [usbc_board[1], usbc_side_cl, usbc_entry[0], usbc_entry[1]]],
     ["led_pocket", [led_xz, led_d, led_cl, led_skin, led_boss]],
     ["base_h", base_h], ["joint_y", joint_y], ["base_joint_h", base_joint_h],
     ["foot_peg", foot_peg], ["ballast", ball], ["ballast_posts", ball_posts()], ["lid_screw_length", len_lid], ["seat_y", head_y[2]], ["back_y", head_y[4]],
