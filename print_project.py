@@ -644,6 +644,63 @@ def check_head_fasteners(ctx):
     return dict(head_fasteners=dict(count=4, screw_lengths_mm=[8,8,8,8], seats=rows))
 
 
+def check_front_boss_roots(ctx):
+    """Measure a continuous, broad load path from each raised boss into the wall."""
+    base = ctx.solids['base']
+    local = ctx.manifold(head_frame(ctx.meshes['base'], ctx.metrics))
+    rows = []
+    for x in (25.5, 119.5):
+        # These overlapping rectangular stock probes cross the wall, buttress
+        # and old raised post. They are independent of its triangular profile.
+        # Keep the outer probes clear of the right PWM driver's existing bore.
+        boxes = {
+            'wall_root': ([x-7.5, 2, 36.2], [x+7.5, 3.5, 37.2]),
+            'lower_connection': ([x-6.5, 3.2, 36.8], [x+6.5, 4, 38.3]),
+            'broad_gusset': ([x-6.5, 3.2, 37.8], [x+6.5, 5.8, 38.4]),
+            'post_connection': ([x-3, 4.5, 38.2], [x+3, 5.5, 41]),
+        }
+        if x == 25.5:
+            # The unobstructed battery side has a substantially deeper and
+            # wider buttress than the right side above the PWM controller.
+            boxes.update({
+                'deep_wall': ([x-10, 2.4, 27], [x+10, 4.5, 30.7]),
+                'deep_gusset': ([x-10, 3, 30.5], [x+10, 7.5, 38]),
+                'wide_upper': ([x-10, 6, 34.5], [x+10, 10.5, 37]),
+            })
+        probes = {name: _air_box(*bounds) for name, bounds in boxes.items()}
+        fills = {name: (probe ^ base).volume()/probe.volume()
+                 for name, probe in probes.items()}
+        assert all(fill > .995 for fill in fills.values()), \
+            f'Front insert boss lacks its broad wall connection at x{x}: {fills}'
+        stock = md.Manifold.batch_boolean(list(probes.values()), md.OpType.Add)
+        assert len(stock.decompose()) == 1 and len((stock ^ base).decompose()) == 1, \
+            f'Front insert root stock does not connect continuously at x{x}'
+
+        # Actual section areas include the front wall and, on the right, the
+        # PWM access scallop. The previous root fails these fixed thresholds.
+        region = md.CrossSection.square([22, 20]).translate([x-11, -3])
+        sections = []
+        thresholds = ((38, 130), (40, 200), (42, 260), (46, 245), (47, 245), (47.8, 245)) \
+            if x == 25.5 else ((46, 95), (47, 115), (47.8, 133))
+        for z, minimum in thresholds:
+            area = (local.slice(z) ^ region).area()
+            assert area >= minimum, \
+                f'Front insert root too small at x{x}, local z{z}: {area:.3f} < {minimum} mm2'
+            sections.append(dict(local_z_mm=z, area_mm2=round(area, 3), minimum_mm2=minimum))
+        rows.append(dict(x_mm=x, stock_fill={name: round(fill, 6) for name, fill in fills.items()},
+                         connected_stock_mm3=round(stock.volume(), 3), sections=sections))
+    left_root = base ^ _air_box([13.4, 3.1, 23], [37.6, 12.1, 41])
+    left_gaps = {name: left_root.min_gap(ctx.solids[name], 20)
+                 for name in ('battery', 'battery_ties')}
+    assert all(gap >= 2 for gap in left_gaps.values()), \
+        f'Deep front root blocks the battery or ties: {left_gaps}'
+    rows[0]['hardware_clearance_mm'] = {name: round(gap, 3) for name, gap in left_gaps.items()}
+    ctx.open_items.append('Front insert roots have continuous stock and increased measured sections; '
+                          'these geometric checks do not predict printed fracture force, layer adhesion '
+                          'or damage from inserting the heated brass inserts.')
+    return dict(front_boss_roots=rows)
+
+
 def check_front_mat_contact(ctx):
     """Bound contact from the exposed front screw heads and their bevelled seats."""
     m = ctx.metrics
@@ -1507,10 +1564,10 @@ def check_pwm_removal(ctx):
                       for d in np.linspace(0, 4.5, 46)]),
         ('clear_rim', [pose(rear=8.6, angle=35, postrear=7.9+d, postup=3.9)
                       for d in np.linspace(0, 2, 21)]),
-        # The shaft is already free; centre the board left of the rear-right screw boss.
+        # The shaft is already free; clear the reinforced front root and rear-right boss.
         ('side_clear', [pose(rear=8.6, angle=35, postrear=9.9, postup=3.9).translate([-d, 0, 0])
-                        for d in np.linspace(0, 6.5, 66)]),
-        ('up', [pose(rear=8.6, angle=35, postrear=9.9, postup=3.9+d).translate([-6.5, 0, 0])
+                        for d in np.linspace(0, 9, 91)]),
+        ('up', [pose(rear=8.6, angle=35, postrear=9.9, postup=3.9+d).translate([-9, 0, 0])
                 for d in np.linspace(0, 60, 121)]),
     ]
     rows = []
@@ -1959,7 +2016,7 @@ def checks(ctx):
                 tip_angle_deg=round(tip_angle, 1), **check_top_corners(ctx), **check_sealed_magnets(ctx),
                 **check_fan_cable_opening(ctx), **check_joint_profile(ctx),
                 **check_rim_chamfers(ctx), **check_charger_air(ctx), **check_charger_holder(ctx),
-                **check_lid_fasteners(ctx), **check_head_fasteners(ctx), **check_front_mat_contact(ctx), **check_front_ratchet_access(ctx), **check_pwm_mount(ctx), **check_pwm_removal(ctx), **check_usb_wire_access(ctx), **check_ballast_cover(ctx),
+                **check_lid_fasteners(ctx), **check_head_fasteners(ctx), **check_front_boss_roots(ctx), **check_front_mat_contact(ctx), **check_front_ratchet_access(ctx), **check_pwm_mount(ctx), **check_pwm_removal(ctx), **check_usb_wire_access(ctx), **check_ballast_cover(ctx),
                 **check_switch_trough_clearance(ctx), **check_filter_support(ctx), **check_led_window(ctx), **check_usb_support(ctx),
                 **check_battery_retention(ctx), **check_battery_ties(ctx), **check_usb_installation(ctx), **check_usb_fit(ctx), **check_loaded_lid_removal(ctx))
 
@@ -2076,4 +2133,7 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
                                 "8,110,100,40,62,52"),
          "15_filter_clip": ("color(\"#aeb5bb\") intersection() { filter_support_raw(); "
                              "translate([body_w/2+50, mat_support[3]-1, head_cz-7]) cube([14, 13, 14]); }",
-                             "156,70,155,130,28,120.5")}
+                             "156,70,155,130,28,120.5"),
+         "16_front_insert_root": ("color(\"#aeb5bb\") intersection() { base(); "
+                                   "translate([11, -1, 21]) cube([29, 17, 34]); }",
+                                   "70,90,72,25.5,5,37")}

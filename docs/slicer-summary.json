@@ -13,12 +13,12 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "c94d4a749e7258b1ea7095241ecdaf0eeb6d7fd63d7b4fb683d977f7a62b1b83",
+      "source_sha256": "8c51ed52f4c8041a682824d5d61503b8afd0f2428f59b136a073c614cf4f2d4c",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 3.708,
-      "grams": 119.472,
+      "hours": 3.789,
+      "grams": 120.863,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -202,7 +202,7 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "ecb2051e8a4d531359eabd05d91028b77f1c2bff0508b8ffb53d405842fe679c",
+      "source_sha256": "cb0fc38e32890165d431274a3a1c9622db5586de20fefa326160c9e493cae88f",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -229,7 +229,7 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "724914e9f2b3d00cc51a3bc27c0dfcee407a779a7721d4e59e0a06432e833ba1",
+      "source_sha256": "d0c8879fc7d59e21dcc8b7a8e35c1d58a435e29063b3d8e5b04787d000c7435b",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -277,7 +277,7 @@
     }
   ],
   "total_parts": 11,
-  "total_grams_individual_plates": 491.4,
+  "total_grams_individual_plates": 492.8,
   "total_hours_individual_plates": 17.4,
   "production_gcode": false,
   "project_3mf": {
@@ -347,8 +347,8 @@
         ]
       }
     ],
-    "total_hours_plates": 16.5,
-    "total_grams_plates": 491.0,
+    "total_hours_plates": 16.6,
+    "total_grams_plates": 492.4,
     "multicolour_parts": {},
     "multicolour_slices": {},
     "pause_slices": {
@@ -399,9 +399,9 @@
       },
       "Base and back cover": {
         "plate": 2,
-        "hours": 6.77,
+        "hours": 6.85,
         "grams_by_filament": {
-          "1": 193.66
+          "1": 195.05
         },
         "warnings": "",
         "process_overrides": {
@@ -451,7 +451,7 @@
       }
     },
     "own_infill_parts": 5,
-    "sha256": "460b4513a9a9b03b5ee93cbb2f84fed612866e814bc58f8e3e82655aed11eea8"
+    "sha256": "5e1450e5fc85238baa15f498258bc6c4ac2c899526ea966985123f761e1b8cc5"
   },
   "test_3mf": {
     "file": "stl/fumex_usb_fit.3mf",
@@ -492,7 +492,7 @@
       }
     },
     "own_infill_parts": 0,
-    "sha256": "f3fbc148c143fa5025982db9bb226e2ca4f9e187e5b3a1155817e3950bbe7143",
+    "sha256": "11406f84933e9f0504d502b5453364ecd75ae70b1db4dccf58452a86e91271a3",
     "process": {
       "wall_loops": 4,
       "top_shell_layers": 5,

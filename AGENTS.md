@@ -217,7 +217,8 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     Their short hull roots join the front wall and remain above the joint where needed;
     clipping the entire root at the joint would leave the raised bosses disconnected.
     The outer base outline clips only the outside, preserving the complete insert-wall
-    and blind-floor probes. Rear bosses remain Ø10 x 9 mm with the existing cover notches.
+    and blind-floor probes. Additional sloping feet reinforce both wall roots below the joint (2026-09-28):
+    24 mm wide and deeper on the left, 18 mm wide above the PWM board on the right; the upper posts and existing head windows stay unchanged. Rear bosses remain Ø10 x 9 mm with the existing cover notches.
   - The head has short Ø12.2 mm caps from local z59.5 to z62.3,
     connected to the lower filter tube. A Ø9.7 mm guide opening below the insert face
     leaves 1.25 mm radial material around each boss and 0.25 mm guide clearance.
@@ -774,3 +775,47 @@ they do not validate the subsequent geometry.
   USB test plate pass without slicer warnings; both actual magnet pauses verify the
   Z4.4 -> Z34.4 -> Z4.4 movement. Estimates remain 491.0 g / 16.5 h arranged.
   Both viewer copies were rebuilt; their unchanged hash reflects unchanged geometry.
+
+
+## Reinforced front insert roots (2026-09-28)
+
+- The user reports that the printed front head-mount posts break at the connection to the
+  base front wall, not around the inserts. The original 9.2 mm wide hull started from only
+  a 2 mm high wall patch in the head frame (z46..48). The Ø4 x 7 mm pockets, 2.6 mm radial
+  post wall and 2 mm blind floors retain their original dimensions.
+- The user measured 10 mm of free space above the PWM controller and reports ample room
+  on the opposite side. `rim_front_base_brace()` therefore uses a 24 mm wide, deeper left
+  foot and an 18 mm wide right foot, both kept 0.1 mm below the tilted joint. In installed
+  coordinates their undersides follow z = 21.8 + 1.1 y (left) and z = 31.2 + 1.1 y (right),
+  about 47.7 degrees above horizontal, growing out of the existing wall without supports.
+  The left foot uses 9.4 mm more depth and ends at y12, ahead of the battery and tie buckles.
+  The right foot retains the verified controller envelope and service clearance rather than
+  inferring new absolute component heights from the user's clearance measurement.
+  Their width spreads the post load laterally along the wall.
+  The existing `rim_front_base_raw()` remains the exact head-clearance template; changing
+  that shared module would change the already printed head's mating geometry too.
+- The base's existing PWM screwdriver relief trims the right foot locally. All earlier
+  controller removal stages stay unchanged, but the final lateral shift grows from 6.5
+  to 9 mm left before lifting. The previous path clipped the new right foot. The wider
+  offset retains about 0.6 mm nominal clearance at this feature; physical wiring and
+  assembly tolerance remain outside the rigid geometry check.
+- This is a geometric load-spreading improvement, not a measured breaking-load or PETG
+  creep result. Reprint only the base for this change; all screw axes, head seats and
+  upper insert-post surfaces retain their fitted geometry.
+- Final source SHA256: `61f4dff845d1437bf6ce3110dd4a673716e2964726ece6d9483f60394f5637aa`.
+  All ten print meshes export correctly; 431 coaxial feature pairs, nine assembly paths
+  and 561 assembly pairs pass. Independent Boolean comparison against `2357a6d` finds
+  2049.726 mm³ added only at the two front roots, with no meaningful removal or changes
+  above the joint; the head and all other print meshes are geometrically unchanged.
+  At local z47, measured root section grows from 85.556 to 250.537 mm² on the left and
+  from 82.914 to 117.696 mm² on the right. The new connected-stock probes reject the old
+  base. The deeper left foot clears the battery by 10.171 mm and its ties by 8.535 mm;
+  the revised PWM final lift has at least 0.604 mm clearance near the right foot.
+- Islands, overhangs, thickness and fins are CLEAN on the changed base. All ten individual
+  slices, five production plates and the USB test plate pass without supports or slicer
+  warnings. Base: 120.863 g / 3.789 h; production: 492.4 g / 16.6 h arranged, 492.8 g /
+  17.4 h individually. Both 4.6 mm magnet pauses retain the 30 mm bed clearance; the first
+  layer retains one wall. Both viewer files and affected documentation images are rebuilt.
+- Shared-skill commit `4bfbb89` records checking the wall connection independently of
+  insert-pocket wall thickness and verifying the complete service path after reinforcement.
+  Project scripts remain identical to the shared skill.

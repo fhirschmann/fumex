@@ -284,6 +284,9 @@ head_pocket = [6.4, 1.9];
 rim_screws = [[25.5, 6.5], [119.5, 6.5], [25, 66], [131, 66]];
 rim_front_entry_z = 60;     // raised base insert face, directly behind the front wall
 rim_front_root_z = 46;      // short support-free root joins the front wall below the joint
+rim_front_brace = [[24, 21.8], [18, 31.2]]; // left/right: width and underside Z at Y0
+rim_brace_rise = 1.1;       // underside Z/Y slope, printable without supports
+rim_brace_joint_gap = 0.1;  // added stock stays below the existing head interface
 rim_front_cap_d = 12.2;
 rim_front_cap_c = 0.3;
 rim_front_bearing = 1.6;    // 0.7 mm recess leaves 6.4 mm of the M3 x 8 in the 7 mm pocket
@@ -409,6 +412,10 @@ assert(foot_boss[1] - insert_depth >= 1.2, "Foot insert pocket floor thinner tha
 assert(floor_t - foot_peg[1] >= 3 * 0.4, "Floor under the foot peg holes thinner than three perimeters");
 assert(min([for (p = rim_bosses()) rim_length(p) - rim_bearing(p)]) >= insert_len - eps,
        "Head screws must engage the complete 5.7 mm insert");
+assert(min([for (b = rim_front_brace) b[0]]) >= 18 && rim_brace_rise >= 1.1 && rim_brace_joint_gap >= 0.1,
+       "Front post roots need broad support-free feet below the head joint");
+assert(rim_front_brace[1][1] + (pwm_y0+1)*rim_brace_rise >= pwm_z0+pwm_total_h+3.4+0.5,
+       "Front root braces must clear the initial PWM service lift");
 
 // ---------- helpers ----------
 module rrect(size, r) offset(r = r) offset(delta = -r) square(size, center = true);
@@ -565,6 +572,15 @@ module rim_front_base_raw(p, clearance = 0) hull() {
     rim_at(p) cylinder(d = rim_boss_d+2*clearance, h = rim_boss_depth);
     translate([p[0]-rim_boss_d/2-clearance, -clearance, rim_front_root_z])
         cube([rim_boss_d+2*clearance, wall+2*clearance, base_h-rim_front_root_z]);
+}
+// Spread the raised post's load into a wider, deeper front-wall foot. Keep the
+// added stock below the joint so already printed heads retain their exact fit.
+module rim_front_base_brace(p) let (b = rim_front_brace[p[0] < body_w/2 ? 0 : 1]) difference() {
+    along_x(p[0]-b[0]/2, p[0]+b[0]/2)
+        polygon([[1, b[1]+rim_brace_rise], [1, 60],
+                 [12, 60], [12, b[1]+12*rim_brace_rise]]);
+    head_at() translate([-1, -20, base_h-rim_brace_joint_gap])
+        cube([body_w+2, body_d+40, 100]);
 }
 // A short solid bearing cap closes the tube floor around the raised insert boss.
 // The head is recessed by the same 0.7 mm as at the rear, with its upper part exposed.
@@ -1208,7 +1224,10 @@ module ballast_env() difference() {
 // Clip only to the vertical exterior; clipping roots at the joint would disconnect them.
 module rim_boss_bodies() for (p = rim_bosses()) if (rim_dir(p) > 0) {
     intersection() {
-        head_at() rim_front_base_raw(p);
+        union() {
+            head_at() rim_front_base_raw(p);
+            rim_front_base_brace(p);
+        }
         translate([0, 0, -1]) linear_extrude(101) base_outline();
     }
 } else difference() {
@@ -1440,6 +1459,7 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["head_thread", min([for (p = rim_bosses()) rim_length(p) - rim_bearing(p)])],
     ["head_screw", [rim_recess, len_head, rim_seat_d]],
     ["head_mount", [0, rim_front_entry_z+rim_front_bearing+rim_recess, rim_boss_d, rim_fit_gap, rim_boss_depth]],
+    ["head_front_brace", [rim_front_brace, rim_brace_rise, rim_brace_joint_gap]],
     ["head_axes", [for (p = rim_bosses()) concat(rim_entry(p), rim_axis(p), [rim_bearing(p), rim_length(p)])]],
     ["chamber", [chamber_sq, chamber_d]], ["open_sq", open_sq],
     ["head_y", head_y], ["mat_stop", mat_stop_y()], ["mat_support", mat_support],

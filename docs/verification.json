@@ -1,5 +1,5 @@
 {
-  "source_sha256": "c4930f45065ccac14310cadf64c1cdb1deac2b4ec8c2bfcc79207e58f7872851",
+  "source_sha256": "61f4dff845d1437bf6ce3110dd4a673716e2964726ece6d9483f60394f5637aa",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -29,8 +29,8 @@
           57.2657
         ]
       ],
-      "volume_mm3": 109319.9048,
-      "triangles": 11104,
+      "volume_mm3": 111369.6309,
+      "triangles": 11428,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
@@ -40,10 +40,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "c94d4a749e7258b1ea7095241ecdaf0eeb6d7fd63d7b4fb683d977f7a62b1b83",
+      "sha256": "8c51ed52f4c8041a682824d5d61503b8afd0f2428f59b136a073c614cf4f2d4c",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "c94d4a749e7258b1ea7095241ecdaf0eeb6d7fd63d7b4fb683d977f7a62b1b83"
+      "committed_sha256": "8c51ed52f4c8041a682824d5d61503b8afd0f2428f59b136a073c614cf4f2d4c"
     },
     "head": {
       "size_mm": [
@@ -278,10 +278,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "ecb2051e8a4d531359eabd05d91028b77f1c2bff0508b8ffb53d405842fe679c",
+      "sha256": "cb0fc38e32890165d431274a3a1c9622db5586de20fefa326160c9e493cae88f",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "ecb2051e8a4d531359eabd05d91028b77f1c2bff0508b8ffb53d405842fe679c"
+      "committed_sha256": "cb0fc38e32890165d431274a3a1c9622db5586de20fefa326160c9e493cae88f"
     },
     "usbc_fit_base": {
       "size_mm": [
@@ -312,10 +312,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "724914e9f2b3d00cc51a3bc27c0dfcee407a779a7721d4e59e0a06432e833ba1",
+      "sha256": "d0c8879fc7d59e21dcc8b7a8e35c1d58a435e29063b3d8e5b04787d000c7435b",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "724914e9f2b3d00cc51a3bc27c0dfcee407a779a7721d4e59e0a06432e833ba1"
+      "committed_sha256": "d0c8879fc7d59e21dcc8b7a8e35c1d58a435e29063b3d8e5b04787d000c7435b"
     },
     "usbc_fit_lid": {
       "size_mm": [
@@ -386,6 +386,20 @@
       9.2,
       0.25,
       9
+    ],
+    "head_front_brace": [
+      [
+        [
+          24,
+          21.8
+        ],
+        [
+          18,
+          31.2
+        ]
+      ],
+      1.1,
+      0.1
     ],
     "head_axes": [
       [
@@ -1167,11 +1181,11 @@
   "intake_lip_mm": 2.25,
   "mat_free_travel_mm": 1.62,
   "mat_squashed_percent": 0.08,
-  "mass_g": 1034.8,
+  "mass_g": 1036.6,
   "centre_of_mass_mm": [
     67.4,
     30.7,
-    70.0
+    69.9
   ],
   "foot_polygon_mm": [
     10.0,
@@ -2040,6 +2054,84 @@
       }
     ]
   },
+  "front_boss_roots": [
+    {
+      "x_mm": 25.5,
+      "stock_fill": {
+        "wall_root": 1.0,
+        "lower_connection": 1.0,
+        "broad_gusset": 1.0,
+        "post_connection": 1.0,
+        "deep_wall": 1.0,
+        "deep_gusset": 1.0,
+        "wide_upper": 1.0
+      },
+      "connected_stock_mm3": 1018.52,
+      "sections": [
+        {
+          "local_z_mm": 38,
+          "area_mm2": 140.746,
+          "minimum_mm2": 130
+        },
+        {
+          "local_z_mm": 40,
+          "area_mm2": 209.214,
+          "minimum_mm2": 200
+        },
+        {
+          "local_z_mm": 42,
+          "area_mm2": 268.826,
+          "minimum_mm2": 260
+        },
+        {
+          "local_z_mm": 46,
+          "area_mm2": 250.537,
+          "minimum_mm2": 245
+        },
+        {
+          "local_z_mm": 47,
+          "area_mm2": 250.537,
+          "minimum_mm2": 245
+        },
+        {
+          "local_z_mm": 47.8,
+          "area_mm2": 250.537,
+          "minimum_mm2": 245
+        }
+      ],
+      "hardware_clearance_mm": {
+        "battery": 10.171,
+        "battery_ties": 8.535
+      }
+    },
+    {
+      "x_mm": 119.5,
+      "stock_fill": {
+        "wall_root": 1.0,
+        "lower_connection": 1.0,
+        "broad_gusset": 1.0,
+        "post_connection": 1.0
+      },
+      "connected_stock_mm3": 67.22,
+      "sections": [
+        {
+          "local_z_mm": 46,
+          "area_mm2": 97.048,
+          "minimum_mm2": 95
+        },
+        {
+          "local_z_mm": 47,
+          "area_mm2": 117.696,
+          "minimum_mm2": 115
+        },
+        {
+          "local_z_mm": 47.8,
+          "area_mm2": 135.436,
+          "minimum_mm2": 133
+        }
+      ]
+    }
+  ],
   "front_mat_contact": {
     "contacts": {
       "head": {
@@ -2415,7 +2507,7 @@
       },
       {
         "stage": "side_clear",
-        "samples": 66,
+        "samples": 91,
         "maximum_overlap_mm3": 0.0
       },
       {
@@ -2937,6 +3029,7 @@
       "total_preload_overlap_mm3": 2.094856,
       "compressed_peak_motion_mm": 0.17,
       "compressed_free_width_mm": 8.36,
+      "compressed_head_clearance_mm": 0.019997,
       "fixed_root_top_y_mm": 25.3,
       "service_path": {
         "translation_local_mm": [
@@ -3589,6 +3682,7 @@
     "Masses of the bought parts are data-sheet or estimated values, not weighed",
     "Embedded magnets: check actual disc size and polarity before closing the 4.6 mm layer; retention across the two 1.2 mm face skins is not a pull-force test. STL files contain no pause.",
     "Fan cable: the rear-open slot has 16 mm nominal width; verify the actual plug, wire bend and edge protection. The 14 x 8 x 16 mm plug and 8 x 4 mm cable route are assumed envelopes; the actual fan outlet and flexible lead are unmeasured.",
+    "Front insert roots have continuous stock and increased measured sections; these geometric checks do not predict printed fracture force, layer adhesion or damage from inserting the heated brass inserts.",
     "The soft filter mat bends locally by up to 2.75 mm over the two front screw heads and their shallow recessed seats; only the two measured contact zones are allowed. No compression force or flexible deformation is simulated.",
     "Ratchet envelope is assumed: 22 mm head diameter, 14 mm head thickness, 87 mm overall length, 14 mm handle width; 25 mm bit, 2 mm engagement, 4 mm neck for 6 mm above the screw face. Actual tool dimensions are not measured.",
     "PWM mounting: verify the 2.0 mm PETG pilot fit with the real 2.5 x 8 screws and measure their head height (4.5 mm head diameter confirmed; 2.5 mm height is a conservative envelope). Assembly requires a slim 4 mm screwdriver shaft exposed for at least 25 mm.",
