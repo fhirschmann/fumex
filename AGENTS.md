@@ -206,8 +206,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     physical strength, long-term creep, loose-fibre or maximum-speed rubbing test has been performed.
     Do not turn the nominal 5 mm central-bar/frame gap into a guarantee of rotor clearance.
 - The mat is held by the intake lip (opening 117 in a 121.5 chamber, 2.25 mm per side). It is pressed in and pulled out past that lip — a rigid-body path check cannot show this, so `filter_out` is not a checked path but a documented limitation.
-- **Current head fastening: two rear M3 x 8 only (2026-09-28).** The user explicitly requested removing both defective front insert platforms completely for now, including their wall roots and braces. There is no substitute front mount. This temporary state supersedes the earlier minimum-three/four-corner request; do not describe it as complete four-corner fastening. The existing head seats, clearances and holes stay unchanged.
-- **Historical four-screw layout; front base features below are now removed:**
+- **Head screws: four M3 x 8, all straight down into the base in the same direction**
   (user, 2026-09-25). In the untilted head frame every axis is (0,0,-1), normal to the
   joint plane; the shared housing tilt is unchanged. Front insert entries are
   (25.5,6.5,60) and (119.5,6.5,60), behind the front wall. Rear entries remain
@@ -215,12 +214,13 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   6.4 mm screw penetration and 0.6 mm pocket reserve; rear seats retain 2.3 mm
   material, 5.7 mm penetration and 1.3 mm reserve in the 7 mm insert pockets.
   This supersedes the previous 40-degree outward front axes and M3 x 16 screws.
-  - Removed front base bosses were Ø9.2 x 9 mm with Ø4 x 7 mm Ruthex pockets and 2 mm blind ends.
-    Their short hull roots join the front wall and remain above the joint where needed;
-    clipping the entire root at the joint would leave the raised bosses disconnected.
-    The outer base outline clips only the outside, preserving the complete insert-wall
-    and blind-floor probes. The subsequently added, now also removed, sloping feet had these dimensions:
-    24 mm wide and deeper on the left, 18 mm wide above the PWM board on the right; the upper posts and existing head windows stay unchanged. Rear bosses remain Ø10 x 9 mm with the existing cover notches.
+  - Front base bosses retain Ø9.2 and Ø4 x 7 mm Ruthex pockets. The original compact
+    cylinder/root profile is swept 6 mm farther down, with its new underside trimmed
+    at world z = 31.2 + 1.1 y for support-free printing and PWM clearance. The deeper
+    narrow wall attachment has no broad pedestal feet; the slope shortens the extension
+    locally, so this is not a full extra 6 mm of cylinder everywhere.
+    The original head clearance template is unchanged; its 15 mm downward sweep
+    encloses the extension. Rear bosses remain Ø10 x 9 mm with existing cover notches.
   - The head has short Ø12.2 mm caps from local z59.5 to z62.3,
     connected to the lower filter tube. A Ø9.7 mm guide opening below the insert face
     leaves 1.25 mm radial material around each boss and 0.25 mm guide clearance.
@@ -251,15 +251,15 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     This staged route clears the raised front boss; pitching directly to 35 degrees
     at the previous position does not. The full actual-mesh route includes the PCB,
     potentiometer and tab, with separate removal checks for both PCB screws and knob.
-- **Driver access is checked in the applicable assembly stage.** Active screws use a
-  straight Torx-bit/holder envelope. The historical front ratchet envelope above is inactive
-  while the front mounts are removed. Assembly-stage exclusions only cover parts removed for that operation; fixed
+- **Driver access is checked in the applicable assembly stage.** Most screws use a
+  straight Torx-bit/holder envelope. Front head screws use the conservative ratchet
+  above. Assembly-stage exclusions only cover parts removed for that operation; fixed
   housing and electronics remain obstacles. Tool geometry is not a physical-fit test.
 - **The ballast lid now uses exactly two M3 x 8 screws and two Ruthex RX-M3x5.7 inserts** (user,
   2026-09-23). The Ø10 posts stand at (x, y) = (10, 63) and (117, 56.8), with Ø4 x 7 mm insert pockets
   opening upwards. This replaces all four plastic-forming screws and their core holes. With the
-  3 mm lid and 1.2 mm head pockets, nominal thread reach is 6.2 mm. Total current hardware is 16 inserts,
-  12 M3 x 8 and four M3 x 30 screws (front head mounts removed on 2026-09-28). The right post moved inwards and forwards on 2026-09-24 so
+  3 mm lid and 1.2 mm head pockets, nominal thread reach is 6.2 mm. Total current hardware is 18 inserts,
+  14 M3 x 8 and four M3 x 30 screws. The right post moved inwards and forwards on 2026-09-24 so
   the screwdriver clears the head-mount bosses; the intermediate (130,63) position did not.
   Earlier positions at x30/115, 45/90, 12/40 and (135,63), including the G3 rear-row adjustment
   to y66.2, are historical. The head vent slots remain 14 mm long.
@@ -860,7 +860,7 @@ they do not validate the subsequent geometry.
   their 4.6 mm insertion layer and 30 mm bed movement; first-layer walls remain one.
 
 
-## Removed front platforms, shared cover plate and dark knob pointer (2026-09-28)
+## Superseded removal of complete front platforms (2026-09-28; corrected below)
 
 - The user requests complete removal of the faulty front base insert platforms for now.
   Both posts, their short hull roots, the later broad reinforcement feet, front insert
@@ -914,3 +914,54 @@ they do not validate the subsequent geometry.
   exactly the old grooved knob; only its dark pointer fills that groove.
   Both viewer files and affected documentation images are rebuilt. Browser policy
   blocks refreshing the local file URL; the open local tabs require a manual reload.
+
+
+## Restored narrow front insert posts with deeper wall roots (2026-09-28)
+
+- The user's correction clarifies that only the broad reinforcement feet were unwanted.
+  Removing the insert posts and their screws was an incorrect interpretation. Restore
+  all four M3 x 8 head fasteners and both front Ruthex pockets, matching the already
+  printed head; do not reintroduce the 24/18 mm wide pedestal feet. The preceding
+  rear-only release is superseded. Current totals: 18 Ruthex inserts, 14 M3 x 8
+  and four M3 x 30 screws, plus the two thermoplastic PWM screws.
+- The user additionally requests longer cylinders that continue into the wall.
+  `rim_front_base_extension()` sweeps the original narrow post/root profile down
+  by 6 mm, retaining its 9.2 mm width. A narrow additional wall overlap below the
+  joint prevents the tilted sweep from starting behind the vertical front wall.
+  The new underside is cut at world z = 31.2 + 1.1 y (47.7 degrees), keeping it
+  support-free and above the PWM controller and its initial service lift. This
+  trims the nominal 6 mm extension locally; do not describe it as 6 mm of full
+  extra cylindrical length everywhere. The original upper root is retained.
+  Insert entries, 4 x 7 mm pockets, screw seats and outer upper diameters stay fixed.
+- The original `rim_front_base_raw()` remains unchanged for the head windows. Their
+  existing 15 mm downward clearance sweep encloses the new 6 mm extension. No head
+  geometry is changed, so the user's printed head remains compatible. The knob
+  pointer, closer USB fit, grey covers and shared cover plate remain as released.
+- This changes geometric embedment, not a measured breaking-load or creep result.
+  Preserve the earlier physical root failure as history; do not claim proven strength.
+- The untrimmed tilted prototype left two small floating starting strips and
+  overlapped the PWM envelope by 0.109 mm3. The final wall overlap and sloping
+  underside remove both problems. Redundant unions of identical cylinder facets
+  also caused zero-volume shells; the final single swept body and narrower wall
+  link export as one watertight base with no degenerate faces or extra shells.
+- Final source SHA256: `8af777e4b417c29a9750ecd9a2564c5d60e102417ac7bac0df69d412be3ff7d0`.
+  Full export passes: ten print meshes, one multicolour part, 431 coaxial feature
+  pairs, nine standard paths and 561 assembly pairs. All four clamping stacks,
+  the front ratchet route and the complete PWM service path pass. Four connected
+  material probes per front root are completely filled; measured width is
+  9.1914 mm on the faceted surface. Independent underside rays measure 47.726
+  degrees. Islands, overhangs, thickness and fins are CLEAN for the changed base.
+- Shared-skill commit `6f3972b` records preserving functional insert bosses and
+  existing printed mating interfaces when removing reinforcement feet.
+- Independent comparison preserves the complete original compact bosses and roots
+  (removed stock is only 0.000101 mm3 numerical noise), adding 190.591 mm3 solely
+  within the two 9.2 mm wide corridors. The finished underside extends about
+  0.56–0.73 mm farther down at sampled local y3.5/6.5/10 after the clearance slope
+  trims the sweep. Head, back cover, lid and knob remain byte-identical to `d3bdba2`;
+  all other print parts remain geometrically identical. The PWM overlap is zero.
+- All ten individual slices, five production plates and the USB test plate pass
+  without supports or slicer warnings. Base: 119.654 g / 3.728 h.
+  Production: 493.3 g / 16.7 h arranged; 491.6 g / 17.4 h as individual single-colour
+  diagnostics. The shared grey plate, dark knob pointer and both magnet pauses
+  with 30 mm bed movement remain unchanged. Both viewer files and affected
+  documentation images are rebuilt; local file-URL tabs require a manual reload.
