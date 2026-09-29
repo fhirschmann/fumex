@@ -211,6 +211,63 @@ def check_top_corners(ctx):
     return dict(top_corner_normals=corners)
 
 
+def check_cassette_corners(ctx):
+    """Measure four complete tangent R6 rounds on the finished cassette outline."""
+    m = ctx.metrics
+    assert abs(m['cass_corner_r'] - 6) < .001 and abs(m['cass_c'] - 1.2) < .001, \
+        'Cassette needs R6 corners with the retained 1.2-mm front bevel'
+    mesh = head_frame(ctx.meshes['cassette'], m)
+    expected_bounds = np.array([[3.5, -4, 49], [141.5, 0, 192]])
+    assert np.allclose(mesh.bounds, expected_bounds, atol=.003), \
+        f'Cassette finished bounds changed: {mesh.bounds.tolist()}'
+    adjacent = mesh.face_adjacency
+    edges = mesh.vertices[mesh.face_adjacency_edges]
+    mid = edges.mean(axis=1)
+    normals = mesh.face_normals[adjacent]
+    lengths = np.linalg.norm(edges[:, 0]-edges[:, 1], axis=1)
+    jumps = np.degrees(mesh.face_adjacency_angles)
+    rows = []
+    for sx, cx in [(-1, 9.5), (1, 135.5)]:
+        for sz, cz in [(-1, 55), (1, 186)]:
+            radial_errors, normal_errors = [], []
+            directions = np.array([[sx*math.cos(t), 0, sz*math.sin(t)]
+                                   for t in np.linspace(0, math.pi/2, 37)])
+            # Shoot inward from outside, so grid holes and screw recesses cannot
+            # masquerade as the outer outline. The bevel keeps each arc centre.
+            for depth in [.1, .6, 1.1, 1.3, 2.5, 3.8]:
+                centre = np.array([cx, -4+depth, cz])
+                origins = centre + 8*directions
+                hits, ray_ids, face_ids = mesh.ray.intersects_location(origins, -directions, multiple_hits=True)
+                for index, direction in enumerate(directions):
+                    candidates = np.flatnonzero(ray_ids == index)
+                    assert len(candidates), f'Cassette corner ray missed: {sx,sz,depth,index}'
+                    selected = candidates[np.argmin(np.linalg.norm(hits[candidates]-origins[index], axis=1))]
+                    distance = float(np.linalg.norm((hits[selected]-centre)[[0, 2]]))
+                    expected_radius = 6-max(0, 1.2-depth)
+                    radial_errors.append(abs(distance-expected_radius))
+                    normal = mesh.face_normals[face_ids[selected]][[0, 2]]
+                    normal /= np.linalg.norm(normal)
+                    normal_errors.append(math.degrees(math.acos(float(np.clip(np.dot(normal, direction[[0, 2]]), -1, 1)))))
+            assert max(radial_errors) < .025 and max(normal_errors) < 3.5, \
+                f'Cassette round is truncated or not R6 at {sx,sz}: radial error {max(radial_errors)}, normal error {max(normal_errors)}'
+            radial = np.linalg.norm(mid[:, [0, 2]]-[cx, cz], axis=1)
+            keep = ((np.abs(radial-6) < .025) & (sx*(mid[:, 0]-cx) >= -.002)
+                    & (sz*(mid[:, 2]-cz) >= -.002) & (mid[:, 1] > -2.7) & (mid[:, 1] < -.1)
+                    & (np.abs(normals[:, :, 1]).max(axis=1) < .001) & (lengths > .1)
+                    & ((sx*normals[:, :, 0]).min(axis=1) >= -.001)
+                    & ((sz*normals[:, :, 2]).min(axis=1) >= -.001))
+            assert int(keep.sum()) >= 8, f'Insufficient cassette tangent-join coverage at {sx,sz}'
+            peak = float(jumps[keep].max())
+            assert peak < 7, f'Sharp cassette side-to-round join at {sx,sz}: {peak} degrees'
+            rows.append(dict(corner=['left' if sx < 0 else 'right', 'bottom' if sz < 0 else 'top'],
+                             arc_centre_xz_mm=[cx, cz], radius_mm=6, checked_rays=len(radial_errors),
+                             maximum_radius_error_mm=round(max(radial_errors), 6),
+                             maximum_radial_normal_error_deg=round(max(normal_errors), 5),
+                             tangent_edges=int(keep.sum()), maximum_tangent_join_deg=round(peak, 5)))
+    ctx.summary.append('Cassette: four complete tangent R6 corners, unchanged 138 x 143 mm outline and 1.2 mm front bevel')
+    return dict(cassette_corners=dict(bounds_mm=expected_bounds.tolist(), front_bevel_mm=1.2, corners=rows))
+
+
 def check_cassette_fasteners(ctx):
     """Four direct screw clamps with measured bearings, blind inserts and tool access."""
     m = ctx.metrics
@@ -2198,7 +2255,7 @@ def checks(ctx):
                 intake_lip_mm=lip, mat_free_travel_mm=round(mat_free, 2), mat_squashed_percent=round(100 * squashed / mat, 2), mass_g=round(total, 1),
                 centre_of_mass_mm=[round(c, 1) for c in com],
                 foot_polygon_mm=poly, tip_margins_mm={k: round(v, 1) for k, v in margins.items()},
-                tip_angle_deg=round(tip_angle, 1), **check_top_corners(ctx), **check_cassette_fasteners(ctx),
+                tip_angle_deg=round(tip_angle, 1), **check_top_corners(ctx), **check_cassette_fasteners(ctx), **check_cassette_corners(ctx),
                 **check_fan_cable_opening(ctx), **check_joint_profile(ctx),
                 **check_rim_chamfers(ctx), **check_charger_air(ctx), **check_charger_holder(ctx),
                 **check_lid_fasteners(ctx), **check_head_fasteners(ctx), **check_removed_front_braces(ctx), **check_front_boss_extensions(ctx), **check_front_base_silhouette(ctx), **check_front_mat_contact(ctx), **check_front_ratchet_access(ctx), **check_pwm_mount(ctx), **check_pwm_removal(ctx), **check_usb_wire_access(ctx), **check_ballast_cover(ctx),

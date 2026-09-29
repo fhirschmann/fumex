@@ -157,10 +157,16 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   There are no enclosing collars. The earlier 4.5 mm and 5.6 mm magnetic cassette
   versions are historical. The head intake face stays 5.6 mm thick to preserve its
   internal component positions and compatibility with the current back cover.
-- `head_outline(inset, square_bottom)`: the head shell keeps the square bottom corners so its side walls meet the
-  base rim without a step; `head_back` and `cassette` pass false and keep the radius all round (user,
-  2026-09-23). Neither lands on the base rim - the cover has the head wall behind it carrying the silhouette,
-  the cassette lies on the intake face - so the radius costs no flushness.
+- `head_outline(inset, square_bottom)`: the head shell keeps the square bottom corners
+  so its side walls meet the base rim without a step; `head_back` passes false to keep
+  its rounded outline. The cassette no longer derives its perimeter by clipping an
+  inset head profile. Its final 138 x 143 mm outline is constructed directly with
+  tangent R6 arcs at all four corners, matching the head's upper radius. Only then is
+  its 1.2 mm front bevel applied, giving R4.8 visible-face corners. The former width
+  clipping erased the lower arcs and truncated the upper R5 arcs, leaving a roughly
+  60-degree tangent break; that construction is superseded (user, 2026-09-29).
+  Neither cover nor cassette lands on the base rim: the head carries the silhouette
+  behind the cover, and the cassette lies on the intake face.
 - The joint plane rises 15 degrees to the back and therefore meets the vertical back face of the base at 75
   degrees: an acute edge across the full width, right where the back cover lands (user, 2026-09-23: "die
   scharfe kante weg wo die rueckwand aufliegt"). It is cut at 45 degrees to the joint plane, placed with
@@ -1158,3 +1164,49 @@ they do not validate the subsequent geometry.
   The assembly, exploded, back, head-mount, cassette-fastener section and fan-cable
   images are regenerated. The older magnet section remains only as evidence for
   its explicitly superseded dated report.
+
+
+## Rounded cassette corners (2026-09-29)
+
+- User requested cassette corners rounded like the head. The cassette now starts from
+  its actual 138 x 143 mm bounding outline with four tangent R6 corners, then receives
+  the existing 1.2 mm front bevel. Visible-face radii are R4.8. This supersedes the
+  clipped inset-head contour: clipping removed the lower rounds and cut the upper
+  R5 arcs before they reached a tangent side edge, producing an approximately
+  60-degree direction change.
+- Cassette thickness remains 4 mm; the Ø6.4 x 1.9 mm head pockets, Ø3.4 mm bores,
+  M3 x 8 screws, all fastening axes and grey material remain unchanged. The head
+  and its insert pockets are unchanged. Existing screw-version heads need only the
+  new cassette for this refinement; upgrading the former magnetic interface still
+  requires both the screw-version head and cassette.
+- Retain all six production plates and both Engineering Plate/3DLAC coating groups.
+  Recheck corner tangency, complete screw-bearing material, printability and the
+  actual first-layer contact areas before publishing the updated 3MF and viewer.
+- Final source SHA256: `0baee0059d26471f6d7717826be5ad933764aecceca64b63d2efd2cb25b46526`.
+  Full export passes ten print meshes, one multicolour part, 595 assembly pairs,
+  459 coaxial feature pairs, ten removal paths and all 22 insert probes. Existing
+  cassette clamps pass unchanged, including their fully recessed screw heads.
+- The new actual-mesh corner check measures 888 radial rays over six depths,
+  including the bevel, and inspects the four tangent transitions. Maximum radius
+  error is 0.007353 mm, with 5.627-degree maximum facet steps around the arcs and
+  approximately 2.812-degree turns at the eight straight-to-arc endpoints. These
+  are the intended polygon sampling, not the former roughly 60-degree crease.
+  The old clipped cassette fails this regression.
+- Independent comparison with `31d6f0c` removes 113.564945 mm³ only inside four
+  7 x 7 mm corner regions and adds no material. Bounds, thickness, grid and screw
+  bores/bearings are unchanged. The four corner centres are (9.5/135.5, 55/186)
+  in local XZ. The front bevel remains 1.200195 mm after BOSL2 quantization.
+- Islands, overhangs, thickness and fins pass with zero findings on the changed
+  cassette. The estimated assembly mass is 1005.5 g; the modelled front tipping
+  margin remains 29.2 mm and the angle 21.7 degrees.
+- Shared skill commit `a8efb7b` records the general lesson: construct rounded
+  corners inside the final outline bounds before beveling; a later width clip
+  can truncate the arcs and remove tangency even when a radius parameter exists.
+- All ten diagnostic slices, all six production plates and the USB fit plate pass
+  without warnings or supports. Production totals are 478.6 g / 16.2 h, including
+  the cassette at 46.19 g / 2.25 h. Both Engineering Plate coating groups retain
+  their saved positions and pass the actual first-layer contact check. No insertion
+  pauses are scheduled. Source, all slicer input STL hashes and both 3MF hashes match
+  the generated verification reports.
+- Both viewer copies are rebuilt and byte-identical, with 27 current items.
+  Assembly, exploded, rear and cassette-fastener detail renders are regenerated.

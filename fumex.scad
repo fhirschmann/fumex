@@ -86,6 +86,7 @@ cass_t = 4;          // no magnet cavities; the recessed M3 x 8 retains 2.1 mm b
 cass_recess = 1.9;   // the complete 1.65 mm button head sits 0.25 mm below the outer face
 cass_c = 1.2;        // 45 degree bevel on the finished contour; 2.8 mm of the rim stays straight
 cass_inset = 1;      // flange inside the head outline, leaves a ledge beside the finger scoops
+cass_corner_r = corner_r; // four complete tangent rounds, matching the head's upper R6 corners
 cass_screw_off = 62.5; // axes from the head centre; the four retained 10-mm-inset corner positions
 cass_boss_d = 8.4;   // 2.2 mm radial stock around the 4 mm Ruthex bore, clear of the rounded mat
 cass_boss_len = 9;   // 7 mm front-open pocket plus 2 mm blind end
@@ -538,9 +539,10 @@ function head_profile_points(inset = 0) = let (
         cz = c == 0 || c == 3 ? -h / 2 + r : h / 2 - r)
         for (k = [0:n]) let (a = -90 + c * 90 + min(k * da, 90))
         [body_w / 2 + cx + r * cos(a), head_cz + cz + r * sin(a)]];
-function cassette_profile_points() = intersection(
-    head_profile_points(cass_inset),
-    move([body_w / 2, head_cz], p=rect([body_w - 2 * plan_r, head_h + 10])))[0];
+// Round the finished cassette bounds directly; clipping a wider rounded profile
+// would truncate its arcs and leave sharp joins at the narrowed side edges.
+function cassette_profile_points() = move([body_w / 2, head_cz],
+    p=rect([body_w - 2 * plan_r, head_h - 2 * cass_inset], rounding=cass_corner_r));
 function cover_profile_points() = intersection(
     head_profile_points(),
     move([body_w / 2, base_h + cover_gap + head_h / 2], p=rect([body_w + 2, head_h])))[0];
@@ -865,16 +867,10 @@ module fan_posts() for (p = fan_holes()) difference() {
 module head_back_print_pose() translate([0, -base_h, body_d]) rotate([-90, 0, 0]) children();   // outer face on the bed
 
 // ---------- filter cassette (untilted frame, in front of the intake face) ----------
-// The cassette lies on the intake face and touches no rim, so like the back cover it keeps the radius
-// on all four corners rather than the shell's square bottom (user, 2026-09-23).
-// Its finished outline, not the one it starts from: the head outline first, then the width the shared
-// footprint leaves in front of the intake face. The bevel below is taken from THIS contour. Built the
-// other way round - bevel first, prism afterwards - the prism cut the bevel off the two long sides
-// entirely and left a square 4.5 mm wall there (audit 2026-09-23, G1).
-module cass_face(inset = 0) offset(delta = -inset) intersection() {
-    head_outline(cass_inset);
-    translate([body_w / 2, head_cz]) square([body_w - 2 * plan_r, head_h + 10], center = true);
-}
+// The cassette does not meet the base joint, so all four corners use the head's
+// upper radius. Round its final 138 x 143 mm bounds before applying the bevel;
+// neither a later width clip nor the head's tiny lower joint rounds belong here.
+module cass_face(inset = 0) offset(delta = -inset) polygon(cassette_profile_points());
 module cassette_raw() difference() {
     profile_sweep_y(cassette_profile_points(), -cass_t, 0, front_c = cass_c);
     translate([body_w / 2, 0, head_cz]) along_y(-cass_t - 1, 1) grid_2d(open_sq);
@@ -1483,7 +1479,8 @@ module assembly(explode = 0) {
 if      (part == "assembly") assembly();
 else if (part == "exploded") assembly(18);
 else if (part == "metrics") echo("PROJECT_METRICS", [
-    ["cass_t", cass_t], ["cass_c", cass_c], ["cass_inset", cass_inset], ["cover_gap", cover_gap],
+    ["cass_t", cass_t], ["cass_c", cass_c], ["cass_inset", cass_inset],
+    ["cass_corner_r", cass_corner_r], ["cover_gap", cover_gap],
     ["corner_r", corner_r], ["plan_r", plan_r], ["edge_c", edge_c],
     ["cassette_screw_off", cass_screw_off], ["cassette_axes", cassette_holes()],
     ["cassette_mount", [cass_boss_d, cass_boss_len, screw_clear_d, len_cassette, cass_recess]],

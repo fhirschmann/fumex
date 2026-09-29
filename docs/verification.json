@@ -1,5 +1,5 @@
 {
-  "source_sha256": "97a7b945c5bd19014dd3c990a333d07f953c85834c60fa1913c5289233602f46",
+  "source_sha256": "0baee0059d26471f6d7717826be5ad933764aecceca64b63d2efd2cb25b46526",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -40,10 +40,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "7fce08d7e71e9a245dd15cea2558297a5854c2b790a360075158fa145d09ec6e",
+      "sha256": "bb96468c5f440fb229097b50610b5f0f4d01e140a29ce7e04f780149d6f1b068",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "7fce08d7e71e9a245dd15cea2558297a5854c2b790a360075158fa145d09ec6e"
+      "committed_sha256": "bb96468c5f440fb229097b50610b5f0f4d01e140a29ce7e04f780149d6f1b068"
     },
     "head": {
       "size_mm": [
@@ -131,8 +131,8 @@
           4.0
         ]
       ],
-      "volume_mm3": 46370.9285,
-      "triangles": 9326,
+      "volume_mm3": 46257.3636,
+      "triangles": 9652,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
@@ -142,10 +142,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
-      "sha256": "d7049becfcbfcf50c285f60b9159d9c60a24c5d801a273e489e144bc6ad050d2",
+      "sha256": "4b2b3d7a5a0fdb8da684ec913d40b817e03e998a95b21b6e99913a28337bd4d7",
       "quantity": 1,
       "material": "PETG-grey",
-      "committed_sha256": "d7049becfcbfcf50c285f60b9159d9c60a24c5d801a273e489e144bc6ad050d2"
+      "committed_sha256": "4b2b3d7a5a0fdb8da684ec913d40b817e03e998a95b21b6e99913a28337bd4d7"
     },
     "knob": {
       "size_mm": [
@@ -278,10 +278,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "60ebd96f41e358507bead88fa7aafb3fb53815941168a4b60c7ba4123c67c2f0",
+      "sha256": "d00541d8c82e6388c9948b84ff330c9c55d5a2ff320150e64108508cd7d558d4",
       "quantity": 1,
       "material": "PETG-grey",
-      "committed_sha256": "60ebd96f41e358507bead88fa7aafb3fb53815941168a4b60c7ba4123c67c2f0"
+      "committed_sha256": "d00541d8c82e6388c9948b84ff330c9c55d5a2ff320150e64108508cd7d558d4"
     },
     "usbc_fit_base": {
       "size_mm": [
@@ -312,10 +312,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "ebff9ab4145d11efdbb5a7e7549dd8ebdcf7a5e30fa629a37b1f809e16da4e0f",
+      "sha256": "b13d644abc80fc40e14b636df845f5f683be473d3b85599335b2c9ffae51a48e",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "ebff9ab4145d11efdbb5a7e7549dd8ebdcf7a5e30fa629a37b1f809e16da4e0f"
+      "committed_sha256": "b13d644abc80fc40e14b636df845f5f683be473d3b85599335b2c9ffae51a48e"
     },
     "usbc_fit_lid": {
       "size_mm": [
@@ -437,6 +437,7 @@
     "cass_t": 4,
     "cass_c": 1.2,
     "cass_inset": 1,
+    "cass_corner_r": 6,
     "cover_gap": 0.3,
     "corner_r": 6,
     "plan_r": 3.5,
@@ -920,7 +921,7 @@
   },
   "contact_volumes_mm3": {
     "head@base": 39.4303,
-    "cassette@head": 285.034,
+    "cassette@head": 283.7188,
     "fan@head": 33.4246,
     "fan@head_back": 7.5398,
     "feet@base": 54.8257,
@@ -1340,7 +1341,7 @@
   "intake_lip_mm": 2.25,
   "mat_free_travel_mm": 1.62,
   "mat_squashed_percent": 0.08,
-  "mass_g": 1005.6,
+  "mass_g": 1005.5,
   "centre_of_mass_mm": [
     67.3,
     32.2,
@@ -1787,6 +1788,87 @@
           "screws_feet": 0.0,
           "screws_pwm": 0.0
         }
+      }
+    ]
+  },
+  "cassette_corners": {
+    "bounds_mm": [
+      [
+        3.5,
+        -4.0,
+        49.0
+      ],
+      [
+        141.5,
+        0.0,
+        192.0
+      ]
+    ],
+    "front_bevel_mm": 1.2,
+    "corners": [
+      {
+        "corner": [
+          "left",
+          "bottom"
+        ],
+        "arc_centre_xz_mm": [
+          9.5,
+          55
+        ],
+        "radius_mm": 6,
+        "checked_rays": 222,
+        "maximum_radius_error_mm": 0.007351,
+        "maximum_radial_normal_error_deg": 2.81259,
+        "tangent_edges": 33,
+        "maximum_tangent_join_deg": 5.62526
+      },
+      {
+        "corner": [
+          "left",
+          "top"
+        ],
+        "arc_centre_xz_mm": [
+          9.5,
+          186
+        ],
+        "radius_mm": 6,
+        "checked_rays": 222,
+        "maximum_radius_error_mm": 0.007353,
+        "maximum_radial_normal_error_deg": 2.81311,
+        "tangent_edges": 33,
+        "maximum_tangent_join_deg": 5.62572
+      },
+      {
+        "corner": [
+          "right",
+          "bottom"
+        ],
+        "arc_centre_xz_mm": [
+          135.5,
+          55
+        ],
+        "radius_mm": 6,
+        "checked_rays": 222,
+        "maximum_radius_error_mm": 0.007353,
+        "maximum_radial_normal_error_deg": 2.81339,
+        "tangent_edges": 33,
+        "maximum_tangent_join_deg": 5.627
+      },
+      {
+        "corner": [
+          "right",
+          "top"
+        ],
+        "arc_centre_xz_mm": [
+          135.5,
+          186
+        ],
+        "radius_mm": 6,
+        "checked_rays": 222,
+        "maximum_radius_error_mm": 0.007353,
+        "maximum_radial_normal_error_deg": 2.81335,
+        "tangent_edges": 33,
+        "maximum_tangent_join_deg": 5.62697
       }
     ]
   },

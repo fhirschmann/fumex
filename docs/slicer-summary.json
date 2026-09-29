@@ -13,7 +13,7 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "7fce08d7e71e9a245dd15cea2558297a5854c2b790a360075158fa145d09ec6e",
+      "source_sha256": "bb96468c5f440fb229097b50610b5f0f4d01e140a29ce7e04f780149d6f1b068",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -45,7 +45,7 @@
       "result_code": 0,
       "warnings": "",
       "hours": 5.854,
-      "grams": 225.583,
+      "grams": 225.582,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -94,12 +94,12 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "d7049becfcbfcf50c285f60b9159d9c60a24c5d801a273e489e144bc6ad050d2",
+      "source_sha256": "4b2b3d7a5a0fdb8da684ec913d40b817e03e998a95b21b6e99913a28337bd4d7",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.252,
-      "grams": 46.299,
+      "hours": 2.249,
+      "grams": 46.185,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -202,7 +202,7 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "60ebd96f41e358507bead88fa7aafb3fb53815941168a4b60c7ba4123c67c2f0",
+      "source_sha256": "d00541d8c82e6388c9948b84ff330c9c55d5a2ff320150e64108508cd7d558d4",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -229,7 +229,7 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "ebff9ab4145d11efdbb5a7e7549dd8ebdcf7a5e30fa629a37b1f809e16da4e0f",
+      "source_sha256": "b13d644abc80fc40e14b636df845f5f683be473d3b85599335b2c9ffae51a48e",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -277,7 +277,7 @@
     }
   ],
   "total_parts": 11,
-  "total_grams_individual_plates": 476.9,
+  "total_grams_individual_plates": 476.8,
   "total_hours_individual_plates": 16.8,
   "production_gcode": false,
   "project_3mf": {
@@ -604,14 +604,14 @@
               297.0
             ]
           ],
-          "extrusion_segments": 9118,
+          "extrusion_segments": 9193,
           "features": [
             "Bottom surface",
             "Outer wall"
           ],
           "line_widths_mm": [
             0.5,
-            0.50029
+            0.50061
           ],
           "grid_mm": 1,
           "startup_bounds_mm": [
@@ -795,7 +795,7 @@
       "startup_policy": "Native startup/purge/wipe/calibration remains enabled and may revisit its fixed area; reported startup bounds are not part of the fresh-area guarantee"
     },
     "total_hours_plates": 16.2,
-    "total_grams_plates": 478.7,
+    "total_grams_plates": 478.6,
     "multicolour_parts": {
       "knob": [
         "pointer"
@@ -844,7 +844,7 @@
         "plate": 3,
         "hours": 2.25,
         "grams_by_filament": {
-          "2": 46.3
+          "2": 46.19
         },
         "warnings": "",
         "process_overrides": {
@@ -895,7 +895,7 @@
       }
     },
     "own_infill_parts": 5,
-    "sha256": "24a0f6767fe6ae731bce631d65cc3b5bdd7d9f1d5767f68d2c0ab8e602934f0e"
+    "sha256": "cf8768b42f85e71b4864e2a281cfa6a86a91b749dbdd3265db185cb270acade7"
   },
   "test_3mf": {
     "file": "stl/fumex_usb_fit.3mf",
@@ -952,7 +952,7 @@
       }
     },
     "own_infill_parts": 0,
-    "sha256": "3b777860fb8b27f94f063abdd75ac0857d4c8a264bcd4670629a5444cde8dfc0",
+    "sha256": "7584dc53b682f897afa297c118c846dd10ba285e1e07e21be9d46454396f359d",
     "process": {
       "wall_loops": 4,
       "top_shell_layers": 5,

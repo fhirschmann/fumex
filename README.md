@@ -28,7 +28,7 @@ The mat sits on the intake side, so flux resin settles in the fleece and the imp
 
 That rear lip is also the fan's seat: the filter tube ends as a ring the fan frame sits on. The support cross presses into four pockets from the back. Each end has two spring cheeks with tapered contact ribs: their free width is 8.7 mm against the existing 8.4 mm sockets, so they grip before the fan is fitted. Rounded relief slots let the cheeks flex; no screws or glue are needed. The fan frame supplies an additional rear stop. The fan is screwed to the **back cover** — four spacer posts on the cover carry its heat-set inserts, and the M3 × 30 go in from the front of the fan. Fan and cover are screwed together on the bench, where that face is reachable, and the pair goes into the head as one part. The four internal corner guides have 1.2 mm lead-in chamfers on both inner edges, widening the entry clearance to 1.6 mm per side before the straight 0.4 mm guides locate the frame.
 
-Four **M3 × 8 Torx button-head screws** hold the filter cassette against the head, engaging Ruthex inserts in its four corners. The screws pass through Ø3.4 mm holes and sit in flat Ø6.4 mm recesses, 1.9 mm deep. Their heads lie fully inside the recesses, 0.25 mm below the cassette face. The cassette is 4 mm thick, with a continuous 1.2 mm bevel and 2.8 mm of straight rim. After removing the screws, use the two side finger scoops to lift it away. No magnets or insertion pauses are needed.
+Four **M3 × 8 Torx button-head screws** hold the filter cassette against the head, engaging Ruthex inserts in its four corners. The screws pass through Ø3.4 mm holes and sit in flat Ø6.4 mm recesses, 1.9 mm deep. Their heads lie fully inside the recesses, 0.25 mm below the cassette face. The cassette is 4 mm thick, with four smooth R6 corners matching the head’s upper corner radius. Its continuous 1.2 mm bevel leaves 2.8 mm of straight rim and R4.8 corners on the visible face. After removing the screws, use the two side finger scoops to lift it away. No magnets or insertion pauses are needed.
 
 ![Section through the recessed cassette screw and the head’s blind insert pocket](img/13_cassette_fastener.png)
 
@@ -59,8 +59,8 @@ All parts are in the Bambu Studio project [`stl/fumex_all_parts.3mf`](stl/fumex_
 
 Print profile: 0.20 mm layers, **1 wall on the first layer**, 4 walls on subsequent layers, 5 top/bottom layers, 20 % gyroid; support cross and TPU feet at 100 % infill.
 
-The six plates use about **478.7 g of filament and 16.2 hours**, including the knob's
-two-colour prime tower. Head and cassette together use about **271.9 g and 8.1 hours**.
+The six plates use about **478.6 g of filament and 16.2 hours**, including the knob's
+two-colour prime tower. Head and cassette together use about **271.8 g and 8.1 hours**.
 
 Use the **Engineering Plate with 3DLAC**. The saved positions let three successive
 jobs use separate areas of one full-bed coating:
@@ -129,7 +129,7 @@ battery (JST-PH, built-in BMS) ──► (PTC) ──► rocker switch ──►
 
 ## Assembly
 
-The spring support cross fits the existing 8.4 mm head sockets: replace only the cross to add retention in an already printed head. The front insert posts extend farther down into the base front wall at their original 9.2 mm width, without broad reinforcement feet. Their wall connections follow the curved outer face without a projecting ledge. Their screw positions and upper fit still match an already printed head. The screw-fastened cassette requires the matching **new head and cassette**; the former magnetic parts do not provide this screw interface. The base and current back cover remain compatible. Very early versions need the current back cover with its shorter fan posts.
+The spring support cross fits the existing 8.4 mm head sockets: replace only the cross to add retention in an already printed head. The front insert posts extend farther down into the base front wall at their original 9.2 mm width, without broad reinforcement feet. Their wall connections follow the curved outer face without a projecting ledge. Their screw positions and upper fit still match an already printed head. The screw-fastened cassette requires the matching **new head and cassette**; the former magnetic parts do not provide this screw interface. If the screw-version head is already printed, only the cassette needs replacing for the rounded-corner refinement. The base and current back cover remain compatible. Very early versions need the current back cover with its shorter fan posts.
 
 1. Press in the 22 heat-set inserts: 4 into the head’s intake corners from the front, 4 into the spacer posts of the back cover from the fan side, 4 into the bosses along the head’s side walls from the back, 2 into the raised base bosses behind the front wall and 2 into its rear rim, all four from above, 4 into the base floor from below, and 2 into the ballast-lid posts from above. The cassette inserts sit flush with the intake face in Ø4 × 7 mm blind pockets; their bosses have 2 mm closed ends.
 2. Align all four support-cross pads with the rear-open pockets, then press the cross in evenly, with its flat crossed face towards the mat. The split spring pads grip the sockets without the fan fitted. Check that every pad holds and that the cross stays seated when the open head is turned over. Pull it out evenly for service; do not twist the spring tips. No screws or glue are needed.
