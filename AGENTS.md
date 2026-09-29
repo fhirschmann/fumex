@@ -22,8 +22,8 @@ Internal notes for coding agents (Claude, Codex). The README is public and stays
 ## User constraints and preferences
 
 - Bench tool, no child-safety requirement. Plain and functional: no logo, no QR code, no decorative grooves (user, 2026-09-21).
-- Two colours, part by part: base and head in Bambu PETG black; cassette, back cover, ballast lid, support cross and knob in grey (back cover, ballast lid and support cross changed at the user's request on 2026-09-28). The grey knob has a dark housing-colour pointer inlay (user, 2026-09-28); only its separate plate uses a prime tower. Other parts remain single-colour.
-- Current production layout (user, 2026-09-28): plate 1 head, plate 2 base, plate 3 cassette, plate 4 grey back cover / ballast lid / support cross, plate 5 knob, plate 6 TPU feet. Head and cassette have separate magnet-pause plates again; the earlier shared cassette/cover/lid plate is superseded. The grey support cross retains 100% infill.
+- Two colours, part by part: base in Bambu PETG black; head, cassette, back cover, ballast lid, support cross and knob in grey (back cover, ballast lid and support cross changed at the user's request on 2026-09-28; head on 2026-09-29). The grey knob has a dark housing-colour pointer inlay (user, 2026-09-28); only its separate plate uses a prime tower. Other parts remain single-colour.
+- Current production layout (user, 2026-09-28): plate 1 head, plate 2 base, plate 3 cassette, plate 4 grey back cover / ballast lid / support cross, plate 5 knob, plate 6 TPU feet. Head and cassette remain on separate plates, both grey. The 2026-09-29 screw interface removes all magnet insertion pauses; the earlier shared cassette/cover/lid plate is superseded. The grey support cross retains 100% infill.
 - **The viewer colours are deliberately not the filament colours** (user, 2026-09-22): black PETG renders as a
   silhouette on screen and the geometry disappears, so `VIEWER["parts"]` uses lifted greys. Do not "correct"
   them back to #1a1b1d; the real colours live in `FILAMENTS`, the plate names and the README.
@@ -34,7 +34,7 @@ Internal notes for coding agents (Claude, Codex). The README is public and stays
   3DLAC before a batch, for its smooth finish. Arrange successive virtual plates
   on separate physical bed areas so one coating serves multiple jobs. Remove all
   finished parts and print debris between jobs; do not leave previous parts standing.
-  Keep material and magnet-pause jobs separate. Include brims, skirts and prime
+  Keep different-material jobs separate; if future parts require insertion pauses, retain their separate jobs too. Include brims, skirts and prime
   towers in the used footprint; preserve normal start/calibration routines.
 
 ## Measured hardware
@@ -45,9 +45,9 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 |---|---|---|
 | Fan Arctic P12 Pro (PST) | 120 × 120 × 25 mm, 185 g, 600–3000 rpm, 77 cfm / 131 m³/h, 6.9 mmH₂O, 12 V, **0.33 A**, start-up 3.3 V, 0 rpm below 5 % PWM, cable 400 + 80 mm, 0–40 °C | data sheet (ACFAN00306A) |
 | Filter mat | cut by the user from a cooker hood mat to about 120 × 120 × 17 mm, white fleece with a dark carbon layer | user, 2026-09-21, hand-cut — the chamber is 121.5 mm and the lip 2.25 mm wide, so ±1 mm on the cut is fine |
-| Magnets | 8 × neodymium disc Ø10 × 3 | nominal disc size, **not yet measured**; user's proven Tinkercad cavity diameter Ø10.04 (2026-09-28), depth 3.2 and axial skins 1.2 mm; insert at print pauses |
+| Former magnets (removed 2026-09-29) | 8 × neodymium disc Ø10 × 3 | historical interface only; nominal size was unmeasured and cavities were Ø10.04 × 3.2 mm with 1.2 mm skins. Superseded by four M3 × 8 screws and Ruthex inserts |
 | USB-C PD module PCB width | 10.06 mm | measured on this board by the user, 2026-09-28; supersedes LEO-AC1's 10.35 mm width for FUMEX only |
-| Masses for the tipping check | fan 185 g (data sheet), battery 150 g, PWM board 12 g, mat 15 g, magnets 18 g, rest estimated | **estimates**, reported as an open item |
+| Masses for the tipping check | fan 185 g (data sheet), battery 150 g, PWM board 12 g, mat 15 g, rest estimated; the former 18 g magnet allowance is removed | **estimates**, reported as an open item |
 
 ## Current design state
 
@@ -131,7 +131,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     Use the matching-source verification report for release results. Remove the loaded lid before
     withdrawing the PWM controller. Wiring and finger access are not represented by these paths.
 - The housing bends: `base` stands upright, `head` leans `tilt` = 15° forward above it, so the intake looks down at the work (user: "erst senkrecht nach oben, und dann nach vorne im Winkel"). Head modules are written in an untilted frame and placed by `head_at()`; `print_project.py` mirrors that transform in `_tilt()` for the probes.
-- The base has a nominal 145 × 74 footprint; its upper loft meets the projected head outline at the joint, so the head's floor closes the electronics bay without an extra cover. The joint is one flat plane cut by `joint_halfspace()`. The 145 mm width is set by the Ø10 magnet pockets in the corners of the intake face, not by the fan.
+- The base has a nominal 145 × 74 footprint; its upper loft meets the projected head outline at the joint, so the head's floor closes the electronics bay without an extra cover. The joint is one flat plane cut by `joint_halfspace()`. The 145 mm width was originally set by the former Ø10 magnet pockets. The screw conversion retains that outline and the four corner axes.
 - **The fan is screwed to the back cover, not to the head** (user asked 2026-09-23: "kann man den luefter
   nich mit der rueckwand verschrauben?"). Four `fan_post_d` = 8 spacer posts on the cover bridge the plenum
   to the fan's back face and hold its inserts; the M3 x 30 go in from the *front* of the fan. Fan and cover
@@ -150,11 +150,13 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     pressed 6.6 cm3 out of the mat. Removing those gussets reduced `mat_squashed_percent`
     to 0.0; the current front screw seats intentionally raise it to 0.11%, confined to
     the local flexible contacts described below.
-- The cassette stands 5.6 mm proud of the intake face. The 3.2 mm cavities have closed
-  1.2 mm skins on both axial sides (user, 2026-09-26); a 1.2 mm final-contour bevel leaves
-  4.4 mm of straight rim. The thicker cassette remains outside the original intake plane.
-  The former 4.5 mm open-pocket version stood 3.9 mm in front of the base at the joint;
-  that earlier projection measurement does not describe the new 5.6 mm cassette.
+- The cassette stands 4 mm proud of the intake face, with a 1.2 mm final-contour
+  bevel and 2.8 mm of straight rim. Four Ø3.4 mm through-holes replace its enclosed
+  magnet cavities. M3 x 8 button heads sit fully in flat Ø6.4 x 1.9 mm counterbores,
+  leaving 2.1 mm of bearing material and the head tops 0.25 mm below the cassette face.
+  There are no enclosing collars. The earlier 4.5 mm and 5.6 mm magnetic cassette
+  versions are historical. The head intake face stays 5.6 mm thick to preserve its
+  internal component positions and compatibility with the current back cover.
 - `head_outline(inset, square_bottom)`: the head shell keeps the square bottom corners so its side walls meet the
   base rim without a step; `head_back` and `cassette` pass false and keep the radius all round (user,
   2026-09-23). Neither lands on the base rim - the cover has the head wall behind it carrying the silhouette,
@@ -165,7 +167,20 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   `head_at()` so it mirrors the chamfer on the cover's lower edge; both sit behind `head_y[4]`, where the rim
   carries no head wall. The cover's lower edge had only 0.9 mm of the rim chamfer left on it, because the
   joint plane cuts that chamfer off `cover_gap` above the outline's own bottom edge; now it is the full 1.2.
-- Filter cassette held by four enclosed magnet pairs. Head and cassette each pause on their own plates 1 and 3 before the 4.6 mm layer for inserting four discs, then close the cavities. The grey back cover, ballast lid and support cross share plate 4 without an insertion pause. Mark the same pole on every disc and place the marked face upwards on both magnet plates; the installed mating faces then attract. No glue is required. Two 45° finger scoops in the side edges of the intake face get a finger behind the flange. The redundant half-round mat notches were removed at the user's request on 2026-09-23; the intake lip is continuous.
+- **Filter cassette: four M3 x 8 screws and four Ruthex RX-M3x5.7 inserts**
+  replace the magnets (user, 2026-09-29, insufficient stability of the magnetic closure).
+  Axes remain at untilted-head x10/135 and z58/183, normal to the intake face. Head
+  bosses are Ø8.4 x 9 mm with front-open Ø4 x 7 mm pockets and 2 mm blind ends.
+  Cassette holes are Ø3.4 mm. The 4 mm cassette has Ø6.4 x 1.9 mm flat counterbores,
+  with the bearing plane at local y-2.1; its 1.65 mm button heads lie 0.25 mm below the face.
+  The 8 mm screws pass through 2.1 mm of bearing material and enter 5.9 mm into the
+  7 mm pockets, leaving 1.1 mm reserve. There are no enclosed
+  magnet cavities, magnet bodies or insertion pauses (`PAUSES = {}`).
+  The matching head and cassette must both be reprinted; this is not a retrofit to
+  magnetic printed parts. Base, back cover and other current parts keep their interfaces.
+  The head is now grey like the cassette. Production plates and coating groups stay
+  unchanged. Two 45° side finger scoops help lift the cassette after removing its screws;
+  the intake lip remains continuous and the redundant half-round notches remain removed.
 - **The chamber has a rear lip too** (`mat_stop()`, user asked 2026-09-23 what stops the mat falling into the
   fan - nothing did). The mat's back face rested on the four gusset corners only, 7.8 % of it, with 10.5 mm
   of clear air to the fan frame, while the fan pulls it that way with about 1 N at 69 Pa. The lip closes the
@@ -254,7 +269,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     14 mm wide, and bit engagement 2 mm; these dimensions are not measured. The checked
     envelope includes the complete bit, front entry, seating motion and ±6-degree swing.
     Remove cassette and mat for front fastening. Rear screws require the fan/cover off.
-  - `head_off` moves the head, support cross and magnets along the tilted normal after
+  - `head_off` moves the head and support cross along the tilted normal after
     the cassette, mat, fan/cover and screws are removed; battery ties remain.
   - PWM service first pitches the released PCB to 20 degrees, withdraws it 7.9 mm,
     then pitches it to 35 degrees before the remaining lift and sideways extraction.
@@ -268,8 +283,8 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 - **The ballast lid now uses exactly two M3 x 8 screws and two Ruthex RX-M3x5.7 inserts** (user,
   2026-09-23). The Ø10 posts stand at (x, y) = (10, 63) and (117, 56.8), with Ø4 x 7 mm insert pockets
   opening upwards. This replaces all four plastic-forming screws and their core holes. With the
-  3 mm lid and 1.2 mm head pockets, nominal thread reach is 6.2 mm. Total current hardware is 18 inserts,
-  14 M3 x 8 and four M3 x 30 screws. The right post moved inwards and forwards on 2026-09-24 so
+  3 mm lid and 1.2 mm head pockets, nominal thread reach is 6.2 mm. Total current hardware is 22 inserts,
+  18 M3 x 8 (including four cassette screws) and four M3 x 30 fan screws. The right post moved inwards and forwards on 2026-09-24 so
   the screwdriver clears the head-mount bosses; the intermediate (130,63) position did not.
   Earlier positions at x30/115, 45/90, 12/40 and (135,63), including the G3 rear-row adjustment
   to y66.2, are historical. The head vent slots remain 14 mm long.
@@ -298,7 +313,8 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
   the base's and the vertical edges run through the joint without a step. Before this the head was a sharp
   145 x 74 rectangle in plan against the base's R6 and stood 2.5 mm proud at all four corners (user,
   2026-09-23: "die rundungen sind immer noch falsch").
-  - 3.5 is capped by the magnet pockets in the intake face, not chosen freely. The pocket has to clear the
+  - Historical constraint before the screw conversion: 3.5 was capped by the magnet pockets
+    in the intake face. The pocket had to clear the
     rounded plan corner by 1.2 mm and the intake opening by 1.2 mm, which at R6 leaves an empty window
     (inset >= 12.35 and <= 10.39). At 3.5 the window is 9.85 to 10.39 and `mag_off` 62.5 puts the magnets
     at inset 10: 1.3 mm to the corner, 1.8 mm to the opening.
@@ -415,7 +431,7 @@ two-insert lid, OUT-end holder, USB support ribs, wider switch recess and closed
 - `analyze.py overhangs --min-area 5` lists 27 small downward faces, all of them understood: four Ø3.3 foot peg holes and four Ø4 insert pockets in the bay floor (circular bridges, 6–10 mm²), the six vent slots in the head floor (10.8 mm² each), the two finger scoops in the intake face (45 mm² flat cone ends 2 mm above the bed), the USB-C channel floor (85 mm², a 5.8 mm ledge off the back wall) and the two cable tie loops (28 mm² each, 6 mm off the back wall). None is a floating island; every one of them grows out of a wall or bridges a hole under 15 mm.
 - Before the support-cross addition, the Bambu CLI sliced all seven parts and all four plates without support. The individual `base` and `head` slices each report "floating cantilever", also present before the G2/G3 changes. The base candidates are the USB-C channel ledge and the tie loops. The warning locations have not been conclusively isolated; keep these warnings visible in the report and inspect the small bridges on the first print.
 - Historical decision: gussets under the USB-C floor and former tie loops would eat the lid's lift clearance. A later revision removed the loops and used floor ribs, then low gussets through rear-open lid slots with a 7.85 mm seat bridge. That support layout is also superseded by the elevated narrow guides and unslotted lid described above.
-- The two tall bridges in the design are the rocker switch panel cut-out (12.2 mm, which is why the switch stands upright) and the enclosed magnet cavities (Ø10.3). Their first roof layer follows the magnet insertion pause.
+- At the enclosed-magnet revision, the tall bridges were the rocker switch panel cut-out (12.2 mm, which is why the switch stands upright) and the magnet cavities (then Ø10.3). The screw conversion removes the latter cavities and their insertion pauses.
 
 ## Audit of 2026-09-23 (`docs/audit-2026-09-23.md`)
 
@@ -443,15 +459,15 @@ An external audit of commit `a90c581`. What it found and what happened to it:
 - The inner transition starts `wall*sin(tilt)` earlier, with up to 0.15 mm extra wall reserve. Front-wall normal samples stay at 2.999 mm or more (numerical tolerance around nominal 3 mm). The loft vertex count is fixed from the nominal inset, even when its intermediate inner radius changes.
 - At the G3 revision, the rear ballast-lid screws and posts moved from y 67.5 to 66.2, preserving access for the existing 6.35 mm driver and leaving a 1.3 mm web to adjacent head pockets. That four-post pattern was subsequently replaced by insert posts at (10,63)/(135,63). The current right post is at (117,56.8); base, lid and screw bodies continue to derive positions from `ball_posts()`.
 - The base uses the export tool's existing CGAL fallback; the resulting binary STL is closed, one body and has zero degenerate faces. Do not force an invalid fast-backend result or repair it after export.
-- `check_top_corners()` rejects the previous crease in all four outer corner regions and probes a complete 1.21 mm radial material ring around each head magnet pocket. Face-normal comparisons exclude numerical triangles below 0.001 mm altitude; full mesh validity remains independently mandatory. This is a targeted mesh regression, not a global C1 proof.
+- At the magnetic revision, `check_top_corners()` rejected the previous crease in all four outer corner regions and probed a complete 1.21 mm radial material ring around each head magnet pocket. The screw conversion keeps the corner-surface checks and replaces the obsolete magnet ring probes with cassette insert material checks. Face-normal comparisons exclude numerical triangles below 0.001 mm altitude; full mesh validity remains independently mandatory. This is a targeted mesh regression, not a global C1 proof.
 - `check_joint_profile()` compares actual base/head silhouette spans in five cross sections, 2 mm either side of the joint. Old excess: 2.58–2.61 mm; new: 0.403–0.408 mm, reflecting the remaining transition below the joint. The accepted band is -0.1 to +0.6 mm. This guards the shoulder; it does not certify every surface tangent or erase the intentional seam chamfers.
 - Follow-up evidence and images: `docs/rounding-2026-09-23.md`. Fresh full checks: seven mesh types, ten physical parts, 394 coaxial feature pairs, eight paths, 435 assembly pairs; all four analyses CLEAN. Estimated assembled mass 1008.4 g and tip angle 21.4 degrees. Slicer: 470.5 g / 15.4 h across four plates; 470.9 g / 16.1 h as individual part jobs.
 
-Everything the audit lists as "verify on the real part" stays open: magnet force, knob press fit, switch body depth, the charge module's soldered connections and tie against its OUT-end holder, insert pull-out, bridge quality on the small overhangs, and every thermal and airflow figure.
+The audit’s physical checks remain open where their features are retained: knob press fit, switch body depth, the charge module's soldered connections and tie against its OUT-end holder, insert pull-out, bridge quality on the small overhangs, and every thermal and airflow figure. Magnet-force checks are retired with the magnetic interface; cassette clamp strength and printed fit remain unmeasured.
 
 ## Open items
 
-- Magnets Ø10 × 3 not measured; holding force through the printed faces not tested. Print the fit test before committing to the full print.
+- Cassette screws: verify actual insert fit, cassette seating, tightening feel and retention on the printed parts. Geometric bearing and engagement checks do not establish pull-out strength or PETG creep. The former magnet-force and magnet-fit items are retired.
 - Part masses for the tipping check are data-sheet or estimated values, not weighed (reported by `print_tools.py` as an OPEN item).
 - The knob bore is nominal 5.8 mm with zero clearance, as in LEO-AC1 — validate the push fit on the real knurled shaft with a test print.
 - Rocker switch body depth behind the panel is still the assumed value from LEO-AC1.
@@ -465,7 +481,9 @@ Everything the audit lists as "verify on the real part" stays open: magnet force
 `docs/verification.json` holds the full report and the current check counts. Checks cover closed meshes and body counts, bed placement and build envelope, assembly pairs with documented assembly-stage or intentional-fit exceptions, coaxial round features, contacts, stops, assembly paths, heat-set insert pockets, the intake lip, mat displacement, and the centre of mass over the foot polygon. The dated results below describe their respective earlier revisions; their 0.8 mm LED-window exceptions do not apply to the current 1.8 mm skins. Likewise, previous
 lid tongues, side-mounted USB stops, low gussets, lid slots and loaded-lid path numbers remain evidence
 only for their stated revisions. The active design description above takes precedence; never treat a
-report as current until its source SHA matches `fumex.scad`.
+report as current until its source SHA matches `fumex.scad`. All dated magnet-cavity,
+insertion-pause, polarity and 18-insert results below are historical and superseded by the
+2026-09-29 cassette-screw conversion; retain them as evidence of their own revisions only.
 
 Not checked: flexible deformation (the mat and the TPU feet are rigid bodies here), strength, thermal behaviour, airflow, and anything about the real hardware that has not been measured.
 
@@ -1069,3 +1087,74 @@ they do not validate the subsequent geometry.
   the grey cross keeps 100% infill, and the knob retains its separate dark pointer.
   Totals remain 493.3 g / 16.8 h; the USB fit plate is 10.02 g / 1.04 h.
   Both viewer copies are rebuilt from the unchanged assembly exports.
+
+
+## Screw-fastened cassette and grey head (2026-09-29)
+
+- The user found the magnetic cassette unstable and requested M3 screws with heat-set
+  inserts, then changed the head to grey to match the cassette. Four M3 x 8 ISO 7380
+  Torx screws now use the existing corner axes. The cassette is 4 mm thick, with
+  Ø3.4 mm through-holes and flat Ø6.4 x 1.9 mm counterbores. These leave 2.1 mm of
+  bearing material and fully recess the 1.65 mm button heads 0.25 mm below the face,
+  as explicitly requested by the user. The 1.2 mm edge bevel leaves 2.8 mm of straight
+  rim. The head's Ø8.4 x 9 mm bosses contain Ø4 x 7 mm Ruthex RX-M3x5.7 pockets,
+  opening towards the intake and retaining 2 mm blind ends. Nominal screw penetration
+  is 5.9 mm with 1.1 mm pocket reserve. The
+  head intake thickness remains 5.6 mm, preserving the fan/filter positions.
+- Both magnetic printed parts need replacing with this matching head and cassette.
+  The base and current back cover remain compatible. Existing support-cross sockets,
+  head-to-base screws, fan mounting and outside contours are preserved.
+- Remove magnet cavities, hardware bodies and obsolete overlap exceptions/checks;
+  replace them with actual screw bearing, insert-wall/floor, axis alignment, tool
+  access and cassette-removal checks. Clear the project insertion-pause configuration
+  and verify that the produced 3MF and sliced jobs contain no scheduled magnet pauses.
+  The general 30 mm extra-clearance preference remains available for future insertion
+  jobs; it is not an active action in these pause-free plates.
+- Total bought fasteners: 22 Ruthex RX-M3x5.7 inserts, 18 M3 x 8, four M3 x 30
+  and the two 2.5 x 8 thermoplastic PWM-board screws. Magnets are removed
+  from the BOM and mass accounting. Head uses grey filament slot 2; only the base uses
+  dark slot 1 as its main material, with the knob pointer retaining dark inlay slot 4.
+- Keep six production plates and the existing Engineering Plate/3DLAC coating groups:
+  Head → Base → Cassette, then Grey covers and support → Knob → TPU feet. The support
+  cross remains grey with 100% infill. Preserve bed-reuse positions and recheck actual
+  first-layer printed areas after the new slices.
+- Shared skill commit `e197b5a` documents retiring obsolete embedded-hardware pauses and
+  sliced-job metadata when switching to post-print fasteners, without disabling
+  unrelated insertion jobs or promising an unvalidated retrofit.
+- Final source SHA256: `97a7b945c5bd19014dd3c990a333d07f953c85834c60fa1913c5289233602f46`.
+  Full export passes: ten print meshes, one multicolour part, 595 assembly pairs,
+  459 coaxial feature pairs, ten removal paths and 22 insert probes. Head and
+  cassette are each one closed body with no cavity shells. Both changed parts pass
+  islands, overhangs, thickness and fins with zero findings. G2's maximum sampled
+  normal step remains 7.827 degrees.
+- Independent checks confirm all four heads are 0.25 mm below the face, the complete
+  2.1 mm cassette bearings and 2 mm insert-pocket floors remain present, and the
+  fasteners clear the filter envelope by at least 0.57881 mm. Straight driver and
+  insert-tool access pass. Comparing the head outside the four fastening regions
+  changes only 0.0000875 mm³ of numerical mesh noise. A negative fixture using the
+  former sealed-magnet head fails the new bore check, as intended.
+- Tool-presence probes are inset by up to 0.026 mm to account for the OpenSCAD
+  circles' facet sag; the independent full-size bit/holder clearance envelopes and
+  exact straight approach sweeps retain their nominal dimensions.
+- All ten diagnostic slices, six production plates and the USB fit plate pass
+  without warnings or supports. The production project totals 478.7 g / 16.2 h;
+  the head and cassette account for 271.9 g / 8.1 h. The USB fit plate remains
+  10.02 g / 1.04 h. Head uses grey slot 2, the cross remains solid, and the knob
+  retains its separate two-colour plate. Both coating groups pass the actual
+  first-layer contact check with 5 mm clearance, including the knob's prime tower.
+  Engineering Plate and the existing bed-local placements remain saved.
+- Independent release inspection matches both project 3MF hashes, the embedded
+  production meshes and the source/STL hashes. Neither project carries custom
+  per-layer pause metadata, and all seven actual sliced archives (six production
+  plates plus USB fit) contain zero manual pause commands. The regenerated base,
+  support cross and USB base coupon have zero geometric difference from the
+  preceding release despite binary STL ordering changes.
+- Revised estimated assembly mass is 1005.6 g; the modelled front tipping margin
+  is 29.2 mm and the angle is 21.7 degrees. These retain the documented estimated
+  hardware masses and effective print density, not physical load testing.
+- Both `build/viewer.html` and `docs/index.html` are rebuilt from this assembly and
+  are byte-identical: 27 viewer items, including four M3 x 8 cassette screws and
+  no magnet bodies. Head and cassette use the same lifted grey viewer colour.
+  The assembly, exploded, back, head-mount, cassette-fastener section and fan-cable
+  images are regenerated. The older magnet section remains only as evidence for
+  its explicitly superseded dated report.

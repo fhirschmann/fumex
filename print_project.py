@@ -15,7 +15,7 @@ METRICS_TAG = "PROJECT_METRICS"       # part="metrics" echoes this tag with [key
 # Must match the part branches in SOURCE exactly (checked). One material key per colour, same keys in FILAMENTS.
 PARTS = {
     "base": (1, "PETG-black", 1),
-    "head": (1, "PETG-black", 1),
+    "head": (1, "PETG-grey", 1),
     "head_back": (1, "PETG-grey", 1),
     "cassette": (1, "PETG-grey", 1),
     "knob": (1, "PETG-grey", 1),
@@ -40,7 +40,6 @@ ASSEMBLY = {
     "fan": "fan_env();",
     "filter": "filter_env();",
     "filter_support": "filter_support();",
-    "magnets": "magnets_env();",
     "battery": "battery_env();",
     "battery_ties": "battery_ties_env();",
     "pwm_board": "pwm_board_env();",
@@ -52,6 +51,7 @@ ASSEMBLY = {
     "switch": "sw_env();",
     "led": "led_env();",
     "ballast": "ballast_env();",
+    "screws_cassette": "screws_cassette();",
     "screws_fan": "screws_fan();",
     "screws_back": "screws_back();",
     "screws_head": "screws_head();",
@@ -59,6 +59,7 @@ ASSEMBLY = {
     "screws_feet": "screws_feet();",
     "screws_pwm": "screws_pwm();",
     # A bit and its holder on every screw head. These must not touch anything, which is the whole check.
+    "driver_cassette": "drivers_cassette();",
     "driver_fan": "drivers_fan();",
     "driver_back": "drivers_back();",
     "driver_head": "drivers_head();",
@@ -71,7 +72,7 @@ ALLOWED_OVERLAPS = [("base", "screws_pwm"),     # thread forms into the pilot; i
                     ("head", "filter_support"),  # only the eight spring bumps, bounded by check_filter_support
                     # PCB is fastened before the head, filter and cover assembly is installed.
                     ("head", "driver_pwm"), ("filter", "driver_pwm"), ("cassette", "driver_pwm"),
-                    ("magnets", "driver_pwm"),  # embedded magnets leave with the removed head and cassette
+                    ("screws_cassette", "driver_pwm"),  # removed with the cassette before head/PWM service
                     # PWM service removes the complete head and all four head screws first.
                     ("screws_head", "driver_pwm"), ("driver_head", "driver_pwm"),
                     ("filter_support", "driver_pwm"), ("fan", "driver_pwm"),
@@ -82,6 +83,7 @@ ALLOWED_OVERLAPS = [("base", "screws_pwm"),     # thread forms into the pilot; i
                     # driven, not against the finished assembly: remove cassette and back/fan assembly
                     # for the front/rear head screws; close the ballast lid before fitting the head.
                     ("head_back", "driver_head"), ("cassette", "driver_head"), ("filter", "driver_head"),
+                    ("screws_cassette", "driver_head"),
                     # Local flexible-mat contacts are bounded by check_front_mat_contact.
                     ("head", "filter"), ("screws_head", "filter"),
                     ("driver_back", "driver_head"), ("head_back", "driver_lid"), ("head", "driver_lid"),
@@ -90,6 +92,7 @@ ALLOWED_OVERLAPS = [("base", "screws_pwm"),     # thread forms into the pilot; i
                     # and the fan is screwed to the cover on the bench, where its front face is reachable,
                     # before either of them goes into the head
                     ("head", "driver_fan"), ("cassette", "driver_fan"), ("filter", "driver_fan"),
+                    ("screws_cassette", "driver_fan"),
                     ("screws_back", "driver_lid"), ("driver_back", "driver_lid")]
 
 # The grey knob has a flush pointer in the dark housing filament.
@@ -123,10 +126,8 @@ BED_REUSE = dict(
                 "Knob": dict(min_xy=[265, 35], prime_tower_xy=[245, 90]),
                 "TPU feet": dict(min_xy=[255, 220])},
     clearance_mm=5)
-# At 0.2-mm layers the cavity ends at 4.4 mm; the 4.6-mm layer closes it.
-# Each magnet part has a separate plate, so the insertion pause does not stop
-# an unrelated cover or support part.
-PAUSES = {"head": [4.6], "cassette": [4.6]}
+# The cassette uses accessible screw/insert fasteners; no embedded hardware.
+PAUSES = {}
 PAUSE_LIFT_MM = 30  # Lower the H2S bed for insertion, then restore its actual pre-pause Z.
 PROJECT_3MF = "stl/fumex_all_parts.3mf"
 TEST_PLATES = [("USB insertion fit", ["usbc_fit_base", "usbc_fit_lid"])]
@@ -142,8 +143,8 @@ SLICER_SUMMARY = "docs/slicer-summary.json"
 MAT = (120, 120, 17)      # the mat the user cut from a cooker hood filter
 DENSITY = {"PETG": 0.90e-3, "PETG-solid": 1.27e-3, "TPU": 1.20e-3, "nylon": 1.14e-3, "iron-loose": 4.7e-3}
 MASSES_G = {"fan": 185, "battery": 150, "filter": 15, "pwm_board": 12, "chg_module": 3, "chg_sink": 5,
-            "usbc": 2, "switch": 5, "led": 0.6, "magnets": 18, "pot": 6, "screws_pwm": 0.7,
-            "screws_fan": 6, "screws_back": 4, "screws_head": 6, "screws_feet": 3, "screws_lid": 1.5}
+            "usbc": 2, "switch": 5, "led": 0.6, "pot": 6, "screws_pwm": 0.7,
+            "screws_cassette": 4, "screws_fan": 6, "screws_back": 4, "screws_head": 6, "screws_feet": 3, "screws_lid": 1.5}
 # bodies whose mass comes from their volume rather than a data sheet
 BY_VOLUME = {"base": "PETG", "head": "PETG", "head_back": "PETG", "cassette": "PETG", "knob": "PETG",
              "feet": "TPU", "ball_lid": "PETG", "filter_support": "PETG-solid", "ballast": "iron-loose",
@@ -199,132 +200,147 @@ def corner_jumps(local_meshes, width, depth, top, plan_r=3.5, corner_r=6.0,
     return rows
 
 
-def magnet_skin(local_head, cylinder, manifold, axes, depth=3.2, radius=5.02, start=0):
-    solid = manifold(local_head)
-    rows = []
-    for x, z in axes:
-        # 1.21 rather than 1.20 covers the <0.001-mm sag of this 360-sided
-        # inscribed probe. Exclude only 0.001 mm at the cavity end faces.
-        outer = cylinder([x, start + 0.001, z], [0, 1, 0], depth - 0.002, radius + 1.21, 360)
-        inner = cylinder([x, start + 0.001, z], [0, 1, 0], depth - 0.002, radius + 0.01, 360)
-        missing = float(((outer - inner) - solid).volume())
-        rows.append(dict(axis_xz=[x, z], tested_radial_skin_mm=1.21,
-                         missing_mm3=round(missing, 8)))
-    return rows
-
-
 def check_top_corners(ctx):
-    """checks(ctx) adapter for installed-position assembly meshes."""
+    """Retain the G2 corner-smoothness gate independently of cassette retention."""
     m = ctx.metrics
-    plan_r, corner_r, edge_c, mag_off = (m[k] for k in ("plan_r", "corner_r", "edge_c", "mag_off"))
     width, depth = m["body"]
     top = m["base_h"] + m["head_h"]
     local = {name: head_frame(ctx.meshes[name], m) for name in ("head", "head_back")}
-    corners = corner_jumps(local, width, depth, top, plan_r, corner_r, edge_c)
-    centre_z = m["base_h"] + m["head_h"] / 2
-    axes = [(width / 2 + sx * mag_off, centre_z + sz * mag_off)
-            for sx in (-1, 1) for sz in (-1, 1)]
-    pockets = magnet_skin(local["head"], ctx.cylinder, ctx.manifold, axes,
-                          depth=m["magnet_pocket"][1], radius=m["magnet_pocket"][0] / 2,
-                          start=m["magnet_skin"])
+    corners = corner_jumps(local, width, depth, top, m["plan_r"], m["corner_r"], m["edge_c"])
     assert all(r["max_jump_deg"] <= 15 for r in corners), f"corner crease: {corners}"
-    assert all(r["missing_mm3"] < 1e-5 for r in pockets), f"magnet skin missing: {pockets}"
-    return dict(top_corner_normals=corners, magnet_radial_skin=pockets)
+    return dict(top_corner_normals=corners)
 
 
-def check_sealed_magnets(ctx):
-    """Prove eight usable closed cavities and both full axial skins on actual meshes."""
+def check_cassette_fasteners(ctx):
+    """Four direct screw clamps with measured bearings, blind inserts and tool access."""
     m = ctx.metrics
-    assert np.allclose(m["magnet_pocket"], [10.04, 3.2], atol=1e-6)
-    assert abs(m["magnet_skin"] - 1.2) < 1e-6
-    assert abs(m["front_t"] - 5.6) < 1e-6 and abs(m["cass_t"] - 5.6) < 1e-6
-    assert PAUSES == {"head": [4.6], "cassette": [4.6]}, "Wrong magnet insertion layer"
-    paused_plates = {part: [group for _, group in PLATES if part in group] for part in PAUSES}
-    assert paused_plates['head'] == [['head']], "The head needs its separate black magnet plate"
-    assert paused_plates['cassette'] == [['cassette']], "The cassette needs its separate grey magnet plate"
-    assert PAUSE_LIFT_MM == 30, "Magnet insertion requires the user's 30-mm bed drop"
-    meshes = {n: head_frame(ctx.meshes[n], m) for n in ("head", "cassette", "magnets")}
-    solids = {n: ctx.manifold(mesh) for n, mesh in meshes.items()}
-    width, cz = m["body"][0], m["base_h"] + m["head_h"] / 2
-    axes = [(width / 2 + sx * m["mag_off"], cz + sz * m["mag_off"])
-            for sx in (-1, 1) for sz in (-1, 1)]
+    axes = np.asarray(m['cassette_axes'], float)
+    expected = [[10, 58], [10, 183], [135, 58], [135, 183]]
+    assert axes.shape == (4, 2) and np.allclose(axes, expected, atol=.001), \
+        f'Cassette needs four reviewed corner fasteners: {axes.tolist()}'
+    assert np.allclose(m['cassette_mount'], [8.4, 9, 3.4, 8, 1.9], atol=.001), \
+        'Cassette mounting must retain complete 8.4-mm bosses and fully recessed M3 x 8 heads'
+    assert abs(m['cass_t'] - 4) < .001 and abs(m['front_t'] - 5.6) < .001, \
+        'Cassette and intake planes changed; recheck the complete clamping stack'
+    assert abs(m['insert_depth'] - 7) < .001 and abs(m['insert_hole_d'] - 4) < .001
+    assert not PAUSES and 'magnets' not in ASSEMBLY, 'Screw retention must not retain magnet cavities or insertion pauses'
+    assert len(PLATES) == 6 and [parts for _, parts in PLATES if 'cassette' in parts] == [['cassette']], \
+        'Preserve the separate cassette plate and the reviewed six-plate bed plan'
+    local_meshes = {n: head_frame(mesh, m) for n, mesh in ctx.meshes.items()}
+    local = {n: ctx.manifold(mesh) for n, mesh in local_meshes.items()}
+    head, cassette, screws = (local[n] for n in ('head', 'cassette', 'screws_cassette'))
+    assert len(screws.decompose()) == 4, 'Cassette needs exactly four separate screws'
+    fixed = {n: q for n, q in local.items() if not n.startswith('driver_')}
+    rows = []
+    seat, length, penetration = -2.1, 8., 5.9
 
-    def radial_distances(mesh, x, ys, z):
-        directions = np.array([[math.cos(t), 0, math.sin(t)]
-                               for t in np.linspace(0, 2 * math.pi, 16, endpoint=False)])
-        origins = np.repeat([[x, y, z] for y in ys], len(directions), axis=0)
-        directions = np.tile(directions, (len(ys), 1))
-        hits, ray_ids, _ = mesh.ray.intersects_location(origins, directions, multiple_hits=True)
-        distances = np.full(len(origins), np.inf)
-        np.minimum.at(distances, ray_ids, np.linalg.norm(hits - origins[ray_ids], axis=1))
-        assert np.all(np.isfinite(distances)), "Missing radial magnet boundary"
-        return distances
+    def collisions(probe, bodies):
+        return {n: round(float((probe ^ q).volume()), 8) for n, q in bodies.items()}
 
-    rows, cavities = [], []
-    for name, planes in (("head", [0, 1.2, 4.4, 5.6]),
-                         ("cassette", [-5.6, -4.4, -1.2, 0])):
-        solid, mesh = solids[name], meshes[name]
-        for x, z in axes:
-            a, b, c, d = planes
-            # The 53-sided CAD circle has <0.009 mm radial sag. A 0.012 mm
-            # probe inset avoids that tessellation, independently of the disc size.
-            cavity = ctx.cylinder([x, b + .002, z], [0, 1, 0], c - b - .004, 5.008, 240)
-            cavity_overlap = float((cavity ^ solid).volume())
-            assert cavity_overlap < .001, f"Sealed magnet cavity blocked: {name}/{x}/{z}, {cavity_overlap}"
-            pocket_radii = radial_distances(mesh, x, [b + .2, (b + c) / 2, c - .2], z)
-            assert pocket_radii.min() > 5.008 and pocket_radii.max() < 5.023, \
-                f"Incorrect 10.04 mm cavity diameter: {name}/{x}/{z}, {pocket_radii}"
-            missing = []
-            for lo, hi in ((a, b), (c, d)):
-                skin = ctx.cylinder([x, lo + .002, z], [0, 1, 0], hi - lo - .004, 5.008, 240)
-                missing.append(float((skin - solid).volume()))
-            assert max(missing) < .001, f"Open/thin magnet face: {name}/{x}/{z}, {missing}"
-            # The complete pocket faces must be planar. Seventeen spatially
-            # separate rays also measure the exterior and cavity boundaries;
-            # rear head material may continue into the chamber corner guides.
-            offsets = [(0, 0)] + [(4.9 * math.cos(t), 4.9 * math.sin(t))
-                                  for t in np.linspace(0, 2 * math.pi, 16, endpoint=False)]
-            errors, measured_skins = [], []
-            for dx, dz in offsets:
-                hits, _, _ = mesh.ray.intersects_location([[x + dx, a - 1, z + dz]],
-                                                         [[0, 1, 0]], multiple_hits=True)
-                ys = np.unique(np.round(hits[:, 1], 4)) if len(hits) else np.array([])
-                wanted = planes[:3] if name == "head" else planes
-                assert len(ys) >= len(wanted), f"Missing magnet face: {name}/{x}/{z}, {ys}"
-                error = float(np.max(np.abs(ys[:len(wanted)] - wanted)))
-                assert error < .003, f"Incorrect magnet face planes: {name}/{x}/{z}, {ys}"
-                errors.append(error)
-                measured_skins.append(float(ys[1] - ys[0]))
-                if name == "cassette":
-                    measured_skins.append(float(ys[3] - ys[2]))
-            full_cavity = ctx.cylinder([x, b - .001, z], [0, 1, 0], c - b + .002, 5.021, 240)
-            cavities.append(full_cavity)
-            disc_volume = float((full_cavity ^ solids["magnets"]).volume())
-            assert 230 < disc_volume < 240, f"Missing or incorrect 10 x 3 magnet: {name}/{x}/{z}, {disc_volume}"
-            disc_radii = radial_distances(meshes["magnets"], x, [b + .1, b + 1.5, b + 2.9], z)
-            assert disc_radii.min() > 4.988 and disc_radii.max() < 5.003, \
-                f"Magnet disc is not diameter 10 mm: {name}/{x}/{z}, {disc_radii}"
-            disc_hits, _, _ = meshes["magnets"].ray.intersects_location(
-                [[x, b - .1, z]], [[0, 1, 0]], multiple_hits=True)
-            disc_ys = np.unique(np.round(disc_hits[:, 1], 4))
-            assert len(disc_ys) >= 2 and np.allclose(disc_ys[:2], [b, b + 3], atol=.003), \
-                f"Magnet disc is not 3 mm tall on the cavity floor: {name}/{x}/{z}, {disc_ys}"
-            rows.append(dict(part=name, axis_xz=[x, z], cavity_diameter_depth_mm=[10.04, 3.2],
-                             measured_cavity_diameter_range_mm=(2 * np.array([pocket_radii.min(), pocket_radii.max()])).round(5).tolist(),
-                             measured_disc_diameter_range_mm=(2 * np.array([disc_radii.min(), disc_radii.max()])).round(5).tolist(),
-                             cavity_overlap_mm3=round(cavity_overlap, 7),
-                             axial_skin_missing_mm3=[round(v, 7) for v in missing],
-                             minimum_measured_outer_skin_mm=round(min(measured_skins), 4),
-                             maximum_face_plane_error_mm=round(max(errors), 5),
-                             magnet_volume_mm3=round(disc_volume, 4)))
-    outside = float((solids["magnets"] - md.Manifold.batch_boolean(cavities, md.OpType.Add)).volume())
-    assert outside < .001 and len(solids["magnets"].decompose()) == 8, \
-        f"Magnet set is not eight discs contained in the sealed cavities: outside {outside} mm3"
-    ctx.summary.append("8 sealed magnet cavities, full 1.2 mm axial skins; insertion pauses before layer 4.6 mm")
-    ctx.open_items.append("Embedded magnets: check actual disc size and polarity before closing the 4.6 mm layer; "
-                          "retention across the two 1.2 mm face skins is not a pull-force test. STL files contain no pause.")
-    return dict(sealed_magnets=dict(cavities=rows, magnet_outside_cavities_mm3=round(outside, 7),
-                pause_before_layer_mm=PAUSES, print_layer_height_mm=.2))
+    for x, z in axes:
+        def cyl(start, end, radius):
+            return ctx.cylinder([x, start, z], [0, 1, 0], end-start, radius, 240)
+
+        # The independent probes leave only facet-scale clearance from nominal holes.
+        # Complete circumferential material is required through the whole stack.
+        bore = cyl(.02, 6.98, 1.974)
+        passage = cyl(-2.08, -.02, 1.672)
+        recess = cyl(-3.98, -2.12, 3.184)
+        blocked = {'insert': float((bore ^ head).volume()),
+                   'clearance': float((passage ^ cassette).volume()),
+                   'head_recess': float((recess ^ cassette).volume())}
+        assert max(blocked.values()) < .001, f'Cassette screw or insert bore is blocked at {x,z}: {blocked}'
+        material = {
+            'insert_wall': (cyl(.02, 6.98, 3.61) - cyl(.02, 6.98, 2.03), head),
+            'blind_floor': (cyl(7.02, 8.98, 3.61), head),
+            'cassette_head_bearing': (cyl(-2.08, -1.68, 2.83) - cyl(-2.08, -1.68, 1.74), cassette),
+            'cassette_recess_rim': (cyl(-3.98, -2.12, 4.41) - cyl(-3.98, -2.12, 3.23), cassette),
+            'cassette_clamping_stack': (cyl(-2.08, -.02, 3.60) - cyl(-2.08, -.02, 1.74), cassette),
+            'head_interface': (cyl(.02, .42, 3.60) - cyl(.02, .42, 2.03), head),
+        }
+        fills = {n: float((q ^ solid).volume()/q.volume()) for n, (q, solid) in material.items()}
+        assert min(fills.values()) > .9999, f'Incomplete cassette clamping material at {x,z}: {fills}'
+
+        measured = {}
+        plane_errors = []
+        for radius, expected_start in [(2.5, -2.1), (4, -4)]:
+            for angle in np.linspace(0, 2*math.pi, 8, endpoint=False):
+                origin = [x+radius*math.cos(angle), -5, z+radius*math.sin(angle)]
+                hits, _, _ = local_meshes['cassette'].ray.intersects_location([origin], [[0, 1, 0]], multiple_hits=True)
+                planes = np.unique(np.round(hits[:, 1], 4)) if len(hits) else np.array([])
+                assert len(planes) == 2 and np.allclose(planes, [expected_start, 0], atol=.003), \
+                    f'Cassette front/recess plane is wrong at {x,z}: {planes}'
+                plane_errors.append(float(np.max(np.abs(planes-[expected_start, 0]))))
+        for name, ys, lo, hi in [('head', [.2, 3.5, 6.8], 1.974, 2.003),
+                                 ('cassette', [-1.9, -1.0, -.2], 1.672, 1.703)]:
+            directions = np.array([[math.cos(t), 0, math.sin(t)]
+                                   for t in np.linspace(0, 2*math.pi, 32, endpoint=False)])
+            origins = np.repeat([[x, y, z] for y in ys], len(directions), axis=0)
+            rays = np.tile(directions, (len(ys), 1))
+            hits, ids, _ = local_meshes[name].ray.intersects_location(origins, rays, multiple_hits=True)
+            distances = np.full(len(origins), np.inf)
+            np.minimum.at(distances, ids, np.linalg.norm(hits-origins[ids], axis=1))
+            assert np.all(np.isfinite(distances)) and distances.min() >= lo and distances.max() <= hi, \
+                f'Incorrect cassette mounting bore in {name} at {x,z}: {distances}'
+            measured[name] = (2*np.array([distances.min(), distances.max()])).round(5).tolist()
+        hits, _, _ = local_meshes['head'].ray.intersects_location([[x, -.1, z]], [[0, 1, 0]], multiple_hits=True)
+        ys = np.sort(hits[:, 1])
+        assert len(ys) >= 2 and np.allclose(ys[:2], [7, 9], atol=.003), \
+            f'Cassette insert must have a 7-mm pocket and complete 2-mm blind floor at {x,z}: {ys}'
+
+        screw = screws ^ _air_box([x-3.1, -8, z-3.1], [x+3.1, 10, z+3.1])
+        bounds = np.asarray(screw.bounding_box())
+        assert screw.volume() > 85 and np.allclose(bounds[[1, 4]], [-3.75, 5.9], atol=.003), \
+            f'Cassette screw does not have its full M3 x 8 stack at {x,z}: {bounds}'
+        shaft = cyl(-2.08, 5.88, 1.47)
+        head_ring = cyl(-3.73, -2.12, 2.83) - cyl(-3.73, -2.12, 1.51)
+        assert (shaft ^ screw).volume()/shaft.volume() > .9999 \
+            and (head_ring ^ screw).volume()/head_ring.volume() > .9999, \
+            f'Cassette screw shaft or ISO7380 head is incomplete at {x,z}'
+        bearing = float((screw.translate([0, .05, 0]) ^ cassette).volume())
+        capture = float((cassette.translate([0, -.05, 0]) ^ screw).volume())
+        assert min(bearing, capture) > .1, f'Cassette screw head does not clamp at {x,z}'
+        interface = cyl(-.04, 0, 3.6) - cyl(-.04, 0, 2.03)
+        interface_contact = float((interface.translate([0, .05, 0]) ^ head).volume())
+        assert interface_contact > .1, f'Cassette has no matching head bearing at {x,z}'
+
+        # Insert installation is on the bare head from the open front. A full
+        # straight 6.35-mm press shaft reaches the pocket without crossing plastic.
+        press = cyl(-60, -.02, 3.175)
+        press_overlap = float((press ^ head).volume())
+        assert press_overlap < .001, f'Cassette insert press access is blocked at {x,z}: {press_overlap}'
+        face = seat-1.65
+        tool_parts = [cyl(face-6, face, 2),
+                      cyl(face-31, face-6, 3.175),
+                      cyl(face-86, face-31, 6.5)]
+        tool = md.Manifold.batch_boolean(tool_parts, md.OpType.Add)
+        # Inset the presence probes by the CAD circles' facet sag (up to .026 mm).
+        inner = md.Manifold.batch_boolean([cyl(face-5.99, face-.01, 1.974),
+                     cyl(face-30.99, face-6.01, 3.15),
+                     cyl(face-85.99, face-31.01, 6.48)], md.OpType.Add)
+        tool_fill = float((inner ^ local['driver_cassette']).volume()/inner.volume())
+        assert tool_fill > .9999, f'Cassette driver export omits its bit or holder at {x,z}: {tool_fill}'
+        tool_hits = collisions(tool, fixed)
+        # Every component is convex, making each endpoint hull its exact axial sweep.
+        approach = md.Manifold.batch_boolean([md.Manifold.batch_hull([p, p.translate([0, -30, 0])])
+                                               for p in tool_parts], md.OpType.Add)
+        approach_hits = collisions(approach, fixed)
+        assert max(tool_hits.values(), default=0) < .01 and max(approach_hits.values(), default=0) < .01, \
+            f'Cassette bit/holder or its straight front approach is blocked at {x,z}: {tool_hits}, {approach_hits}'
+        rows.append(dict(axis_xz_mm=[float(x), float(z)], material_fill={n: round(v, 7) for n, v in fills.items()},
+            blocked_bore_mm3={n: round(v, 8) for n, v in blocked.items()}, measured_bore_diameters_mm=measured,
+            screw_bearing_contact_mm3=round(bearing, 6), outward_capture_mm3=round(capture, 6),
+            interface_contact_mm3=round(interface_contact, 6), press_access_overlap_mm3=round(press_overlap, 8),
+            maximum_recess_plane_error_mm=round(max(plane_errors), 7),
+            exported_driver_fill=round(tool_fill, 7), driver_overlap_mm3=tool_hits,
+            exact_driver_approach_overlap_mm3=approach_hits))
+    assert penetration >= 5.7 and 7-penetration >= .5, 'Cassette screws must engage the complete insert without bottoming'
+    ctx.summary.append('Cassette: four fully recessed M3 x 8 clamps, 5.9 mm penetration, 1.1 mm pocket reserve; no insertion pauses')
+    ctx.open_items.append('Cassette inserts: heat-set four Ruthex RX-M3x5.7 flush from the front of the bare head; '
+                          'fit and torque remain physical checks. Remove all four cassette screws before filter service.')
+    return dict(cassette_fasteners=dict(screw_count=4, screw_length_mm=length, insert_engagement_mm=5.7,
+        screw_penetration_mm=penetration, pocket_reserve_mm=1.1, blind_floor_mm=2,
+        screw_head_diameter_height_mm=[5.7, 1.65], recess_diameter_depth_mm=[6.4, 1.9], bearing_thickness_mm=2.1, head_below_front_mm=.25, pause_parts=[], fasteners=rows))
 
 
 def check_fan_cable_opening(ctx):
@@ -827,7 +843,7 @@ def check_front_ratchet_access(ctx):
                          [119.5, 6.5, 60, 0, 0, -1, 1.6, 8]])
     assert np.allclose(axes[:2], expected, atol=.001), 'Revalidate ratchet route for changed front screws'
     local = {n: ctx.manifold(head_frame(mesh, m)) for n, mesh in ctx.meshes.items()
-             if n not in ('filter', 'cassette') and not n.startswith('driver_')}
+             if n not in ('filter', 'cassette', 'screws_cassette') and not n.startswith('driver_')}
     exported = ctx.manifold(head_frame(ctx.meshes['driver_head'], m))
     rows = []
 
@@ -2061,7 +2077,6 @@ def checks(ctx):
     assert m["opening_sq"] >= 113, "Air passage narrower than the swept blade diameter"
     assert m["fan_post"][0] / 2 >= m["insert_hole_d"] / 2 + m["insert_w_min"], \
         "Fan posts too thin around their inserts"
-    assert m["magnet_pocket"] == [10.04, 3.2], "Magnet pockets no longer match the user's proven 10.04 x 3.2 mm fit"
 
     # Contact, not just freedom from overlap
     tilt = math.radians(m["tilt"])
@@ -2080,7 +2095,9 @@ def checks(ctx):
     # Stops: the fan cannot move sideways in its corner guides, the head is located by its screws
     # There is no register between head and base: the four screws locate it, so that is what is checked
     # usbc_in: pushing a cable into the socket must not push the board into the bay
-    stops = ctx.stops([("fan_sideways", "fan", "head", [1, 0, 0], 1.5),
+    stops = ctx.stops([("cassette_pull_off", "cassette", "screws_cassette", [-v for v in into], .25),
+                       ("cassette_sideways", "cassette", "screws_cassette", [1, 0, 0], .5),
+                       ("fan_sideways", "fan", "head", [1, 0, 0], 1.5),
                        ("usbc_in", "usbc", "ball_lid", [0, -1, 0], 0.6),
                        ("head_on_screws", "head", "screws_head", [1, 0, 0], 0.6),
                        ("battery_right", "battery", "base", [1, 0, 0], 0.8),
@@ -2098,6 +2115,8 @@ def checks(ctx):
     up = [0, -math.sin(tilt), math.cos(tilt)]
     out = [0, -math.cos(tilt), -math.sin(tilt)]       # out of the intake face, normal to it
     paths = ctx.paths([
+        ("cassette_screws_out", "screws_cassette",
+         [n for n in ctx.solids if n != "screws_cassette" and not n.startswith("driver_")], out, 30, .25),
         ("cassette_off", "cassette", ["head", "base", "fan", "filter", "screws_head"], out, 30, 0.5),
         # the fan is bolted to the cover, so it comes off with it
         ("cover_off", ["head_back", "fan", "screws_fan"], ["head", "base", "filter_support", "chg_module", "chg_sink", "chg_tie", "screws_head"],
@@ -2114,7 +2133,7 @@ def checks(ctx):
         ("fan_out", ["fan", "screws_fan"], ["head", "base", "filter_support"], [-o for o in out], 40, 0.5),   # cover off first
         # Cassette, mat and back/fan assembly are removed to reach the screws.
         # The support cross may remain in the head during removal.
-        ("head_off", ["head", "filter_support", "magnets"],
+        ("head_off", ["head", "filter_support"],
          ["base", "battery", "pwm_board", "usbc", "switch", "pot", "led", "ball_lid", "ballast",
           "chg_module", "chg_sink", "chg_tie", "battery_ties"], up, 60, 1),
         # Cut and remove both ties before lifting the shrink-wrapped battery pack.
@@ -2130,6 +2149,7 @@ def checks(ctx):
     d, depth, w = m["insert_hole_d"], m["insert_depth"], m["insert_w_min"]
     back = [-o for o in out]
     probes = ctx.insert_probes(
+        [("head", _tilt(m, [p[0], 0, p[1]]), into, depth, d, w) for p in m["cassette_axes"]] +
         [("head_back", _tilt(m, [p[0], m["head_y"][3], p[1]]), back, depth, d, w) for p in m["fan_holes"]] +
         [("head", _tilt(m, [p[0], m["back_y"], p[1]]), out, depth, d, w) for p in m["head_bosses"]] +
         [("base", _tilt(m, row[:3]),
@@ -2139,7 +2159,7 @@ def checks(ctx):
         [("base", [p[0], p[1], 0], [0, 0, 1], depth, d, w) for p in _foot_xy(m)] +
         [("base", [p[0], p[1], m["ballast"][3]], [0, 0, -1], depth, d, w)
          for p in m["ballast_posts"]])
-    assert len(probes) == 18, "Four-point head attachment must have 18 insert pockets in total"
+    assert len(probes) == 22, "Four cassette clamps plus the existing head/housing mounts require 22 insert pockets"
     # Air must not bypass the mat: the chamber lip overlaps it on every side, front and back
     lip = (m["chamber"][0] - m["open_sq"]) / 2
     assert lip >= 2, f"Intake lip only {lip:.2f} mm wide"
@@ -2178,7 +2198,7 @@ def checks(ctx):
                 intake_lip_mm=lip, mat_free_travel_mm=round(mat_free, 2), mat_squashed_percent=round(100 * squashed / mat, 2), mass_g=round(total, 1),
                 centre_of_mass_mm=[round(c, 1) for c in com],
                 foot_polygon_mm=poly, tip_margins_mm={k: round(v, 1) for k, v in margins.items()},
-                tip_angle_deg=round(tip_angle, 1), **check_top_corners(ctx), **check_sealed_magnets(ctx),
+                tip_angle_deg=round(tip_angle, 1), **check_top_corners(ctx), **check_cassette_fasteners(ctx),
                 **check_fan_cable_opening(ctx), **check_joint_profile(ctx),
                 **check_rim_chamfers(ctx), **check_charger_air(ctx), **check_charger_holder(ctx),
                 **check_lid_fasteners(ctx), **check_head_fasteners(ctx), **check_removed_front_braces(ctx), **check_front_boss_extensions(ctx), **check_front_base_silhouette(ctx), **check_front_mat_contact(ctx), **check_front_ratchet_access(ctx), **check_pwm_mount(ctx), **check_pwm_removal(ctx), **check_usb_wire_access(ctx), **check_ballast_cover(ctx),
@@ -2200,7 +2220,7 @@ def _foot_xy(m):
 
 VIEWER = dict(
     title="FUMEX", page_title="FUMEX solder fume extractor", eyebrow="Assembly · installed position",
-    dims=[("Width", "145"), ("Depth", "112"), ("Height", "201")],
+    dims=[("Width", "145"), ("Depth", "114"), ("Height", "202")],
     # Viewer greys, not the filament colours: black PETG has no shading contrast on screen and the
     # geometry disappears (user, 2026-09-22). The plate and filament names keep the real colours.
     groups=[("black", "Printed · PETG black"), ("grey", "Printed · PETG grey"),
@@ -2210,7 +2230,7 @@ VIEWER = dict(
     cut=["head", "base"],
     # id, label, group, colour, quantity, explode direction (mm per slider mm)
     parts=[("base", "Base", "black", "#8a9096", "1x", [0, 0, 0]),
-           ("head", "Head", "black", "#8a9096", "1x", [0, -0.36, 1.35]),
+           ("head", "Head", "grey", "#c4c9ce", "1x", [0, -0.36, 1.35]),
            ("head_back", "Back cover", "grey", "#c4c9ce", "1x", [0, 2.3, 0.6]),
            ("cassette", "Filter cassette", "grey", "#c4c9ce", "1x", [0, -1.55, 1.0]),
            ("filter_support", "Filter support cross", "grey", "#c4c9ce", "1x", [0, 0.15, 1.35]),
@@ -2226,7 +2246,7 @@ VIEWER = dict(
            ("chg_tie", "Charge-module cable tie", "bought", "#55595e", "1x", [0, 0, 0.3]),
            ("usbc", "USB-C PD trigger", "bought", "#2f5d3a", "1x", [0, 0.8, 0]),
            ("switch", "Rocker switch", "bought", "#3a3d42", "1x", [0.8, 0, 0]),
-           ("magnets", "Magnets 10 x 3", "bought", "#9aa0a6", "8x", [0, -1.2, 0.9]),
+           ("screws_cassette", "Cassette screws M3 x 8", "bought", "#9aa0a6", "4x", [0, -1.9, 1.0]),
            ("screws_fan", "Screws M3 x 30", "bought", "#9aa0a6", "4x", [0, 0.9, 1.35]),
            ("screws_back", "Screws M3 x 8", "bought", "#9aa0a6", "4x", [0, 2.8, 0.6]),
            ("screws_head", "Head screws", "bought", "#9aa0a6", "4x M3 x 8", [0, -0.3, 1.6]),
@@ -2287,16 +2307,15 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
          "12_floor_tie_loops": ("color(\"#aeb5bb\") intersection() { base(); "
                                 "translate([15, 24, 0]) cube([50, 22, 9]); }",
                                 "83,-45,43,40,35,3"),
-         "13_magnet_section": ("color(\"#717980\") intersection() { head_raw(); "
-                                "translate([10, -7, 174]) cube([15, 15, 18]); } "
-                                "color(\"#c4c9ce\") intersection() { cassette_raw(); "
-                                "translate([10, -7, 174]) cube([15, 15, 18]); } "
-                                "color(\"#c49a55\") intersection() { union() { for (p = mag_xz()) { "
-                                "cyl_y(p, mag_skin, mag_skin + 3, 5); "
-                                "cyl_y(p, -cass_t + mag_skin, -cass_t + mag_skin + 3, 5); } } "
-                                "translate([10, -7, 174]) cube([15, 15, 18]); }",
-                                "-25,-25,207,13,0,183"),
-         "14_fan_cable_notch": ("color(\"#aeb5bb\") intersection() { head_raw(); "
+         "13_cassette_fastener": ("color(\"#c4c9ce\") intersection() { head_raw(); "
+                                     "translate([10, -8, 174]) cube([15, 19, 18]); } "
+                                     "color(\"#d8dcdf\") intersection() { cassette_raw(); "
+                                     "translate([10, -8, 174]) cube([15, 19, 18]); } "
+                                     "color(\"#9aa0a6\") intersection() { for (p = cassette_holes()) "
+                                     "translate([p[0], -cass_t+cass_recess, p[1]]) axis_orient([0, 1, 0]) screw(len_cassette); "
+                                     "translate([10, -8, 174]) cube([15, 19, 18]); }",
+                                     "-25,-25,207,13,0,183"),
+         "14_fan_cable_notch": ("color(\"#c4c9ce\") intersection() { head_raw(); "
                                 "translate([20, 50, 48]) cube([40, 24, 14]); }",
                                 "8,110,100,40,62,52"),
          "15_filter_clip": ("color(\"#c4c9ce\") intersection() { filter_support_raw(); "

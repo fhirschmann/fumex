@@ -13,7 +13,7 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "0088ea0a20c28cdb91ba64c7d549a38cf8f0659f6f208a959aa4c5486232b0e9",
+      "source_sha256": "7fce08d7e71e9a245dd15cea2558297a5854c2b790a360075158fa145d09ec6e",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -35,17 +35,17 @@
     {
       "part": "head",
       "quantity": 1,
-      "material": "PETG-black",
+      "material": "PETG-grey",
       "passed": true,
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "15b4422dc0087921c3783643f1de30e20f42ebb419f9779500be9ee262c67ea8",
+      "source_sha256": "aeeb026f4b8d8fbf1fda5ee644856078bb82b7e21aa4f7c1306c7243cd922dc0",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 5.803,
-      "grams": 225.586,
+      "hours": 5.854,
+      "grams": 225.583,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -94,12 +94,12 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "a5b3c7fcc3a008a9e981d737eeff570b424acf699ffb5957493c387e9c82dcf3",
+      "source_sha256": "d7049becfcbfcf50c285f60b9159d9c60a24c5d801a273e489e144bc6ad050d2",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.914,
-      "grams": 60.862,
+      "hours": 2.252,
+      "grams": 46.299,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -202,7 +202,7 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "67f6d270d0323cafd79b3b8c5486ffde8433429fb64c7d4cd155f8305b336307",
+      "source_sha256": "60ebd96f41e358507bead88fa7aafb3fb53815941168a4b60c7ba4123c67c2f0",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -229,7 +229,7 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "b13d644abc80fc40e14b636df845f5f683be473d3b85599335b2c9ffae51a48e",
+      "source_sha256": "ebff9ab4145d11efdbb5a7e7549dd8ebdcf7a5e30fa629a37b1f809e16da4e0f",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -277,8 +277,8 @@
     }
   ],
   "total_parts": 11,
-  "total_grams_individual_plates": 491.5,
-  "total_hours_individual_plates": 17.4,
+  "total_grams_individual_plates": 476.9,
+  "total_hours_individual_plates": 16.8,
   "production_gcode": false,
   "project_3mf": {
     "file": "stl/fumex_all_parts.3mf",
@@ -522,7 +522,7 @@
               304.0
             ]
           ],
-          "extrusion_segments": 1700,
+          "extrusion_segments": 1909,
           "features": [
             "Bottom surface",
             "Outer wall"
@@ -604,7 +604,7 @@
               297.0
             ]
           ],
-          "extrusion_segments": 8975,
+          "extrusion_segments": 9118,
           "features": [
             "Bottom surface",
             "Outer wall"
@@ -794,8 +794,8 @@
       "workflow": "Remove each finished print, brim, skirt and tower before starting the next virtual plate; retain the same plate orientation",
       "startup_policy": "Native startup/purge/wipe/calibration remains enabled and may revisit its fixed area; reported startup bounds are not part of the fresh-area guarantee"
     },
-    "total_hours_plates": 16.8,
-    "total_grams_plates": 493.3,
+    "total_hours_plates": 16.2,
+    "total_grams_plates": 478.7,
     "multicolour_parts": {
       "knob": [
         "pointer"
@@ -812,44 +812,13 @@
         "warnings": ""
       }
     },
-    "pause_slices": {
-      "Head": {
-        "plate": 1,
-        "pause_before_layer_mm": [
-          4.6
-        ],
-        "extra_clearance_mm": 30.0,
-        "clearance_moves": [
-          {
-            "layer_mm": 4.6,
-            "before_z_mm": 4.4,
-            "paused_z_mm": 34.4,
-            "restored_z_mm": 4.4
-          }
-        ]
-      },
-      "Cassette": {
-        "plate": 3,
-        "pause_before_layer_mm": [
-          4.6
-        ],
-        "extra_clearance_mm": 30.0,
-        "clearance_moves": [
-          {
-            "layer_mm": 4.6,
-            "before_z_mm": 4.4,
-            "paused_z_mm": 34.4,
-            "restored_z_mm": 4.4
-          }
-        ]
-      }
-    },
+    "pause_slices": {},
     "plate_slices": {
       "Head": {
         "plate": 1,
-        "hours": 5.8,
+        "hours": 5.85,
         "grams_by_filament": {
-          "1": 225.58
+          "2": 225.58
         },
         "warnings": "",
         "process_overrides": {
@@ -873,9 +842,9 @@
       },
       "Cassette": {
         "plate": 3,
-        "hours": 2.92,
+        "hours": 2.25,
         "grams_by_filament": {
-          "2": 60.86
+          "2": 46.3
         },
         "warnings": "",
         "process_overrides": {
@@ -926,7 +895,7 @@
       }
     },
     "own_infill_parts": 5,
-    "sha256": "82da767f3058ffaea93361e0659df253cb04f1275976a8bf71b9c7fce481613a"
+    "sha256": "24a0f6767fe6ae731bce631d65cc3b5bdd7d9f1d5767f68d2c0ab8e602934f0e"
   },
   "test_3mf": {
     "file": "stl/fumex_usb_fit.3mf",
@@ -983,7 +952,7 @@
       }
     },
     "own_infill_parts": 0,
-    "sha256": "2868c8f579b62999ef8502b19bf0cf4f18de036be29406c9cec644dc0e3ba1ea",
+    "sha256": "3b777860fb8b27f94f063abdd75ac0857d4c8a264bcd4670629a5444cde8dfc0",
     "process": {
       "wall_loops": 4,
       "top_shell_layers": 5,

@@ -3,6 +3,8 @@
 Stand: 26. September 2026  
 Modell-SHA256: `d2d21113b80c1214a133452ce8b9820178cb5de3a1354b2a165ddce98acb4137`
 
+> Historical report for the source revision above. The 2026-09-29 cassette screw conversion supersedes its magnet geometry, hardware and insertion-pause instructions. The linked production 3MF contains the current screw version; this report and its magnet-section image remain historical evidence.
+
 ## Ergebnis und benötigte Teile
 
 Die Lüfterkabeldurchführung ist vergrößert und nach hinten geöffnet. Alle acht Magnete werden jetzt während des Drucks eingelegt und vollständig eingeschlossen, mit **1,2 mm Kunststoff auf beiden axialen Seiten**. Neu zu drucken sind **Kopf, Kassette und Rückdeckel**. Die Base und das Filterkreuz können weiterverwendet werden.

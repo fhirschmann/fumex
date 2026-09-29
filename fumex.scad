@@ -18,16 +18,13 @@ eps = 0.01;
 tip = 0.2;           // thickness of hull tips: eps-thin tips leave degenerate triangles in Manifold exports
 
 /* [Housing] */
-body_w = 145;        // outer width (x); set by the magnet pockets in the corners of the intake face
+body_w = 145;        // outer width (x); retained housing footprint and four corner cassette fasteners
 body_d = 74;         // outer depth (y): base and head share one footprint, so the head closes the bay
 wall = 3;            // walls, at least seven 0.4 mm lines
 floor_t = 3.2;       // base floor
 corner_r = 6;
 top_corner_steps = 28; // angular subdivisions of the tangent corner blend
-plan_r = 3.5;        // the four vertical edges of the housing. The head has to carry the same radius as
-                     // the base or its corners stand proud of the base's, and it is the magnet pockets in
-                     // the intake face that cap it: at 6 they would fall outside the rounded corner, and
-                     // they cannot move further in without reaching the intake opening (user, 2026-09-23)
+plan_r = 3.5;        // shared vertical-edge radius; retains the existing base/head joint outline
 corner_rb = 0.5;       // at the joint: small enough that the base rim can follow it, see head_outline()
 neck_r = 1;        // the same arc mirrored into the base rim, half a millimetre wider - see joint_neck()
 edge_c = 1.2;        // 45 degree chamfer on the bed edges
@@ -40,7 +37,7 @@ base_joint_wall_extra = 0.15; // extra material inside the transition keeps norm
 
 /* [Head: fan and filter] */
 head_h = 145;        // head height (z) in the untilted frame
-front_t = 5.6;       // sealed magnets: 1.2 mm front skin, 3.2 mm cavity, 1.2 mm rear skin
+front_t = 5.6;       // solid intake face; retains the existing filter and fan positions
 open_sq = 117;       // square opening in the intake face; its lip holds the mat in the chamber
 open_r = 3;
 mat_stop_rise = 1.5;  // flank of the rear lip: 1.5 mm of depth per mm inwards, so it is not an overhang
@@ -84,15 +81,14 @@ fan_hole_d = 4.5;
 fan_blade_d = 113;
 fan_cl = 0.4;        // clearance per side in the corner guides
 
-/* [Filter cassette: grid panel held by four magnet pairs] */
-cass_t = 5.6;        // sealed magnets: 1.2 mm skins on both sides of the 3.2 mm cavity
-cass_c = 1.2;        // 45 degree bevel on the finished contour; 4.4 mm of the rim stays straight.
-                     // The narrowed side contour and the magnet pockets limit the bevel to 1.2 mm.
+/* [Filter cassette: four M3 screws into heat-set inserts] */
+cass_t = 4;          // no magnet cavities; the recessed M3 x 8 retains 2.1 mm bearing stock
+cass_recess = 1.9;   // the complete 1.65 mm button head sits 0.25 mm below the outer face
+cass_c = 1.2;        // 45 degree bevel on the finished contour; 2.8 mm of the rim stays straight
 cass_inset = 1;      // flange inside the head outline, leaves a ledge beside the finger scoops
-mag = [10.04, 3.2];  // user's proven Tinkercad fit for a 10 x 3 disc; insert during the print pause
-mag_skin = 1.2;     // six solid 0.2 mm layers on each axial side; no glue-in opening
-mag_off = 62.5;      // magnet axes from the head centre, on both diagonals. 10 mm inset: 1.3 mm of material
-                     // to the rounded plan corner and 1.8 mm to the intake opening
+cass_screw_off = 62.5; // axes from the head centre; the four retained 10-mm-inset corner positions
+cass_boss_d = 8.4;   // 2.2 mm radial stock around the 4 mm Ruthex bore, clear of the rounded mat
+cass_boss_len = 9;   // 7 mm front-open pocket plus 2 mm blind end
 
 /* [Battery, 3.2 V 6000 mAh LiFePO4 pack, lying across the bay] */
 bat_d = 32.5;        // measured cell body without the protection board (LEO-AC1, 2026-09-15)
@@ -303,6 +299,7 @@ rim_fit_gap = 0.25;         // side clearance, never between the clamping faces
 len_lid = 8;         // 1.8 mm lid bearing plus 6.2 mm into the 7 mm insert pocket
 len_fan = 30;        // M3 x 30, bought: through the 25 mm frame, 5 mm of thread in the insert
 len_back = 8;
+len_cassette = 8;   // 2.1 mm cassette bearing plus 5.9 mm penetration into the head
 len_head = 8;
 len_head_front = 8;
 len_foot = 8;
@@ -335,7 +332,8 @@ chg_sink_cx = chg_x0 + chg_pcb[0] - chg_sink_end + chg_sink[0] / 2;   // heatsin
 
 function base_top(y) = base_h + (y - joint_y) * tan(tilt);
 function fan_holes() = [for (sx = [-1, 1], sz = [-1, 1]) [body_w / 2 + sx * fan_pitch / 2, head_cz + sz * fan_pitch / 2]];
-function mag_xz() = [for (sx = [-1, 1], sz = [-1, 1]) [body_w / 2 + sx * mag_off, head_cz + sz * mag_off]];
+function cassette_holes() = [for (sx = [-1, 1], sz = [-1, 1])
+    [body_w / 2 + sx * cass_screw_off, head_cz + sz * cass_screw_off]];
 // four screws are enough for the back cover (user, 2026-09-22)
 function head_bosses() = [for (sx = [-1, 1], z = [base_h + boss_bottom, base_h + head_h - boss_inset])
                           [body_w / 2 + sx * (body_w / 2 - boss_inset), z]];
@@ -390,11 +388,15 @@ assert(max(chg_z0 + chg_pcb[1], chg_sink_z + chg_sink[1]) + 5 < base_top(chg_y0 
 assert(vent_xz[1] > ball[3] + ball_lid_t, "Back wall slots would let the ballast out");
 assert(usbc_side_cl > 0 && usbc_entry[0] < usbc_guide_lead && usbc_wall - usbc_entry[1] >= 1.6,
        "USB lead-in must finish before the PCB and retain solid guide walls");
-assert(mag_skin >= 1.2 && cass_t >= mag[1] + 2 * mag_skin - eps,
-       "Cassette needs closed skins on both sides of the magnets");
-assert(front_t >= mag[1] + 2 * mag_skin - eps,
-       "Head needs closed skins on both sides of the magnets");
-assert(plan_r + cass_c < body_w / 2 - mag_off - mag[0] / 2, "Cassette bevel cuts into the magnet pockets");
+assert(cass_boss_d / 2 >= insert_hole_d / 2 + insert_w_min,
+       "Cassette insert bosses have insufficient radial wall");
+assert(cass_boss_len - insert_depth >= 2, "Cassette insert pockets need 2 mm blind ends");
+assert(cass_t - cass_recess >= 2, "Cassette screw seats need at least 2 mm bearing stock");
+assert(len_cassette - (cass_t - cass_recess) >= insert_len &&
+       len_cassette - (cass_t - cass_recess) <= insert_depth - 0.5,
+       "Cassette screws need full insert engagement and pocket-floor clearance");
+assert(plan_r + cass_c + 1.2 < body_w / 2 - cass_screw_off - screw_head_d / 2,
+       "Cassette bevel leaves too little stock beside the screw heads");
 assert(len_fan - fan_t >= 5, "Fan screws reach less than 5 mm into the insert");
 assert(len_lid - (ball_lid_t - lid_pocket) < insert_depth, "Ballast lid screws reach the pocket floor");
 assert(len_lid - (ball_lid_t - lid_pocket) >= insert_len, "Ballast lid screws miss full insert engagement");
@@ -637,6 +639,7 @@ module head_body() difference() {
             head_centre_sq(chamber_sq, open_r);
         }
         mat_stop();
+        for (p = cassette_holes()) cyl_y(p, 0, cass_boss_len, cass_boss_d / 2);
         for (p = head_bosses()) cyl_y(p, head_y[2], head_y[4], boss_d / 2);
         fan_guides();
         rim_head_seats();
@@ -647,7 +650,7 @@ module head_body() difference() {
     }
     filter_support_pockets();
     for (p = head_bosses()) cyl_y(p, head_y[4] - insert_depth, head_y[4] + eps, insert_hole_d / 2);
-    for (p = mag_xz()) cyl_y(p, mag_skin, mag_skin + mag[1], mag[0] / 2);
+    for (p = cassette_holes()) cyl_y(p, -eps, insert_depth, insert_hole_d / 2);
     for (sx = [-1, 1]) cyl_y([body_w / 2 + sx * body_w / 2, head_cz], -eps, scoop[1],
                              scoop[0] / 2 + eps, scoop[0] / 2 - scoop[1]);   // finger scoops at the side edges
     rim_head_windows();
@@ -875,8 +878,10 @@ module cass_face(inset = 0) offset(delta = -inset) intersection() {
 module cassette_raw() difference() {
     profile_sweep_y(cassette_profile_points(), -cass_t, 0, front_c = cass_c);
     translate([body_w / 2, 0, head_cz]) along_y(-cass_t - 1, 1) grid_2d(open_sq);
-    for (p = mag_xz()) cyl_y(p, -cass_t + mag_skin, -mag_skin, mag[0] / 2);
-
+    for (p = cassette_holes()) {
+        cyl_y(p, -cass_t - eps, eps, screw_clear_d / 2);
+        cyl_y(p, -cass_t - eps, -cass_t + cass_recess, head_pocket[0] / 2);
+    }
 }
 module cassette() head_at() cassette_raw();
 module cassette_print_pose() translate([0, base_h + head_h, cass_t]) rotate([90, 0, 0]) children();   // grid face on the bed
@@ -1319,11 +1324,6 @@ module fan_visual() head_at() translate([body_w / 2, head_y[2], head_cz]) rotate
 }
 // the hand-cut mat, its corners pressed into the chamber fillets
 module filter_env() head_at() translate([body_w / 2, 0, head_cz]) along_y(front_t, front_t + 17) rrect([120, 120], open_r);
-module magnets_env() for (p = mag_xz()) head_at() {
-    // Each disc rests on the bed-facing cavity floor, leaving 0.2 mm above it.
-    cyl_y(p, mag_skin, mag_skin + 3, 5);
-    cyl_y(p, -cass_t + mag_skin, -cass_t + mag_skin + 3, 5);
-}
 module battery_env() {
     translate([bat_x0, bat_cy, bat_cz]) rotate([0, 90, 0]) cylinder(d = bat_d, h = bat_l);
     translate([bat_x0, bat_cy - bat_bms[0] / 2, bat_cz + bat_d / 4]) cube([bat_l, bat_bms[0], bat_d / 4 + bat_bms[1]]);
@@ -1393,6 +1393,8 @@ module screw(len, socket = false) difference() {
 // bench, before it goes into the head
 module screws_fan(socket = false) head_at() for (p = fan_holes()) translate([p[0], head_y[2], p[1]]) axis_orient([0, 1, 0]) screw(len_fan, socket);
 module screws_back(socket = false) head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) axis_orient([0, -1, 0]) screw(len_back, socket);
+module screws_cassette(socket = false) head_at() for (p = cassette_holes())
+    translate([p[0], -cass_t + cass_recess, p[1]]) axis_orient([0, 1, 0]) screw(len_cassette, socket);
 module screws_head(socket = false) head_at() for (p = rim_bosses())
     rim_at(p, -rim_bearing(p)) screw(rim_length(p), socket);
 module screws_lid(socket = false) for (q = ball_posts())
@@ -1439,6 +1441,8 @@ module front_ratchet_at(p, swing = 0) let (
 ]) front_ratchet_local(swing);
 module drivers_fan()  head_at() for (p = fan_holes())   translate([p[0], head_y[2], p[1]]) axis_orient([0, 1, 0]) driver_at();
 module drivers_back() head_at() for (p = head_bosses()) translate([p[0], body_d - head_pocket[1], p[1]]) axis_orient([0, -1, 0]) driver_at();
+module drivers_cassette() head_at() for (p = cassette_holes())
+    translate([p[0], -cass_t + cass_recess, p[1]]) axis_orient([0, 1, 0]) driver_at();
 module drivers_head() head_at() for (p = rim_bosses())
     if (rim_dir(p) > 0) front_ratchet_at(p);
     else rim_at(p, -rim_bearing(p)) driver_at();
@@ -1457,9 +1461,12 @@ module drivers_pwm() for (p = pwm_holes())
 // ---------- assembly ----------
 module assembly(explode = 0) {
     color("#2b2d30") base();
-    color("#2b2d30") head_at() translate([0, 0, explode * 1.4]) head_raw();
+    color("#8c9196") head_at() translate([0, 0, explode * 1.4]) head_raw();
     color("#8c9196") head_at() translate([0, explode * 2.4, explode * 1.4]) head_back_raw();
     color("#8c9196") head_at() translate([0, -explode * 1.6, explode * 1.4]) cassette_raw();
+    color("#c0c5ca") head_at() translate([0, -explode * 1.6, explode * 1.4])
+        for (p = cassette_holes()) translate([p[0], -cass_t + cass_recess, p[1]])
+            axis_orient([0, 1, 0]) screw(len_cassette, true);
     color("#8c9196") head_at() translate([0, explode * 0.5, explode * 1.4]) filter_support_raw();
     color("#5a5f66") translate([0, -explode * 0.8, explode * 1.4]) filter_env();
     translate([0, -explode * 0.6, 0]) knob_at() {
@@ -1477,7 +1484,9 @@ if      (part == "assembly") assembly();
 else if (part == "exploded") assembly(18);
 else if (part == "metrics") echo("PROJECT_METRICS", [
     ["cass_t", cass_t], ["cass_c", cass_c], ["cass_inset", cass_inset], ["cover_gap", cover_gap],
-    ["corner_r", corner_r], ["plan_r", plan_r], ["edge_c", edge_c], ["mag_off", mag_off],
+    ["corner_r", corner_r], ["plan_r", plan_r], ["edge_c", edge_c],
+    ["cassette_screw_off", cass_screw_off], ["cassette_axes", cassette_holes()],
+    ["cassette_mount", [cass_boss_d, cass_boss_len, screw_clear_d, len_cassette, cass_recess]],
     ["wall", wall], ["tilt", tilt], ["body", [body_w, body_d]], ["head_h", head_h],
     ["fan_insert_front", lug_d - insert_depth], ["fan_thread", len_fan - fan_t],
     ["head_thread", min([for (p = rim_bosses()) rim_length(p) - rim_bearing(p)])],
@@ -1490,7 +1499,7 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["mat_clip", mat_clip],
     ["fan_cable_slot", fan_cable_slot],
     ["charge_vent", [chg_vent_y, chg_vent[3]]],
-    ["magnet_pocket", mag], ["magnet_skin", mag_skin], ["front_t", front_t],
+    ["front_t", front_t],
     ["pot_mount_t", pot_mount_t], ["front_rim_z", base_top(0)],
     ["pwm_front", [pot_x, pot_z, pot_shoulder_y, pwm_install_lift]], ["pwm_pcb", pwm_pcb], ["pwm_origin", [pwm_x[0], pwm_y0, pwm_z0]],
     ["pwm_holes", pwm_holes()], ["pwm_hole_d", pwm_hole_d], ["pwm_boss_d", pwm_boss_d],

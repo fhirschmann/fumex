@@ -1,5 +1,5 @@
 {
-  "source_sha256": "7f72614137f5de59d5c862275ab7e72ba9a5a2b3b75d14c428e4877bb0866d31",
+  "source_sha256": "97a7b945c5bd19014dd3c990a333d07f953c85834c60fa1913c5289233602f46",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -40,10 +40,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "0088ea0a20c28cdb91ba64c7d549a38cf8f0659f6f208a959aa4c5486232b0e9",
+      "sha256": "7fce08d7e71e9a245dd15cea2558297a5854c2b790a360075158fa145d09ec6e",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "0088ea0a20c28cdb91ba64c7d549a38cf8f0659f6f208a959aa4c5486232b0e9"
+      "committed_sha256": "7fce08d7e71e9a245dd15cea2558297a5854c2b790a360075158fa145d09ec6e"
     },
     "head": {
       "size_mm": [
@@ -63,21 +63,21 @@
           70.0
         ]
       ],
-      "volume_mm3": 207462.4093,
-      "triangles": 9836,
+      "volume_mm3": 208644.4061,
+      "triangles": 9918,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
-      "boundary_shells": 5,
-      "cavity_shells": 4,
+      "boundary_shells": 1,
+      "cavity_shells": 0,
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
-      "sha256": "15b4422dc0087921c3783643f1de30e20f42ebb419f9779500be9ee262c67ea8",
+      "sha256": "aeeb026f4b8d8fbf1fda5ee644856078bb82b7e21aa4f7c1306c7243cd922dc0",
       "quantity": 1,
-      "material": "PETG-black",
-      "committed_sha256": "15b4422dc0087921c3783643f1de30e20f42ebb419f9779500be9ee262c67ea8"
+      "material": "PETG-grey",
+      "committed_sha256": "aeeb026f4b8d8fbf1fda5ee644856078bb82b7e21aa4f7c1306c7243cd922dc0"
     },
     "head_back": {
       "size_mm": [
@@ -117,7 +117,7 @@
       "size_mm": [
         138.0,
         143.0,
-        5.6
+        4.0
       ],
       "bounds_mm": [
         [
@@ -128,24 +128,24 @@
         [
           141.5,
           144.0,
-          5.6
+          4.0
         ]
       ],
-      "volume_mm3": 64513.9999,
-      "triangles": 9310,
+      "volume_mm3": 46370.9285,
+      "triangles": 9326,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
       "components": 1,
-      "boundary_shells": 5,
-      "cavity_shells": 4,
+      "boundary_shells": 1,
+      "cavity_shells": 0,
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
-      "sha256": "a5b3c7fcc3a008a9e981d737eeff570b424acf699ffb5957493c387e9c82dcf3",
+      "sha256": "d7049becfcbfcf50c285f60b9159d9c60a24c5d801a273e489e144bc6ad050d2",
       "quantity": 1,
       "material": "PETG-grey",
-      "committed_sha256": "a5b3c7fcc3a008a9e981d737eeff570b424acf699ffb5957493c387e9c82dcf3"
+      "committed_sha256": "d7049becfcbfcf50c285f60b9159d9c60a24c5d801a273e489e144bc6ad050d2"
     },
     "knob": {
       "size_mm": [
@@ -278,10 +278,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "67f6d270d0323cafd79b3b8c5486ffde8433429fb64c7d4cd155f8305b336307",
+      "sha256": "60ebd96f41e358507bead88fa7aafb3fb53815941168a4b60c7ba4123c67c2f0",
       "quantity": 1,
       "material": "PETG-grey",
-      "committed_sha256": "67f6d270d0323cafd79b3b8c5486ffde8433429fb64c7d4cd155f8305b336307"
+      "committed_sha256": "60ebd96f41e358507bead88fa7aafb3fb53815941168a4b60c7ba4123c67c2f0"
     },
     "usbc_fit_base": {
       "size_mm": [
@@ -312,10 +312,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "b13d644abc80fc40e14b636df845f5f683be473d3b85599335b2c9ffae51a48e",
+      "sha256": "ebff9ab4145d11efdbb5a7e7549dd8ebdcf7a5e30fa629a37b1f809e16da4e0f",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "b13d644abc80fc40e14b636df845f5f683be473d3b85599335b2c9ffae51a48e"
+      "committed_sha256": "ebff9ab4145d11efdbb5a7e7549dd8ebdcf7a5e30fa629a37b1f809e16da4e0f"
     },
     "usbc_fit_lid": {
       "size_mm": [
@@ -431,17 +431,42 @@
       }
     }
   },
-  "assembly_bodies": 34,
-  "assembly_pairs": 561,
+  "assembly_bodies": 35,
+  "assembly_pairs": 595,
   "metrics": {
-    "cass_t": 5.6,
+    "cass_t": 4,
     "cass_c": 1.2,
     "cass_inset": 1,
     "cover_gap": 0.3,
     "corner_r": 6,
     "plan_r": 3.5,
     "edge_c": 1.2,
-    "mag_off": 62.5,
+    "cassette_screw_off": 62.5,
+    "cassette_axes": [
+      [
+        10,
+        58
+      ],
+      [
+        10,
+        183
+      ],
+      [
+        135,
+        58
+      ],
+      [
+        135,
+        183
+      ]
+    ],
+    "cassette_mount": [
+      8.4,
+      9,
+      3.4,
+      8,
+      1.9
+    ],
     "wall": 3,
     "tilt": 15,
     "body": [
@@ -557,11 +582,6 @@
       56.7,
       10
     ],
-    "magnet_pocket": [
-      10.04,
-      3.2
-    ],
-    "magnet_skin": 1.2,
     "front_t": 5.6,
     "pot_mount_t": 1.8,
     "front_rim_z": 38.0859,
@@ -854,7 +874,7 @@
   },
   "intersections": [],
   "alignment": {
-    "features": 277,
+    "features": 297,
     "coaxial_pairs": {
       "ball_lid|ballast": 26,
       "ball_lid|base": 17,
@@ -878,7 +898,9 @@
       "base|screws_head": 6,
       "base|screws_lid": 4,
       "base|screws_pwm": 6,
-      "cassette|magnets": 4,
+      "cassette|driver_cassette": 8,
+      "cassette|head": 8,
+      "cassette|screws_cassette": 16,
       "driver_back|head_back": 8,
       "driver_feet|feet": 8,
       "driver_head|head": 14,
@@ -887,8 +909,8 @@
       "head_back|screws_back": 16,
       "head_back|screws_fan": 4,
       "head|head_back": 8,
-      "head|magnets": 4,
       "head|screws_back": 4,
+      "head|screws_cassette": 4,
       "head|screws_head": 16,
       "knob|pot": 6,
       "pwm_board|screws_pwm": 12
@@ -898,7 +920,7 @@
   },
   "contact_volumes_mm3": {
     "head@base": 39.4303,
-    "cassette@head": 287.51,
+    "cassette@head": 285.034,
     "fan@head": 33.4246,
     "fan@head_back": 7.5398,
     "feet@base": 54.8257,
@@ -908,6 +930,16 @@
     "usbc@base": 2.515
   },
   "stops": [
+    {
+      "name": "cassette_pull_off",
+      "first_contact_mm": 0.25,
+      "limit_mm": 0.25
+    },
+    {
+      "name": "cassette_sideways",
+      "first_contact_mm": 0.25,
+      "limit_mm": 0.5
+    },
     {
       "name": "fan_sideways",
       "first_contact_mm": 0.5,
@@ -991,6 +1023,13 @@
   ],
   "sampled_paths": [
     {
+      "name": "cassette_screws_out",
+      "length_mm": 30.0,
+      "collisions": 0,
+      "first_mm": null,
+      "max_volume_mm3": 0.0
+    },
+    {
       "name": "cassette_off",
       "length_mm": 30.0,
       "collisions": 0,
@@ -1055,6 +1094,50 @@
     }
   ],
   "insert_probes": [
+    {
+      "body": "head",
+      "at": [
+        10.0,
+        -1.33,
+        48.08
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "head",
+      "at": [
+        10.0,
+        -33.68,
+        168.82
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "head",
+      "at": [
+        135.0,
+        -1.33,
+        48.08
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
+    {
+      "body": "head",
+      "at": [
+        135.0,
+        -33.68,
+        168.82
+      ],
+      "empty_mm3": 0.0,
+      "ring_fill": 1.0,
+      "floor_fill": 1.0
+    },
     {
       "body": "head_back",
       "at": [
@@ -1257,11 +1340,11 @@
   "intake_lip_mm": 2.25,
   "mat_free_travel_mm": 1.62,
   "mat_squashed_percent": 0.08,
-  "mass_g": 1034.9,
+  "mass_g": 1005.6,
   "centre_of_mass_mm": [
-    67.4,
-    30.7,
-    70.0
+    67.3,
+    32.2,
+    68.9
   ],
   "foot_polygon_mm": [
     10.0,
@@ -1270,12 +1353,12 @@
     68.0
   ],
   "tip_margins_mm": {
-    "front": 27.7,
-    "back": 37.3,
-    "left": 57.4,
-    "right": 67.6
+    "front": 29.2,
+    "back": 35.8,
+    "left": 57.3,
+    "right": 67.7
   },
-  "tip_angle_deg": 20.4,
+  "tip_angle_deg": 21.7,
   "top_corner_normals": [
     {
       "part": "head",
@@ -1306,269 +1389,406 @@
       "over_limit_length_mm": 0.0
     }
   ],
-  "magnet_radial_skin": [
-    {
-      "axis_xz": [
-        10.0,
-        58.0
-      ],
-      "tested_radial_skin_mm": 1.21,
-      "missing_mm3": 0.0
-    },
-    {
-      "axis_xz": [
-        10.0,
-        183.0
-      ],
-      "tested_radial_skin_mm": 1.21,
-      "missing_mm3": 0.0
-    },
-    {
-      "axis_xz": [
-        135.0,
-        58.0
-      ],
-      "tested_radial_skin_mm": 1.21,
-      "missing_mm3": 0.0
-    },
-    {
-      "axis_xz": [
-        135.0,
-        183.0
-      ],
-      "tested_radial_skin_mm": 1.21,
-      "missing_mm3": 0.0
-    }
-  ],
-  "sealed_magnets": {
-    "cavities": [
-      {
-        "part": "head",
-        "axis_xz": [
-          10.0,
-          58.0
-        ],
-        "cavity_diameter_depth_mm": [
-          10.04,
-          3.2
-        ],
-        "measured_cavity_diameter_range_mm": [
-          10.02237,
-          10.04
-        ],
-        "measured_disc_diameter_range_mm": [
-          9.98244,
-          10.0
-        ],
-        "cavity_overlap_mm3": 0.0,
-        "axial_skin_missing_mm3": [
-          0.0,
-          0.0
-        ],
-        "minimum_measured_outer_skin_mm": 1.2,
-        "maximum_face_plane_error_mm": 0.0,
-        "magnet_volume_mm3": 235.0679
-      },
-      {
-        "part": "head",
-        "axis_xz": [
-          10.0,
-          183.0
-        ],
-        "cavity_diameter_depth_mm": [
-          10.04,
-          3.2
-        ],
-        "measured_cavity_diameter_range_mm": [
-          10.02237,
-          10.04
-        ],
-        "measured_disc_diameter_range_mm": [
-          9.98244,
-          10.0
-        ],
-        "cavity_overlap_mm3": 0.0,
-        "axial_skin_missing_mm3": [
-          0.0,
-          0.0
-        ],
-        "minimum_measured_outer_skin_mm": 1.2,
-        "maximum_face_plane_error_mm": 0.0,
-        "magnet_volume_mm3": 235.0679
-      },
-      {
-        "part": "head",
-        "axis_xz": [
-          135.0,
-          58.0
-        ],
-        "cavity_diameter_depth_mm": [
-          10.04,
-          3.2
-        ],
-        "measured_cavity_diameter_range_mm": [
-          10.02237,
-          10.04001
-        ],
-        "measured_disc_diameter_range_mm": [
-          9.98245,
-          10.0
-        ],
-        "cavity_overlap_mm3": 0.0,
-        "axial_skin_missing_mm3": [
-          0.0,
-          0.0
-        ],
-        "minimum_measured_outer_skin_mm": 1.2,
-        "maximum_face_plane_error_mm": 0.0,
-        "magnet_volume_mm3": 235.0679
-      },
-      {
-        "part": "head",
-        "axis_xz": [
-          135.0,
-          183.0
-        ],
-        "cavity_diameter_depth_mm": [
-          10.04,
-          3.2
-        ],
-        "measured_cavity_diameter_range_mm": [
-          10.02237,
-          10.04001
-        ],
-        "measured_disc_diameter_range_mm": [
-          9.98245,
-          10.0
-        ],
-        "cavity_overlap_mm3": 0.0,
-        "axial_skin_missing_mm3": [
-          0.0,
-          0.0
-        ],
-        "minimum_measured_outer_skin_mm": 1.2,
-        "maximum_face_plane_error_mm": 0.0,
-        "magnet_volume_mm3": 235.068
-      },
-      {
-        "part": "cassette",
-        "axis_xz": [
-          10.0,
-          58.0
-        ],
-        "cavity_diameter_depth_mm": [
-          10.04,
-          3.2
-        ],
-        "measured_cavity_diameter_range_mm": [
-          10.02237,
-          10.04
-        ],
-        "measured_disc_diameter_range_mm": [
-          9.98244,
-          10.0
-        ],
-        "cavity_overlap_mm3": 0.0,
-        "axial_skin_missing_mm3": [
-          0.0,
-          0.0
-        ],
-        "minimum_measured_outer_skin_mm": 1.2,
-        "maximum_face_plane_error_mm": 0.0,
-        "magnet_volume_mm3": 235.0679
-      },
-      {
-        "part": "cassette",
-        "axis_xz": [
-          10.0,
-          183.0
-        ],
-        "cavity_diameter_depth_mm": [
-          10.04,
-          3.2
-        ],
-        "measured_cavity_diameter_range_mm": [
-          10.02237,
-          10.04
-        ],
-        "measured_disc_diameter_range_mm": [
-          9.98244,
-          10.0
-        ],
-        "cavity_overlap_mm3": 0.0,
-        "axial_skin_missing_mm3": [
-          0.0,
-          0.0
-        ],
-        "minimum_measured_outer_skin_mm": 1.2,
-        "maximum_face_plane_error_mm": 0.0,
-        "magnet_volume_mm3": 235.068
-      },
-      {
-        "part": "cassette",
-        "axis_xz": [
-          135.0,
-          58.0
-        ],
-        "cavity_diameter_depth_mm": [
-          10.04,
-          3.2
-        ],
-        "measured_cavity_diameter_range_mm": [
-          10.02237,
-          10.04001
-        ],
-        "measured_disc_diameter_range_mm": [
-          9.98245,
-          10.0
-        ],
-        "cavity_overlap_mm3": 0.0,
-        "axial_skin_missing_mm3": [
-          0.0,
-          0.0
-        ],
-        "minimum_measured_outer_skin_mm": 1.2,
-        "maximum_face_plane_error_mm": 0.0,
-        "magnet_volume_mm3": 235.0679
-      },
-      {
-        "part": "cassette",
-        "axis_xz": [
-          135.0,
-          183.0
-        ],
-        "cavity_diameter_depth_mm": [
-          10.04,
-          3.2
-        ],
-        "measured_cavity_diameter_range_mm": [
-          10.02237,
-          10.04001
-        ],
-        "measured_disc_diameter_range_mm": [
-          9.98245,
-          10.0
-        ],
-        "cavity_overlap_mm3": 0.0,
-        "axial_skin_missing_mm3": [
-          0.0,
-          0.0
-        ],
-        "minimum_measured_outer_skin_mm": 1.2,
-        "maximum_face_plane_error_mm": 0.0,
-        "magnet_volume_mm3": 235.068
-      }
+  "cassette_fasteners": {
+    "screw_count": 4,
+    "screw_length_mm": 8.0,
+    "insert_engagement_mm": 5.7,
+    "screw_penetration_mm": 5.9,
+    "pocket_reserve_mm": 1.1,
+    "blind_floor_mm": 2,
+    "screw_head_diameter_height_mm": [
+      5.7,
+      1.65
     ],
-    "magnet_outside_cavities_mm3": 0.0,
-    "pause_before_layer_mm": {
-      "head": [
-        4.6
-      ],
-      "cassette": [
-        4.6
-      ]
-    },
-    "print_layer_height_mm": 0.2
+    "recess_diameter_depth_mm": [
+      6.4,
+      1.9
+    ],
+    "bearing_thickness_mm": 2.1,
+    "head_below_front_mm": 0.25,
+    "pause_parts": [],
+    "fasteners": [
+      {
+        "axis_xz_mm": [
+          10.0,
+          58.0
+        ],
+        "material_fill": {
+          "insert_wall": 1.0,
+          "blind_floor": 1.0,
+          "cassette_head_bearing": 1.0,
+          "cassette_recess_rim": 1.0,
+          "cassette_clamping_stack": 1.0,
+          "head_interface": 1.0
+        },
+        "blocked_bore_mm3": {
+          "insert": 0.0,
+          "clearance": 0.0,
+          "head_recess": 0.0
+        },
+        "measured_bore_diameters_mm": {
+          "head": [
+            3.95532,
+            4.0
+          ],
+          "cassette": [
+            3.34834,
+            3.4
+          ]
+        },
+        "screw_bearing_contact_mm3": 0.821773,
+        "outward_capture_mm3": 0.821773,
+        "interface_contact_mm3": 1.110627,
+        "press_access_overlap_mm3": 0.0,
+        "maximum_recess_plane_error_mm": 0.0,
+        "exported_driver_fill": 1.0,
+        "driver_overlap_mm3": {
+          "base": 0.0,
+          "head": 0.0,
+          "head_back": 0.0,
+          "cassette": 0.0,
+          "knob": 0.0,
+          "feet": 0.0,
+          "ball_lid": 0.0,
+          "fan": 0.0,
+          "filter": 0.0,
+          "filter_support": 0.0,
+          "battery": 0.0,
+          "battery_ties": 0.0,
+          "pwm_board": 0.0,
+          "pot": 0.0,
+          "chg_module": 0.0,
+          "chg_sink": 0.0,
+          "chg_tie": 0.0,
+          "usbc": 0.0,
+          "switch": 0.0,
+          "led": 0.0,
+          "ballast": 0.0,
+          "screws_cassette": 2.8e-07,
+          "screws_fan": 0.0,
+          "screws_back": 0.0,
+          "screws_head": 0.0,
+          "screws_lid": 0.0,
+          "screws_feet": 0.0,
+          "screws_pwm": 0.0
+        },
+        "exact_driver_approach_overlap_mm3": {
+          "base": 0.0,
+          "head": 0.0,
+          "head_back": 0.0,
+          "cassette": 0.0,
+          "knob": 0.0,
+          "feet": 0.0,
+          "ball_lid": 0.0,
+          "fan": 0.0,
+          "filter": 0.0,
+          "filter_support": 0.0,
+          "battery": 0.0,
+          "battery_ties": 0.0,
+          "pwm_board": 0.0,
+          "pot": 0.0,
+          "chg_module": 0.0,
+          "chg_sink": 0.0,
+          "chg_tie": 0.0,
+          "usbc": 0.0,
+          "switch": 0.0,
+          "led": 0.0,
+          "ballast": 0.0,
+          "screws_cassette": 2.8e-07,
+          "screws_fan": 0.0,
+          "screws_back": 0.0,
+          "screws_head": 0.0,
+          "screws_lid": 0.0,
+          "screws_feet": 0.0,
+          "screws_pwm": 0.0
+        }
+      },
+      {
+        "axis_xz_mm": [
+          10.0,
+          183.0
+        ],
+        "material_fill": {
+          "insert_wall": 1.0,
+          "blind_floor": 1.0,
+          "cassette_head_bearing": 1.0,
+          "cassette_recess_rim": 1.0,
+          "cassette_clamping_stack": 1.0,
+          "head_interface": 1.0
+        },
+        "blocked_bore_mm3": {
+          "insert": 0.0,
+          "clearance": 0.0,
+          "head_recess": 0.0
+        },
+        "measured_bore_diameters_mm": {
+          "head": [
+            3.95532,
+            4.0
+          ],
+          "cassette": [
+            3.34834,
+            3.4
+          ]
+        },
+        "screw_bearing_contact_mm3": 0.821762,
+        "outward_capture_mm3": 0.821762,
+        "interface_contact_mm3": 1.110627,
+        "press_access_overlap_mm3": 0.0,
+        "maximum_recess_plane_error_mm": 0.0,
+        "exported_driver_fill": 1.0,
+        "driver_overlap_mm3": {
+          "base": 0.0,
+          "head": 0.0,
+          "head_back": 0.0,
+          "cassette": 0.0,
+          "knob": 0.0,
+          "feet": 0.0,
+          "ball_lid": 0.0,
+          "fan": 0.0,
+          "filter": 0.0,
+          "filter_support": 0.0,
+          "battery": 0.0,
+          "battery_ties": 0.0,
+          "pwm_board": 0.0,
+          "pot": 0.0,
+          "chg_module": 0.0,
+          "chg_sink": 0.0,
+          "chg_tie": 0.0,
+          "usbc": 0.0,
+          "switch": 0.0,
+          "led": 0.0,
+          "ballast": 0.0,
+          "screws_cassette": 2.5e-06,
+          "screws_fan": 0.0,
+          "screws_back": 0.0,
+          "screws_head": 0.0,
+          "screws_lid": 0.0,
+          "screws_feet": 0.0,
+          "screws_pwm": 0.0
+        },
+        "exact_driver_approach_overlap_mm3": {
+          "base": 0.0,
+          "head": 0.0,
+          "head_back": 0.0,
+          "cassette": 0.0,
+          "knob": 0.0,
+          "feet": 0.0,
+          "ball_lid": 0.0,
+          "fan": 0.0,
+          "filter": 0.0,
+          "filter_support": 0.0,
+          "battery": 0.0,
+          "battery_ties": 0.0,
+          "pwm_board": 0.0,
+          "pot": 0.0,
+          "chg_module": 0.0,
+          "chg_sink": 0.0,
+          "chg_tie": 0.0,
+          "usbc": 0.0,
+          "switch": 0.0,
+          "led": 0.0,
+          "ballast": 0.0,
+          "screws_cassette": 2.16e-06,
+          "screws_fan": 0.0,
+          "screws_back": 0.0,
+          "screws_head": 0.0,
+          "screws_lid": 0.0,
+          "screws_feet": 0.0,
+          "screws_pwm": 0.0
+        }
+      },
+      {
+        "axis_xz_mm": [
+          135.0,
+          58.0
+        ],
+        "material_fill": {
+          "insert_wall": 1.0,
+          "blind_floor": 1.0,
+          "cassette_head_bearing": 1.0,
+          "cassette_recess_rim": 1.0,
+          "cassette_clamping_stack": 1.0,
+          "head_interface": 1.0
+        },
+        "blocked_bore_mm3": {
+          "insert": 0.0,
+          "clearance": 0.0,
+          "head_recess": 0.0
+        },
+        "measured_bore_diameters_mm": {
+          "head": [
+            3.95532,
+            4.0
+          ],
+          "cassette": [
+            3.34834,
+            3.39999
+          ]
+        },
+        "screw_bearing_contact_mm3": 0.821774,
+        "outward_capture_mm3": 0.821774,
+        "interface_contact_mm3": 1.110627,
+        "press_access_overlap_mm3": 0.0,
+        "maximum_recess_plane_error_mm": 0.0,
+        "exported_driver_fill": 1.0,
+        "driver_overlap_mm3": {
+          "base": 0.0,
+          "head": 0.0,
+          "head_back": 0.0,
+          "cassette": 0.0,
+          "knob": 0.0,
+          "feet": 0.0,
+          "ball_lid": 0.0,
+          "fan": 0.0,
+          "filter": 0.0,
+          "filter_support": 0.0,
+          "battery": 0.0,
+          "battery_ties": 0.0,
+          "pwm_board": 0.0,
+          "pot": 0.0,
+          "chg_module": 0.0,
+          "chg_sink": 0.0,
+          "chg_tie": 0.0,
+          "usbc": 0.0,
+          "switch": 0.0,
+          "led": 0.0,
+          "ballast": 0.0,
+          "screws_cassette": 2.8e-07,
+          "screws_fan": 0.0,
+          "screws_back": 0.0,
+          "screws_head": 0.0,
+          "screws_lid": 0.0,
+          "screws_feet": 0.0,
+          "screws_pwm": 0.0
+        },
+        "exact_driver_approach_overlap_mm3": {
+          "base": 0.0,
+          "head": 0.0,
+          "head_back": 0.0,
+          "cassette": 0.0,
+          "knob": 0.0,
+          "feet": 0.0,
+          "ball_lid": 0.0,
+          "fan": 0.0,
+          "filter": 0.0,
+          "filter_support": 0.0,
+          "battery": 0.0,
+          "battery_ties": 0.0,
+          "pwm_board": 0.0,
+          "pot": 0.0,
+          "chg_module": 0.0,
+          "chg_sink": 0.0,
+          "chg_tie": 0.0,
+          "usbc": 0.0,
+          "switch": 0.0,
+          "led": 0.0,
+          "ballast": 0.0,
+          "screws_cassette": 2.8e-07,
+          "screws_fan": 0.0,
+          "screws_back": 0.0,
+          "screws_head": 0.0,
+          "screws_lid": 0.0,
+          "screws_feet": 0.0,
+          "screws_pwm": 0.0
+        }
+      },
+      {
+        "axis_xz_mm": [
+          135.0,
+          183.0
+        ],
+        "material_fill": {
+          "insert_wall": 1.0,
+          "blind_floor": 1.0,
+          "cassette_head_bearing": 1.0,
+          "cassette_recess_rim": 1.0,
+          "cassette_clamping_stack": 1.0,
+          "head_interface": 1.0
+        },
+        "blocked_bore_mm3": {
+          "insert": 0.0,
+          "clearance": 0.0,
+          "head_recess": 0.0
+        },
+        "measured_bore_diameters_mm": {
+          "head": [
+            3.95532,
+            4.0
+          ],
+          "cassette": [
+            3.34834,
+            3.39999
+          ]
+        },
+        "screw_bearing_contact_mm3": 0.821763,
+        "outward_capture_mm3": 0.821763,
+        "interface_contact_mm3": 1.110627,
+        "press_access_overlap_mm3": 0.0,
+        "maximum_recess_plane_error_mm": 0.0,
+        "exported_driver_fill": 1.0,
+        "driver_overlap_mm3": {
+          "base": 0.0,
+          "head": 0.0,
+          "head_back": 0.0,
+          "cassette": 0.0,
+          "knob": 0.0,
+          "feet": 0.0,
+          "ball_lid": 0.0,
+          "fan": 0.0,
+          "filter": 0.0,
+          "filter_support": 0.0,
+          "battery": 0.0,
+          "battery_ties": 0.0,
+          "pwm_board": 0.0,
+          "pot": 0.0,
+          "chg_module": 0.0,
+          "chg_sink": 0.0,
+          "chg_tie": 0.0,
+          "usbc": 0.0,
+          "switch": 0.0,
+          "led": 0.0,
+          "ballast": 0.0,
+          "screws_cassette": 2.5e-06,
+          "screws_fan": 0.0,
+          "screws_back": 0.0,
+          "screws_head": 0.0,
+          "screws_lid": 0.0,
+          "screws_feet": 0.0,
+          "screws_pwm": 0.0
+        },
+        "exact_driver_approach_overlap_mm3": {
+          "base": 0.0,
+          "head": 0.0,
+          "head_back": 0.0,
+          "cassette": 0.0,
+          "knob": 0.0,
+          "feet": 0.0,
+          "ball_lid": 0.0,
+          "fan": 0.0,
+          "filter": 0.0,
+          "filter_support": 0.0,
+          "battery": 0.0,
+          "battery_ties": 0.0,
+          "pwm_board": 0.0,
+          "pot": 0.0,
+          "chg_module": 0.0,
+          "chg_sink": 0.0,
+          "chg_tie": 0.0,
+          "usbc": 0.0,
+          "switch": 0.0,
+          "led": 0.0,
+          "ballast": 0.0,
+          "screws_cassette": 2.58e-06,
+          "screws_fan": 0.0,
+          "screws_back": 0.0,
+          "screws_head": 0.0,
+          "screws_lid": 0.0,
+          "screws_feet": 0.0,
+          "screws_pwm": 0.0
+        }
+      }
+    ]
   },
   "fan_cable_opening": {
     "nominal_width_mm": 16,
@@ -1636,7 +1856,7 @@
         73.66804399902668
       ],
       "head_front_back_mm": [
-        3.2344856748522943e-07,
+        3.814150719705367e-07,
         73.99999887327354
       ],
       "base_excess_span_mm": 0.40789
@@ -1660,7 +1880,7 @@
         73.66804399902668
       ],
       "head_front_back_mm": [
-        3.2344856748522943e-07,
+        3.230512906071681e-07,
         73.99999888526204
       ],
       "base_excess_span_mm": 0.40788
@@ -1672,7 +1892,7 @@
         73.18866583385608
       ],
       "head_front_back_mm": [
-        0.4735549000085797,
+        0.47355490000858147,
         73.52324728305433
       ],
       "base_excess_span_mm": 0.40265
@@ -2295,9 +2515,9 @@
   "front_mat_contact": {
     "contacts": {
       "head": {
-        "volume_mm3": 201.140253,
+        "volume_mm3": 201.140254,
         "maximum_local_deflection_mm": 1.800003,
-        "outside_allowed_zones_mm3": 8.573e-05
+        "outside_allowed_zones_mm3": 8.691e-05
       },
       "screws_head": {
         "volume_mm3": 71.42933,
@@ -2305,7 +2525,7 @@
         "outside_allowed_zones_mm3": 0.0
       }
     },
-    "total_nominal_displacement_mm3": 272.569583,
+    "total_nominal_displacement_mm3": 272.569584,
     "allowed_zones_mm": [
       [
         [
@@ -2369,7 +2589,6 @@
           "ball_lid": 0.0,
           "fan": 0.0,
           "filter_support": 0.0,
-          "magnets": 0.0,
           "battery": 0.0,
           "battery_ties": 0.0,
           "pwm_board": 0.0,
@@ -2397,7 +2616,6 @@
           "ball_lid": 0.0,
           "fan": 0.0,
           "filter_support": 0.0,
-          "magnets": 0.0,
           "battery": 0.0,
           "battery_ties": 0.0,
           "pwm_board": 0.0,
@@ -2425,7 +2643,6 @@
           "ball_lid": 0.0,
           "fan": 0.0,
           "filter_support": 0.0,
-          "magnets": 0.0,
           "battery": 0.0,
           "battery_ties": 0.0,
           "pwm_board": 0.0,
@@ -2475,7 +2692,6 @@
           "ball_lid": 0.0,
           "fan": 0.0,
           "filter_support": 0.0,
-          "magnets": 0.0,
           "battery": 0.0,
           "battery_ties": 0.0,
           "pwm_board": 0.0,
@@ -2503,7 +2719,6 @@
           "ball_lid": 0.0,
           "fan": 0.0,
           "filter_support": 0.0,
-          "magnets": 0.0,
           "battery": 0.0,
           "battery_ties": 0.0,
           "pwm_board": 0.0,
@@ -2531,7 +2746,6 @@
           "ball_lid": 0.0,
           "fan": 0.0,
           "filter_support": 0.0,
-          "magnets": 0.0,
           "battery": 0.0,
           "battery_ties": 0.0,
           "pwm_board": 0.0,
@@ -3263,7 +3477,6 @@
       "fan",
       "filter",
       "filter_support",
-      "magnets",
       "battery",
       "battery_ties",
       "pwm_board",
@@ -3274,6 +3487,7 @@
       "usbc",
       "switch",
       "ballast",
+      "screws_cassette",
       "screws_fan",
       "screws_back",
       "screws_head",
@@ -3963,7 +4177,7 @@
   },
   "open_measurements": [
     "Masses of the bought parts are data-sheet or estimated values, not weighed",
-    "Embedded magnets: check actual disc size and polarity before closing the 4.6 mm layer; retention across the two 1.2 mm face skins is not a pull-force test. STL files contain no pause.",
+    "Cassette inserts: heat-set four Ruthex RX-M3x5.7 flush from the front of the bare head; fit and torque remain physical checks. Remove all four cassette screws before filter service.",
     "Fan cable: the rear-open slot has 16 mm nominal width; verify the actual plug, wire bend and edge protection. The 14 x 8 x 16 mm plug and 8 x 4 mm cable route are assumed envelopes; the actual fan outlet and flexible lead are unmeasured.",
     "Front boss connections are checked geometrically; printed fracture force, layer adhesion and damage from heat-set insertion still require a physical test.",
     "The soft filter mat bends locally by up to 2.75 mm over the two front screw heads and their shallow recessed seats; only the two measured contact zones are allowed. No compression force or flexible deformation is simulated.",
