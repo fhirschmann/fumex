@@ -97,7 +97,7 @@ COLOR_PARTS = {"knob": ("pointer",)}
 STL_DIR, COLOR_DIR, ASM_DIR, REPORT = "stl", "stl/multicolour", "asm", "docs/verification.json"
 
 PRINTER = dict(machine="Bambu Lab H2S 0.4 nozzle", process="0.20mm Standard @BBL H2S",
-               bed="Textured PEI Plate", envelope_mm=(340, 320, 340))
+               bed="Engineering Plate", envelope_mm=(340, 320, 340))
 PROCESS = dict(wall_loops=4, top_shell_layers=5, bottom_shell_layers=5, infill=20, pattern="gyroid",
                settings={"only_one_wall_first_layer": "1"})
 FILAMENTS = [dict(material="PETG-black", profile="Generic PETG @BBL H2S", colour="#1A1B1D"),
@@ -111,6 +111,18 @@ PLATES = [("Head", ["head"]),
           ("Grey covers and support", ["head_back", "ball_lid", "filter_support"]),
           ("Knob", ["knob"]),
           ("TPU feet", ["foot"])]
+# Use fresh areas of a fully 3DLAC-coated bed across successive jobs. Remove
+# finished parts and purge debris between jobs; keep the saved XY positions.
+BED_REUSE = dict(
+    batches=[["Head", "Base", "Cassette"],
+             ["Grey covers and support", "Knob", "TPU feet"]],
+    placements={"Head": dict(min_xy=[15, 160]),
+                "Base": dict(min_xy=[15, 45]),
+                "Cassette": dict(min_xy=[180, 160]),
+                "Grey covers and support": dict(min_xy=[15, 35]),
+                "Knob": dict(min_xy=[265, 35], prime_tower_xy=[245, 90]),
+                "TPU feet": dict(min_xy=[255, 220])},
+    clearance_mm=5)
 # At 0.2-mm layers the cavity ends at 4.4 mm; the 4.6-mm layer closes it.
 # Each magnet part has a separate plate, so the insertion pause does not stop
 # an unrelated cover or support part.

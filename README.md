@@ -57,6 +57,20 @@ The six plates use about **493.3 g** of filament and take **16.8 hours** in tota
 
 Print profile: 0.20 mm layers, **1 wall on the first layer**, 4 walls on subsequent layers, 5 top/bottom layers, 20 % gyroid; support cross and TPU feet at 100 % infill.
 
+Use the **Engineering Plate with 3DLAC**. The saved positions let three successive
+jobs use separate areas of one full-bed coating:
+
+| Coating | Print these virtual plates in order |
+|---|---|
+| 1 | 1 Head → 2 Base → 3 Cassette |
+| 2 | 4 Grey covers and support → 5 Knob → 6 TPU feet |
+
+Between jobs, remove the finished parts, brims, prime tower and purge-line remnants;
+leave the adhesive on the unused areas. Keep the saved positions instead of using
+Auto Arrange or centring the parts again. The standard printer start and calibration
+routines stay enabled and may revisit their usual areas. The filament profiles set
+the Engineering Plate to 70 °C for PETG and 35 °C for TPU.
+
 Before printing the base, use [`stl/fumex_usb_fit.3mf`](stl/fumex_usb_fit.3mf) to check the USB board in small sections of the real base and lid (about **10.0 g and 62 minutes**). With the lid section removed, lower the board in front of the channel and slide it towards the rear wall. Then place the lid section on its two small fixture pads and the retained screw-post seat: its central keeper secures the board from the front and above while leaving both side wire exits open. Two low triangular ribs brace the keeper against the lid. These two optional test pieces are not part of the full assembly.
 
 A rounded end wall in the base sits beside the battery’s right end with 0.5 mm axial clearance. A full-height web joins the stop to the ballast trough wall for lateral support; its sloping top clears the removable lid. The left housing wall and this stop prevent lengthwise sliding. Two cable ties through integrated loops under the cell hold it down in its three saddles, including while the base is open. The ties run directly around the shrink-wrapped pack, without printed spacers. Tighten them gently by hand so the pack stays seated without crushing the wrap or electronics beneath it. Cut and replace the ties to remove the battery. Optional cushioning must not raise the cell from its designed seating height.

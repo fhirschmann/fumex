@@ -25,7 +25,7 @@
       "effective_settings": {
         "sparse_infill_pattern": "gyroid",
         "enable_support": "0",
-        "curr_bed_type": "Textured PEI Plate",
+        "curr_bed_type": "Engineering Plate",
         "top_shell_layers": "5",
         "bottom_shell_layers": "5",
         "only_one_wall_first_layer": "1"
@@ -52,7 +52,7 @@
       "effective_settings": {
         "sparse_infill_pattern": "gyroid",
         "enable_support": "0",
-        "curr_bed_type": "Textured PEI Plate",
+        "curr_bed_type": "Engineering Plate",
         "top_shell_layers": "5",
         "bottom_shell_layers": "5",
         "only_one_wall_first_layer": "1"
@@ -71,7 +71,7 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.688,
+      "hours": 2.689,
       "grams": 59.368,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -79,7 +79,7 @@
       "effective_settings": {
         "sparse_infill_pattern": "gyroid",
         "enable_support": "0",
-        "curr_bed_type": "Textured PEI Plate",
+        "curr_bed_type": "Engineering Plate",
         "top_shell_layers": "5",
         "bottom_shell_layers": "5",
         "only_one_wall_first_layer": "1"
@@ -106,7 +106,7 @@
       "effective_settings": {
         "sparse_infill_pattern": "gyroid",
         "enable_support": "0",
-        "curr_bed_type": "Textured PEI Plate",
+        "curr_bed_type": "Engineering Plate",
         "top_shell_layers": "5",
         "bottom_shell_layers": "5",
         "only_one_wall_first_layer": "1"
@@ -133,7 +133,7 @@
       "effective_settings": {
         "sparse_infill_pattern": "gyroid",
         "enable_support": "0",
-        "curr_bed_type": "Textured PEI Plate",
+        "curr_bed_type": "Engineering Plate",
         "top_shell_layers": "5",
         "bottom_shell_layers": "5",
         "only_one_wall_first_layer": "1"
@@ -160,7 +160,7 @@
       "effective_settings": {
         "sparse_infill_pattern": "zig-zag",
         "enable_support": "0",
-        "curr_bed_type": "Textured PEI Plate",
+        "curr_bed_type": "Engineering Plate",
         "top_shell_layers": "5",
         "bottom_shell_layers": "5",
         "only_one_wall_first_layer": "1"
@@ -187,7 +187,7 @@
       "effective_settings": {
         "sparse_infill_pattern": "gyroid",
         "enable_support": "0",
-        "curr_bed_type": "Textured PEI Plate",
+        "curr_bed_type": "Engineering Plate",
         "top_shell_layers": "5",
         "bottom_shell_layers": "5",
         "only_one_wall_first_layer": "1"
@@ -214,7 +214,7 @@
       "effective_settings": {
         "sparse_infill_pattern": "zig-zag",
         "enable_support": "0",
-        "curr_bed_type": "Textured PEI Plate",
+        "curr_bed_type": "Engineering Plate",
         "top_shell_layers": "5",
         "bottom_shell_layers": "5",
         "only_one_wall_first_layer": "1"
@@ -241,7 +241,7 @@
       "effective_settings": {
         "sparse_infill_pattern": "gyroid",
         "enable_support": "0",
-        "curr_bed_type": "Textured PEI Plate",
+        "curr_bed_type": "Engineering Plate",
         "top_shell_layers": "5",
         "bottom_shell_layers": "5",
         "only_one_wall_first_layer": "1"
@@ -268,7 +268,7 @@
       "effective_settings": {
         "sparse_infill_pattern": "gyroid",
         "enable_support": "0",
-        "curr_bed_type": "Textured PEI Plate",
+        "curr_bed_type": "Engineering Plate",
         "top_shell_layers": "5",
         "bottom_shell_layers": "5",
         "only_one_wall_first_layer": "1"
@@ -294,6 +294,27 @@
         "size_mm": [
           145.0,
           145.0
+        ],
+        "reuse_batch": 1,
+        "object_bounds_mm": [
+          [
+            15.0,
+            160.0
+          ],
+          [
+            160.0,
+            305.0
+          ]
+        ],
+        "sliced_object_bounds_mm": [
+          [
+            15.0,
+            160.0
+          ],
+          [
+            160.0,
+            305.0
+          ]
         ]
       },
       {
@@ -305,6 +326,27 @@
         "size_mm": [
           145.0,
           74.0
+        ],
+        "reuse_batch": 1,
+        "object_bounds_mm": [
+          [
+            15.0,
+            45.0
+          ],
+          [
+            160.0,
+            119.0
+          ]
+        ],
+        "sliced_object_bounds_mm": [
+          [
+            15.0,
+            45.0
+          ],
+          [
+            160.0,
+            119.0
+          ]
         ]
       },
       {
@@ -316,6 +358,27 @@
         "size_mm": [
           143.0,
           138.0
+        ],
+        "reuse_batch": 1,
+        "object_bounds_mm": [
+          [
+            180.0,
+            160.0
+          ],
+          [
+            323.0,
+            298.0
+          ]
+        ],
+        "sliced_object_bounds_mm": [
+          [
+            180.0,
+            160.0
+          ],
+          [
+            323.0,
+            298.0
+          ]
         ]
       },
       {
@@ -329,6 +392,27 @@
         "size_mm": [
           201.3,
           239.5
+        ],
+        "reuse_batch": 2,
+        "object_bounds_mm": [
+          [
+            15.0,
+            35.0
+          ],
+          [
+            216.3442,
+            274.5431
+          ]
+        ],
+        "sliced_object_bounds_mm": [
+          [
+            15.0,
+            35.0
+          ],
+          [
+            216.3442,
+            274.5431
+          ]
         ]
       },
       {
@@ -342,8 +426,29 @@
           24.0
         ],
         "prime_tower_xy": [
-          52.0,
-          130.0
+          245.0,
+          90.0
+        ],
+        "reuse_batch": 2,
+        "object_bounds_mm": [
+          [
+            265.0,
+            35.0
+          ],
+          [
+            289.0,
+            58.9925
+          ]
+        ],
+        "sliced_object_bounds_mm": [
+          [
+            265.0,
+            35.0
+          ],
+          [
+            289.0,
+            58.9926
+          ]
         ]
       },
       {
@@ -358,9 +463,337 @@
         "size_mm": [
           38.0,
           34.0
+        ],
+        "reuse_batch": 2,
+        "object_bounds_mm": [
+          [
+            255.0,
+            220.0
+          ],
+          [
+            293.0,
+            254.0
+          ]
+        ],
+        "sliced_object_bounds_mm": [
+          [
+            255.0,
+            220.0
+          ],
+          [
+            293.0,
+            254.0
+          ]
         ]
       }
     ],
+    "bed_type": "Engineering Plate",
+    "bed_reuse": {
+      "batches": [
+        [
+          "Head",
+          "Base",
+          "Cassette"
+        ],
+        [
+          "Grey covers and support",
+          "Knob",
+          "TPU feet"
+        ]
+      ],
+      "clearance_mm": 5.0,
+      "plates": [
+        {
+          "name": "Head",
+          "batch": 1,
+          "placement": {
+            "min_xy": [
+              15,
+              160
+            ]
+          },
+          "bounds_mm": [
+            [
+              17.593,
+              161.0
+            ],
+            [
+              157.382,
+              304.0
+            ]
+          ],
+          "extrusion_segments": 1700,
+          "features": [
+            "Bottom surface",
+            "Outer wall"
+          ],
+          "line_widths_mm": [
+            0.5,
+            0.50085
+          ],
+          "grid_mm": 1,
+          "startup_bounds_mm": [
+            [
+              249.5,
+              -1.0
+            ],
+            [
+              290.5,
+              0.0
+            ]
+          ],
+          "startup_extrusion_segments": 1
+        },
+        {
+          "name": "Base",
+          "batch": 1,
+          "placement": {
+            "min_xy": [
+              15,
+              45
+            ]
+          },
+          "bounds_mm": [
+            [
+              16.0,
+              46.0
+            ],
+            [
+              159.0,
+              118.0
+            ]
+          ],
+          "extrusion_segments": 1040,
+          "features": [
+            "Bottom surface",
+            "Outer wall"
+          ],
+          "line_widths_mm": [
+            0.5,
+            0.5002
+          ],
+          "grid_mm": 1,
+          "startup_bounds_mm": [
+            [
+              249.5,
+              -1.0
+            ],
+            [
+              290.5,
+              0.0
+            ]
+          ],
+          "startup_extrusion_segments": 1
+        },
+        {
+          "name": "Cassette",
+          "batch": 1,
+          "placement": {
+            "min_xy": [
+              180,
+              160
+            ]
+          },
+          "bounds_mm": [
+            [
+              181.0,
+              161.0
+            ],
+            [
+              322.0,
+              297.0
+            ]
+          ],
+          "extrusion_segments": 8975,
+          "features": [
+            "Bottom surface",
+            "Outer wall"
+          ],
+          "line_widths_mm": [
+            0.5,
+            0.50029
+          ],
+          "grid_mm": 1,
+          "startup_bounds_mm": [
+            [
+              249.5,
+              -1.0
+            ],
+            [
+              290.5,
+              0.0
+            ]
+          ],
+          "startup_extrusion_segments": 1
+        },
+        {
+          "name": "Grey covers and support",
+          "batch": 2,
+          "placement": {
+            "min_xy": [
+              15,
+              35
+            ]
+          },
+          "bounds_mm": [
+            [
+              15.066,
+              35.597
+            ],
+            [
+              215.748,
+              273.543
+            ]
+          ],
+          "extrusion_segments": 10349,
+          "features": [
+            "Bottom surface",
+            "Gap infill",
+            "Outer wall"
+          ],
+          "line_widths_mm": [
+            0.115702,
+            0.115705,
+            0.115714,
+            0.116853,
+            0.122968,
+            0.12313,
+            0.124066,
+            0.124146,
+            0.124171,
+            0.124346,
+            0.125556,
+            0.12606,
+            0.126068,
+            0.126094,
+            0.126103,
+            0.129911,
+            0.141886,
+            0.14189,
+            0.141899,
+            0.141931,
+            0.162308,
+            0.163079,
+            0.163565,
+            0.167467,
+            0.167526,
+            0.167969,
+            0.168435,
+            0.168698,
+            0.169444,
+            0.169783,
+            0.5,
+            0.50025,
+            0.50036,
+            0.50057
+          ],
+          "grid_mm": 1,
+          "startup_bounds_mm": [
+            [
+              249.5,
+              -1.0
+            ],
+            [
+              290.5,
+              0.0
+            ]
+          ],
+          "startup_extrusion_segments": 1
+        },
+        {
+          "name": "Knob",
+          "batch": 2,
+          "placement": {
+            "min_xy": [
+              265,
+              35
+            ],
+            "prime_tower_xy": [
+              245,
+              90
+            ]
+          },
+          "bounds_mm": [
+            [
+              241.313,
+              36.0
+            ],
+            [
+              287.999,
+              117.176
+            ]
+          ],
+          "extrusion_segments": 399,
+          "features": [
+            "Bottom surface",
+            "Gap infill",
+            "Outer wall",
+            "Prime tower"
+          ],
+          "line_widths_mm": [
+            0.5,
+            0.50239,
+            0.68588
+          ],
+          "grid_mm": 1,
+          "startup_bounds_mm": [
+            [
+              249.5,
+              -1.0
+            ],
+            [
+              290.5,
+              0.0
+            ]
+          ],
+          "startup_extrusion_segments": 1
+        },
+        {
+          "name": "TPU feet",
+          "batch": 2,
+          "placement": {
+            "min_xy": [
+              255,
+              220
+            ]
+          },
+          "bounds_mm": [
+            [
+              255.8,
+              220.8
+            ],
+            [
+              292.2,
+              253.2
+            ]
+          ],
+          "extrusion_segments": 672,
+          "features": [
+            "Bottom surface",
+            "Outer wall"
+          ],
+          "line_widths_mm": [
+            0.5,
+            0.50599
+          ],
+          "grid_mm": 1,
+          "startup_bounds_mm": [
+            [
+              249.5,
+              -1.0
+            ],
+            [
+              290.5,
+              0.0
+            ]
+          ],
+          "startup_extrusion_segments": 1
+        }
+      ],
+      "method": "Conservative 1 mm contact grid from actual first-layer extrusion, including arcs, brims, skirts and prime towers",
+      "workflow": "Remove each finished print, brim, skirt and tower before starting the next virtual plate; retain the same plate orientation",
+      "startup_policy": "Native startup/purge/wipe/calibration remains enabled and may revisit its fixed area; reported startup bounds are not part of the fresh-area guarantee"
+    },
     "total_hours_plates": 16.8,
     "total_grams_plates": 493.3,
     "multicolour_parts": {
@@ -493,7 +926,7 @@
       }
     },
     "own_infill_parts": 5,
-    "sha256": "4649766ae0f500292f0a30198022b2b88b9a7d41dceea6932ee940460e2a2ca3"
+    "sha256": "82da767f3058ffaea93361e0659df253cb04f1275976a8bf71b9c7fce481613a"
   },
   "test_3mf": {
     "file": "stl/fumex_usb_fit.3mf",
@@ -510,9 +943,21 @@
         "size_mm": [
           21.5,
           40.8
+        ],
+        "object_bounds_mm": [
+          [
+            159.25,
+            139.6
+          ],
+          [
+            180.75,
+            180.4
+          ]
         ]
       }
     ],
+    "bed_type": "Engineering Plate",
+    "bed_reuse": null,
     "total_hours_plates": 1.0,
     "total_grams_plates": 10.0,
     "multicolour_parts": {
@@ -538,7 +983,7 @@
       }
     },
     "own_infill_parts": 0,
-    "sha256": "afafea8025f40d61688dcfdbc6f0fa301c2c027c49974604ed37e1ecc968c864",
+    "sha256": "2868c8f579b62999ef8502b19bf0cf4f18de036be29406c9cec644dc0e3ba1ea",
     "process": {
       "wall_loops": 4,
       "top_shell_layers": 5,

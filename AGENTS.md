@@ -30,6 +30,12 @@ Internal notes for coding agents (Claude, Codex). The README is public and stays
 - Except for the two user-supplied 2.5 x 8 thermoplastic PWM PCB screws, screws only ISO 7380 button head Torx from the user's set (M3 × 6/8/10/12/16/25). The four fan screws M3 × 30 are a deliberate extra purchase — a 25 mm fan frame cannot be screwed with anything shorter, whichever side the screw comes from (the user first chose M3 × 25 from the set, which is geometrically impossible; corrected 2026-09-21).
 - Ruthex RX-M3x5.7 per datasheet: hole 4.0, pocket depth ≥ 6.7, wall ≥ 1.6, pressable from an accessible side.
 - Printer Bambu Lab H2S with AMS.
+- Preferred build surface (user, 2026-09-29): Engineering Plate fully sprayed with
+  3DLAC before a batch, for its smooth finish. Arrange successive virtual plates
+  on separate physical bed areas so one coating serves multiple jobs. Remove all
+  finished parts and print debris between jobs; do not leave previous parts standing.
+  Keep material and magnet-pause jobs separate. Include brims, skirts and prime
+  towers in the used footprint; preserve normal start/calibration routines.
 
 ## Measured hardware
 
@@ -1029,3 +1035,37 @@ they do not validate the subsequent geometry.
   Source, STL, slicer and project-file hashes agree; both viewer copies are identical.
   Local file-URL browser tabs require a manual reload because browser automation
   blocks that URL scheme. The published HTTPS viewer is checked after deployment.
+
+## Reuse of the coated Engineering Plate (2026-09-29)
+
+- The user's preferred surface is a fully 3DLAC-sprayed Engineering Plate. Preserve
+  all six virtual production groups, but place successive jobs on distinct physical
+  bed areas so they share a coating. This is not sequential-object printing: remove
+  completed parts, brims, towers and purge remnants before starting the next job.
+- `BED_REUSE` assigns plates 1/2/3 to the first coating and 4/5/6 to the second.
+  Group lower-left positions in bed-local millimetres are Head (15,160), Base
+  (15,45), Cassette (180,160), Grey covers and support (15,35), Knob (265,35),
+  and TPU feet (255,220). The knob's tower origin is (245,90). Keep these saved
+  positions when opening or slicing the 3MF; Auto Arrange would defeat this plan.
+- The shared slicer checks actual first-layer deposition, including extrusion arcs,
+  brims, skirts and prime towers, with 5 mm separation between different jobs in
+  each coating group. Group bounds alone are not the final contact measurement.
+  Preserve ordinary start code and calibration. The H2S load line at x250..290,
+  y-0.5 and firmware-controlled wiping/probing are reused machine operations;
+  this footprint check does not claim those areas remain untouched.
+- Installed H2S Generic PETG and Generic TPU profiles provide Engineering Plate
+  temperatures of 70/70 and 35/35 degrees C respectively (initial/subsequent).
+  No custom temperature, adhesion setting or start-code change is required.
+  The model source and all part geometry are unchanged by this layout update.
+- Shared-skill commit `6ae00e4` adds the Engineering Plate preference, reusable-bed
+  placements and actual contact verification. Its 40 regression tests and complete
+  fresh template loop pass, including the template's three-job coating group and
+  multicolour tower. The project's `scripts/` is installed from that exact tool state.
+- The complete FUMEX slicer run passes: ten diagnostic parts, six production plates
+  and the USB fit plate, without warnings or supports. Both coating groups pass
+  the conservative 1 mm contact-grid check with 5 mm clearance. Saved and sliced
+  archives retain Engineering Plate and the requested bed-local object bounds.
+  Magnet pauses remain on plates 1 and 3 at 4.6 mm with 30 mm extra clearance;
+  the grey cross keeps 100% infill, and the knob retains its separate dark pointer.
+  Totals remain 493.3 g / 16.8 h; the USB fit plate is 10.02 g / 1.04 h.
+  Both viewer copies are rebuilt from the unchanged assembly exports.

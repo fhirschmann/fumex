@@ -23,6 +23,7 @@ import re
 import shutil
 import subprocess
 from xml.sax.saxutils import quoteattr
+import xml.etree.ElementTree as ET
 import zipfile
 
 import numpy as np
@@ -43,7 +44,7 @@ profiles.mkdir(parents=True, exist_ok=True)
 files = {path.stem: path for path in profile_root.rglob("*.json")}
 
 PRINTER = dict(machine="Bambu Lab H2S 0.4 nozzle", process="0.20mm Standard @BBL H2S",
-               bed="Textured PEI Plate") | getattr(P, "PRINTER", {})
+               bed="Engineering Plate") | getattr(P, "PRINTER", {})
 # PROCESS["settings"]: further Bambu process keys for every part, e.g. {"infill_direction": "0"} (first-layer lines
 # along x, parallel to a long bed face; Bambu alternates solid layers by 90 degrees from there)
 def merge_process(base, overrides):
@@ -71,6 +72,8 @@ FULL_INFILL_MATERIALS = set(getattr(P, "FULL_INFILL_MATERIALS", ("TPU",)))
 FILAMENTS = getattr(P, "FILAMENTS", None) or [dict(material=m, profile=f"Generic {m} @BBL H2S")
                                               for m in sorted({m for _, m, _ in PARTS.values()})]
 PLATES = getattr(P, "PLATES", None) or [(name, [name]) for name in PARTS if PARTS[name][0] > 0]
+# Successive virtual plates use distinct contact regions of one fully sprayed physical bed.
+BED_REUSE = getattr(P, "BED_REUSE", None)
 # Multicolour plates (by title) whose parts stay in the middle of the bed, prime tower behind or in front of them
 # instead of parts at the left edge and the tower beside them
 CENTRE_PLATES = set(getattr(P, "CENTRE_PLATES", ()))
@@ -252,6 +255,7 @@ def run(name):
         with zipfile.ZipFile(folder / f"{name}-DIAGNOSTIC.3mf") as archive:
             settings = json.loads(archive.read("Metadata/project_settings.config"))
             verify_process_overrides(settings, profiles / f"process-{infill(name, material)}.json")
+            assert settings.get("curr_bed_type") == PRINTER["bed"], f"{name}: diagnostic lost bed type"
     row = dict(part=name, quantity=quantity, material=material, passed=passed,
                positioning=positioning,
                source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
@@ -309,6 +313,206 @@ def plate_counts(group, full_build):
     return dict((entry, PARTS[entry][0] if full_build else 1) if isinstance(entry, str) else tuple(entry) for entry in group)
 
 
+def archive_geometry_bounds(archive):
+    """Measure the actual transformed objects saved by Bambu, including colour components."""
+    documents = {}
+    result = np.array([[float("inf")] * 3, [float("-inf")] * 3])
+
+    def document(path):
+        if path not in documents:
+            documents[path] = ET.fromstring(archive.read(path))
+        return documents[path]
+
+    def matrix(text):
+        value = np.eye(4)
+        value[:3, :] = transform(text)
+        return value
+
+    def visit(path, object_id, outer, ancestry=()):
+        nonlocal result
+        assert (path, object_id) not in ancestry, "Cyclic 3MF component reference"
+        obj = document(path).find(f"{{*}}resources/{{*}}object[@id='{object_id}']")
+        assert obj is not None, f"Missing 3MF object {path}:{object_id}"
+        points = obj.findall("{*}mesh/{*}vertices/{*}vertex")
+        if points:
+            vertices = np.array([[float(point.get(axis)) for axis in "xyz"] for point in points])
+            placed = vertices @ outer[:3, :3].T + outer[:3, 3]
+            result[0] = np.minimum(result[0], placed.min(axis=0))
+            result[1] = np.maximum(result[1], placed.max(axis=0))
+        for component in obj.findall("{*}components/{*}component"):
+            next_path = next((value.lstrip("/") for key, value in component.attrib.items()
+                              if key.endswith("}path") or key == "path"), path)
+            visit(next_path, component.get("objectid"), outer @ matrix(component.get("transform")),
+                  (*ancestry, (path, object_id)))
+
+    for item in document("3D/3dmodel.model").findall("{*}build/{*}item"):
+        visit("3D/3dmodel.model", item.get("objectid"), matrix(item.get("transform")))
+    assert np.isfinite(result).all(), "Missing finite 3MF geometry bounds"
+    return result
+
+
+def bed_reuse_configuration(config, titles):
+    """Require explicit, complete reusable-bed batches and bed-local group placements."""
+    if not config:
+        return {}, {}
+    assert isinstance(config, dict), "BED_REUSE must be a mapping"
+    batches = config.get("batches", [])
+    flat = [title for batch in batches for title in batch]
+    assert batches and all(batches), "BED_REUSE needs nonempty batches"
+    assert sorted(flat) == sorted(titles), "BED_REUSE batches must name every production plate exactly once"
+    placements = config.get("placements", {})
+    assert set(placements) == set(titles), "BED_REUSE placements must name every production plate"
+    clearance = float(config.get("clearance_mm", 5))
+    assert math.isfinite(clearance) and clearance >= 0, "BED_REUSE clearance_mm must be finite and nonnegative"
+    for title, placement in placements.items():
+        assert isinstance(placement, dict) and "min_xy" in placement, f"BED_REUSE {title}: missing min_xy"
+        for key, point in placement.items():
+            assert key in ("min_xy", "prime_tower_xy"), f"BED_REUSE {title}: unknown placement {key}"
+            assert len(point) == 2 and all(math.isfinite(float(v)) for v in point), \
+                f"BED_REUSE {title}: {key} must have two finite coordinates"
+    return placements, {title: index for index, batch in enumerate(batches, 1) for title in batch}
+
+
+def first_layer_contact(gcode, clearance_mm=5, cell_mm=1):
+    """Conservative sampled contact grid, including Bambu brims, skirts and prime towers.
+
+    Every extrusion curve is sampled at <= 0.5 cell; its samples are expanded by half that
+    distance and a cell circumradius as well as line radius and half the reuse clearance.
+    Thus the grid covers the complete swept contact footprint, not only sample points.
+    The separately reported native start sequence is never counted as fresh reusable area.
+    """
+    assert clearance_mm >= 0 and cell_mm > 0
+    position = {axis: None for axis in "XYZE"}
+    absolute, relative_e = True, False
+    layer, width, feature = 0, 0.5, "Custom"
+    cells, widths, features = set(), set(), set()
+    bounds = [[float("inf")] * 2, [float("-inf")] * 2]
+    startup_bounds = [[float("inf")] * 2, [float("-inf")] * 2]
+    segments, startup_segments = 0, 0
+    max_step = cell_mm / 2
+    disks = {}
+
+    def cover(points, line_width, active):
+        nonlocal segments, startup_segments
+        target = bounds if active else startup_bounds
+        radius = line_width / 2
+        # Sampling arc chords misses extrema by at most max_step/2; retain that reserve.
+        for point in points:
+            for axis in range(2):
+                target[0][axis] = min(target[0][axis], point[axis] - radius - max_step / 2)
+                target[1][axis] = max(target[1][axis], point[axis] + radius + max_step / 2)
+        if not active:
+            startup_segments += 1
+            return
+        segments += 1
+        widths.add(line_width)
+        features.add(feature)
+        # Snap samples to grid centres: two circumradii cover both the snapping offset
+        # and any intersected cell. Extra cells only make the reuse check stricter.
+        expanded = radius + clearance_mm / 2 + max_step / 2 + math.sqrt(2) * cell_mm
+        key = round(expanded, 6)
+        if key not in disks:
+            limit = math.ceil(expanded / cell_mm)
+            disks[key] = [(x, y) for x in range(-limit, limit + 1) for y in range(-limit, limit + 1)
+                          if math.hypot(x * cell_mm, y * cell_mm) <= expanded]
+        offsets = disks[key]
+        for x, y in points:
+            cx, cy = math.floor(x / cell_mm), math.floor(y / cell_mm)
+            cells.update((cx + dx, cy + dy) for dx, dy in offsets)
+
+    for raw in gcode.splitlines():
+        line = raw.strip()
+        if re.fullmatch(r";\s*(?:CHANGE_LAYER|LAYER_CHANGE)", line):
+            layer += 1
+            if layer > 1:
+                break
+        match = re.match(r";\s*(?:FEATURE|TYPE):\s*(.*)", line)
+        if match:
+            feature = match.group(1)
+        match = re.match(r";\s*(?:LINE_WIDTH|WIDTH):\s*([\d.]+)", line)
+        if match:
+            width = float(match.group(1))
+            assert 0 < width < 10, f"Invalid extrusion width: {width}"
+        code = line.split(";", 1)[0].strip()
+        if not code:
+            continue
+        words = dict((key, float(value)) for key, value in re.findall(r"([XYZEFIJP])\s*([-+]?(?:\d+(?:\.\d*)?|\.\d+))", code))
+        command = code.split()[0]
+        if command in ("G90", "G91"):
+            absolute = command == "G90"
+        elif command in ("M82", "M83"):
+            relative_e = command == "M83"
+        elif command == "G92":
+            position.update({key: value for key, value in words.items() if key in position})
+        elif command in ("G0", "G1", "G2", "G3"):
+            previous = position.copy()
+            for axis in "XYZ":
+                if axis in words:
+                    position[axis] = words[axis] if absolute else (position[axis] or 0) + words[axis]
+            extrusion = words.get("E", 0) if relative_e else words.get("E", previous["E"] or 0) - (previous["E"] or 0)
+            if "E" in words:
+                position["E"] = (previous["E"] or 0) + extrusion
+            if extrusion <= 0 or not any(key in words for key in ("X", "Y", "I", "J")):
+                continue
+            assert all(position[k] is not None and previous[k] is not None for k in "XY"), \
+                "Cannot prove bed contact before both XY positions are known"
+            start, end = tuple(previous[k] for k in "XY"), tuple(position[k] for k in "XY")
+            points = []
+            if command in ("G2", "G3"):
+                assert "I" in words or "J" in words, "Contact arcs need I/J centre coordinates"
+                centre = (start[0] + words.get("I", 0), start[1] + words.get("J", 0))
+                radius = math.hypot(start[0] - centre[0], start[1] - centre[1])
+                first = math.atan2(start[1] - centre[1], start[0] - centre[0])
+                last = math.atan2(end[1] - centre[1], end[0] - centre[0])
+                sweep = (last - first) % (2 * math.pi) if command == "G3" else -((first - last) % (2 * math.pi))
+                if math.dist(start, end) < 1e-7:
+                    sweep = 2 * math.pi if command == "G3" else -2 * math.pi
+                steps = max(1, math.ceil(abs(sweep) * radius / max_step))
+                points = [(centre[0] + radius * math.cos(first + sweep * i / steps),
+                           centre[1] + radius * math.sin(first + sweep * i / steps)) for i in range(steps + 1)]
+                points.append(end)
+            else:
+                steps = max(1, math.ceil(math.dist(start, end) / max_step))
+                points = [(start[0] + (end[0] - start[0]) * i / steps,
+                           start[1] + (end[1] - start[1]) * i / steps) for i in range(steps + 1)]
+            cover(points, width, layer == 1)
+    assert layer >= 1 and segments > 0, "Missing first-layer extrusion; cannot verify reusable bed contact"
+    return dict(cells=cells, bounds_mm=[[round(v, 3) for v in row] for row in bounds],
+                extrusion_segments=segments, features=sorted(features), line_widths_mm=sorted(widths),
+                grid_mm=cell_mm,
+                startup_bounds_mm=([[round(v, 3) for v in row] for row in startup_bounds] if startup_segments else None),
+                startup_extrusion_segments=startup_segments)
+
+
+def verify_bed_reuse(config, contact, printer):
+    """Reject reused contact regions; keep startup purge explicitly outside that guarantee."""
+    if not config:
+        return None
+    placements, batches = bed_reuse_configuration(config, list(contact))
+    clearance = float(config.get("clearance_mm", 5))
+    points = [[float(v) for v in point.split("x")] for point in printer["printable_area"]]
+    bed_low = [min(point[axis] for point in points) for axis in range(2)]
+    bed_high = [max(point[axis] for point in points) for axis in range(2)]
+    rows = []
+    for title, footprint in contact.items():
+        for axis in range(2):
+            assert footprint["bounds_mm"][0][axis] >= bed_low[axis] - 0.01 and \
+                   footprint["bounds_mm"][1][axis] <= bed_high[axis] + 0.01, \
+                f"Plate {title}: sliced bed contact extends outside the printable bed"
+        rows.append(dict(name=title, batch=batches[title], placement=placements[title],
+                         **{key: value for key, value in footprint.items() if key != "cells"}))
+    for batch in config["batches"]:
+        for index, first in enumerate(batch):
+            for second in batch[index + 1:]:
+                overlap = contact[first]["cells"] & contact[second]["cells"]
+                assert not overlap, \
+                    f"BED_REUSE batch {batches[first]}: {first} and {second} reuse first-layer contact near {next(iter(overlap), None)} mm"
+    return dict(batches=config["batches"], clearance_mm=clearance, plates=rows,
+                method="Conservative 1 mm contact grid from actual first-layer extrusion, including arcs, brims, skirts and prime towers",
+                workflow="Remove each finished print, brim, skirt and tower before starting the next virtual plate; retain the same plate orientation",
+                startup_policy="Native startup/purge/wipe/calibration remains enabled and may revisit its fixed area; reported startup bounds are not part of the fresh-area guarantee")
+
+
 def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", full_build=True, process_file=None, mono=None):
     """Every part of the full build (no test prints) as one Bambu Studio project on the fixed PLATES; with
     full_build=False any plate list (test prints) into its own target file, optionally with its own process profile;
@@ -319,6 +523,8 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
     folder = out / folder_name
     folder.mkdir(exist_ok=True)
     resolved = [(title, plate_counts(group, full_build)) for title, group in (PLATES if plate_list is None else plate_list)]
+    reuse_config = BED_REUSE if full_build else None
+    reuse_placements, reuse_batches = bed_reuse_configuration(reuse_config, [title for title, _ in resolved])
     listed = [name for _, group in resolved for name in group]
     assert set(listed) <= set(PARTS), f"Plates name unknown parts: {sorted(set(listed) - set(PARTS))}"
     if full_build:
@@ -425,6 +631,7 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
         root = len(plate_ids) ** 0.5
         columns = round(root) + 1 if root > round(root) else round(root)
         project_settings = json.loads(source.read("Metadata/project_settings.config"))
+        assert project_settings.get("curr_bed_type") == PRINTER["bed"], "Saved project lost requested bed type"
         tower_width = float(project_settings["prime_tower_width"])
         tower_brim = float(project_settings["prime_tower_brim_width"])
         towers = {}
@@ -440,7 +647,7 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
             assert size[0] <= width and size[1] <= depth, f"Plate {title} exceeds the bed"
             delta = (width / 2 - (low[0] + high[0]) / 2, depth / 2 - (low[1] + high[1]) / 2)
             entry = dict(plate=index + 1, name=title, parts=got, size_mm=[round(size[0], 1), round(size[1], 1)])
-            if set(group) & set(colour_parts) and title in CENTRE_PLATES:
+            if title not in reuse_placements and set(group) & set(colour_parts) and title in CENTRE_PLATES:
                 # parts stay centred; tower in the strip behind them, else in front (depth about 40 mm, grows
                 # with the purge volume; the slicer run itself reports a tower that still collides)
                 x = width / 2 - tower_width / 2
@@ -453,7 +660,7 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
                         f"Plate {title}: no room for the prime tower in front of or behind the centred parts ({size[0]:.1f} x {size[1]:.1f} mm)"
                     towers[index] = (x, front)
                 entry["prime_tower_xy"] = [round(v, 1) for v in towers[index]]
-            elif set(group) & set(colour_parts):
+            elif title not in reuse_placements and set(group) & set(colour_parts):
                 # Multicolour plate: parts to the left edge, prime tower right next to them. Wide plates first try
                 # tighter margins, then put the parts to the front edge and the tower behind them (its depth grows
                 # with the purge volume; the slicer run itself reports a tower that still collides)
@@ -468,6 +675,19 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
                     assert towers[index][1] + 40 + tower_brim <= depth - 5, \
                         f"Plate {title}: no room for the prime tower ({size[0]:.1f} x {size[1]:.1f} mm on {width:.0f} x {depth:.0f})"
                 entry["prime_tower_xy"] = [round(v, 1) for v in towers[index]]
+            if title in reuse_placements:
+                requested = reuse_placements[title]
+                delta = tuple(float(requested["min_xy"][axis]) - low[axis] for axis in range(2))
+                if set(group) & set(colour_parts):
+                    assert "prime_tower_xy" in requested, f"BED_REUSE {title}: explicit prime_tower_xy required"
+                    towers[index] = tuple(float(value) for value in requested["prime_tower_xy"])
+                    entry["prime_tower_xy"] = list(towers[index])
+                entry["reuse_batch"] = reuse_batches[title]
+            entry["object_bounds_mm"] = [[round(low[axis] + delta[axis], 4) for axis in range(2)],
+                                         [round(high[axis] + delta[axis], 4) for axis in range(2)]]
+            assert all(entry["object_bounds_mm"][0][axis] >= 0 and
+                       entry["object_bounds_mm"][1][axis] <= (width, depth)[axis]
+                       for axis in range(2)), f"Plate {title}: requested placement exceeds the bed"
             for i in ids:
                 shift[i] = delta
             layout.append(entry)
@@ -521,7 +741,7 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
     assert placed == sum(count for _, group in resolved for count in group.values()), f"{target.name} places {placed} parts"
     assert own_infill == expected_own, f"{target.name}: {own_infill} parts with own infill, expected {expected_own}"
     print(f"{target.name}: {placed} parts on {len(plate_ids)} plates, slicing every plate before publishing", flush=True)
-    multicolour, pauses, plate_slices = {}, {}, {}
+    multicolour, pauses, plate_slices, bed_contact = {}, {}, {}, {}
     for index, (title, group) in enumerate(resolved, 1):
         coloured = set(group) & set(colour_parts)
         plate_dir = folder / f"slice-plate-{index}"
@@ -539,8 +759,20 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
         assert result.returncode == 0 and data.get("return_code") == 0 and "slicing result conflict" not in log, \
             f"Plate {title} does not slice; see {plate_dir}"
         with zipfile.ZipFile(plate_dir / "sliced.3mf") as sliced:
-            process_overrides = verify_process_overrides(
-                json.loads(sliced.read("Metadata/project_settings.config")), process_file)
+            sliced_settings = json.loads(sliced.read("Metadata/project_settings.config"))
+            process_overrides = verify_process_overrides(sliced_settings, process_file)
+            assert sliced_settings.get("curr_bed_type") == PRINTER["bed"], f"Plate {title}: lost bed type"
+            if reuse_config:
+                actual_bounds = archive_geometry_bounds(sliced)[:, :2]
+                origin = np.array([((index - 1) % columns) * width * 1.2,
+                                   -((index - 1) // columns) * depth * 1.2])
+                expected_bounds = np.array(layout[index - 1]["object_bounds_mm"])
+                assert np.allclose(actual_bounds - origin, expected_bounds, atol=0.01), \
+                    f"Plate {title}: sliced objects moved from requested bed-local placement"
+                layout[index - 1]["sliced_object_bounds_mm"] = (actual_bounds - origin).round(4).tolist()
+                gcode_name = next(n for n in sliced.namelist() if re.fullmatch(r"Metadata/plate_\d+\.gcode", n))
+                bed_contact[title] = first_layer_contact(sliced.read(gcode_name).decode(errors="replace"),
+                                                        float(reuse_config.get("clearance_mm", 5)))
         if index - 1 in pause_plates:
             with zipfile.ZipFile(plate_dir / "sliced.3mf") as sliced:
                 name = next(n for n in sliced.namelist() if re.fullmatch(r"Metadata/plate_\d+\.gcode", n))
@@ -570,10 +802,14 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
         multicolour[title] = dict(plate=index, hours=round(plate.get("total_predication", 0) / 3600, 2),
                                   grams_by_filament=grams, warnings=plate.get("warning_message"))
         print(f"Slice multicolour plate {title}: PASS, filament use {grams} g", flush=True)
+    reuse_report = verify_bed_reuse(reuse_config, bed_contact, machine)
+    if reuse_report:
+        print(f"Reusable bed: PASS, {len(reuse_report['batches'])} coating batches; disjoint sliced contact footprints", flush=True)
     target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(candidate, target)
     print(f"Project 3MF published -> {target.relative_to(ROOT)}", flush=True)
     return dict(file=str(target.relative_to(ROOT)), parts=placed, plates=len(plate_ids), layout=layout,
+                bed_type=PRINTER["bed"], bed_reuse=reuse_report,
                 total_hours_plates=round(sum(s["hours"] for s in plate_slices.values()), 1),
                 total_grams_plates=round(sum(sum(s["grams_by_filament"].values()) for s in plate_slices.values()), 1),
                 multicolour_parts=COLOR_PARTS, multicolour_slices=multicolour, pause_slices=pauses, plate_slices=plate_slices,
