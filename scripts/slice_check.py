@@ -9,6 +9,8 @@
 3. Optional TEST_PLATES (e.g. fit tests; entries are part names or (name, count), one copy by default) become TEST_3MF
    the same way, with TEST_PROCESS overriding PROCESS (e.g. fewer walls and less infill: same geometry, less material).
    TEST_FILAMENT = slot prints every test part single-colour from that filament slot (no inlays, no prime tower).
+   PART_INFILL = {part: percent} changes production/diagnostic infill, preserving solid parts and TEST_PROCESS.
+   PART_FILAMENTS = {part: slot} selects a plain base slot per part; slots are 1-based and must match its material.
 
 Generated G-code and 3MF files under build/ are diagnostics, NOT print releases.
 Writes build/slicer-diagnostic/summary.json and SLICER_SUMMARY (default docs/slicer-summary.json).
@@ -27,6 +29,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 
 import numpy as np
+import manifold3d as md
 import trimesh
 
 from print_tools import BUILD, COLOR_DIR, COLOR_PARTS, P, PARTS, ROOT, STL_DIR
@@ -66,11 +69,13 @@ def merge_process(base, overrides):
 PROCESS = merge_process(dict(wall_loops=4, top_shell_layers=5, bottom_shell_layers=5, infill=25,
                              pattern="gyroid", settings={"only_one_wall_first_layer": "1", "enable_support": "0"}),
                         getattr(P, "PROCESS", {}))
+PART_INFILL = getattr(P, "PART_INFILL", {})
 FULL_INFILL = set(getattr(P, "FULL_INFILL", ()))
 FULL_INFILL_MATERIALS = set(getattr(P, "FULL_INFILL_MATERIALS", ("TPU",)))
 # Filament slots of the project 3MF, 1-based in list order; inlay slots name their inlay or a tuple of inlays sharing the slot
 FILAMENTS = getattr(P, "FILAMENTS", None) or [dict(material=m, profile=f"Generic {m} @BBL H2S")
                                               for m in sorted({m for _, m, _ in PARTS.values()})]
+PART_FILAMENTS = getattr(P, "PART_FILAMENTS", {})
 PLATES = getattr(P, "PLATES", None) or [(name, [name]) for name in PARTS if PARTS[name][0] > 0]
 # Successive virtual plates use distinct contact regions of one fully sprayed physical bed.
 BED_REUSE = getattr(P, "BED_REUSE", None)
@@ -96,10 +101,63 @@ DEFAULT_INFILL = int(PROCESS["infill"])
 # Keep already chosen STL orientations and centre their actual geometry explicitly.
 # Useful when the arranger's projected brim margin rejects an otherwise valid print pose.
 FIXED_PRINT_POSES = bool(getattr(P, "FIXED_PRINT_POSES", False))
+# Optional absolute bed-local bounding-box minima, one [x, y] per copy.
+PLATE_PART_POSITIONS = getattr(P, "PLATE_PART_POSITIONS", None)
 
 
 def base_filament(material):
     return next(i for i, f in enumerate(FILAMENTS, 1) if f["material"] == material and not f.get("inlay"))
+
+
+def validate_plain_slot(slot, label):
+    assert type(slot) is int and 1 <= slot <= len(FILAMENTS), \
+        f"{label}: filament slot must be an integer in 1..{len(FILAMENTS)}, got {slot!r}"
+    assert not FILAMENTS[slot - 1].get("inlay"), f"{label}: slot {slot} is reserved for inlays"
+    return slot
+
+
+def part_filament(name, mono=None):
+    # The explicit single-colour test choice takes precedence over the normal part palette.
+    if mono is not None:
+        return validate_plain_slot(mono, "TEST_FILAMENT")
+    return PART_FILAMENTS[name] if name in PART_FILAMENTS else base_filament(PARTS[name][1])
+
+
+def validate_part_filaments():
+    assert isinstance(PART_FILAMENTS, dict), "PART_FILAMENTS must map part names to 1-based filament slots"
+    assert set(PART_FILAMENTS) <= set(PARTS), \
+        f"PART_FILAMENTS names unknown parts: {sorted(set(PART_FILAMENTS) - set(PARTS))}"
+    for name, slot in PART_FILAMENTS.items():
+        validate_plain_slot(slot, f"PART_FILAMENTS[{name!r}]")
+        assert FILAMENTS[slot - 1]["material"] == PARTS[name][1], \
+            f"{name}: slot {slot} material {FILAMENTS[slot - 1]['material']} differs from {PARTS[name][1]}"
+    if TEST_FILAMENT is not None:
+        validate_plain_slot(TEST_FILAMENT, "TEST_FILAMENT")
+
+
+def expected_filaments(name, mono=None):
+    if mono is None and name in COLOR_PARTS:
+        return {f"{name}_base": part_filament(name),
+                **{f"{name}_{inlay}": INLAY_FILAMENT[inlay] for inlay in COLOR_PARTS[name]}}
+    return {name: part_filament(name, mono)}
+
+
+def verify_object_filaments(model_settings, mono=None):
+    """Verify every saved volume, including mono parts and sliced per-volume overrides."""
+    found = {}
+    for obj in ET.fromstring(model_settings).findall("object"):
+        own = {m.get("key"): m.get("value") for m in obj.findall("metadata") if m.get("key")}
+        name = slicer_part_name(own["name"], PARTS)
+        assert name in PARTS, f"Unknown filament-assigned object {name}"
+        actual = {}
+        for part in obj.findall("part"):
+            meta = {m.get("key"): m.get("value") for m in part.findall("metadata") if m.get("key")}
+            piece = slicer_part_name(meta["name"], expected_filaments(name, mono))
+            actual[piece] = int(meta.get("extruder", own.get("extruder", "0")))
+        wanted = expected_filaments(name, mono)
+        assert actual == wanted, f"{name}: filament slots {actual}, expected {wanted}"
+        found[name] = actual
+    return found
 
 
 def resolve(name, parents=()):
@@ -119,20 +177,75 @@ def resolve(name, parents=()):
     return result
 
 
-def infill(name, material):
-    return 100 if material in FULL_INFILL_MATERIALS or name in FULL_INFILL else DEFAULT_INFILL
+def validate_part_infill():
+    assert isinstance(PART_INFILL, dict), "PART_INFILL must map part names to integer percentages"
+    assert set(PART_INFILL) <= set(PARTS), \
+        f"PART_INFILL names unknown parts: {sorted(set(PART_INFILL) - set(PARTS))}"
+    for name, density in PART_INFILL.items():
+        assert type(density) is int and 0 <= density <= 100, \
+            f"PART_INFILL[{name!r}] must be an integer percentage in 0..100, got {density!r}"
+        assert density == 100 or not (name in FULL_INFILL or PARTS[name][1] in FULL_INFILL_MATERIALS), \
+            f"{name}: PART_INFILL cannot reduce a FULL_INFILL part or material"
 
 
-def pattern(density):
+def infill(name, material, full_build=True):
+    if material in FULL_INFILL_MATERIALS or name in FULL_INFILL:
+        return 100
+    # Fit-test process settings deliberately supersede production part tuning.
+    return PART_INFILL.get(name, DEFAULT_INFILL) if full_build else int(TEST_PROCESS["infill"])
+
+
+def pattern(density, full_build=True):
     # Bambu serializes Rectilinear as "zig-zag" ("rectilinear" maps to cubic); gyroid is refused at 100 %
-    return "zig-zag" if density == 100 else PROCESS["pattern"]
+    return "zig-zag" if density == 100 else (PROCESS if full_build else TEST_PROCESS)["pattern"]
 
 
+def set_object_infill(model_settings, names, project_settings, full_build=True):
+    """Store whole-object density/pattern overrides; colour volumes must not override them."""
+    keys = ("sparse_infill_density", "sparse_infill_pattern")
+    def configured(match):
+        object_id, body = match.group(1), match.group(2)
+        for key in keys:
+            body = re.sub(rf'\s*<metadata key="{key}" value="[^"]*"\s*/>', "", body)
+        head, separator, rest = body.partition("<part ")
+        name = names[object_id]
+        density = infill(name, PARTS[name][1], full_build)
+        wanted = dict(sparse_infill_density=f"{density}%", sparse_infill_pattern=pattern(density, full_build))
+        for key, value in wanted.items():
+            if value != project_settings.get(key):
+                head += ET.tostring(ET.Element("metadata", key=key, value=value), encoding="unicode") + "\n"
+        return f'<object id="{object_id}">{head}{separator}{rest}</object>'
+    return re.sub(r'<object id="(\d+)">(.*?)</object>', configured, model_settings, flags=re.S)
+
+
+def verify_object_infill(project_settings, model_settings, full_build=True):
+    """Check effective object settings and all copies after saving or slicing."""
+    keys = ("sparse_infill_density", "sparse_infill_pattern")
+    found = {}
+    for obj in ET.fromstring(model_settings).findall("object"):
+        own = {m.get("key"): m.get("value") for m in obj.findall("metadata")}
+        stem = Path(own["name"]).stem
+        name = stem if stem in PARTS else re.sub(r"_\d+$", "", stem)
+        assert name in PARTS, f"Unknown infill-assigned object {name}"
+        density = infill(name, PARTS[name][1], full_build)
+        wanted = dict(sparse_infill_density=f"{density}%", sparse_infill_pattern=pattern(density, full_build))
+        actual = {key: own.get(key, project_settings.get(key)) for key in keys}
+        assert actual == wanted, f"{name}: effective infill {actual}, expected {wanted}"
+        for part in obj.findall("part"):
+            overrides = {m.get("key"): m.get("value") for m in part.findall("metadata")}
+            assert all(overrides.get(key, actual[key]) == actual[key] for key in keys), \
+                f"{name}: colour volume changes effective infill"
+        row = found.setdefault(name, dict(instances=0, **actual))
+        row["instances"] += 1
+    return found
+
+
+validate_part_filaments()
+validate_part_infill()
 for material in {m for _, m, _ in PARTS.values()}:
     base_filament(material)                       # every material needs a plain slot
 for name, inlays in COLOR_PARTS.items():
     assert all(inlay in INLAY_FILAMENT for inlay in inlays), f"{name}: no FILAMENTS slot for {inlays}"
-    assert infill(name, PARTS[name][1]) == DEFAULT_INFILL, f"{name}: multicolour parts with own infill are not supported yet"
 
 def insertion_pause_gcode(native_gcode, lift_mm, relative_e=True):
     """Lower a Bambu bed for insertion, preserving its native parking/resume operation."""
@@ -160,7 +273,8 @@ def write_process(name, settings, density):
     process = resolve(PRINTER["process"])
     process.update(wall_loops=str(settings["wall_loops"]), sparse_infill_density=f"{density}%", enable_support="0",
                    top_shell_layers=str(settings["top_shell_layers"]),
-                   bottom_shell_layers=str(settings["bottom_shell_layers"]), sparse_infill_pattern=pattern(density))
+                   bottom_shell_layers=str(settings["bottom_shell_layers"]),
+                   sparse_infill_pattern="zig-zag" if density == 100 else settings["pattern"])
     process.update({key: str(value) for key, value in settings.get("settings", {}).items()})
     (profiles / name).write_text(json.dumps(process, indent=2))
 
@@ -238,7 +352,7 @@ def run(name):
         stale.unlink(missing_ok=True)
     command = [str(executable), "--datadir", str(folder / "config"), "--debug", "2",
                "--load-settings", f"{profiles / 'machine.json'};{profiles / f'process-{infill(name, material)}.json'}",
-               "--load-filaments", str(profiles / f"filament-{base_filament(material)}.json"),
+               "--load-filaments", str(profiles / f"filament-{part_filament(name)}.json"),
                "--orient", "0", "--arrange", "0" if FIXED_PRINT_POSES else "1", "--slice", "0",
                # --outputdir must be absolute, otherwise the CLI exits with 243
                "--export-3mf", f"{name}-DIAGNOSTIC.3mf", "--outputdir", str(folder), str(slice_input)]
@@ -256,7 +370,7 @@ def run(name):
             settings = json.loads(archive.read("Metadata/project_settings.config"))
             verify_process_overrides(settings, profiles / f"process-{infill(name, material)}.json")
             assert settings.get("curr_bed_type") == PRINTER["bed"], f"{name}: diagnostic lost bed type"
-    row = dict(part=name, quantity=quantity, material=material, passed=passed,
+    row = dict(part=name, quantity=quantity, material=material, filament_slot=part_filament(name), passed=passed,
                positioning=positioning,
                source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
                exit_code=result.returncode, result_code=data.get("return_code"),
@@ -313,7 +427,7 @@ def plate_counts(group, full_build):
     return dict((entry, PARTS[entry][0] if full_build else 1) if isinstance(entry, str) else tuple(entry) for entry in group)
 
 
-def archive_geometry_bounds(archive):
+def archive_geometry_bounds(archive, per_item=False):
     """Measure the actual transformed objects saved by Bambu, including colour components."""
     documents = {}
     result = np.array([[float("inf")] * 3, [float("-inf")] * 3])
@@ -345,10 +459,82 @@ def archive_geometry_bounds(archive):
             visit(next_path, component.get("objectid"), outer @ matrix(component.get("transform")),
                   (*ancestry, (path, object_id)))
 
+    item_bounds = []
     for item in document("3D/3dmodel.model").findall("{*}build/{*}item"):
+        result = np.array([[float("inf")] * 3, [float("-inf")] * 3])
         visit("3D/3dmodel.model", item.get("objectid"), matrix(item.get("transform")))
-    assert np.isfinite(result).all(), "Missing finite 3MF geometry bounds"
+        assert np.isfinite(result).all(), "Missing finite 3MF geometry bounds"
+        item_bounds.append(result.copy())
+    assert item_bounds, "Missing 3MF build items"
+    if per_item:
+        return item_bounds
+    return np.array([np.min([b[0] for b in item_bounds], axis=0),
+                     np.max([b[1] for b in item_bounds], axis=0)])
+
+
+def plate_part_positions_configuration(config, resolved, colour_parts):
+    """Validate an exact per-copy manifest; explicit positions currently require monochrome parts."""
+    if config is None:
+        return {}
+    assert isinstance(config, dict), "PLATE_PART_POSITIONS must be a mapping"
+    assert set(config) == {title for title, _ in resolved}, \
+        "PLATE_PART_POSITIONS must name every production plate exactly once"
+    result = {}
+    for title, group in resolved:
+        positions = config[title]
+        assert isinstance(positions, dict) and set(positions) == set(group), \
+            f"PLATE_PART_POSITIONS {title}: part keys must exactly match the plate"
+        assert not set(group) & set(colour_parts), \
+            f"PLATE_PART_POSITIONS {title}: multicolour component placement is not supported"
+        result[title] = {}
+        for name, count in group.items():
+            copies = positions[name]
+            assert isinstance(copies, (list, tuple)) and len(copies) == count, \
+                f"PLATE_PART_POSITIONS {title}/{name}: expected {count} positions"
+            for point in copies:
+                assert isinstance(point, (list, tuple)) and len(point) == 2 and all(
+                    isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
+                    for v in point), f"PLATE_PART_POSITIONS {title}/{name}: positions require two finite coordinates"
+            result[title][name] = [[float(v) for v in point] for point in copies]
     return result
+
+
+def explicit_part_placements(title, positions, mesh_bounds, printer):
+    """Place unchanged STL poses, checking each bounding rectangle and known excluded areas."""
+    bed_points = [[float(v) for v in point.split("x")] for point in printer["printable_area"]]
+    bed = md.CrossSection([bed_points])
+    excluded_points = [[float(v) for v in point.split("x")]
+                       for point in printer.get("bed_exclude_area", [])]
+    excluded = md.CrossSection([excluded_points]) if excluded_points else md.CrossSection()
+    rows, transforms, footprints = [], {}, []
+    for name, copies in positions.items():
+        bounds = np.asarray(mesh_bounds[name], dtype=float)
+        assert bounds.shape == (2, 3) and np.isfinite(bounds).all(), f"{title}/{name}: invalid STL bounds"
+        size = bounds[1] - bounds[0]
+        assert np.all(size > 0), f"{title}/{name}: empty STL extent"
+        assert size[2] <= float(printer["printable_height"]) + 0.001, f"{title}/{name}: exceeds bed height"
+        transforms[name] = []
+        for copy, point in enumerate(copies, 1):
+            delta = np.array([*point, 0.0]) - bounds[0]
+            placed = bounds + delta
+            footprint = md.CrossSection.square(size[:2]).translate(point)
+            assert (footprint - bed).area() <= 0.001, f"{title}/{name}[{copy}]: outside printable bed"
+            assert (footprint ^ excluded).area() <= 0.001, f"{title}/{name}[{copy}]: overlaps excluded bed area"
+            for other_name, other_copy, other_footprint in footprints:
+                assert (footprint ^ other_footprint).area() <= 0.001, \
+                    f"{title}: print bounding boxes overlap: {other_name}[{other_copy}] and {name}[{copy}]"
+            transforms[name].append(delta.tolist())
+            footprints.append((name, copy, footprint))
+            rows.append(dict(part=name, copy=copy, min_xy=list(point), bounds_mm=placed.tolist()))
+    return transforms, rows
+
+
+def assert_instance_bounds(expected, actual, message):
+    """Compare all instance bounds, not only their common envelope."""
+    assert len(expected) == len(actual), f"{message}: instance count changed"
+    expected = sorted(tuple(np.asarray(b).reshape(-1)) for b in expected)
+    actual = sorted(tuple(np.asarray(b).reshape(-1)) for b in actual)
+    assert np.allclose(actual, expected, atol=0.01, rtol=0), message
 
 
 def bed_reuse_configuration(config, titles):
@@ -517,7 +703,7 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
     """Every part of the full build (no test prints) as one Bambu Studio project on the fixed PLATES; with
     full_build=False any plate list (test prints) into its own target file, optionally with its own process profile;
     mono = filament slot prints every part single-colour from its plain STL."""
-    colour_parts = {} if mono else COLOR_PARTS
+    colour_parts = {} if mono is not None else COLOR_PARTS
     target = target or PROJECT_3MF
     process_file = process_file or profiles / f"process-{DEFAULT_INFILL}.json"
     folder = out / folder_name
@@ -525,6 +711,9 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
     resolved = [(title, plate_counts(group, full_build)) for title, group in (PLATES if plate_list is None else plate_list)]
     reuse_config = BED_REUSE if full_build else None
     reuse_placements, reuse_batches = bed_reuse_configuration(reuse_config, [title for title, _ in resolved])
+    explicit_positions = plate_part_positions_configuration(
+        PLATE_PART_POSITIONS if full_build else None, resolved, colour_parts)
+    explicit_rows = {}
     listed = [name for _, group in resolved for name in group]
     assert set(listed) <= set(PARTS), f"Plates name unknown parts: {sorted(set(listed) - set(PARTS))}"
     if full_build:
@@ -533,6 +722,15 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
     plates, assembled = [], 0
     for title, group in resolved:
         objects = []
+        translations = {}
+        if title in explicit_positions:
+            mesh_bounds = {name: trimesh.load_mesh(STL_DIR / f"{name}.stl", process=False).bounds for name in group}
+            translations, explicit_rows[title] = explicit_part_placements(
+                title, explicit_positions[title], mesh_bounds, machine)
+            if title in reuse_placements:
+                group_min = np.min([row["bounds_mm"][0][:2] for row in explicit_rows[title]], axis=0)
+                assert np.allclose(group_min, reuse_placements[title]["min_xy"], atol=0.001, rtol=0), \
+                    f"{title}: BED_REUSE min_xy conflicts with absolute PLATE_PART_POSITIONS"
         for name, quantity in group.items():
             material = PARTS[name][1]
             if name in colour_parts:
@@ -540,21 +738,21 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
                 # each copy gets its own (a shared index merges every copy into one object)
                 indices = list(range(assembled + 1, assembled + quantity + 1))
                 assembled += quantity
-                for piece, filament in (("base", base_filament(material)),
+                for piece, filament in (("base", part_filament(name)),
                                         *((inlay, INLAY_FILAMENT[inlay]) for inlay in COLOR_PARTS[name])):
                     objects.append(dict(path=str(COLOR_DIR / f"{name}_{piece}.stl"), count=quantity,
                                         filaments=[filament] * quantity, assemble_index=indices))
                 continue
             entry = dict(path=str(STL_DIR / f"{name}.stl"), count=quantity,
-                         filaments=[mono or base_filament(material)] * quantity)
-            density = infill(name, material)
-            if density != DEFAULT_INFILL:
-                entry["print_params"] = dict(sparse_infill_density=f"{density}%", sparse_infill_pattern=pattern(density))
+                         filaments=[part_filament(name, mono)] * quantity)
+            if name in translations:
+                entry.update({f"pos_{axis}": [point[i] for point in translations[name]]
+                              for i, axis in enumerate("xyz")})
             objects.append(entry)
         # One complete object needs no packing; our explicit centring below preserves its pose.
         # Multi-object plates still use the arranger to avoid overlaps before centring the group.
-        need_arrange = not (FIXED_PRINT_POSES and sum(group.values()) == 1)
-        if not need_arrange:
+        need_arrange = title not in explicit_positions and not (FIXED_PRINT_POSES and sum(group.values()) == 1)
+        if not need_arrange and title not in explicit_positions:
             # Bambu adds the plate-grid origin later, but classifies objects by their bounds.
             # Put the complete object inside its local bed before that classification; colour
             # pieces must share the same translation rather than being centred separately.
@@ -616,14 +814,13 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
                 raw_name = re.search(r'key="name" value="([^"]+)"', part).group(1)
                 parts[slicer_part_name(raw_name, known_piece_names)] = extruder.group(1)
             name = project_object_name(parts, PARTS, colour_parts)
-            if name in colour_parts:
-                expected = {f"{name}_base": str(base_filament(PARTS[name][1])),
-                            **{f"{name}_{inlay}": str(INLAY_FILAMENT[inlay]) for inlay in COLOR_PARTS[name]}}
-                assert parts == expected, f"Multicolour {name}: parts {parts}, expected {expected}"
+            expected = {piece: str(slot) for piece, slot in expected_filaments(name, mono).items()}
+            assert parts == expected, f"{name}: parts {parts}, expected {expected}"
             names[match.group(1)] = name
         # assembled objects are called assemble_N; give them the part name
         settings = re.sub(r'(<object id="(\d+)">\s*<metadata key="name" value=")assemble_\d+(")',
                           lambda m: m.group(1) + names[m.group(2)] + m.group(3), settings)
+        object_filaments = verify_object_filaments(settings, mono)
         assert len(plate_ids) == len(resolved), f"{target.name} has {len(plate_ids)} plates, expected {len(resolved)}"
         # Plate grid like Bambu Studio: columns from the square root of the plate count, 20 % gap
         width = max(float(p.split("x")[0]) for p in machine["printable_area"])
@@ -631,6 +828,9 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
         root = len(plate_ids) ** 0.5
         columns = round(root) + 1 if root > round(root) else round(root)
         project_settings = json.loads(source.read("Metadata/project_settings.config"))
+        settings = set_object_infill(settings, names, project_settings, full_build)
+        object_infill = verify_object_infill(project_settings, settings, full_build)
+        assert set(object_infill) == set(listed), f"{target.name}: wrong infill-configured objects"
         assert project_settings.get("curr_bed_type") == PRINTER["bed"], "Saved project lost requested bed type"
         tower_width = float(project_settings["prime_tower_width"])
         tower_brim = float(project_settings["prime_tower_brim_width"])
@@ -647,6 +847,15 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
             assert size[0] <= width and size[1] <= depth, f"Plate {title} exceeds the bed"
             delta = (width / 2 - (low[0] + high[0]) / 2, depth / 2 - (low[1] + high[1]) / 2)
             entry = dict(plate=index + 1, name=title, parts=got, size_mm=[round(size[0], 1), round(size[1], 1)])
+            if title in explicit_rows:
+                for name in group:
+                    expected = [row["bounds_mm"] for row in explicit_rows[title] if row["part"] == name]
+                    actual = [np.array(bounds(i)) - np.array([*origin, 0]) for i in ids if names[i] == name]
+                    assert_instance_bounds(expected, actual, f"{title}/{name}: Bambu moved explicit instances during import")
+                delta = (0.0, 0.0)
+                entry["part_positions"] = explicit_rows[title]
+                entry["bed_exclude_area"] = machine.get("bed_exclude_area", [])
+                entry["placement_check"] = "Each unchanged STL bounding rectangle is inside printable_area, outside bed_exclude_area and disjoint from other parts"
             if title not in reuse_placements and set(group) & set(colour_parts) and title in CENTRE_PLATES:
                 # parts stay centred; tower in the strip behind them, else in front (depth about 40 mm, grows
                 # with the purge volume; the slicer run itself reports a tower that still collides)
@@ -736,8 +945,11 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
             if pause_plates:
                 project.writestr(custom_name, custom_gcode_xml(pause_plates, pause_gcode))
     placed = sum(len(ids) for ids in plate_ids)
-    own_infill = len([v for v in re.findall(r'sparse_infill_density" value="(\d+)%"', settings) if int(v) != DEFAULT_INFILL])
-    expected_own = sum(count for _, group in resolved for n, count in group.items() if infill(n, PARTS[n][1]) != DEFAULT_INFILL)
+    inherited_density = project_settings["sparse_infill_density"]
+    own_infill = sum(row["instances"] for row in object_infill.values()
+                     if row["sparse_infill_density"] != inherited_density)
+    expected_own = sum(count for _, group in resolved for n, count in group.items()
+                       if f"{infill(n, PARTS[n][1], full_build)}%" != inherited_density)
     assert placed == sum(count for _, group in resolved for count in group.values()), f"{target.name} places {placed} parts"
     assert own_infill == expected_own, f"{target.name}: {own_infill} parts with own infill, expected {expected_own}"
     print(f"{target.name}: {placed} parts on {len(plate_ids)} plates, slicing every plate before publishing", flush=True)
@@ -761,6 +973,12 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
         with zipfile.ZipFile(plate_dir / "sliced.3mf") as sliced:
             sliced_settings = json.loads(sliced.read("Metadata/project_settings.config"))
             process_overrides = verify_process_overrides(sliced_settings, process_file)
+            sliced_infill = verify_object_infill(sliced_settings, sliced.read("Metadata/model_settings.config"), full_build)
+            assert sliced_infill == {name: object_infill[name] | dict(instances=count) for name, count in group.items()}, \
+                f"Plate {title}: object infill settings changed during slicing"
+            sliced_filaments = verify_object_filaments(sliced.read("Metadata/model_settings.config"), mono)
+            assert sliced_filaments == {name: object_filaments[name] for name in group}, \
+                f"Plate {title}: filament assignments changed during slicing"
             assert sliced_settings.get("curr_bed_type") == PRINTER["bed"], f"Plate {title}: lost bed type"
             if reuse_config:
                 actual_bounds = archive_geometry_bounds(sliced)[:, :2]
@@ -773,6 +991,12 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
                 gcode_name = next(n for n in sliced.namelist() if re.fullmatch(r"Metadata/plate_\d+\.gcode", n))
                 bed_contact[title] = first_layer_contact(sliced.read(gcode_name).decode(errors="replace"),
                                                         float(reuse_config.get("clearance_mm", 5)))
+            if title in explicit_rows:
+                origin3 = np.array([((index - 1) % columns) * width * 1.2,
+                                    -((index - 1) // columns) * depth * 1.2, 0])
+                actual = [b - origin3 for b in archive_geometry_bounds(sliced, per_item=True)]
+                assert_instance_bounds([row["bounds_mm"] for row in explicit_rows[title]], actual,
+                                       f"{title}: sliced individual objects moved from explicit positions")
         if index - 1 in pause_plates:
             with zipfile.ZipFile(plate_dir / "sliced.3mf") as sliced:
                 name = next(n for n in sliced.namelist() if re.fullmatch(r"Metadata/plate_\d+\.gcode", n))
@@ -790,15 +1014,16 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
             pauses[title] = dict(plate=index, pause_before_layer_mm=wanted, extra_clearance_mm=PAUSE_LIFT_MM,
                                  clearance_moves=clearance)
             print(f"Slice pause plate {title}: PASS, pause before layer {wanted} mm; {PAUSE_LIFT_MM:g} mm extra clearance", flush=True)
+        needed = {slot for name in group for slot in expected_filaments(name, mono).values()}
+        assert all(grams.get(slot, 0) > 0 for slot in needed), \
+            f"Plate {title}: filament use {grams}, needs {sorted(needed)}"
         plate_slices[title] = dict(plate=index, hours=round(plate.get("total_predication", 0) / 3600, 2),
                                    grams_by_filament=grams, warnings=plate.get("warning_message"),
-                                   process_overrides=process_overrides)
+                                   process_overrides=process_overrides, object_infill=sliced_infill,
+                                   expected_filament_slots=sorted(needed), object_filaments=sliced_filaments)
         if not coloured:
             print(f"Slice plate {title}: PASS, filament use {grams} g", flush=True)
             continue
-        needed = {base_filament(PARTS[part][1]) for part in group} | \
-                 {INLAY_FILAMENT[inlay] for part in group if part in colour_parts for inlay in colour_parts[part]}
-        assert all(grams.get(f, 0) > 0 for f in needed), f"Multicolour plate {title}: filament use {grams}, needs {sorted(needed)}"
         multicolour[title] = dict(plate=index, hours=round(plate.get("total_predication", 0) / 3600, 2),
                                   grams_by_filament=grams, warnings=plate.get("warning_message"))
         print(f"Slice multicolour plate {title}: PASS, filament use {grams} g", flush=True)
@@ -813,7 +1038,7 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
                 total_hours_plates=round(sum(s["hours"] for s in plate_slices.values()), 1),
                 total_grams_plates=round(sum(sum(s["grams_by_filament"].values()) for s in plate_slices.values()), 1),
                 multicolour_parts=COLOR_PARTS, multicolour_slices=multicolour, pause_slices=pauses, plate_slices=plate_slices,
-                own_infill_parts=own_infill, sha256=hashlib.sha256(target.read_bytes()).hexdigest())
+                object_filaments=object_filaments, object_infill=object_infill, own_infill_parts=own_infill, sha256=hashlib.sha256(target.read_bytes()).hexdigest())
 
 
 def custom_gcode_xml(pause_plates, gcode):
@@ -931,6 +1156,7 @@ summary = dict(profile=f"{PRINTER['machine']} / {PRINTER['process']}, {PROCESS['
                        f"{'supports enabled' if PROCESS['settings']['enable_support'] == '1' else 'no supports'}; "
                        f"{DEFAULT_INFILL} % {PROCESS['pattern']}, 100 % zig-zag: {', '.join(solid) or 'none'}",
                process_overrides=PROCESS["settings"],
+               part_infill=PART_INFILL,
                parts=results, total_parts=sum(r["quantity"] for r in results),
                total_grams_individual_plates=round(sum(r["quantity"] * r["grams"] for r in results), 1),
                total_hours_individual_plates=round(sum(r["quantity"] * r["hours"] for r in results), 1),

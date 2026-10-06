@@ -4,20 +4,22 @@
     "only_one_wall_first_layer": "1",
     "enable_support": "0"
   },
+  "part_infill": {},
   "parts": [
     {
       "part": "base",
       "quantity": 1,
       "material": "PETG-black",
+      "filament_slot": 1,
       "passed": true,
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "bb96468c5f440fb229097b50610b5f0f4d01e140a29ce7e04f780149d6f1b068",
+      "source_sha256": "8e5b08d11d2f94fc6b7cfdbf75eec2085208fb72000bfd2d146ffa49b1082e90",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 3.714,
+      "hours": 3.713,
       "grams": 119.569,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -36,6 +38,7 @@
       "part": "head",
       "quantity": 1,
       "material": "PETG-grey",
+      "filament_slot": 2,
       "passed": true,
       "positioning": {
         "mode": "automatic"
@@ -63,6 +66,7 @@
       "part": "head_back",
       "quantity": 1,
       "material": "PETG-grey",
+      "filament_slot": 2,
       "passed": true,
       "positioning": {
         "mode": "automatic"
@@ -90,6 +94,7 @@
       "part": "cassette",
       "quantity": 1,
       "material": "PETG-grey",
+      "filament_slot": 2,
       "passed": true,
       "positioning": {
         "mode": "automatic"
@@ -117,6 +122,7 @@
       "part": "knob",
       "quantity": 1,
       "material": "PETG-grey",
+      "filament_slot": 2,
       "passed": true,
       "positioning": {
         "mode": "automatic"
@@ -144,6 +150,7 @@
       "part": "foot",
       "quantity": 4,
       "material": "TPU",
+      "filament_slot": 3,
       "passed": true,
       "positioning": {
         "mode": "automatic"
@@ -171,16 +178,17 @@
       "part": "ball_lid",
       "quantity": 1,
       "material": "PETG-grey",
+      "filament_slot": 2,
       "passed": true,
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "396e4ae1f493d36398f69ef9dd125457d7d21d88aba249564448af3fca111eb6",
+      "source_sha256": "d6f2b2ad63a22f23638b9d24566d4bfa5787a15858b41b268133bc83c64a1f57",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 0.539,
-      "grams": 8.429,
+      "hours": 0.514,
+      "grams": 7.787,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -198,11 +206,12 @@
       "part": "filter_support",
       "quantity": 1,
       "material": "PETG-grey",
+      "filament_slot": 2,
       "passed": true,
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "d00541d8c82e6388c9948b84ff330c9c55d5a2ff320150e64108508cd7d558d4",
+      "source_sha256": "49c002245abaad87bef874492af2feaf0ef4b999e9d2e1c6e55f94932c0354f4",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -225,11 +234,12 @@
       "part": "usbc_fit_base",
       "quantity": 0,
       "material": "PETG-black",
+      "filament_slot": 1,
       "passed": true,
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "b13d644abc80fc40e14b636df845f5f683be473d3b85599335b2c9ffae51a48e",
+      "source_sha256": "b26ba204aca4d6c809687f075de51af9527487c69d120f2d4108f1d40ed889a3",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -252,11 +262,12 @@
       "part": "usbc_fit_lid",
       "quantity": 0,
       "material": "PETG-black",
+      "filament_slot": 1,
       "passed": true,
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "353880bb51e1d50dabe43934b1bcb81b150f6ea99497091c2feb6754c6956f70",
+      "source_sha256": "04ab31b7d440d0fc7c83032e8dce18481f4519cdf2c2be2a58ccfd29529c082a",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -277,8 +288,8 @@
     }
   ],
   "total_parts": 11,
-  "total_grams_individual_plates": 476.8,
-  "total_hours_individual_plates": 16.8,
+  "total_grams_individual_plates": 476.1,
+  "total_hours_individual_plates": 16.7,
   "production_gcode": false,
   "project_3mf": {
     "file": "stl/fumex_all_parts.3mf",
@@ -563,7 +574,7 @@
               118.0
             ]
           ],
-          "extrusion_segments": 1040,
+          "extrusion_segments": 1039,
           "features": [
             "Bottom surface",
             "Outer wall"
@@ -795,7 +806,7 @@
       "startup_policy": "Native startup/purge/wipe/calibration remains enabled and may revisit its fixed area; reported startup bounds are not part of the fresh-area guarantee"
     },
     "total_hours_plates": 16.2,
-    "total_grams_plates": 478.6,
+    "total_grams_plates": 478.0,
     "multicolour_parts": {
       "knob": [
         "pointer"
@@ -816,7 +827,7 @@
     "plate_slices": {
       "Head": {
         "plate": 1,
-        "hours": 5.85,
+        "hours": 5.86,
         "grams_by_filament": {
           "2": 225.58
         },
@@ -825,6 +836,21 @@
           "enable_support": "0",
           "only_one_wall_first_layer": "1",
           "wall_loops": "4"
+        },
+        "object_infill": {
+          "head": {
+            "instances": 1,
+            "sparse_infill_density": "20%",
+            "sparse_infill_pattern": "gyroid"
+          }
+        },
+        "expected_filament_slots": [
+          2
+        ],
+        "object_filaments": {
+          "head": {
+            "head": 2
+          }
         }
       },
       "Base": {
@@ -838,6 +864,21 @@
           "enable_support": "0",
           "only_one_wall_first_layer": "1",
           "wall_loops": "4"
+        },
+        "object_infill": {
+          "base": {
+            "instances": 1,
+            "sparse_infill_density": "20%",
+            "sparse_infill_pattern": "gyroid"
+          }
+        },
+        "expected_filament_slots": [
+          1
+        ],
+        "object_filaments": {
+          "base": {
+            "base": 1
+          }
         }
       },
       "Cassette": {
@@ -851,19 +892,65 @@
           "enable_support": "0",
           "only_one_wall_first_layer": "1",
           "wall_loops": "4"
+        },
+        "object_infill": {
+          "cassette": {
+            "instances": 1,
+            "sparse_infill_density": "20%",
+            "sparse_infill_pattern": "gyroid"
+          }
+        },
+        "expected_filament_slots": [
+          2
+        ],
+        "object_filaments": {
+          "cassette": {
+            "cassette": 2
+          }
         }
       },
       "Grey covers and support": {
         "plate": 4,
-        "hours": 3.23,
+        "hours": 3.22,
         "grams_by_filament": {
-          "2": 74.24
+          "2": 73.6
         },
         "warnings": "",
         "process_overrides": {
           "enable_support": "0",
           "only_one_wall_first_layer": "1",
           "wall_loops": "4"
+        },
+        "object_infill": {
+          "filter_support": {
+            "instances": 1,
+            "sparse_infill_density": "100%",
+            "sparse_infill_pattern": "zig-zag"
+          },
+          "head_back": {
+            "instances": 1,
+            "sparse_infill_density": "20%",
+            "sparse_infill_pattern": "gyroid"
+          },
+          "ball_lid": {
+            "instances": 1,
+            "sparse_infill_density": "20%",
+            "sparse_infill_pattern": "gyroid"
+          }
+        },
+        "expected_filament_slots": [
+          2
+        ],
+        "object_filaments": {
+          "filter_support": {
+            "filter_support": 2
+          },
+          "head_back": {
+            "head_back": 2
+          },
+          "ball_lid": {
+            "ball_lid": 2
+          }
         }
       },
       "Knob": {
@@ -878,6 +965,23 @@
           "enable_support": "0",
           "only_one_wall_first_layer": "1",
           "wall_loops": "4"
+        },
+        "object_infill": {
+          "knob": {
+            "instances": 1,
+            "sparse_infill_density": "20%",
+            "sparse_infill_pattern": "gyroid"
+          }
+        },
+        "expected_filament_slots": [
+          2,
+          4
+        ],
+        "object_filaments": {
+          "knob": {
+            "knob_base": 2,
+            "knob_pointer": 4
+          }
         }
       },
       "TPU feet": {
@@ -891,11 +995,95 @@
           "enable_support": "0",
           "only_one_wall_first_layer": "1",
           "wall_loops": "4"
+        },
+        "object_infill": {
+          "foot": {
+            "instances": 4,
+            "sparse_infill_density": "100%",
+            "sparse_infill_pattern": "zig-zag"
+          }
+        },
+        "expected_filament_slots": [
+          3
+        ],
+        "object_filaments": {
+          "foot": {
+            "foot": 3
+          }
         }
       }
     },
+    "object_filaments": {
+      "base": {
+        "base": 1
+      },
+      "filter_support": {
+        "filter_support": 2
+      },
+      "cassette": {
+        "cassette": 2
+      },
+      "foot": {
+        "foot": 3
+      },
+      "head": {
+        "head": 2
+      },
+      "knob": {
+        "knob_base": 2,
+        "knob_pointer": 4
+      },
+      "ball_lid": {
+        "ball_lid": 2
+      },
+      "head_back": {
+        "head_back": 2
+      }
+    },
+    "object_infill": {
+      "base": {
+        "instances": 1,
+        "sparse_infill_density": "20%",
+        "sparse_infill_pattern": "gyroid"
+      },
+      "filter_support": {
+        "instances": 1,
+        "sparse_infill_density": "100%",
+        "sparse_infill_pattern": "zig-zag"
+      },
+      "cassette": {
+        "instances": 1,
+        "sparse_infill_density": "20%",
+        "sparse_infill_pattern": "gyroid"
+      },
+      "foot": {
+        "instances": 4,
+        "sparse_infill_density": "100%",
+        "sparse_infill_pattern": "zig-zag"
+      },
+      "head": {
+        "instances": 1,
+        "sparse_infill_density": "20%",
+        "sparse_infill_pattern": "gyroid"
+      },
+      "knob": {
+        "instances": 1,
+        "sparse_infill_density": "20%",
+        "sparse_infill_pattern": "gyroid"
+      },
+      "ball_lid": {
+        "instances": 1,
+        "sparse_infill_density": "20%",
+        "sparse_infill_pattern": "gyroid"
+      },
+      "head_back": {
+        "instances": 1,
+        "sparse_infill_density": "20%",
+        "sparse_infill_pattern": "gyroid"
+      }
+    },
     "own_infill_parts": 5,
-    "sha256": "cf8768b42f85e71b4864e2a281cfa6a86a91b749dbdd3265db185cb270acade7"
+    "sha256": "f2aa7489de6bef335bc6f913965181efa32a7f56a7d5b7ebc35a398d26638042"
   },
   "test_3mf": {
     "file": "stl/fumex_usb_fit.3mf",
@@ -948,11 +1136,54 @@
           "enable_support": "0",
           "only_one_wall_first_layer": "1",
           "wall_loops": "4"
+        },
+        "object_infill": {
+          "usbc_fit_base": {
+            "instances": 1,
+            "sparse_infill_density": "20%",
+            "sparse_infill_pattern": "gyroid"
+          },
+          "usbc_fit_lid": {
+            "instances": 1,
+            "sparse_infill_density": "20%",
+            "sparse_infill_pattern": "gyroid"
+          }
+        },
+        "expected_filament_slots": [
+          1
+        ],
+        "object_filaments": {
+          "usbc_fit_base": {
+            "usbc_fit_base": 1
+          },
+          "usbc_fit_lid": {
+            "usbc_fit_lid": 1
+          }
         }
       }
     },
+    "object_filaments": {
+      "usbc_fit_base": {
+        "usbc_fit_base": 1
+      },
+      "usbc_fit_lid": {
+        "usbc_fit_lid": 1
+      }
+    },
+    "object_infill": {
+      "usbc_fit_base": {
+        "instances": 1,
+        "sparse_infill_density": "20%",
+        "sparse_infill_pattern": "gyroid"
+      },
+      "usbc_fit_lid": {
+        "instances": 1,
+        "sparse_infill_density": "20%",
+        "sparse_infill_pattern": "gyroid"
+      }
+    },
     "own_infill_parts": 0,
-    "sha256": "7584dc53b682f897afa297c118c846dd10ba285e1e07e21be9d46454396f359d",
+    "sha256": "5d5a4b24f5d6b820c36bb7eb21265a0e2ee1c5ada8344bdb2ea739484fb60c3a",
     "process": {
       "wall_loops": 4,
       "top_shell_layers": 5,

@@ -142,7 +142,7 @@ SLICER_SUMMARY = "docs/slicer-summary.json"
 # loose iron offcuts under a lid, roughly 60 % of the volume actually metal
 MAT = (120, 120, 17)      # the mat the user cut from a cooker hood filter
 DENSITY = {"PETG": 0.90e-3, "PETG-solid": 1.27e-3, "TPU": 1.20e-3, "nylon": 1.14e-3, "iron-loose": 4.7e-3}
-MASSES_G = {"fan": 185, "battery": 150, "filter": 15, "pwm_board": 12, "chg_module": 3, "chg_sink": 5,
+MASSES_G = {"fan": 185, "battery": 150, "filter": 15, "pwm_board": 12, "chg_module": 3, "chg_sink": 7,
             "usbc": 2, "switch": 5, "led": 0.6, "pot": 6, "screws_pwm": 0.7,
             "screws_cassette": 4, "screws_fan": 6, "screws_back": 4, "screws_head": 6, "screws_feet": 3, "screws_lid": 1.5}
 # bodies whose mass comes from their volume rather than a data sheet
@@ -523,13 +523,14 @@ def _air_corridor(points, cylinder, radius=0.6):
 def _charger_air_probes(cylinder):
     return {
         # The tie occupies the cool end. The warm component face remains exposed.
-        'component_face_space': _air_box([70, 54.6, 33.2], [83, 56.6, 42.2]),
-        'heatsink_rear_space': _air_box([77.6, 67.7, 31.7], [89.6, 69.5, 43.7]),
-        'component_side_route': _air_corridor([[74.5, 59, 60], [74.5, 59, 47], [74.5, 55.5, 45],
-                                           [74.5, 55.5, 37], [74.5, 54.5, 37], [50, 54.5, 37],
-                                           [50, 75, 37]], cylinder),
-        'heatsink_side_route': _air_corridor([[83.5, 63, 60], [83.5, 63, 47], [83.5, 68.5, 46],
-                                          [83.5, 68.5, 37], [85, 68.5, 37], [85, 75, 37]], cylinder),
+        'component_face_space': _air_box([70, 52.2, 37], [83, 54.2, 46]),
+        'heatsink_rear_space': _air_box([72, 69.3, 33], [89, 70.6, 48]),
+        # Both routes pass the free IN end; the 20 mm heatsink fills the floor vents' depth.
+        'component_side_route': _air_corridor([[74.5, 57.4, 60], [74.5, 57.4, 49], [74.5, 53.2, 49],
+                                           [74.5, 53.2, 40], [93, 53.2, 40], [93, 70, 40],
+                                           [85, 70, 40], [85, 75, 40]], cylinder),
+        'heatsink_side_route': _air_corridor([[83.5, 63, 60], [83.5, 63, 52.6], [93, 63, 52.6],
+                                          [93, 63, 40], [93, 70, 40], [85, 70, 40], [85, 75, 40]], cylinder),
     }
 
 
@@ -541,10 +542,10 @@ def _charger_air_report(meshes, solids, cylinder):
     result['vertical_pose'] = bool(abs(extent[0] - 32.2) < 0.05 and abs(extent[1] - 3.7) < 0.05
                                    and abs(extent[2] - 11) < 0.05)
     module_bounds, sink_bounds = meshes['chg_module'].bounds, meshes['chg_sink'].bounds
-    spaces = {'component_face_space': ([70, 54.6, 33.2], [83, 56.6, 42.2]),
-              'heatsink_rear_space': ([77.6, 67.7, 31.7], [89.6, 69.5, 43.7])}
-    result['face_anchor_gaps_mm'] = {'components': float(module_bounds[0, 1] - 56.6),
-                                      'heatsink': float(67.7 - sink_bounds[1, 1])}
+    spaces = {'component_face_space': ([70, 52.2, 37], [83, 54.2, 46]),
+              'heatsink_rear_space': ([72, 69.3, 33], [89, 70.6, 48])}
+    result['face_anchor_gaps_mm'] = {'components': float(module_bounds[0, 1] - 54.2),
+                                      'heatsink': float(69.3 - sink_bounds[1, 1])}
     result['fields_inside_face_extents'] = all(
         bounds[0, axis] + 0.05 <= lo[axis] < hi[axis] <= bounds[1, axis] - 0.05
         for bounds, (lo, hi) in [(module_bounds, spaces['component_face_space']),
@@ -587,36 +588,39 @@ def check_charger_holder(ctx):
     top_lid = ctx.metrics["ballast"][3] + ctx.metrics["lid_screw"][0]
     holder = lid ^ _air_box([0, 0, top_lid + 0.01], [150, 80, 80])
     assert holder.volume() > 100, "Charge-module holder is missing"
-    hot = _air_box([x0 + 21.8, 50, top_lid + 0.01], [95, 72, 46])
+    # User, 2026-10-06: only one web, one seat and the tie passage at the OUT end,
+    # ending at 8.5 mm. The 20 mm heatsink begins 16.7 mm from OUT.
+    hot = _air_box([x0 + 8.6, 50, top_lid + 0.01], [95, 72, 60])
     hot_overlap = (holder ^ hot).volume()
-    sink_gap = holder.min_gap(ctx.solids["chg_sink"], 6)
-    assert hot_overlap < 0.01 and sink_gap >= 4.6, \
+    sink_gap = holder.min_gap(ctx.solids["chg_sink"], 12)
+    assert hot_overlap < 0.01 and sink_gap >= 8, \
         f"Charge-module holder obstructs its hot end: {hot_overlap:.4f} mm3, gap {sink_gap:.3f} mm"
 
     # Separate physical seats; a contact at one end cannot stand in for the others.
+    # The lower-edge region is limited to the bare PCB thickness: the component
+    # envelope's flat underside must not stand in for the real edge bearing.
     contacts = {}
     for name, delta, region in [
-        ("lower_edge", [0, 0, -0.05], ([x0 + 2.9, 59, z0 - 0.1], [x0 + 11.1, 61, z0 + 0.1])),
-        ("rear_bearing", [0, 0.05, 0], ([x0 + 8.9, yback - 0.1, z0 + 3.4],
-                                      [x0 + 18.1, yback + 0.1, z0 + 7.6])),
-        ("out_end", [-0.05, 0, 0], ([x0 - 0.1, 59.4, z0 + 3.4], [x0 + 0.1, 60.6, z0 + 7.6])),
+        ("lower_edge", [0, 0, -0.05], ([x0 + 6.15, yback - 0.98, z0 - 0.1], [x0 + 8.4, yback - 0.02, z0 + 0.1])),
+        ("rear_bearing", [0, 0.05, 0], ([x0 + 1.3, yback - 0.1, z0 + 3.4],
+                                      [x0 + 6.4, yback + 0.1, z0 + 7.6])),
     ]:
-        volume = (module.translate(delta) ^ lid ^ _air_box(*region)).volume()
-        assert volume > 0.1, f"Charge-module seat missing: {name}, {volume:.4f} mm3"
-        contacts[name] = round(volume, 5)
+        area = (module.translate(delta) ^ lid ^ _air_box(*region)).volume() / 0.05
+        assert area > 1.8, f"Charge-module seat missing: {name}, {area:.3f} mm2"
+        contacts[name] = round(area, 3)
 
     # Probe a slightly inset copy of each tunnel to avoid coplanar facet noise.
     # These are spaces in the printed lid; the separate band collision check
     # below proves that the installed tie fits with the board in place as well.
     tunnels = {
-        "under_board": _air_box([64.87, 55.02, 30.72], [67.93, 68.38, 32.48]),
-        "rear_vertical": _air_box([64.87, 64.02, 30.72], [67.93, 65.78, 44.68]),
+        "under_board": _air_box([56.97, 52.62, 34.52], [60.03, 65.98, 36.28]),
+        "rear_vertical": _air_box([56.97, 61.62, 34.52], [60.03, 63.38, 48.68]),
     }
     overlaps = {n: round((probe ^ lid).volume(), 6) for n, probe in tunnels.items()}
     assert all(v < 0.01 for v in overlaps.values()), f"Charge tie tunnel blocked: {overlaps}"
     assert (tunnels["under_board"] ^ tunnels["rear_vertical"]).volume() > 1, "Disconnected tie passages"
     bounds = np.asarray(tie.bounding_box()).reshape(2, 3)
-    assert abs(bounds[:, 0].mean() - x0 - 12.5) < 0.05, "Charge tie moved off the reviewed cool-end position"
+    assert abs(bounds[:, 0].mean() - x0 - 4.6) < 0.05, "Charge tie moved off the reviewed cool-end position"
     assert abs(bounds[1, 0] - bounds[0, 0] - 2.5) < 0.05, "Charge tie has the wrong width"
     assert bounds[0, 2] < z0 - 1.1 and bounds[1, 2] > pcb[1, 2] + 1.1, "Charge tie does not wrap the board"
     assert len(tie.decompose()) == 1, "Charge tie band is disconnected"
@@ -628,7 +632,7 @@ def check_charger_holder(ctx):
     tie_gap = tie.min_gap(lid, 1)
     assert 0.25 <= tie_gap <= 0.35, f"Charge tie tunnel clearance is {tie_gap:.3f} mm"
     return dict(charger_holder=dict(hot_zone_overlap_mm3=round(hot_overlap, 5),
-        holder_to_sink_mm=round(sink_gap, 3), seat_contact_mm3=contacts,
+        holder_to_sink_mm=round(sink_gap, 3), seat_contact_area_mm2=contacts,
         tunnel_overlap_mm3=overlaps, tie_to_lid_mm=round(tie_gap, 3),
         tie_forward_contact_mm3=round(forward, 5)))
 
@@ -2324,9 +2328,9 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
          "02_exploded": ("assembly(18);", "60,-360,170,0,0,30"),
          "03_back": ("assembly();", "60,320,150,0,0,205"),
          "04_charger_front": ("color(\"#c4c9ce\") ball_lid(); color(\"#2f5d3a\") chg_module_env(); "
-                              "color(\"#aeb5bb\") chg_sink_env(); color(\"#55595e\") chg_tie_env();", "110,-90,90,70,60,34"),
+                              "color(\"#aeb5bb\") chg_sink_env(); color(\"#55595e\") chg_tie_env();", "110,-90,96,72,60,40"),
          "05_charger_back": ("color(\"#c4c9ce\") ball_lid(); color(\"#2f5d3a\") chg_module_env(); "
-                             "color(\"#aeb5bb\") chg_sink_env(); color(\"#55595e\") chg_tie_env();", "110,180,90,70,60,34"),
+                             "color(\"#aeb5bb\") chg_sink_env(); color(\"#55595e\") chg_tie_env();", "110,180,96,72,60,40"),
          "06_filter_support": ("color(\"#c4c9ce\") filter_support_raw();", "220,-240,220,72.5,26,120.5"),
          # Exploded only along Z: the two screw heads and both lid holes stay visible.
          "07_ballast_mount": ("color(\"#717980\") intersection() { base(); "

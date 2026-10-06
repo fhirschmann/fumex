@@ -1,5 +1,5 @@
 {
-  "source_sha256": "0baee0059d26471f6d7717826be5ad933764aecceca64b63d2efd2cb25b46526",
+  "source_sha256": "e290837dce7e8731495053ef902b0fa718e7f9f1a77c868593db6f07a7cb0c9b",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -40,10 +40,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "bb96468c5f440fb229097b50610b5f0f4d01e140a29ce7e04f780149d6f1b068",
+      "sha256": "8e5b08d11d2f94fc6b7cfdbf75eec2085208fb72000bfd2d146ffa49b1082e90",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "bb96468c5f440fb229097b50610b5f0f4d01e140a29ce7e04f780149d6f1b068"
+      "committed_sha256": "8e5b08d11d2f94fc6b7cfdbf75eec2085208fb72000bfd2d146ffa49b1082e90"
     },
     "head": {
       "size_mm": [
@@ -233,8 +233,8 @@
           24.2
         ]
       ],
-      "volume_mm3": 8167.122,
-      "triangles": 778,
+      "volume_mm3": 7505.0689,
+      "triangles": 748,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
@@ -244,10 +244,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
-      "sha256": "396e4ae1f493d36398f69ef9dd125457d7d21d88aba249564448af3fca111eb6",
+      "sha256": "d6f2b2ad63a22f23638b9d24566d4bfa5787a15858b41b268133bc83c64a1f57",
       "quantity": 1,
       "material": "PETG-grey",
-      "committed_sha256": "396e4ae1f493d36398f69ef9dd125457d7d21d88aba249564448af3fca111eb6"
+      "committed_sha256": "d6f2b2ad63a22f23638b9d24566d4bfa5787a15858b41b268133bc83c64a1f57"
     },
     "filter_support": {
       "size_mm": [
@@ -278,10 +278,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "d00541d8c82e6388c9948b84ff330c9c55d5a2ff320150e64108508cd7d558d4",
+      "sha256": "49c002245abaad87bef874492af2feaf0ef4b999e9d2e1c6e55f94932c0354f4",
       "quantity": 1,
       "material": "PETG-grey",
-      "committed_sha256": "d00541d8c82e6388c9948b84ff330c9c55d5a2ff320150e64108508cd7d558d4"
+      "committed_sha256": "49c002245abaad87bef874492af2feaf0ef4b999e9d2e1c6e55f94932c0354f4"
     },
     "usbc_fit_base": {
       "size_mm": [
@@ -312,10 +312,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "b13d644abc80fc40e14b636df845f5f683be473d3b85599335b2c9ffae51a48e",
+      "sha256": "b26ba204aca4d6c809687f075de51af9527487c69d120f2d4108f1d40ed889a3",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "b13d644abc80fc40e14b636df845f5f683be473d3b85599335b2c9ffae51a48e"
+      "committed_sha256": "b26ba204aca4d6c809687f075de51af9527487c69d120f2d4108f1d40ed889a3"
     },
     "usbc_fit_lid": {
       "size_mm": [
@@ -346,10 +346,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
-      "sha256": "353880bb51e1d50dabe43934b1bcb81b150f6ea99497091c2feb6754c6956f70",
+      "sha256": "04ab31b7d440d0fc7c83032e8dce18481f4519cdf2c2be2a58ccfd29529c082a",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "353880bb51e1d50dabe43934b1bcb81b150f6ea99497091c2feb6754c6956f70"
+      "committed_sha256": "04ab31b7d440d0fc7c83032e8dce18481f4519cdf2c2be2a58ccfd29529c082a"
     }
   },
   "color_meshes": {
@@ -659,31 +659,41 @@
     ],
     "charge_origin": [
       53.9,
-      59.5,
-      32.2
+      57.1,
+      36
     ],
     "charge_components": 2.7,
     "charge_sink": [
-      14,
-      14,
-      6,
+      20,
+      20,
+      10,
       1
     ],
     "charge_tie": [
       2.5,
       1.2,
       0.3,
-      12.5,
+      4.6,
       2
     ],
     "charge_web": [
       1.5,
       [
-        9,
-        18
+        1.4,
+        6.3
       ],
       4,
       1.6
+    ],
+    "charge_holder": [
+      [
+        1.4,
+        8.5
+      ],
+      [
+        6.25,
+        8.3
+      ]
     ],
     "lid_screw": [
       3,
@@ -926,7 +936,7 @@
     "fan@head_back": 7.5398,
     "feet@base": 54.8257,
     "pwm_board@base": 5.1495,
-    "chg_module@ball_lid": 0.5565,
+    "chg_module@ball_lid": 0.1435,
     "ball_lid@base": 6.1373,
     "usbc@base": 2.515
   },
@@ -1341,10 +1351,10 @@
   "intake_lip_mm": 2.25,
   "mat_free_travel_mm": 1.62,
   "mat_squashed_percent": 0.08,
-  "mass_g": 1005.5,
+  "mass_g": 1006.9,
   "centre_of_mass_mm": [
     67.3,
-    32.2,
+    32.3,
     68.9
   ],
   "foot_polygon_mm": [
@@ -1354,8 +1364,8 @@
     68.0
   ],
   "tip_margins_mm": {
-    "front": 29.2,
-    "back": 35.8,
+    "front": 29.3,
+    "back": 35.7,
     "left": 57.3,
     "right": 67.7
   },
@@ -2225,7 +2235,7 @@
   "charger_air_access": {
     "module_extents_mm": [
       32.19999694824219,
-      3.700000762939453,
+      3.6999969482421875,
       11.0
     ],
     "probes": {
@@ -2234,44 +2244,43 @@
         "collisions_mm3": {}
       },
       "heatsink_rear_space": {
-        "volume_mm3": 259.2,
+        "volume_mm3": 331.5,
         "collisions_mm3": {}
       },
       "component_side_route": {
-        "volume_mm3": 80.7559,
+        "volume_mm3": 82.2524,
         "collisions_mm3": {}
       },
       "heatsink_side_route": {
-        "volume_mm3": 40.8029,
+        "volume_mm3": 56.3799,
         "collisions_mm3": {}
       }
     },
     "vertical_pose": true,
     "face_anchor_gaps_mm": {
-      "components": 0.19999923706054545,
-      "heatsink": 0.20000000000000284
+      "components": 0.2000015258789034,
+      "heatsink": 0.2000015258789034
     },
     "fields_inside_face_extents": true,
     "route_connections": {
       "component": {
         "components": 1,
-        "face_space_overlap_mm3": 8.58388,
+        "face_space_overlap_mm3": 16.2867,
         "probe_diameter_mm": 1.2
       },
       "heatsink": {
         "components": 1,
-        "face_space_overlap_mm3": 10.24402,
+        "face_space_overlap_mm3": 5.12201,
         "probe_diameter_mm": 1.2
       }
     }
   },
   "charger_holder": {
     "hot_zone_overlap_mm3": 0.0,
-    "holder_to_sink_mm": 4.7,
-    "seat_contact_mm3": {
-      "lower_edge": 0.5565,
-      "rear_bearing": 1.81389,
-      "out_end": 0.2047
+    "holder_to_sink_mm": 8.2,
+    "seat_contact_area_mm2": {
+      "lower_edge": 1.968,
+      "rear_bearing": 19.751
     },
     "tunnel_overlap_mm3": {
       "under_board": 0.0,
