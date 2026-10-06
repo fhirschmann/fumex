@@ -1,5 +1,5 @@
 {
-  "source_sha256": "e290837dce7e8731495053ef902b0fa718e7f9f1a77c868593db6f07a7cb0c9b",
+  "source_sha256": "0e1f80b945a2e85120ec6e5c2d2b43beb1b437ba4b4d1443ee6a166ba12c2d44",
   "software": {
     "numpy": "2.5.3",
     "trimesh": "5.1.0",
@@ -8,8 +8,8 @@
     "rtree": "1.4.1",
     "networkx": "3.6.1"
   },
-  "print_parts": 10,
-  "print_quantity": 11,
+  "print_parts": 11,
+  "print_quantity": 12,
   "print_meshes": {
     "base": {
       "size_mm": [
@@ -40,10 +40,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "8e5b08d11d2f94fc6b7cfdbf75eec2085208fb72000bfd2d146ffa49b1082e90",
+      "sha256": "7708e55479a809510f77a1ae1ec50806f73784cc68d478ea138462e00c2394fe",
       "quantity": 1,
       "material": "PETG-black",
-      "committed_sha256": "8e5b08d11d2f94fc6b7cfdbf75eec2085208fb72000bfd2d146ffa49b1082e90"
+      "committed_sha256": "7708e55479a809510f77a1ae1ec50806f73784cc68d478ea138462e00c2394fe"
     },
     "head": {
       "size_mm": [
@@ -233,8 +233,8 @@
           24.2
         ]
       ],
-      "volume_mm3": 7505.0689,
-      "triangles": 748,
+      "volume_mm3": 7036.499,
+      "triangles": 1076,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
@@ -244,10 +244,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
-      "sha256": "d6f2b2ad63a22f23638b9d24566d4bfa5787a15858b41b268133bc83c64a1f57",
+      "sha256": "21ac5728d533ebca50fc1d67384cc2da189c1ad4e911b0967253badc6064b92c",
       "quantity": 1,
       "material": "PETG-grey",
-      "committed_sha256": "d6f2b2ad63a22f23638b9d24566d4bfa5787a15858b41b268133bc83c64a1f57"
+      "committed_sha256": "21ac5728d533ebca50fc1d67384cc2da189c1ad4e911b0967253badc6064b92c"
     },
     "filter_support": {
       "size_mm": [
@@ -278,10 +278,44 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "49c002245abaad87bef874492af2feaf0ef4b999e9d2e1c6e55f94932c0354f4",
+      "sha256": "83b621f929b2a056fe760ca3e289596a584c4c891d667d22486377adf426a559",
       "quantity": 1,
       "material": "PETG-grey",
-      "committed_sha256": "49c002245abaad87bef874492af2feaf0ef4b999e9d2e1c6e55f94932c0354f4"
+      "committed_sha256": "83b621f929b2a056fe760ca3e289596a584c4c891d667d22486377adf426a559"
+    },
+    "chg_holder": {
+      "size_mm": [
+        13.0,
+        21.5,
+        16.1
+      ],
+      "bounds_mm": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          13.0,
+          21.5,
+          16.1
+        ]
+      ],
+      "volume_mm3": 2212.373,
+      "triangles": 488,
+      "watertight": true,
+      "consistent_winding": true,
+      "degenerate_faces": 0,
+      "components": 1,
+      "boundary_shells": 1,
+      "cavity_shells": 0,
+      "shell_nesting_valid": true,
+      "shell_errors": [],
+      "backend": "Manifold",
+      "sha256": "16ea86795b579b3976ce90216736a27bebd4403a98ab22b6e05b06c358ee30c3",
+      "quantity": 1,
+      "material": "PETG-grey",
+      "committed_sha256": "16ea86795b579b3976ce90216736a27bebd4403a98ab22b6e05b06c358ee30c3"
     },
     "usbc_fit_base": {
       "size_mm": [
@@ -312,10 +346,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
-      "sha256": "b26ba204aca4d6c809687f075de51af9527487c69d120f2d4108f1d40ed889a3",
+      "sha256": "e37d7607a7fbd7985a4a5b3b1d97e2096cade6918a8bf2d4989beeb464677d74",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "b26ba204aca4d6c809687f075de51af9527487c69d120f2d4108f1d40ed889a3"
+      "committed_sha256": "e37d7607a7fbd7985a4a5b3b1d97e2096cade6918a8bf2d4989beeb464677d74"
     },
     "usbc_fit_lid": {
       "size_mm": [
@@ -336,7 +370,7 @@
         ]
       ],
       "volume_mm3": 1617.0503,
-      "triangles": 274,
+      "triangles": 276,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
@@ -346,10 +380,10 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
-      "sha256": "04ab31b7d440d0fc7c83032e8dce18481f4519cdf2c2be2a58ccfd29529c082a",
+      "sha256": "854b9ec0f84448be8b64ddd8fd8e47e139d7b073eb3b27853c36b9d621af5d05",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "04ab31b7d440d0fc7c83032e8dce18481f4519cdf2c2be2a58ccfd29529c082a"
+      "committed_sha256": "854b9ec0f84448be8b64ddd8fd8e47e139d7b073eb3b27853c36b9d621af5d05"
     }
   },
   "color_meshes": {
@@ -431,8 +465,12 @@
       }
     }
   },
-  "assembly_bodies": 35,
-  "assembly_pairs": 595,
+  "print_poses": {
+    "chg_holder": 0.0004,
+    "ball_lid": 0.001
+  },
+  "assembly_bodies": 36,
+  "assembly_pairs": 630,
   "metrics": {
     "cass_t": 4,
     "cass_c": 1.2,
@@ -659,8 +697,8 @@
     ],
     "charge_origin": [
       53.9,
-      57.1,
-      36
+      57.5,
+      38
     ],
     "charge_components": 2.7,
     "charge_sink": [
@@ -679,20 +717,36 @@
     "charge_web": [
       1.5,
       [
-        1.4,
-        6.3
+        8.8,
+        11
       ],
-      4,
-      1.6
+      [
+        2,
+        4
+      ]
     ],
     "charge_holder": [
+      8,
+      2.5,
       [
-        1.4,
-        8.5
+        6.2,
+        11,
+        1.6,
+        0.9,
+        0.2,
+        2.6
+      ],
+      0.8,
+      1.6
+    ],
+    "charge_pads": [
+      [
+        56.4,
+        58.7
       ],
       [
-        6.25,
-        8.3
+        60.6,
+        64.7
       ]
     ],
     "lid_screw": [
@@ -885,10 +939,11 @@
   },
   "intersections": [],
   "alignment": {
-    "features": 297,
+    "features": 301,
     "coaxial_pairs": {
       "ball_lid|ballast": 26,
       "ball_lid|base": 17,
+      "ball_lid|chg_holder": 2,
       "ball_lid|driver_lid": 8,
       "ball_lid|screws_lid": 16,
       "ballast|base": 63,
@@ -936,7 +991,8 @@
     "fan@head_back": 7.5398,
     "feet@base": 54.8257,
     "pwm_board@base": 5.1495,
-    "chg_module@ball_lid": 0.1435,
+    "chg_module@chg_holder": 0.24,
+    "chg_holder@ball_lid": 1.4051,
     "ball_lid@base": 6.1373,
     "usbc@base": 2.515
   },
@@ -1000,6 +1056,21 @@
       "name": "charger_backward",
       "first_contact_mm": 0.25,
       "limit_mm": 0.4
+    },
+    {
+      "name": "charger_up",
+      "first_contact_mm": 0.25,
+      "limit_mm": 0.4
+    },
+    {
+      "name": "charger_out_end",
+      "first_contact_mm": 0.25,
+      "limit_mm": 0.4
+    },
+    {
+      "name": "charger_tie_forward",
+      "first_contact_mm": 0.25,
+      "limit_mm": 0.4
     }
   ],
   "clearances_mm": [
@@ -1023,6 +1094,20 @@
       "gap_mm": 2.5,
       "min_mm": 1.5,
       "capped": true
+    },
+    {
+      "a": "chg_sink",
+      "b": "head",
+      "gap_mm": 0.252,
+      "min_mm": 0.25,
+      "capped": false
+    },
+    {
+      "a": "chg_sink",
+      "b": "base",
+      "gap_mm": 0.414,
+      "min_mm": 0.25,
+      "capped": false
     },
     {
       "a": "ball_lid",
@@ -1049,13 +1134,6 @@
     },
     {
       "name": "cover_off",
-      "length_mm": 30.0,
-      "collisions": 0,
-      "first_mm": null,
-      "max_volume_mm3": 0.0
-    },
-    {
-      "name": "chg_off",
       "length_mm": 30.0,
       "collisions": 0,
       "first_mm": null,
@@ -1351,11 +1429,11 @@
   "intake_lip_mm": 2.25,
   "mat_free_travel_mm": 1.62,
   "mat_squashed_percent": 0.08,
-  "mass_g": 1006.9,
+  "mass_g": 1009.3,
   "centre_of_mass_mm": [
     67.3,
     32.3,
-    68.9
+    68.8
   ],
   "foot_polygon_mm": [
     10.0,
@@ -1369,7 +1447,7 @@
     "left": 57.3,
     "right": 67.7
   },
-  "tip_angle_deg": 21.7,
+  "tip_angle_deg": 21.8,
   "top_corner_normals": [
     {
       "part": "head",
@@ -1471,6 +1549,7 @@
           "chg_module": 0.0,
           "chg_sink": 0.0,
           "chg_tie": 0.0,
+          "chg_holder": 0.0,
           "usbc": 0.0,
           "switch": 0.0,
           "led": 0.0,
@@ -1501,6 +1580,7 @@
           "chg_module": 0.0,
           "chg_sink": 0.0,
           "chg_tie": 0.0,
+          "chg_holder": 0.0,
           "usbc": 0.0,
           "switch": 0.0,
           "led": 0.0,
@@ -1566,6 +1646,7 @@
           "chg_module": 0.0,
           "chg_sink": 0.0,
           "chg_tie": 0.0,
+          "chg_holder": 0.0,
           "usbc": 0.0,
           "switch": 0.0,
           "led": 0.0,
@@ -1596,6 +1677,7 @@
           "chg_module": 0.0,
           "chg_sink": 0.0,
           "chg_tie": 0.0,
+          "chg_holder": 0.0,
           "usbc": 0.0,
           "switch": 0.0,
           "led": 0.0,
@@ -1661,6 +1743,7 @@
           "chg_module": 0.0,
           "chg_sink": 0.0,
           "chg_tie": 0.0,
+          "chg_holder": 0.0,
           "usbc": 0.0,
           "switch": 0.0,
           "led": 0.0,
@@ -1691,6 +1774,7 @@
           "chg_module": 0.0,
           "chg_sink": 0.0,
           "chg_tie": 0.0,
+          "chg_holder": 0.0,
           "usbc": 0.0,
           "switch": 0.0,
           "led": 0.0,
@@ -1756,6 +1840,7 @@
           "chg_module": 0.0,
           "chg_sink": 0.0,
           "chg_tie": 0.0,
+          "chg_holder": 0.0,
           "usbc": 0.0,
           "switch": 0.0,
           "led": 0.0,
@@ -1786,6 +1871,7 @@
           "chg_module": 0.0,
           "chg_sink": 0.0,
           "chg_tie": 0.0,
+          "chg_holder": 0.0,
           "usbc": 0.0,
           "switch": 0.0,
           "led": 0.0,
@@ -2235,7 +2321,7 @@
   "charger_air_access": {
     "module_extents_mm": [
       32.19999694824219,
-      3.6999969482421875,
+      3.700000762939453,
       11.0
     ],
     "probes": {
@@ -2244,50 +2330,86 @@
         "collisions_mm3": {}
       },
       "heatsink_rear_space": {
-        "volume_mm3": 331.5,
+        "volume_mm3": 183.6,
         "collisions_mm3": {}
       },
       "component_side_route": {
-        "volume_mm3": 82.2524,
+        "volume_mm3": 81.2938,
         "collisions_mm3": {}
       },
       "heatsink_side_route": {
-        "volume_mm3": 56.3799,
+        "volume_mm3": 45.7975,
         "collisions_mm3": {}
       }
     },
     "vertical_pose": true,
     "face_anchor_gaps_mm": {
-      "components": 0.2000015258789034,
-      "heatsink": 0.2000015258789034
+      "components": 0.09999923706054403,
+      "heatsink": 0.29999999999999716
     },
     "fields_inside_face_extents": true,
     "route_connections": {
       "component": {
         "components": 1,
-        "face_space_overlap_mm3": 16.2867,
+        "face_space_overlap_mm3": 18.54219,
         "probe_diameter_mm": 1.2
       },
       "heatsink": {
         "components": 1,
-        "face_space_overlap_mm3": 5.12201,
+        "face_space_overlap_mm3": 4.28762,
         "probe_diameter_mm": 1.2
       }
     }
   },
   "charger_holder": {
+    "holder_to_sink_mm": 5.7,
     "hot_zone_overlap_mm3": 0.0,
-    "holder_to_sink_mm": 8.2,
     "seat_contact_area_mm2": {
-      "lower_edge": 1.968,
-      "rear_bearing": 19.751
+      "lower_jaw": 4.8,
+      "hooks": 8.64,
+      "lower_back_stop": 9.6,
+      "upper_back_stop": 9.6,
+      "web_bearing": 8.8,
+      "end_lip": 4.0
     },
-    "tunnel_overlap_mm3": {
-      "under_board": 0.0,
-      "rear_vertical": 0.0
+    "hook_fill": {
+      "lower": 1.0,
+      "upper": 1.0
     },
-    "tie_to_lid_mm": 0.3,
-    "tie_forward_contact_mm3": 1.375
+    "jaw_free_space_overlap_mm3": {
+      "lower_slot": 0.0,
+      "upper_slot": 0.0,
+      "lower_room": 0.0,
+      "upper_room": 0.0
+    },
+    "jaw_free_length_mm": 10.1,
+    "jaw_clip_strain": 0.0259,
+    "tunnel_overlap_mm3": 0.0,
+    "tie_to_holder_mm": 0.3,
+    "installed_forward_block_mm3": 5.5307,
+    "unclip_path": [
+      {
+        "stage": "out_of_l",
+        "length_mm": 3.5,
+        "step_mm": 0.1,
+        "maximum_overlap_mm3": 0.0,
+        "minimum_clearance_mm": 0.0
+      },
+      {
+        "stage": "forward",
+        "length_mm": 4,
+        "step_mm": 0.1,
+        "maximum_overlap_mm3": 0.0,
+        "minimum_clearance_mm": 0.0
+      },
+      {
+        "stage": "lift",
+        "length_mm": 30,
+        "step_mm": 0.5,
+        "maximum_overlap_mm3": 0.0,
+        "minimum_clearance_mm": 0.5
+      }
+    ]
   },
   "lid_fasteners": {
     "screw_length_mm": 8,
@@ -2687,6 +2809,7 @@
           "chg_module": 0.0,
           "chg_sink": 0.0,
           "chg_tie": 0.0,
+          "chg_holder": 0.0,
           "usbc": 0.0,
           "switch": 0.0,
           "led": 0.0,
@@ -2714,6 +2837,7 @@
           "chg_module": 0.0,
           "chg_sink": 0.0,
           "chg_tie": 0.0,
+          "chg_holder": 0.0,
           "usbc": 0.0,
           "switch": 0.0,
           "led": 0.0,
@@ -2741,6 +2865,7 @@
           "chg_module": 0.0,
           "chg_sink": 0.0,
           "chg_tie": 0.0,
+          "chg_holder": 0.0,
           "usbc": 0.0,
           "switch": 0.0,
           "led": 0.0,
@@ -2790,6 +2915,7 @@
           "chg_module": 0.0,
           "chg_sink": 0.0,
           "chg_tie": 0.0,
+          "chg_holder": 0.0,
           "usbc": 0.0,
           "switch": 0.0,
           "led": 0.0,
@@ -2817,6 +2943,7 @@
           "chg_module": 0.0,
           "chg_sink": 0.0,
           "chg_tie": 0.0,
+          "chg_holder": 0.0,
           "usbc": 0.0,
           "switch": 0.0,
           "led": 0.0,
@@ -2844,6 +2971,7 @@
           "chg_module": 0.0,
           "chg_sink": 0.0,
           "chg_tie": 0.0,
+          "chg_holder": 0.0,
           "usbc": 0.0,
           "switch": 0.0,
           "led": 0.0,
@@ -3575,6 +3703,7 @@
       "chg_module",
       "chg_sink",
       "chg_tie",
+      "chg_holder",
       "usbc",
       "switch",
       "ballast",
@@ -4119,6 +4248,7 @@
   "loaded_lid_removal": {
     "moving": [
       "ball_lid",
+      "chg_holder",
       "chg_module",
       "chg_sink",
       "chg_tie"
@@ -4261,6 +4391,7 @@
     "foot": 0.0,
     "ball_lid": 0.0,
     "filter_support": 0.0,
+    "chg_holder": 0.0,
     "usbc_fit_base": 0.0,
     "usbc_fit_lid": 0.0,
     "multicolour/knob_base": 0.0,
@@ -4270,6 +4401,7 @@
     "Masses of the bought parts are data-sheet or estimated values, not weighed",
     "Cassette inserts: heat-set four Ruthex RX-M3x5.7 flush from the front of the bare head; fit and torque remain physical checks. Remove all four cassette screws before filter service.",
     "Fan cable: the rear-open slot has 16 mm nominal width; verify the actual plug, wire bend and edge protection. The 14 x 8 x 16 mm plug and 8 x 4 mm cable route are assumed envelopes; the actual fan outlet and flexible lead are unmeasured.",
+    "Charge holder: clip-in force, jaw spring and hook retention on the real board are geometric only; glue the holder with CA gel over both lid pads and check the hooks miss the inductor and diode (0.9 mm, as on LEO-AC1).",
     "Front boss connections are checked geometrically; printed fracture force, layer adhesion and damage from heat-set insertion still require a physical test.",
     "The soft filter mat bends locally by up to 2.75 mm over the two front screw heads and their shallow recessed seats; only the two measured contact zones are allowed. No compression force or flexible deformation is simulated.",
     "Ratchet envelope is assumed: 22 mm head diameter, 14 mm head thickness, 87 mm overall length, 14 mm handle width; 25 mm bit, 2 mm engagement, 4 mm neck for 6 mm above the screw face. Actual tool dimensions are not measured.",

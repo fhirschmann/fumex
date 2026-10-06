@@ -1,5 +1,5 @@
 {
-  "profile": "Bambu Lab H2S 0.4 nozzle / 0.20mm Standard @BBL H2S, 4 walls, 5/5 top/bottom, no supports; 20 % gyroid, 100 % zig-zag: filter_support, foot",
+  "profile": "Bambu Lab H2S 0.4 nozzle / 0.20mm Standard @BBL H2S, 4 walls, 5/5 top/bottom, no supports; 20 % gyroid, 100 % zig-zag: chg_holder, filter_support, foot",
   "process_overrides": {
     "only_one_wall_first_layer": "1",
     "enable_support": "0"
@@ -15,11 +15,11 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "8e5b08d11d2f94fc6b7cfdbf75eec2085208fb72000bfd2d146ffa49b1082e90",
+      "source_sha256": "7708e55479a809510f77a1ae1ec50806f73784cc68d478ea138462e00c2394fe",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 3.713,
+      "hours": 3.715,
       "grams": 119.569,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -75,7 +75,7 @@
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 2.689,
+      "hours": 2.688,
       "grams": 59.368,
       "wall_loops": 4,
       "infill_percent": 20.0,
@@ -183,12 +183,12 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "d6f2b2ad63a22f23638b9d24566d4bfa5787a15858b41b268133bc83c64a1f57",
+      "source_sha256": "21ac5728d533ebca50fc1d67384cc2da189c1ad4e911b0967253badc6064b92c",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
-      "hours": 0.514,
-      "grams": 7.787,
+      "hours": 0.417,
+      "grams": 7.23,
       "wall_loops": 4,
       "infill_percent": 20.0,
       "layer_height": 0.20000000298023224,
@@ -211,12 +211,40 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "49c002245abaad87bef874492af2feaf0ef4b999e9d2e1c6e55f94932c0354f4",
+      "source_sha256": "83b621f929b2a056fe760ca3e289596a584c4c891d667d22486377adf426a559",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
       "hours": 0.367,
       "grams": 6.554,
+      "wall_loops": 4,
+      "infill_percent": 100.0,
+      "layer_height": 0.20000000298023224,
+      "effective_settings": {
+        "sparse_infill_pattern": "zig-zag",
+        "enable_support": "0",
+        "curr_bed_type": "Engineering Plate",
+        "top_shell_layers": "5",
+        "bottom_shell_layers": "5",
+        "only_one_wall_first_layer": "1"
+      },
+      "start_gcode_diagnostic": true
+    },
+    {
+      "part": "chg_holder",
+      "quantity": 1,
+      "material": "PETG-grey",
+      "filament_slot": 2,
+      "passed": true,
+      "positioning": {
+        "mode": "automatic"
+      },
+      "source_sha256": "16ea86795b579b3976ce90216736a27bebd4403a98ab22b6e05b06c358ee30c3",
+      "exit_code": 0,
+      "result_code": 0,
+      "warnings": "",
+      "hours": 0.38,
+      "grams": 2.708,
       "wall_loops": 4,
       "infill_percent": 100.0,
       "layer_height": 0.20000000298023224,
@@ -239,7 +267,7 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "b26ba204aca4d6c809687f075de51af9527487c69d120f2d4108f1d40ed889a3",
+      "source_sha256": "e37d7607a7fbd7985a4a5b3b1d97e2096cade6918a8bf2d4989beeb464677d74",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -267,7 +295,7 @@
       "positioning": {
         "mode": "automatic"
       },
-      "source_sha256": "04ab31b7d440d0fc7c83032e8dce18481f4519cdf2c2be2a58ccfd29529c082a",
+      "source_sha256": "854b9ec0f84448be8b64ddd8fd8e47e139d7b073eb3b27853c36b9d621af5d05",
       "exit_code": 0,
       "result_code": 0,
       "warnings": "",
@@ -287,13 +315,13 @@
       "start_gcode_diagnostic": true
     }
   ],
-  "total_parts": 11,
-  "total_grams_individual_plates": 476.1,
-  "total_hours_individual_plates": 16.7,
+  "total_parts": 12,
+  "total_grams_individual_plates": 478.3,
+  "total_hours_individual_plates": 17.0,
   "production_gcode": false,
   "project_3mf": {
     "file": "stl/fumex_all_parts.3mf",
-    "parts": 11,
+    "parts": 12,
     "plates": 6,
     "layout": [
       {
@@ -397,11 +425,12 @@
         "name": "Grey covers and support",
         "parts": [
           "ball_lid",
+          "chg_holder",
           "filter_support",
           "head_back"
         ],
         "size_mm": [
-          201.3,
+          165.6,
           239.5
         ],
         "reuse_batch": 2,
@@ -411,7 +440,7 @@
             35.0
           ],
           [
-            216.3442,
+            180.5976,
             274.5431
           ]
         ],
@@ -421,7 +450,7 @@
             35.0
           ],
           [
-            216.3442,
+            180.5976,
             274.5431
           ]
         ]
@@ -571,7 +600,7 @@
             ],
             [
               159.0,
-              118.0
+              118.001
             ]
           ],
           "extrusion_segments": 1039,
@@ -648,15 +677,15 @@
           },
           "bounds_mm": [
             [
-              15.066,
+              14.913,
               35.597
             ],
             [
-              215.748,
-              273.543
+              180.001,
+              274.643
             ]
           ],
-          "extrusion_segments": 10349,
+          "extrusion_segments": 10322,
           "features": [
             "Bottom surface",
             "Gap infill",
@@ -678,7 +707,7 @@
             0.126068,
             0.126094,
             0.126103,
-            0.129911,
+            0.12988,
             0.141886,
             0.14189,
             0.141899,
@@ -694,9 +723,10 @@
             0.169444,
             0.169783,
             0.5,
-            0.50025,
+            0.50019,
             0.50036,
-            0.50057
+            0.50057,
+            0.50845
           ],
           "grid_mm": 1,
           "startup_bounds_mm": [
@@ -805,8 +835,8 @@
       "workflow": "Remove each finished print, brim, skirt and tower before starting the next virtual plate; retain the same plate orientation",
       "startup_policy": "Native startup/purge/wipe/calibration remains enabled and may revisit its fixed area; reported startup bounds are not part of the fresh-area guarantee"
     },
-    "total_hours_plates": 16.2,
-    "total_grams_plates": 478.0,
+    "total_hours_plates": 16.3,
+    "total_grams_plates": 480.1,
     "multicolour_parts": {
       "knob": [
         "pointer"
@@ -855,7 +885,7 @@
       },
       "Base": {
         "plate": 2,
-        "hours": 3.71,
+        "hours": 3.72,
         "grams_by_filament": {
           "1": 119.57
         },
@@ -911,9 +941,9 @@
       },
       "Grey covers and support": {
         "plate": 4,
-        "hours": 3.22,
+        "hours": 3.3,
         "grams_by_filament": {
-          "2": 73.6
+          "2": 75.69
         },
         "warnings": "",
         "process_overrides": {
@@ -922,11 +952,6 @@
           "wall_loops": "4"
         },
         "object_infill": {
-          "filter_support": {
-            "instances": 1,
-            "sparse_infill_density": "100%",
-            "sparse_infill_pattern": "zig-zag"
-          },
           "head_back": {
             "instances": 1,
             "sparse_infill_density": "20%",
@@ -936,20 +961,33 @@
             "instances": 1,
             "sparse_infill_density": "20%",
             "sparse_infill_pattern": "gyroid"
+          },
+          "filter_support": {
+            "instances": 1,
+            "sparse_infill_density": "100%",
+            "sparse_infill_pattern": "zig-zag"
+          },
+          "chg_holder": {
+            "instances": 1,
+            "sparse_infill_density": "100%",
+            "sparse_infill_pattern": "zig-zag"
           }
         },
         "expected_filament_slots": [
           2
         ],
         "object_filaments": {
-          "filter_support": {
-            "filter_support": 2
-          },
           "head_back": {
             "head_back": 2
           },
           "ball_lid": {
             "ball_lid": 2
+          },
+          "filter_support": {
+            "filter_support": 2
+          },
+          "chg_holder": {
+            "chg_holder": 2
           }
         }
       },
@@ -1014,34 +1052,42 @@
       }
     },
     "object_filaments": {
-      "base": {
-        "base": 1
+      "head_back": {
+        "head_back": 2
+      },
+      "ball_lid": {
+        "ball_lid": 2
       },
       "filter_support": {
         "filter_support": 2
+      },
+      "chg_holder": {
+        "chg_holder": 2
+      },
+      "head": {
+        "head": 2
+      },
+      "base": {
+        "base": 1
+      },
+      "knob": {
+        "knob_base": 2,
+        "knob_pointer": 4
       },
       "cassette": {
         "cassette": 2
       },
       "foot": {
         "foot": 3
-      },
-      "head": {
-        "head": 2
-      },
-      "knob": {
-        "knob_base": 2,
-        "knob_pointer": 4
-      },
-      "ball_lid": {
-        "ball_lid": 2
-      },
-      "head_back": {
-        "head_back": 2
       }
     },
     "object_infill": {
-      "base": {
+      "head_back": {
+        "instances": 1,
+        "sparse_infill_density": "20%",
+        "sparse_infill_pattern": "gyroid"
+      },
+      "ball_lid": {
         "instances": 1,
         "sparse_infill_density": "20%",
         "sparse_infill_pattern": "gyroid"
@@ -1050,6 +1096,26 @@
         "instances": 1,
         "sparse_infill_density": "100%",
         "sparse_infill_pattern": "zig-zag"
+      },
+      "chg_holder": {
+        "instances": 1,
+        "sparse_infill_density": "100%",
+        "sparse_infill_pattern": "zig-zag"
+      },
+      "head": {
+        "instances": 1,
+        "sparse_infill_density": "20%",
+        "sparse_infill_pattern": "gyroid"
+      },
+      "base": {
+        "instances": 1,
+        "sparse_infill_density": "20%",
+        "sparse_infill_pattern": "gyroid"
+      },
+      "knob": {
+        "instances": 1,
+        "sparse_infill_density": "20%",
+        "sparse_infill_pattern": "gyroid"
       },
       "cassette": {
         "instances": 1,
@@ -1060,30 +1126,10 @@
         "instances": 4,
         "sparse_infill_density": "100%",
         "sparse_infill_pattern": "zig-zag"
-      },
-      "head": {
-        "instances": 1,
-        "sparse_infill_density": "20%",
-        "sparse_infill_pattern": "gyroid"
-      },
-      "knob": {
-        "instances": 1,
-        "sparse_infill_density": "20%",
-        "sparse_infill_pattern": "gyroid"
-      },
-      "ball_lid": {
-        "instances": 1,
-        "sparse_infill_density": "20%",
-        "sparse_infill_pattern": "gyroid"
-      },
-      "head_back": {
-        "instances": 1,
-        "sparse_infill_density": "20%",
-        "sparse_infill_pattern": "gyroid"
       }
     },
-    "own_infill_parts": 5,
-    "sha256": "f2aa7489de6bef335bc6f913965181efa32a7f56a7d5b7ebc35a398d26638042"
+    "own_infill_parts": 6,
+    "sha256": "71b90ca9304fba58a2914a927d7c748b7a44a71fe5c776fdabc3c7e277cb8887"
   },
   "test_3mf": {
     "file": "stl/fumex_usb_fit.3mf",
@@ -1183,7 +1229,7 @@
       }
     },
     "own_infill_parts": 0,
-    "sha256": "5d5a4b24f5d6b820c36bb7eb21265a0e2ee1c5ada8344bdb2ea739484fb60c3a",
+    "sha256": "6a704b4fbf0d78ca4faf719bb221242539fbde15de1b644f9903da01655dc68f",
     "process": {
       "wall_loops": 4,
       "top_shell_layers": 5,

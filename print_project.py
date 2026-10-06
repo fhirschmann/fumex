@@ -22,10 +22,14 @@ PARTS = {
     "foot": (4, "TPU", 1),
     "ball_lid": (1, "PETG-grey", 1),
     "filter_support": (1, "PETG-grey", 1),
+    "chg_holder": (1, "PETG-grey", 1),
     "usbc_fit_base": (0, "PETG-black", 1),
     "usbc_fit_lid": (0, "PETG-black", 1),
 }
-FULL_INFILL = {"filter_support"}
+FULL_INFILL = {"filter_support", "chg_holder"}
+# World -> print rotations: the print STLs must be rotated, not mirrored, copies of the installed bodies.
+PRINT_POSES = {"chg_holder": [[1, 0, 0], [0, 0, 1], [0, -1, 0]],   # back plate on the bed
+               "ball_lid": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]}
 FULL_INFILL_MATERIALS = {"TPU"}
 
 # Assembly bodies in installed position: name -> OpenSCAD call. Every pair is checked for overlap.
@@ -47,6 +51,7 @@ ASSEMBLY = {
     "chg_module": "chg_module_env();",
     "chg_sink": "chg_sink_env();",
     "chg_tie": "chg_tie_env();",
+    "chg_holder": "chg_holder();",
     "usbc": "usbc_env();",
     "switch": "sw_env();",
     "led": "led_env();",
@@ -111,7 +116,7 @@ FILAMENTS = [dict(material="PETG-black", profile="Generic PETG @BBL H2S", colour
 PLATES = [("Head", ["head"]),
           ("Base", ["base"]),
           ("Cassette", ["cassette"]),
-          ("Grey covers and support", ["head_back", "ball_lid", "filter_support"]),
+          ("Grey covers and support", ["head_back", "ball_lid", "filter_support", "chg_holder"]),
           ("Knob", ["knob"]),
           ("TPU feet", ["foot"])]
 # Use fresh areas of a fully 3DLAC-coated bed across successive jobs. Remove
@@ -147,7 +152,7 @@ MASSES_G = {"fan": 185, "battery": 150, "filter": 15, "pwm_board": 12, "chg_modu
             "screws_cassette": 4, "screws_fan": 6, "screws_back": 4, "screws_head": 6, "screws_feet": 3, "screws_lid": 1.5}
 # bodies whose mass comes from their volume rather than a data sheet
 BY_VOLUME = {"base": "PETG", "head": "PETG", "head_back": "PETG", "cassette": "PETG", "knob": "PETG",
-             "feet": "TPU", "ball_lid": "PETG", "filter_support": "PETG-solid", "ballast": "iron-loose",
+             "feet": "TPU", "ball_lid": "PETG", "filter_support": "PETG-solid", "chg_holder": "PETG-solid", "ballast": "iron-loose",
              "chg_tie": "nylon", "battery_ties": "nylon"}
 
 LIMITATIONS = ["Hardware envelopes, not detailed vendor CAD",
@@ -523,14 +528,15 @@ def _air_corridor(points, cylinder, radius=0.6):
 def _charger_air_probes(cylinder):
     return {
         # The tie occupies the cool end. The warm component face remains exposed.
-        'component_face_space': _air_box([70, 52.2, 37], [83, 54.2, 46]),
-        'heatsink_rear_space': _air_box([72, 69.3, 33], [89, 70.6, 48]),
-        # Both routes pass the free IN end; the 20 mm heatsink fills the floor vents' depth.
-        'component_side_route': _air_corridor([[74.5, 57.4, 60], [74.5, 57.4, 49], [74.5, 53.2, 49],
-                                           [74.5, 53.2, 40], [93, 53.2, 40], [93, 70, 40],
-                                           [85, 70, 40], [85, 75, 40]], cylinder),
-        'heatsink_side_route': _air_corridor([[83.5, 63, 60], [83.5, 63, 52.6], [93, 63, 52.6],
-                                          [93, 63, 40], [93, 70, 40], [85, 70, 40], [85, 75, 40]], cylinder),
+        'component_face_space': _air_box([70, 52.7, 39], [83, 54.7, 48]),
+        'heatsink_rear_space': _air_box([72, 69.8, 35], [89, 70.7, 47]),
+        # Both routes pass the free IN end; the 20 mm heatsink fills the floor vents' depth and
+        # leaves only about 0.5 mm below the head floor, so no route crosses its top.
+        'component_side_route': _air_corridor([[74.5, 57.35, 60], [74.5, 57.35, 50.2], [74.5, 53.6, 50.2],
+                                           [74.5, 53.6, 40], [93, 53.6, 40], [93, 70.3, 40],
+                                           [85, 70.3, 40], [85, 75, 40]], cylinder),
+        'heatsink_side_route': _air_corridor([[93, 63, 60], [93, 63, 40], [93, 70.3, 40],
+                                          [85, 70.3, 40], [85, 75, 40]], cylinder),
     }
 
 
@@ -542,10 +548,10 @@ def _charger_air_report(meshes, solids, cylinder):
     result['vertical_pose'] = bool(abs(extent[0] - 32.2) < 0.05 and abs(extent[1] - 3.7) < 0.05
                                    and abs(extent[2] - 11) < 0.05)
     module_bounds, sink_bounds = meshes['chg_module'].bounds, meshes['chg_sink'].bounds
-    spaces = {'component_face_space': ([70, 52.2, 37], [83, 54.2, 46]),
-              'heatsink_rear_space': ([72, 69.3, 33], [89, 70.6, 48])}
-    result['face_anchor_gaps_mm'] = {'components': float(module_bounds[0, 1] - 54.2),
-                                      'heatsink': float(69.3 - sink_bounds[1, 1])}
+    spaces = {'component_face_space': ([70, 52.7, 39], [83, 54.7, 48]),
+              'heatsink_rear_space': ([72, 69.8, 35], [89, 70.7, 47])}
+    result['face_anchor_gaps_mm'] = {'components': float(module_bounds[0, 1] - 54.7),
+                                      'heatsink': float(69.8 - sink_bounds[1, 1])}
     result['fields_inside_face_extents'] = all(
         bounds[0, axis] + 0.05 <= lo[axis] < hi[axis] <= bounds[1, axis] - 0.05
         for bounds, (lo, hi) in [(module_bounds, spaces['component_face_space']),
@@ -579,62 +585,124 @@ def check_charger_air(ctx):
     return dict(charger_air_access=result)
 
 
+def _charger_released(holder, x0, y0, z0, zt, yp, clip):
+    """Kinematic proxy for spread jaws: both jaws with their hooks moved clear of the long edges."""
+    c0, c1, jaw_t, hook, top_cl = clip[:5]
+    xa, xb, yf = x0 + c0 - .01, x0 + c1 + .01, y0 - 1.2
+    lower = (_air_box([xa, yf, z0 - jaw_t - .01], [xb, yp - .01, z0 + .001]) +
+             _air_box([xa, yf, z0 - .01], [xb, y0 + .01, z0 + hook + .01]))
+    upper = (_air_box([xa, yf, zt + top_cl - .001], [xb, yp - .01, zt + top_cl + jaw_t + .01]) +
+             _air_box([xa, yf, zt - hook - .01], [xb, y0 + .01, zt + top_cl + .01]))
+    return ((holder - lower - upper) + (holder ^ lower).translate([0, 0, -(hook + .1)]) +
+            (holder ^ upper).translate([0, 0, hook + top_cl + .1]))
+
+
 def check_charger_holder(ctx):
-    """Measure the cool-end seats, open hot end and usable tie passages on the meshes."""
-    lid, module, tie = (ctx.solids[n] for n in ("ball_lid", "chg_module", "chg_tie"))
+    """LEO-AC1 clip holder: real seats, hook reach, free jaws, tie passage, release and heatsink space."""
+    m, s = ctx.metrics, ctx.solids
+    holder, module, tie = s["chg_holder"], s["chg_module"], s["chg_tie"]
     pcb = ctx.meshes["chg_module"].bounds
-    x0, z0 = pcb[0, 0], pcb[0, 2]
-    yback = pcb[1, 1]
-    top_lid = ctx.metrics["ballast"][3] + ctx.metrics["lid_screw"][0]
-    holder = lid ^ _air_box([0, 0, top_lid + 0.01], [150, 80, 80])
-    assert holder.volume() > 100, "Charge-module holder is missing"
-    # User, 2026-10-06: only one web, one seat and the tie passage at the OUT end,
-    # ending at 8.5 mm. The 20 mm heatsink begins 16.7 mm from OUT.
-    hot = _air_box([x0 + 8.6, 50, top_lid + 0.01], [95, 72, 60])
-    hot_overlap = (holder ^ hot).volume()
-    sink_gap = holder.min_gap(ctx.solids["chg_sink"], 12)
-    assert hot_overlap < 0.01 and sink_gap >= 8, \
-        f"Charge-module holder obstructs its hot end: {hot_overlap:.4f} mm3, gap {sink_gap:.3f} mm"
+    x0, z0, zt = pcb[0, 0], pcb[0, 2], pcb[1, 2]
+    y0 = m["charge_origin"][1]
+    yb = y0 + m["charge_pcb"][2]
+    air, plate_t, clip, slot, room = m["charge_holder"]
+    c0, c1, jaw_t, hook, top_cl, stop = clip
+    yp = yb + air
+    assert len(holder.decompose()) == 1 and holder.volume() > 300, "Charge-module holder is missing or split"
+    sink_gap = holder.min_gap(s["chg_sink"], 12)
+    hot_overlap = (holder ^ _air_box([x0 + c1 + .05, 45, 25], [100, 75, 60])).volume()
+    assert hot_overlap < .001 and sink_gap >= 5.5, \
+        f"Charge-module holder approaches its heatsink: {hot_overlap:.4f} mm3, gap {sink_gap:.3f} mm"
 
-    # Separate physical seats; a contact at one end cannot stand in for the others.
-    # The lower-edge region is limited to the bare PCB thickness: the component
-    # envelope's flat underside must not stand in for the real edge bearing.
-    contacts = {}
+    # Separate bearing areas; a contact at one seat cannot stand in for another.
+    areas = {}
     for name, delta, region in [
-        ("lower_edge", [0, 0, -0.05], ([x0 + 6.15, yback - 0.98, z0 - 0.1], [x0 + 8.4, yback - 0.02, z0 + 0.1])),
-        ("rear_bearing", [0, 0.05, 0], ([x0 + 1.3, yback - 0.1, z0 + 3.4],
-                                      [x0 + 6.4, yback + 0.1, z0 + 7.6])),
+        ("lower_jaw", [0, 0, -.05], ([x0 + c0 - .1, y0 - .1, z0 - .2], [x0 + c1 + .1, yb + .1, z0 + .1])),
+        ("hooks", [0, -.05, 0], ([x0 + c0 - .1, y0 - .2, z0 - .1], [x0 + c1 + .1, y0 + .1, zt + .1])),
+        ("lower_back_stop", [0, .05, 0], ([x0 + c0 - .1, yb - .1, z0], [x0 + c1 + .1, yb + .2, z0 + 3])),
+        ("upper_back_stop", [0, .05, 0], ([x0 + c0 - .1, yb - .1, zt - 3], [x0 + c1 + .1, yb + .2, zt])),
+        ("web_bearing", [0, .05, 0], ([x0 + 8.7, yb - .1, z0 + 3.4], [x0 + 11.1, yb + .2, z0 + 7.6])),
+        ("end_lip", [-.05, 0, 0], ([x0 - .2, y0 - .1, z0 + 3.4], [x0 + .1, yb + .1, z0 + 7.6])),
     ]:
-        area = (module.translate(delta) ^ lid ^ _air_box(*region)).volume() / 0.05
-        assert area > 1.8, f"Charge-module seat missing: {name}, {area:.3f} mm2"
-        contacts[name] = round(area, 3)
-
-    # Probe a slightly inset copy of each tunnel to avoid coplanar facet noise.
-    # These are spaces in the printed lid; the separate band collision check
-    # below proves that the installed tie fits with the board in place as well.
-    tunnels = {
-        "under_board": _air_box([56.97, 52.62, 34.52], [60.03, 65.98, 36.28]),
-        "rear_vertical": _air_box([56.97, 61.62, 34.52], [60.03, 63.38, 48.68]),
+        area = (module.translate(delta) ^ holder ^ _air_box(*region)).volume() / .05
+        assert area > 1.5, f"Charge-module seat missing: {name}, {area:.3f} mm2"
+        areas[name] = round(area, 3)
+    # Hooks reach the LEO-checked 0.9 mm over the part side and no farther.
+    reach = {}
+    for name, inside, beyond in [
+        ("lower", ([x0 + c0 + .1, y0 - .15, z0 + .05], [x0 + c1 - .1, y0 - .05, z0 + hook - .05]),
+                  ([x0 + c0 + .1, y0 - .15, z0 + hook + .05], [x0 + c1 - .1, y0 - .05, z0 + 2])),
+        ("upper", ([x0 + c0 + .1, y0 - .15, zt - hook + .05], [x0 + c1 - .1, y0 - .05, zt - .05]),
+                  ([x0 + c0 + .1, y0 - .15, zt - 2], [x0 + c1 - .1, y0 - .05, zt - hook - .05])),
+    ]:
+        a, b = _air_box(*inside), _air_box(*beyond)
+        fill, extra = (a ^ holder).volume() / a.volume(), (b ^ holder).volume()
+        assert fill > .99 and extra < .001, f"Charge hook {name} reach is wrong: {fill:.3f}, {extra:.4f} mm3"
+        reach[name] = round(fill, 4)
+    # The jaws hang only from the plate: open slots to the back stops and spreading room.
+    free = {
+        "lower_slot": ([x0 + c0 + .05, yb + .1, z0 + .05], [x0 + c1 - .05, yp - .1, z0 + slot - .05]),
+        "upper_slot": ([x0 + c0 + .05, yb + .1, zt - slot + top_cl + .05], [x0 + c1 - .05, yp - .1, zt + top_cl - .05]),
+        "lower_room": ([x0 + c0 + .05, y0 - 1, z0 - jaw_t - room + .05], [x0 + c1 - .05, yp - .1, z0 - jaw_t - .05]),
+        "upper_room": ([x0 + c0 + .05, y0 - 1, zt + top_cl + jaw_t + .05], [x0 + c1 - .05, yp - .1, zt + 6]),
     }
-    overlaps = {n: round((probe ^ lid).volume(), 6) for n, probe in tunnels.items()}
-    assert all(v < 0.01 for v in overlaps.values()), f"Charge tie tunnel blocked: {overlaps}"
-    assert (tunnels["under_board"] ^ tunnels["rear_vertical"]).volume() > 1, "Disconnected tie passages"
+    free = {n: round((_air_box(*b) ^ holder).volume(), 5) for n, b in free.items()}
+    assert max(free.values()) < .001, f"Charge holder jaws are not free to spread: {free}"
+    for name, lo, hi in [("lower", z0 - jaw_t - .01, z0 + .01), ("upper", zt + top_cl - .01, zt + top_cl + jaw_t + .01)]:
+        jaw = holder ^ _air_box([x0 + c0 - .3, y0 - 1.2, lo], [x0 + c1 + .3, yp - .05, hi])
+        assert len(jaw.decompose()) == 1 and abs(jaw.volume() - (c1 - c0) * (yp - .05 - y0 + hook + top_cl) * jaw_t) < 3, \
+            f"Charge holder {name} jaw is attached beside the plate: {jaw.volume():.2f} mm3"
+    length = yp - (y0 - hook - top_cl)
+    strain = 3 * jaw_t * (hook + top_cl) / (2 * length ** 2)
+    assert strain <= .03, f"Charge holder jaws strain {strain:.4f} on clipping"
+
+    # Tie passage through the web, probed slightly inset to avoid coplanar facet noise.
+    tx, tc, ty = x0 + m["charge_tie"][3], m["charge_tie"][0] / 2 + m["charge_tie"][2], yb + 1.5 + 2 + .3
+    zc = (z0 + zt) / 2
+    tunnel = _air_box([tx - tc + .02, ty - .28, zc - 3], [tx + tc - .02, ty + 1.48, zc + 3])
+    tunnel_overlap = round((tunnel ^ holder).volume(), 6)
+    assert tunnel_overlap < .01, f"Charge tie tunnel blocked: {tunnel_overlap} mm3"
     bounds = np.asarray(tie.bounding_box()).reshape(2, 3)
-    assert abs(bounds[:, 0].mean() - x0 - 4.6) < 0.05, "Charge tie moved off the reviewed cool-end position"
-    assert abs(bounds[1, 0] - bounds[0, 0] - 2.5) < 0.05, "Charge tie has the wrong width"
-    assert bounds[0, 2] < z0 - 1.1 and bounds[1, 2] > pcb[1, 2] + 1.1, "Charge tie does not wrap the board"
+    assert abs(bounds[:, 0].mean() - x0 - 4.6) < .05, "Charge tie moved off the reviewed position below the hooks"
+    assert abs(bounds[1, 0] - bounds[0, 0] - 2.5) < .05, "Charge tie has the wrong width"
+    assert bounds[0, 2] < z0 - 1.1 and bounds[1, 2] > zt + 1.1, "Charge tie does not wrap the board"
     assert len(tie.decompose()) == 1, "Charge tie band is disconnected"
-    collision = {n: round((tie ^ s).volume(), 6) for n, s in ctx.solids.items()
+    collision = {n: round((tie ^ q).volume(), 6) for n, q in s.items()
                  if n != "chg_tie" and not n.startswith("driver_")}
-    assert not any(v > 0.01 for v in collision.values()), f"Charge tie intersects the assembly: {collision}"
-    forward = (module.translate([0, -0.05, 0]) ^ tie).volume()
-    assert forward > 0.1, "Charge tie does not retain the board against its rear bearing"
-    tie_gap = tie.min_gap(lid, 1)
-    assert 0.25 <= tie_gap <= 0.35, f"Charge tie tunnel clearance is {tie_gap:.3f} mm"
-    return dict(charger_holder=dict(hot_zone_overlap_mm3=round(hot_overlap, 5),
-        holder_to_sink_mm=round(sink_gap, 3), seat_contact_area_mm2=contacts,
-        tunnel_overlap_mm3=overlaps, tie_to_lid_mm=round(tie_gap, 3),
-        tie_forward_contact_mm3=round(forward, 5)))
+    assert not any(v > .01 for v in collision.values()), f"Charge tie intersects the assembly: {collision}"
+    tie_gap = tie.min_gap(holder, 1)
+    assert .25 <= tie_gap <= .35, f"Charge tie tunnel clearance is {tie_gap:.3f} mm"
+
+    # Unclip: spread both jaws, slide the OUT end out of the L, pull forward from under the upper
+    # jaw and lift. Checked against the rest of the holder, the lid and the bay; the tie is cut first.
+    released = _charger_released(holder, x0, y0, z0, zt, yp, clip)
+    assert abs(released.volume() - holder.volume()) < .01, "Released holder proxy changes material volume"
+    fixed = md.Manifold.batch_boolean([released] + [s[n] for n in
+        ("base", "ball_lid", "battery", "pwm_board", "usbc", "switch", "led", "pot", "screws_lid")], md.OpType.Add)
+    board = s["chg_module"] + s["chg_sink"]
+    blocked_installed = (board.translate([0, -.6, 0]) ^ holder).volume()
+    assert blocked_installed > .1, "Charge hooks do not hold the board before the jaws spread"
+    rows, offset = [], np.zeros(3)
+    for name, vector, length_mm, step in [("out_of_l", [1, 0, 0], 3.5, .1), ("forward", [0, -1, 0], 4, .1),
+                                          ("lift", [0, 0, 1], 30, .5)]:
+        peak, gap = 0., 5.
+        for d in np.linspace(0, length_mm, int(round(length_mm / step)) + 1):
+            q = board.translate((offset + np.asarray(vector) * d).tolist())
+            overlap = (q ^ fixed).volume()
+            assert overlap < .01, f"Charge module unclip path blocked during {name}: {overlap:.5f} mm3"
+            peak = max(peak, overlap)
+            gap = min(gap, q.min_gap(fixed, 5))
+        offset = offset + np.asarray(vector) * length_mm
+        rows.append(dict(stage=name, length_mm=length_mm, step_mm=step, maximum_overlap_mm3=round(peak, 6),
+                         minimum_clearance_mm=round(gap, 4)))
+    ctx.open_items.append("Charge holder: clip-in force, jaw spring and hook retention on the real board are "
+                          "geometric only; glue the holder with CA gel over both lid pads and check the hooks miss "
+                          "the inductor and diode (0.9 mm, as on LEO-AC1).")
+    return dict(charger_holder=dict(holder_to_sink_mm=round(sink_gap, 3), hot_zone_overlap_mm3=round(hot_overlap, 5),
+        seat_contact_area_mm2=areas, hook_fill=reach, jaw_free_space_overlap_mm3=free,
+        jaw_free_length_mm=round(length, 3), jaw_clip_strain=round(strain, 4),
+        tunnel_overlap_mm3=tunnel_overlap, tie_to_holder_mm=round(tie_gap, 3),
+        installed_forward_block_mm3=round(blocked_installed, 4), unclip_path=rows))
 
 
 def check_head_fasteners(ctx):
@@ -1722,7 +1790,7 @@ def check_loaded_lid_removal(ctx):
     m, s = ctx.metrics, ctx.solids
     assert abs(m['ballast'][3] - 26) < .01 and abs(m['usb_origin'][0] - 106) < .01, \
         'Revalidate the loaded-lid service path after changing its reference geometry'
-    moving_names = ['ball_lid', 'chg_module', 'chg_sink', 'chg_tie']
+    moving_names = ['ball_lid', 'chg_holder', 'chg_module', 'chg_sink', 'chg_tie']
     fixed_names = ['base', 'pwm_board', 'pot', 'usbc', 'led', 'ballast', 'feet']
     moving = md.Manifold.batch_boolean([s[n] for n in moving_names], md.OpType.Add)
     fixed = md.Manifold.batch_boolean([s[n] for n in fixed_names], md.OpType.Add)
@@ -2149,7 +2217,8 @@ def checks(ctx):
         ("fan", "head_back", into),                   # and on the spacer posts of the cover
         ("feet", "base", [0, 0, 1]),
         ("pwm_board", "base", [0, 0, -1]),            # board on the bosses and rear rib pads
-        ("chg_module", "ball_lid", [0, 0, -1]),       # lower cut edge at the cool OUT end
+        ("chg_module", "chg_holder", [0, 0, -1]),     # lower long edge on the lower jaw
+        ("chg_holder", "ball_lid", [0, 0, -1]),       # glue sockets on the two lid pads
         ("ball_lid", "base", [0, 0, -1]),             # lid on its posts and walls
         ("usbc", "base", [0, 0, -1]),                 # PCB on the gusset-supported rear seat
     ])
@@ -2166,12 +2235,16 @@ def checks(ctx):
                        ("battery_down", "battery", "base", [0, 0, -1], 0.8),
                        ("battery_forward", "battery", "base", [0, -1, 0], 0.8),
                        ("battery_backward", "battery", "base", [0, 1, 0], 0.8),
-                       ("charger_forward", "chg_module", "chg_tie", [0, -1, 0], 0.4),
-                       ("charger_backward", "chg_module", "ball_lid", [0, 1, 0], 0.4)])
+                       ("charger_forward", "chg_module", "chg_holder", [0, -1, 0], 0.4),   # hooks on the part side
+                       ("charger_backward", "chg_module", "chg_holder", [0, 1, 0], 0.4),  # back stops and web bearing
+                       ("charger_up", "chg_module", "chg_holder", [0, 0, 1], 0.4),        # upper jaw
+                       ("charger_out_end", "chg_module", "chg_holder", [-1, 0, 0], 0.4),  # end lip
+                       ("charger_tie_forward", "chg_module", "chg_tie", [0, -1, 0], 0.4)])
     # Foam tape cushions the open saddles; the base end wall supplies positive axial retention.
     # 0.2 for the heatsink: nominal 0.3 in its wall cut-out, less the facets of the rounded corners
     gaps = ctx.clearances([("battery", "base", 0.3), ("battery", "head", 0.45),
-                           ("chg_sink", "fan", 1.5), ("ball_lid", "switch", 1.2)])
+                           ("chg_sink", "fan", 1.5), ("chg_sink", "head", 0.25), ("chg_sink", "base", 0.25),
+                           ("ball_lid", "switch", 1.2)])
     # Assembly paths, not only end positions. The head is pulled off along the tilted normal.
     up = [0, -math.sin(tilt), math.cos(tilt)]
     out = [0, -math.cos(tilt), -math.sin(tilt)]       # out of the intake face, normal to it
@@ -2180,13 +2253,10 @@ def checks(ctx):
          [n for n in ctx.solids if n != "screws_cassette" and not n.startswith("driver_")], out, 30, .25),
         ("cassette_off", "cassette", ["head", "base", "fan", "filter", "screws_head"], out, 30, 0.5),
         # the fan is bolted to the cover, so it comes off with it
-        ("cover_off", ["head_back", "fan", "screws_fan"], ["head", "base", "filter_support", "chg_module", "chg_sink", "chg_tie", "screws_head"],
+        ("cover_off", ["head_back", "fan", "screws_fan"], ["head", "base", "filter_support", "chg_module", "chg_sink", "chg_tie", "chg_holder", "screws_head"],
          [-o for o in out], 30, 0.5),
         # check_filter_support proves the cross's compressed spring-cheek path.
-        # Remove the head and cut/remove the cable tie, then lift the board and heatsink.
-        ("chg_off", ["chg_module", "chg_sink"],
-         ["base", "ball_lid", "battery", "pwm_board", "usbc", "switch", "led", "pot", "screws_lid"],
-         [0, 0, 1], 30, 0.5),
+        # The clipped charge module leaves with spread jaws: check_charger_holder samples that path.
         # Release the rocker clips and pull the switch outwards before the
         # plain lid's staged withdrawal; battery and loaded lid may stay fitted.
         ("switch_out", "switch", ["base", "ball_lid", "battery", "pwm_board", "pot", "usbc", "led", "ballast"],
@@ -2196,9 +2266,9 @@ def checks(ctx):
         # The support cross may remain in the head during removal.
         ("head_off", ["head", "filter_support"],
          ["base", "battery", "pwm_board", "usbc", "switch", "pot", "led", "ball_lid", "ballast",
-          "chg_module", "chg_sink", "chg_tie", "battery_ties"], up, 60, 1),
+          "chg_module", "chg_sink", "chg_tie", "chg_holder", "battery_ties"], up, 60, 1),
         # Cut and remove both ties before lifting the shrink-wrapped battery pack.
-        ("battery_out", "battery", ["base", "pwm_board", "usbc", "switch", "ball_lid"], [0, 0, 1], 40, 0.5),
+        ("battery_out", "battery", ["base", "pwm_board", "usbc", "switch", "ball_lid", "chg_holder"], [0, 0, 1], 40, 0.5),
         # Remove the head and loaded ballast lid first. Withdraw the USB board
         # into the bay, then lift it completely above the rim; reverse to install.
         ("usbc_out", "usbc", ["base", "battery", "pwm_board", "pot", "switch", "led", "ballast"],
@@ -2316,6 +2386,7 @@ VIEWER = dict(
            ("screws_lid", "Lid screws M3 x 8", "bought", "#9aa0a6", "2x", [0, 0, 1.1]),
            ("ballast", "Ballast, loose iron", "bought", "#6b6f74", "1x", [0, 0, -0.3]),
            ("ball_lid", "Ballast lid", "grey", "#c4c9ce", "1x", [0, 0, 0.8]),
+           ("chg_holder", "Charge-module holder", "grey", "#c4c9ce", "1x", [0, 0, 0.8]),
 ],
     colour={"knob": [("pointer", "Speed knob · housing-colour pointer", "#8a9096")]},
     bodies={"fan_visual": "fan_visual();",
@@ -2327,15 +2398,15 @@ VIEWER = dict(
 VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
          "02_exploded": ("assembly(18);", "60,-360,170,0,0,30"),
          "03_back": ("assembly();", "60,320,150,0,0,205"),
-         "04_charger_front": ("color(\"#c4c9ce\") ball_lid(); color(\"#2f5d3a\") chg_module_env(); "
-                              "color(\"#aeb5bb\") chg_sink_env(); color(\"#55595e\") chg_tie_env();", "110,-90,96,72,60,40"),
-         "05_charger_back": ("color(\"#c4c9ce\") ball_lid(); color(\"#2f5d3a\") chg_module_env(); "
-                             "color(\"#aeb5bb\") chg_sink_env(); color(\"#55595e\") chg_tie_env();", "110,180,96,72,60,40"),
+         "04_charger_front": ("color(\"#c4c9ce\") intersection() { ball_lid(); translate([44, 50, 25]) cube([56, 24, 35]); } chg_holder(); color(\"#2f5d3a\") chg_module_env(); "
+                              "color(\"#aeb5bb\") chg_sink_env(); color(\"#55595e\") chg_tie_env();", "98,-22,82,68,61,42"),
+         "05_charger_back": ("color(\"#c4c9ce\") intersection() { ball_lid(); translate([44, 50, 25]) cube([56, 24, 35]); } chg_holder(); color(\"#2f5d3a\") chg_module_env(); "
+                             "color(\"#aeb5bb\") chg_sink_env(); color(\"#55595e\") chg_tie_env();", "98,144,82,68,61,42"),
          "06_filter_support": ("color(\"#c4c9ce\") filter_support_raw();", "220,-240,220,72.5,26,120.5"),
          # Exploded only along Z: the two screw heads and both lid holes stay visible.
          "07_ballast_mount": ("color(\"#717980\") intersection() { base(); "
                               "translate([0, ball[2] - 1, 0]) cube([body_w, body_d - ball[2] + 1, ball[3] + 0.2]); } "
-                              "color(\"#c4c9ce\") translate([0, 0, 8]) ball_lid(); "
+                              "color(\"#c4c9ce\") translate([0, 0, 8]) { ball_lid(); chg_holder(); } "
                               "color(\"#414950\") translate([0, 0, 16]) screws_lid(socket = true);",
                               "100,-180,240,72.5,63,24"),
          "08_usb_mount": ("color(\"#8a9096\") intersection() { base(); "
@@ -2360,7 +2431,7 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
                           "180,-90,110,116,21,14"),
          "11_battery_usb_stops": ("color(\"#717980\") intersection() { base(); "
                                  "translate([3.2, 14, 0]) cube([115, 59, 48]); } "
-                                 "color(\"#c4c9ce\") ball_lid(); "
+                                 "color(\"#c4c9ce\") { ball_lid(); chg_holder(); } "
                                  "color(\"#4a6d3f\") battery_env(); "
                                  "color(\"#414950\") battery_ties_env(); "
                                  "color(\"#2f5d3a\") usbc_env();",

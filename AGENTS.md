@@ -22,8 +22,8 @@ Internal notes for coding agents (Claude, Codex). The README is public and stays
 ## User constraints and preferences
 
 - Bench tool, no child-safety requirement. Plain and functional: no logo, no QR code, no decorative grooves (user, 2026-09-21).
-- Two colours, part by part: base in Bambu PETG black; head, cassette, back cover, ballast lid, support cross and knob in grey (back cover, ballast lid and support cross changed at the user's request on 2026-09-28; head on 2026-09-29). The grey knob has a dark housing-colour pointer inlay (user, 2026-09-28); only its separate plate uses a prime tower. Other parts remain single-colour.
-- Current production layout (user, 2026-09-28): plate 1 head, plate 2 base, plate 3 cassette, plate 4 grey back cover / ballast lid / support cross, plate 5 knob, plate 6 TPU feet. Head and cassette remain on separate plates, both grey. The 2026-09-29 screw interface removes all magnet insertion pauses; the earlier shared cassette/cover/lid plate is superseded. The grey support cross retains 100% infill.
+- Two colours, part by part: base in Bambu PETG black; head, cassette, back cover, ballast lid, support cross, charge-module holder and knob in grey (back cover, ballast lid and support cross changed at the user's request on 2026-09-28; head on 2026-09-29). The grey knob has a dark housing-colour pointer inlay (user, 2026-09-28); only its separate plate uses a prime tower. Other parts remain single-colour.
+- Current production layout (user, 2026-09-28): plate 1 head, plate 2 base, plate 3 cassette, plate 4 grey back cover / ballast lid / support cross / charge-module holder (added 2026-10-06), plate 5 knob, plate 6 TPU feet. Head and cassette remain on separate plates, both grey. The 2026-09-29 screw interface removes all magnet insertion pauses; the earlier shared cassette/cover/lid plate is superseded. The grey support cross and charge-module holder use 100% infill.
 - **The viewer colours are deliberately not the filament colours** (user, 2026-09-22): black PETG renders as a
   silhouette on screen and the geometry disappears, so `VIEWER["parts"]` uses lifted greys. Do not "correct"
   them back to #1a1b1d; the real colours live in `FILAMENTS`, the plate names and the README.
@@ -340,7 +340,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
     The loaded lid uses the straight staged route listed above with the switch removed; use the
     matching-source verification report rather than the former slotted-lid route.
   - The free space in front of the cell (about 50 cm³) is the wrong side of the centre of mass and is deliberately left empty.
-- Charge module upright on the ballast lid, directly below the plenum slots (user, 2026-09-23: both sides of the board should get air; subsequently, "Wie LEO: Seite mit Kühlkörper frei"). Components face forwards, heatsink backwards. A single holder and cable tie retain only the cool OUT end; the heatsink end stays free. See Electrics below for dimensions and physical-fit limits. The earlier pair of edge holders, flat tray and bay-floor brackets are no longer built.
+- Charge module upright on the ballast lid, directly below the plenum slots (user, 2026-09-23: both sides of the board should get air; subsequently, "Wie LEO: Seite mit Kühlkörper frei"). Components face forwards, heatsink backwards. A separate LEO-AC1-style clip holder, glued to the lid, and one cable tie retain only the cool OUT end; the heatsink end stays free. See Electrics below for dimensions and physical-fit limits. The earlier pair of edge holders, flat tray and bay-floor brackets are no longer built.
   - **The air route starts in the plenum:** the five slots and rear-open cable notch in the head floor connect the fan's filtered outlet side to the component and heatsink passages, which lead to the back-wall slots. The surrounding 5.75 mm channel between filter tube and shell also remains open to the plenum. Geometric corridors are checked; flow rate, natural convection and cooling performance are not measured.
   - The vent is a row of five slots beside the wider rear-open cable notch: printed intake-face-down the head floor is a vertical wall, and a single 38 mm opening left a 113 mm² flat bridge at its far edge.
   - Ventilation slots in the back wall (user: slots, not honeycomb, and not staggered) sit above the ballast
@@ -393,35 +393,42 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
    flat-tray arrangements have been replaced. The user asked to turn the board so air can reach both
    its components and its heatsink; the current holder is on the **ballast lid**, under the six plenum slots.
 
-   - **Larger heatsink and minimal holder (user, 2026-10-06).** The user found the holder too close to
-     the heatsink and now uses a 20 × 20 × 10 mm heatsink with a 1 mm pad, on the back only, still
-     overhanging the IN end by 4.5 mm (`chg_sink_over`). It spans x 70.6–90.6, i.e. from 16.7 mm
-     from OUT. Per LEO-AC1's photo layout this covers the back-side BAT pads (17–22 mm) at one long
-     edge; the user's physical board is authoritative, but check the BAT wire joints under it.
-   - The measured 32.2 × 11 × 1 mm PCB now spans x 53.9–86.1, y 57.1–58.1 and z 36–47: 3.8 mm higher
-     and 0.4 mm farther forward than before, so the heatsink hangs 4.5 mm below the PCB edge and still
-     clears the lid by 2.5 mm. Components face forwards to y 54.4. Pad and heatsink span y 58.1–69.1
-     (1.9 mm to the inner back wall) and z 31.5–51.5, leaving about 2.4 mm to the head floor at the
-     heatsink's front edge. The head and its floor vents are unchanged; little more height exists.
-   - The holder is only one web, one lower-edge seat and the tie passage (user's request). The web
-     stands 1.5 mm behind the board over 1.4–8.5 mm from OUT, rooted in the lid up to z43.5. Its 4 mm
-     wide central bearing spans 1.4–6.3 mm, 0.5 mm short of the solder jumpers. The 2.05 mm seat under
-     the lower edge spans 6.25–8.3 mm, beside the tie passage. The former OUT-end stop, broad pedestal
-     and 9–18 mm bearing are removed. PETG now ends 8.2 mm before the heatsink.
-   - One 2.5 x 1.2 mm cable tie passes through the web and around the PCB 3.35–5.85 mm from the OUT
-     end, between the OUT wire pads (0–2.8 mm) and the jumpers (6.8–8.2 mm). The former LEO-AC1 band
-     at 11.25–13.75 mm would keep the holder within ~1.5 mm of the 20 mm heatsink. The new band crosses
-     the near ends of inductor and diode (part side, from 5 mm) instead of their far ends. The shared
-     layout was read from photos with approximately ±0.3 mm uncertainty, and the part side between
-     2 and 5 mm is not documented: verify actual component, solder and wire clearances before
-     tightening. The component envelope is not a detailed model of the real board or its soldered
-     wiring. The tie envelope omits its buckle and elastic tightening; keep the real buckle clear of
-     the hot end, wiring, air passages and lid service path.
-   - Cut and replace the tie to remove the board. `chg_off` must include the actual one-sided holder
-     and evaluate the board/heatsink path after releasing the tie; rigid envelopes cannot prove tie
-     strength or clamping pressure. `lid_off` and `check_loaded_lid_removal()` move the loaded lid
-     with the board attached through the straight staged route above. Leave wire slack for service
-     and remove the head, battery, rocker switch and both lid screws first.
+   - **Larger heatsink (user, 2026-10-06).** A 20 × 20 × 10 mm heatsink on a 1 mm pad, rear side only,
+     centred across the board as in LEO-AC1 and 4.5 mm past the IN end (`chg_sink_over`). It spans
+     x 70.6–90.6, i.e. from 16.7 mm from OUT. Per LEO-AC1's photo layout this covers the back-side BAT
+     pads (17–22 mm) at one long edge; the user's physical board is authoritative, but check the BAT
+     wire joints under it.
+   - **Board 2 mm higher (user, 2026-10-06).** The PCB spans x 53.9–86.1, y 57.6–58.6 and z 38–49;
+     components face forwards to y 54.9. Pad and heatsink span y 58.6–69.6 and z 33.5–53.5, 4.5 mm
+     above the lid. Its top is the limit: with the heatsink centred, `chg_cy` 58.1 balances about
+     0.29 mm to the tilted head floor at the pad's front edge and about 0.3 mm to the curved inner back
+     wall at its rear edge. More height or a thicker heatsink needs a head change; do not trade these
+     two clearances further without measuring the real heatsink position.
+   - **LEO-AC1 clip holder, separate part (user, 2026-10-06: "einklipsen wie bei leo-ac1, dann nur mit
+     Kabelbinder festschnüren").** The earlier lid-integrated web/seat holders are superseded. The
+     jaws must spring across the long edges, i.e. vertically here; integrated in the flat-printed lid
+     they would be unsupported horizontal arms, so `chg_holder` prints separately with its back plate
+     on the bed and the jaws growing upwards, as LEO's holder did. Grey PETG, 100 % infill, plate 4.
+     It is glued with CA gel over two Ø5 × 2.5 mm pads on the lid (sockets 0.2 mm per side, floors on
+     the pad tops, foot 0.3 mm above the lid).
+   - Holder geometry follows LEO-AC1 (`chg_clip`, `chg_lip`, `chg_lip_l`, `chg_air`): end lip with an
+     L leg 0.3 mm in front of the OUT-end parts; jaws 1.6 mm thick at u 6.2–11 mm, free length 10.1 mm
+     from a 2.5 mm plate 8 mm behind the board; hooks 0.9 mm over the part side with lead-ins; back
+     stops 0.8–2.6 mm in from each long edge behind a 0.8 mm slot; central web 1.5 mm behind the board
+     with its bearing above the jumpers at 8.8–11 mm. The board rests on the lower jaw (0 clearance),
+     0.2 mm below the upper one. Clip strain 2.59 % (LEO limit 3 %). A 1.6 mm room under the lower
+     jaw keeps it free above the foot. The component envelope leaves the 1.1 mm edge strips free in
+     the hook zone, as in LEO. The holder ends 11 mm from OUT, 5.7 mm before the heatsink.
+   - One 2.5 x 1.2 mm cable tie runs through the web tunnel and around the PCB 3.35–5.85 mm from OUT,
+     between the OUT wire pads (0–2.8 mm) and the jaws. LEO-AC1's band just above its hooks
+     (11.25–13.75 mm) would bring the holder within ~1.5 mm of the 20 mm heatsink. The part side
+     between 2 and 5 mm is not documented; verify component, solder and wire clearances before
+     tightening. The tie envelope omits its buckle and elastic tightening.
+   - Unclip for service: cut the tie, spread both jaws, slide the board 3.5 mm towards IN out of the L,
+     pull it 4 mm forwards from under the upper jaw and lift it. `check_charger_holder()` samples this
+     against a kinematic proxy with both jaws moved clear of the edges (no elastic model). There is no
+     separate `chg_off` path. `lid_off` and `check_loaded_lid_removal()` move the lid, glued holder,
+     board, heatsink and tie as one group; remove the head, battery, rocker switch and lid screws first.
    - `check_charger_air()` checks free volumes in front of the components and behind the heatsink, anchored
      to the actual mesh faces. Continuous Ø1.2 mm probe corridors connect each space through an existing
      head-floor slot to the plenum and through a rear vent to the outside. Both routes pass round the
@@ -486,7 +493,7 @@ The audit’s physical checks remain open where their features are retained: kno
 - The knob bore is nominal 5.8 mm with zero clearance, as in LEO-AC1 — validate the push fit on the real knurled shaft with a test print.
 - Rocker switch body depth behind the panel is still the assumed value from LEO-AC1.
 - LED: verify visibility through the closed 1.8 mm skin with the chosen PETG and actual LED. The former 0.8 mm thin-wall exception is retired; flange fit and light transmission through the deeper windows remain untested.
-- Charge module: verify solder joints, wire exits, the tie band and clamping pressure at the cool OUT-end holder, the free heatsink end and wire slack for the loaded lid's service path. Check temperatures while charging in the closed housing, with the fan on and off; free geometric air corridors do not establish cooling performance.
+- Charge module: verify the clip-in, the hooks against the inductor and diode, the glued holder, solder joints, wire exits, the tie band and clamping pressure at the cool OUT-end holder, the ~0.3 mm heatsink clearance to the head floor and back wall, the free heatsink end and wire slack for the loaded lid's service path. Check temperatures while charging in the closed housing, with the fan on and off; free geometric air corridors do not establish cooling performance.
 - Filter support: check all four post contacts against the real fan frame, pocket fit, bar stiffness and creep, and mat bowing or loose fibres at maximum speed. The sparse cross does not establish that rubbing is impossible.
 - Filter pressure drop and capture distance are not modelled. The P12 Pro is pressure-optimised (6.9 mmH₂O), which is why it suits a mat, but the working point is unknown.
 
@@ -1240,3 +1247,28 @@ they do not validate the subsequent geometry.
   behind; results unchanged). Both viewer copies and views 01–05/07 are regenerated. Reprint only the
   ballast lid. Physical checks: tie band at 3.35–5.85 mm against the real parts, BAT-pad wires under
   the larger heatsink, heatsink temperature with only about 2.4 mm to the head floor.
+
+
+## LEO-AC1 clip holder and higher charge board (2026-10-06, supersedes the minimal holder above)
+
+- User: the minimal lid holder was poor ("kacke"); the board must sit 2 mm higher and clip in like
+  LEO-AC1 before one cable tie secures it. Asked which variant, the user chose a separate LEO-style
+  holder and confirmed the heatsink sits centred across the board as in LEO-AC1.
+- Source SHA256 `0e1f80b945a2e85120ec6e5c2d2b43beb1b437ba4b4d1443ee6a166ba12c2d44`. New print part
+  `chg_holder` (13 × 21.5 × 16.1 mm as printed); the ballast lid loses the integrated web/seat and
+  gains two Ø5 × 2.5 mm glue pads. Head, base and every other print part are geometrically unchanged.
+- Full export PASS: eleven print meshes, 461 coaxial feature pairs (pads/sockets included), 630
+  assembly pairs, nine standard paths. `chg_off` is replaced by the spread-jaw unclip path in
+  `check_charger_holder()`: seat areas 4.8 (lower jaw), 8.64 (hooks), 9.6/9.6 (back stops), 8.8 (web
+  bearing) and 4.0 mm² (end lip); both hooks reach exactly 0.9 mm; slots and jaw room are empty; clip
+  strain 2.59 %; tie tunnel clearance 0.3 mm; holder 5.7 mm from the heatsink. Mesh clearances: heatsink
+  0.252 mm to the head floor and 0.414 mm to the base; loaded-lid route keeps at least 0.20 mm. Stops
+  forward, backward, up and against the end lip engage at 0.25 mm. `PRINT_POSES` confirms that the
+  holder and lid STLs are proper rotations of their installed bodies.
+- Islands, overhangs, thickness and fins are CLEAN for holder and lid (the lower back stop was raised
+  from 1.8 to 2.0 mm after `fins` flagged it). All slices, six production plates and the USB fit plate
+  pass without supports or warnings; holder 2.71 g / 0.38 h at 100 % infill, production 480.1 g /
+  16.3 h. Estimated mass 1009.3 g, front margin 29.3 mm, tip angle 21.8 degrees.
+- `print_tools.py` and `slice_check.py` are reinstalled from the shared skill (PRINT_POSES check,
+  per-copy assemble objects). Viewer and views 01–05, 07 and 11 are regenerated; 04/05 crop the lid
+  around the charger. Reprint the ballast lid and print the new holder; glue the holder with CA gel.

@@ -529,12 +529,27 @@ def explicit_part_placements(title, positions, mesh_bounds, printer):
     return transforms, rows
 
 
+def assemble_entries(path, quantity, filament, translations=None):
+    """Assemble-list objects for one plain part. Explicit translations become one object per copy: Bambu Studio
+    (02.08.02.61, observed 2026-10-06) places copy k >= 2 of a multi-count entry at pos[0] + pos[k], not at pos[k]."""
+    if translations is None:
+        return [dict(path=path, count=quantity, filaments=[filament] * quantity)]
+    assert len(translations) == quantity, f"{path}: {len(translations)} positions for {quantity} copies"
+    return [dict(path=path, count=1, filaments=[filament], **{f"pos_{axis}": [point[i]] for i, axis in enumerate("xyz")})
+            for point in translations]
+
+
 def assert_instance_bounds(expected, actual, message):
     """Compare all instance bounds, not only their common envelope."""
     assert len(expected) == len(actual), f"{message}: instance count changed"
-    expected = sorted(tuple(np.asarray(b).reshape(-1)) for b in expected)
-    actual = sorted(tuple(np.asarray(b).reshape(-1)) for b in actual)
-    assert np.allclose(actual, expected, atol=0.01, rtol=0), message
+    # Match each expected box to an unused actual one within tolerance; a lexicographic sort is not stable under
+    # float noise (14.99999 sorts before 15.0 and pairs a spatula with a cup)
+    remaining = [np.asarray(b, float).reshape(-1) for b in actual]
+    for box in expected:
+        box = np.asarray(box, float).reshape(-1)
+        hit = next((i for i, other in enumerate(remaining) if np.allclose(other, box, atol=0.01, rtol=0)), None)
+        assert hit is not None, f"{message}: no instance at {np.round(box, 3).tolist()}"
+        remaining.pop(hit)
 
 
 def bed_reuse_configuration(config, titles):
@@ -743,12 +758,8 @@ def build_project_3mf(plate_list=None, target=None, folder_name="project-3mf", f
                     objects.append(dict(path=str(COLOR_DIR / f"{name}_{piece}.stl"), count=quantity,
                                         filaments=[filament] * quantity, assemble_index=indices))
                 continue
-            entry = dict(path=str(STL_DIR / f"{name}.stl"), count=quantity,
-                         filaments=[part_filament(name, mono)] * quantity)
-            if name in translations:
-                entry.update({f"pos_{axis}": [point[i] for point in translations[name]]
-                              for i, axis in enumerate("xyz")})
-            objects.append(entry)
+            objects.extend(assemble_entries(str(STL_DIR / f"{name}.stl"), quantity, part_filament(name, mono),
+                                            translations.get(name)))
         # One complete object needs no packing; our explicit centring below preserves its pose.
         # Multi-object plates still use the arranger to avoid overlaps before centring the group.
         need_arrange = title not in explicit_positions and not (FIXED_PRINT_POSES and sum(group.values()) == 1)

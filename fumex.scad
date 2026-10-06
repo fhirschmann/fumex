@@ -172,20 +172,30 @@ chg_pcb = [32.2, 11, 1.0];  // measured length (here along x), width (z), thickn
 chg_comp_h = 2.7;    // parts above the PCB (3.7 total, measured)
 chg_comp_end = 2;    // component envelope leaves the PCB end pads exposed
 chg_cx = 70;         // board centre on the ballast lid, between its two screws
-chg_cy = 57.6;       // PCB mid-plane across the lid; the 10 mm heatsink keeps 1.9 mm to the back wall
-chg_stand = 7;       // lower PCB edge above the lid; the heatsink hangs 4.5 mm below it and keeps 2.5 mm
+chg_cy = 58.0;       // PCB mid-plane; heatsink top ~0.26 mm below the head floor, rear clear for the lid lift
+chg_stand = 9;       // lower PCB edge above the lid (user, 2026-10-06: 2 mm higher); the heatsink hangs 4.5 below
 chg_sink = [20, 20, 10, 1];  // user's larger rear heatsink (2026-10-06): length, width, height, insulating pad
-chg_sink_over = 4.5; // the heatsink overhangs the IN end by this much, as with the former 14 mm part
-// Holder (user, 2026-10-06): one web behind the OUT end, one lower-edge seat and the tie passage.
-// The tie runs between the OUT corner pads (0-2.8 mm) and the jumpers (6.8-8.2 mm) so the
-// whole holder ends 8.5 mm from OUT, far ahead of the heatsink.
-chg_tie = [2.5, 1.2, 0.3, 4.6, 2]; // width, thickness, tunnel clearance, distance from OUT, front web skin
-chg_web_gap = 1.5;
-chg_web_x = [1.4, 8.5];              // web extent measured from the OUT end
-chg_web_touch = [1.4, 6.3];          // board-back bearing, 0.5 mm short of the solder jumpers
-chg_seat = [6.25, 8.3];              // lower-edge seat beside the tie passage, recessed from the web end
-chg_web_w = 4;                      // central bearing width, clear of both long-edge solder pads
-chg_web_back = 1.6;                 // wall behind the tie tunnel
+chg_sink_over = 4.5; // centred across the board and 4.5 mm past the IN end, as in LEO-AC1
+// LEO-AC1 holder (user, 2026-10-06): a separate grey part glued with CA gel over two lid pads.
+// The OUT end goes into an end L, then the board is pressed back until two jaws snap their hooks
+// over the part side at both long edges. One cable tie through the web then secures it.
+chg_air = 8;                       // board back to holder plate: LEO's 10.1 mm free jaw length
+chg_plate_t = 2.5;                 // holder plate behind the board
+chg_clip = [6.2, 11, 1.6, 0.9, 0.2, 2.6]; // jaws from / to (from OUT), jaw thickness, hook overlap on the part
+                                   // side (0.9 checked on the real board in LEO), upper edge clearance (the board
+                                   // rests on the lower jaw), back stops reach this far in from each long edge
+chg_slot = 0.8;                    // slot between jaw and back stop, so the slicer cannot close it
+chg_lip = [2, 4];                  // end lip beyond the OUT end, lip and web width (between the OUT corner pads)
+chg_lip_l = [3, 1.6, 0.3];         // L leg reach along the board, thickness, clearance in front of the parts
+// Tie below the hooks, between the OUT corner pads (0-2.8 mm) and the jaws, so the holder stays clear of the
+// heatsink; LEO-AC1 put it just above its hooks at 11.25-13.75 mm.
+chg_tie = [2.5, 1.2, 0.3, 4.6, 2]; // width, thickness, tunnel clearance, centre from OUT, web skin in front of the tunnel
+chg_web_gap = 1.5;                 // the web stays this far behind the board (OUT pads, jumper solder) ...
+chg_web_touch = [8.8, 11];         // ... except here, where it bears on the board back above the jumpers
+chg_pad = [5, 2.5, 0.4];           // two glue pads on the lid: diameter, height, top chamfer
+chg_pad_pos = [[2.5, 0.2], [6.7, 6.2]];   // pad centres: from OUT along x, behind the PCB back face along y
+chg_sock = [0.2, 0.3];             // socket clearance per side, holder foot above the lid
+chg_jaw_room = 1.6;                // free space under the lower jaw for it to spread
 // The vent over the board is a row of slots, not one opening: printed with the intake face on the bed
 // the head floor is a vertical wall, so one 38 mm opening leaves a 113 mm2 flat bridge at its far edge.
 chg_vent = [6, 9, 6, 10];    // slot width (x), pitch, count, depth (y) in the head floor over the board
@@ -384,20 +394,26 @@ assert(pwm_boss_d >= pwm_screw[2] + 1.2, "PWM boss too narrow for the screw bear
 assert(pwm_boss_d <= 2 * pwm_hole_edge, "PWM bosses project beyond the confirmed mounting pads");
 assert(base_top(0) > pot_z + knob_d / 2 + 2, "Knob reaches over the front rim");
 assert(chg_sink_z >= ball[3] + ball_lid_t + 2.5, "Heatsink too close to the ballast lid");
-assert(chg_y0 - chg_comp_h > ball[2] + 1 && chg_y0 + chg_pcb[2] + chg_sink[3] + chg_sink[2] < body_d - wall - 1.5,
+// The curved upper back wall is the tighter limit; the mesh clearance check covers it.
+assert(chg_y0 - chg_comp_h > ball[2] + 1 && chg_y0 + chg_pcb[2] + chg_sink[3] + chg_sink[2] < body_d - wall - 1.2,
        "Charge module leaves no air passage around its two faces");
+assert(chg_y0 + chg_pcb[2] + chg_air + chg_plate_t < body_d - wall - 1.5, "Charge holder plate reaches the back wall");
 assert(min([for (q = ball_posts()) abs(q[0] - chg_cx) - chg_pcb[0] / 2 - 2]) > 2,
        "Charge module holder sits on a ballast lid screw");
-assert(chg_z0 + chg_pcb[1] + 5 < base_top(chg_y0 - chg_comp_h),
-       "Less than 5 mm over the charge board to the head floor");
-assert(chg_sink_z + chg_sink[1] + 2.2 < base_top(chg_y0 + chg_pcb[2] + chg_sink[3]),
-       "Less than 2.2 mm over the heatsink to the head floor");
-assert(chg_pcb[0] + chg_sink_over - chg_sink[0] - chg_web_x[1] >= 8, "Charge holder too close to the heatsink");
-assert(chg_tie[3] - chg_tie[0] / 2 >= 2.8 + 0.5 && chg_web_touch[1] <= 6.8 - 0.5,
-       "Charge tie or bearing reaches the OUT pads or solder jumpers");
-assert(chg_tie[3] - chg_tie[0] / 2 - chg_tie[2] - chg_web_x[0] >= 1.6 &&
-       chg_seat[0] - chg_tie[3] - chg_tie[0] / 2 - chg_tie[2] >= 0.1 && chg_seat[1] <= chg_web_x[1] - 0.2,
-       "Charge tie tunnel leaves too little web or meets the seat");
+assert(chg_z0 + chg_pcb[1] + 3 < base_top(chg_y0 - chg_comp_h),
+       "Less than 3 mm over the charge board to the head floor");
+assert(chg_z0 + chg_pcb[1] + chg_clip[4] + chg_clip[2] + 1.5 < base_top(chg_y0 - chg_clip[3] - chg_clip[4]),
+       "Charge holder jaw reaches the head floor");
+assert(chg_sink_z + chg_sink[1] + 0.25 < base_top(chg_y0 + chg_pcb[2]),
+       "Less than 0.25 mm over the heatsink pad to the head floor");
+assert(chg_pcb[0] + chg_sink_over - chg_sink[0] - chg_clip[1] >= 5.5, "Charge holder too close to the heatsink");
+assert(chg_tie[3] - chg_tie[0] / 2 >= 2.8 + 0.5 && chg_tie[3] + chg_tie[0] / 2 + chg_tie[2] < chg_clip[0],
+       "Charge tie reaches the OUT pads or the jaws");
+assert(chg_web_touch[0] >= 8.2 + 0.6 && chg_web_touch[1] <= chg_clip[1], "Charge web bears on the solder jumpers");
+assert(chg_clip[0] >= 3 && chg_clip[1] <= 12.5 && chg_clip[3] + chg_clip[4] <= 1.2 &&
+       3 * chg_clip[2] * (chg_clip[3] + chg_clip[4]) / (2 * pow(chg_pcb[2] + chg_air + chg_clip[3] + chg_clip[4], 2)) <= 0.03,
+       "Charge holder hooks off the checked LEO zone or jaws strained above 3 %");
+assert(chg_jaw_room >= chg_clip[3] + 0.5 && chg_slot >= 0.8, "Charge holder jaws cannot spread freely");
 assert(vent_xz[1] > ball[3] + ball_lid_t, "Back wall slots would let the ballast out");
 assert(usbc_side_cl > 0 && usbc_entry[0] < usbc_guide_lead && usbc_wall - usbc_entry[1] >= 1.6,
        "USB lead-in must finish before the PCB and retain solid guide walls");
@@ -774,35 +790,61 @@ module filter_support_print() translate([-body_w / 2, head_cz, -mat_support[3]])
 // asked whether the fan can be screwed to the back cover instead (2026-09-23) - it can, and the same
 // M3 x 30 do it: fan and cover are screwed together on the bench, where the fan's front face is reachable,
 // and the pair goes into the head as one.
-// One-sided cool-end holder (user, 2026-10-06): a single web behind the board with a central
-// bearing, one lower-edge seat and the tie passage. The hot IN end and heatsink stand free.
+// LEO-AC1 charge-module holder, printed separately with its plate on the bed so the jaws grow
+// upright and spring across the layers as in LEO. It grips only the cool OUT end: an end lip with an
+// L leg in front of the parts, back stops under both long edges, and one jaw per long edge with a hook
+// over the part side (45 degree lead-in from the front). The web behind the board carries the bearing
+// above the jumpers and the tie tunnel. Glued with CA gel over two pads on the ballast lid.
 function chg_tie_y() = chg_y0 + chg_pcb[2] + chg_web_gap + chg_tie[4] + chg_tie[2];
-module chg_brackets() let (
-    z0 = ball[3] + ball_lid_t,
-    za = chg_z0 + (chg_pcb[1] - chg_web_w) / 2, zb = za + chg_web_w,
-    yb = chg_y0 + chg_pcb[2], yw = yb + chg_web_gap,
-    yr = chg_tie_y() + chg_tie[1] + chg_tie[2] + chg_web_back,
-    tx = chg_x0 + chg_tie[3], tc = chg_tie[0] / 2 + chg_tie[2],
-    tz = chg_z0 - chg_tie[1] - chg_tie[2]) difference() {
-    union() {
-        // Web rooted in the lid, 1.5 mm behind the board and clear of the OUT corner pads.
-        translate([chg_x0 + chg_web_x[0], yw, z0 - eps])
-            cube([chg_web_x[1] - chg_web_x[0], yr - yw, zb - z0 + eps]);
-        // Lower-edge seat beside the tie passage, joined to the web front.
-        translate([chg_x0 + chg_seat[0], chg_y0 - 0.4, z0 - eps])
-            cube([chg_seat[1] - chg_seat[0], yw - chg_y0 + 0.4 + eps, chg_z0 - z0 + eps]);
-        // A steep underside grows the central bearing into the PCB back without a shelf.
-        // Recess the hidden top seam by eps instead of joining coplanar cap faces.
-        along_x(chg_x0 + chg_web_touch[0], chg_x0 + chg_web_touch[1])
-            polygon([[yw + eps, za - 1.25 * chg_web_gap], [yb, za], [yb, zb], [yw + eps, zb - eps]]);
-    }
-    // Vertical tie tunnel through the web; its lower opening joins a passage under the board.
-    translate([tx - tc, chg_tie_y() - chg_tie[2], tz])
-        cube([2 * tc, chg_tie[1] + 2 * chg_tie[2], zb - tz + 1]);
-    translate([tx - tc, chg_y0 - chg_comp_h - chg_tie[1] - 1, tz])
-        cube([2 * tc, yr - (chg_y0 - chg_comp_h - chg_tie[1]) + 2,
-              chg_tie[1] + 2 * chg_tie[2]]);
+function chg_holder_box() = let (x = chg_x0 - chg_lip[0], yp = chg_y0 + chg_pcb[2] + chg_air)
+    [[x, chg_y0 - 3.5, ball[3] + ball_lid_t + chg_sock[1]],
+     [chg_x0 + chg_clip[1], yp + chg_plate_t, chg_z0 + chg_pcb[1] + chg_clip[4] + chg_clip[2]]];
+function chg_pad_xy() = [for (q = chg_pad_pos) [chg_x0 + q[0], chg_y0 + chg_pcb[2] + q[1]]];
+module chg_pads() let (zl = ball[3] + ball_lid_t) for (q = chg_pad_xy()) translate([q[0], q[1], zl - eps]) {
+    cylinder(d = chg_pad[0], h = chg_pad[1] - chg_pad[2] + eps);
+    translate([0, 0, chg_pad[1] - chg_pad[2]]) cylinder(d1 = chg_pad[0], d2 = chg_pad[0] - 2 * chg_pad[2], h = chg_pad[2] + eps);
 }
+module chg_holder() let (
+    c = chg_clip, b = chg_holder_box(), zl = ball[3] + ball_lid_t,
+    yb = chg_y0 + chg_pcb[2], yp = yb + chg_air, zt = chg_z0 + chg_pcb[1],
+    zc = chg_z0 + chg_pcb[1] / 2, zw = [zc - chg_lip[1] / 2, zc + chg_lip[1] / 2],
+    yl = chg_y0 - chg_comp_h - chg_lip_l[2] - chg_lip_l[1], dx = c[1] - c[0], xc = chg_x0 + c[0],
+    yh = chg_y0 - c[3] - c[4], tc = chg_tie[0] / 2 + chg_tie[2]) difference() {
+    union() {
+        // plate behind the board and foot under it; the foot stays clear of the lower jaw
+        translate([b[0][0], yp, b[0][2]]) cube([b[1][0] - b[0][0], chg_plate_t, b[1][2] - b[0][2]]);
+        translate(b[0]) cube([b[1][0] - b[0][0], b[1][1] - b[0][1], chg_z0 - c[2] - chg_jaw_room - b[0][2]]);
+        // end lip with the L leg in front of the parts, and the web behind the board
+        translate([b[0][0], yl, zw[0]]) cube([chg_lip[0], yp - yl + eps, chg_lip[1]]);
+        translate([b[0][0], yl, zw[0]]) cube([chg_lip[0] + chg_lip_l[0], chg_lip_l[1], chg_lip[1]]);
+        translate([b[0][0], yb + chg_web_gap, zw[0]]) cube([chg_lip[0] + chg_web_touch[1], yp - yb - chg_web_gap + eps, chg_lip[1]]);
+        translate([chg_x0 + chg_web_touch[0], yb, zw[0]])
+            cube([chg_web_touch[1] - chg_web_touch[0], chg_web_gap + eps, chg_lip[1]]);   // bearing on the board back
+        // back stops under both long edges, separated from the jaws by the slot
+        translate([xc, yb, chg_z0 + chg_slot]) cube([dx, yp - yb + eps, c[5] - chg_slot + c[4]]);
+        translate([xc, yb, zt - c[5]]) cube([dx, yp - yb + eps, c[5] - chg_slot + c[4]]);
+        // jaws, free from the plate; the board rests on the lower one (no mirror: float noise)
+        translate([xc, yh, chg_z0 - c[2]]) cube([dx, yp - yh + eps, c[2]]);
+        translate([xc, yh, zt + c[4]]) cube([dx, yp - yh + eps, c[2]]);
+        hull() {   // hooks: flat seat on the part side, lead-in towards the front
+            translate([xc, chg_y0 - tip, chg_z0 - c[2]]) cube([dx, tip, c[2] + c[3]]);
+            translate([xc, yh, chg_z0 - c[2]]) cube([dx, tip, c[2]]);
+        }
+        hull() {
+            translate([xc, chg_y0 - tip, zt - c[3]]) cube([dx, tip, c[3] + c[4] + c[2]]);
+            translate([xc, yh, zt + c[4]]) cube([dx, tip, c[2]]);
+        }
+    }
+    // tie tunnel through the web, open below and above it
+    translate([chg_x0 + chg_tie[3] - tc, chg_tie_y() - chg_tie[2], zw[0] - 1])
+        cube([2 * tc, chg_tie[1] + 2 * chg_tie[2], chg_lip[1] + 2]);
+    // glue sockets over the lid pads, floors on the pad tops
+    for (q = chg_pad_xy()) translate([q[0], q[1], b[0][2] - 1])
+        cylinder(d = chg_pad[0] + 2 * chg_sock[0], h = zl + chg_pad[1] - b[0][2] + 1);
+}
+// Plate on the bed: the jaws and back stops grow upwards as in the LEO-AC1 print.
+module chg_holder_print_pose() let (b = chg_holder_box())
+    translate([-b[0][0], -b[0][2], b[1][1]]) rotate([-90, 0, 0]) children();
 // Bought cable tie between the OUT corner pads and the solder jumpers, across the near ends
 // of inductor and diode. Its buckle and elastic tightening are not represented by this envelope.
 module chg_tie_env() let (
@@ -1140,7 +1182,7 @@ module ballast_screw_holes() for (q = ball_posts())
     translate([q[0], q[1], ball[3] - insert_depth]) cylinder(d = insert_hole_d, h = insert_depth + 1);
 // Lid bears on two insert posts. Its switch notch stays ahead of the entire trough wall.
 module ball_lid() difference() {
-    union() { ball_lid_plate(); usbc_keeper(); chg_brackets(); }
+    union() { ball_lid_plate(); usbc_keeper(); chg_pads(); }
     for (q = ball_posts()) translate([q[0], q[1], ball[3] - 1]) {
         cylinder(d = screw_clear_d, h = ball_lid_t + 2);
         translate([0, 0, 1 + ball_lid_t - lid_pocket]) cylinder(d = head_pocket[0], h = lid_pocket + 1);
@@ -1365,8 +1407,12 @@ module pot_env() {
 }
 module chg_module_env() translate([chg_x0, chg_y0, chg_z0]) {
     cube([chg_pcb[0], chg_pcb[2], chg_pcb[1]]);       // PCB upright, normal along y
-    translate([chg_comp_end, -chg_comp_h, 0])
-        cube([chg_pcb[0] - 2 * chg_comp_end, chg_comp_h + eps, chg_pcb[1]]);
+    difference() {   // parts up to the edges, except beside the hooks (inductor and diode 0.7-1.0 in, LEO-AC1)
+        translate([chg_comp_end, -chg_comp_h, 0])
+            cube([chg_pcb[0] - 2 * chg_comp_end, chg_comp_h + eps, chg_pcb[1]]);
+        for (z = [-1, chg_pcb[1] - chg_clip[3] - 0.2]) translate([chg_clip[0], -chg_comp_h - 1, z])
+            cube([chg_clip[1] - chg_clip[0], chg_comp_h + 1, chg_clip[3] + 1.2]);
+    }
 }
 // Insulating pad and heatsink on the rear PCB face; both remain clear of the lid.
 module chg_sink_env() translate([chg_sink_cx - chg_sink[0] / 2, chg_y0 + chg_pcb[2], chg_sink_z])
@@ -1477,6 +1523,7 @@ module assembly(explode = 0) {
         color("#2b2d30") knob_pointer_local();
     }
     color("#8c9196") translate([0, 0, explode * 0.8]) ball_lid();
+    color("#8c9196") translate([0, 0, explode * 0.8]) chg_holder();
     color("#414950") translate([0, -explode * 0.3, explode * 0.4]) battery_ties_env();
     color("#1a1b1d") translate([0, 0, -explode * 0.6]) place_feet();
     color("#3f4247") fan_visual();
@@ -1515,7 +1562,8 @@ else if (part == "metrics") echo("PROJECT_METRICS", [
     ["insert_w_min", insert_w_min], ["opening_sq", open_sq], ["fan_post", [fan_post_d, head_y[4] - head_y[3]]],
     ["charge_pcb", chg_pcb], ["charge_origin", [chg_x0, chg_y0, chg_z0]],
     ["charge_components", chg_comp_h], ["charge_sink", chg_sink],
-    ["charge_tie", chg_tie], ["charge_web", [chg_web_gap, chg_web_touch, chg_web_w, chg_web_back]], ["charge_holder", [chg_web_x, chg_seat]],
+    ["charge_tie", chg_tie], ["charge_web", [chg_web_gap, chg_web_touch, chg_lip]],
+    ["charge_holder", [chg_air, chg_plate_t, chg_clip, chg_slot, chg_jaw_room]], ["charge_pads", chg_pad_xy()],
     ["lid_screw", [ball_lid_t, lid_pocket, len_lid]],
     ["battery", [bat_x0, bat_cy, bat_cz, bat_d, bat_l, bat_bms]],
     ["battery_tie_head_clearance", bat_tie_head_clearance], ["battery_ties", bat_tie],
@@ -1540,6 +1588,7 @@ else if (part == "knob_base") knob_print_pose() knob_base_local();
 else if (part == "knob_pointer") knob_print_pose() knob_pointer_local();
 else if (part == "foot") foot_print_pose() foot_local();
 else if (part == "ball_lid") ball_lid_print_pose() ball_lid();
+else if (part == "chg_holder") chg_holder_print_pose() chg_holder();
 else if (part == "filter_support") filter_support_print();
 else if (part == "usbc_fit_base") usbc_fit_base();
 else if (part == "usbc_fit_lid") usbc_fit_lid();

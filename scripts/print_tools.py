@@ -419,6 +419,27 @@ def check_color_parts():
     return report
 
 
+def check_print_poses(solids):
+    """PRINT_POSES {part: rotation | (rotation, body)}: the print STL equals the installed assembly body after this
+    world -> print rotation (proper, det +1) and a translation taken from the bounding boxes. Catches mirrored print
+    files, which collision and watertightness checks do not see."""
+    rows = {}
+    for name, pose in getattr(P, "PRINT_POSES", {}).items():
+        rotation, body = (pose if len(pose) == 2 and isinstance(pose[1], str) else (pose, name))
+        rotation = np.asarray(rotation, float)
+        assert rotation.shape == (3, 3) and np.allclose(rotation @ rotation.T, np.eye(3), atol=1e-9) \
+            and np.isclose(np.linalg.det(rotation), 1), f"PRINT_POSES {name}: not a proper rotation (det +1)"
+        assert name in PARTS and body in solids, f"PRINT_POSES {name}: needs print part {name} and assembly body {body}"
+        printed = manifold(trimesh.load_mesh(BUILD / "print" / f"{name}.stl"))
+        moved = solids[body].transform(np.column_stack([rotation, np.zeros(3)]))
+        moved = moved.translate((np.array(printed.bounding_box()[:3]) - np.array(moved.bounding_box()[:3])).tolist())
+        delta = (printed - moved).volume() + (moved - printed).volume()
+        rows[name] = round(delta, 4)
+        assert delta <= max(1.0, printed.volume() * 1e-5), \
+            f"{name}: print STL is not a rotated copy of assembly body {body} ({delta:.2f} mm3 differ, mirrored?)"
+    return rows
+
+
 def label(folder, name):
     try:
         prefix = folder.relative_to(STL_DIR).as_posix()
@@ -494,6 +515,9 @@ def main():
                           summary=[f"{sum(alignment['coaxial_pairs'].values())} coaxial feature pairs"], open_items=[])
     project = P.checks(ctx) if hasattr(P, "checks") else {}
     colors = check_color_parts()
+    poses = check_print_poses(solids)
+    if poses:
+        ctx.summary.append(f"{len(poses)} print poses")
     if args.command == "export":
         replace_folder(STL_DIR, "print", list(PARTS))
         if COLOR_PIECES:
@@ -506,7 +530,7 @@ def main():
     pairs = len(solids) * (len(solids) - 1) // 2
     report = dict(source_sha256=hashlib.sha256(SOURCE.read_bytes()).hexdigest(), software=software(),
                   print_parts=len(PARTS), print_quantity=sum(q for q, _, _ in PARTS.values()),
-                  print_meshes=results["print"], color_meshes=results["color"], color_parts=colors,
+                  print_meshes=results["print"], color_meshes=results["color"], color_parts=colors, print_poses=poses,
                   assembly_bodies=len(solids), assembly_pairs=pairs, metrics=metrics, intersections=collisions,
                   alignment=alignment,
                   **project, stl_difference_mm3=consistency, open_measurements=ctx.open_items,
