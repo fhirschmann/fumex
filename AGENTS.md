@@ -5,10 +5,10 @@ Internal notes for coding agents (Claude, Codex). The README is public and stays
 ## Working rules
 
 - Talk to the user in German. README, AGENTS.md, code comments, viewer labels, slicer plate/material names, check messages **and all commit messages** are English (user, 2026-09-21).
-- The project follows the skill `openscad-print-project` (`~/.claude/skills/openscad-print-project`). After every model change run the full loop: `print_tools.py export` → `analyze.py islands/overhangs/thickness/fins` → `slice_check.py` → update README numbers → `build_viewer.py --copy-to docs/index.html` → commit.
+- The project follows the skill `openscad-print-project` (`~/.claude/skills/openscad-print-project`). After every model change run `.venv/bin/opp all` (export and checks, analyses from `ANALYZE`, Bambu CLI, viewer incl. `docs/index.html`; one line per stage, logs in `build/logs/`) → update README numbers → commit.
 - Always rebuild the viewer after every model or layout change, before reporting completion (user, 2026-09-23). Regenerate `build/viewer.html` and `docs/index.html` from the current assembly exports; updating only the STLs is not enough. If the open browser tab cannot be refreshed, say so explicitly rather than implying that its displayed state has updated.
-- `scripts/` must stay identical to the skill (`python3 ~/.claude/skills/openscad-print-project/scripts/skill_sync.py status -C .`). Improve tools in the skill and adopt/install them; no project-local forks.
-- No painted or scripted supports. Every part prints without them; `analyze.py overhangs` is CLEAN and must stay that way.
+- The tools are the package `openscad-print-project` pinned in `requirements.txt` (`opp`); no copies in `scripts/`. Improve tools in the skill, release a version, then raise the pin; no project-local forks.
+- No painted or scripted supports. Every part prints without them; `opp analyze overhangs` (part of `opp all`) is CLEAN and must stay that way.
 - No vendor CAD in the repo or the viewer. The fan is the simple `fan_visual()` placeholder.
 - Electrically this is LEO-AC1 minus the bail, the QR code and the logo. When a measured value of a shared part is needed, take it from `~/Projects/leo-ac1/AGENTS.md` rather than re-measuring.
 

@@ -172,26 +172,21 @@ For electronics service, remove the head, cut the two battery ties and lift out 
 
 ## Build from source
 
-Model: [`fumex.scad`](fumex.scad) (OpenSCAD, parameters at the top), project settings and checks: [`print_project.py`](print_project.py). The scripts in `scripts/` export and check the meshes, slice with the Bambu Studio CLI and build the [3D assembly viewer](https://fhirschmann.github.io/fumex/), published from [`docs/index.html`](docs/index.html) on GitHub Pages. [BOSL2](https://github.com/BelfrySCAD/BOSL2) supplies the edge profiles and is pinned as the `BOSL2/` Git submodule; initialise it before opening the model in OpenSCAD or running the tools.
+Model: [`fumex.scad`](fumex.scad) (OpenSCAD, parameters at the top), project settings and checks: [`print_project.py`](print_project.py). The tools of the skill `openscad-print-project` (`opp`, version pinned in [`requirements.txt`](requirements.txt); not public, they run locally) export and check the meshes, slice with the Bambu Studio CLI and build the [3D assembly viewer](https://fhirschmann.github.io/fumex/), published from [`docs/index.html`](docs/index.html) on GitHub Pages. [BOSL2](https://github.com/BelfrySCAD/BOSL2) supplies the edge profiles and is pinned as the `BOSL2/` Git submodule; initialise it before opening the model in OpenSCAD or running the tools.
 
 ```sh
 git clone --recurse-submodules https://github.com/fhirschmann/fumex.git
 cd fumex
 git submodule update --init --recursive          # pinned BOSL2 geometry library
 python3 -m venv .venv
-.venv/bin/python -m pip install -r scripts/requirements.txt
-.venv/bin/python scripts/print_tools.py export     # export and check stl/, asm/, docs/verification.json
-.venv/bin/python scripts/analyze.py islands        # floating regions
-.venv/bin/python scripts/analyze.py overhangs      # unsupported faces
-.venv/bin/python scripts/analyze.py thickness      # walls thinner than 1.2 mm
-.venv/bin/python scripts/analyze.py fins           # slender towers with a free tip
-.venv/bin/python scripts/slice_check.py            # Bambu Studio CLI, project 3MF
-.venv/bin/python scripts/build_viewer.py --copy-to docs/index.html   # viewer page
-.venv/bin/python scripts/render_views.py           # img/, transparent PNGs
+.venv/bin/python -m pip install -r requirements.txt   # opp, needs access to the private tools repository
+.venv/bin/opp all      # export and check stl/, asm/, docs/verification.json; islands, overhangs, thickness,
+                       # fins, inlays; Bambu Studio CLI and project 3MF; viewer incl. docs/index.html
+.venv/bin/opp render   # img/, transparent PNGs
 ```
 
 The fan in the model and the viewer is a simple parametric placeholder; no manufacturer CAD is used or needed.
 
 ## Licence
 
-Model, printable files, images and documentation: [CC BY-NC-SA 4.0](LICENSE). Scripts in `scripts/`: [MIT](LICENSE-MIT). The BOSL2 submodule retains its own [BSD-2-Clause licence](BOSL2/LICENSE).
+Model, printable files, images and documentation: [CC BY-NC-SA 4.0](LICENSE). The BOSL2 submodule retains its own [BSD-2-Clause licence](BOSL2/LICENSE).

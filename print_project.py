@@ -1,7 +1,6 @@
-"""Project settings for the openscad-print-project tools in scripts/.
+"""Project settings for the openscad-print-project tools (opp, pinned in requirements.txt).
 
-Everything project-specific lives here, the scripts stay identical to the skill copies
-(python3 ~/.claude/skills/openscad-print-project/scripts/skill_sync.py status).
+Everything project-specific lives here; the tools stay generic (opp --help).
 """
 import math
 import numpy as np
@@ -2453,3 +2452,11 @@ VIEWS = {"01_assembly": ("assembly();", "60,-320,150,0,0,25"),
          "15_filter_clip": ("color(\"#c4c9ce\") intersection() { filter_support_raw(); "
                              "translate([body_w/2+50, mat_support[3]-1, head_cz-7]) cube([14, 13, 14]); }",
                              "156,70,155,130,28,120.5")}
+
+
+# opp all: analyses after every export (entries: command or (command, *options))
+ANALYZE = ['islands', 'overhangs', 'thickness', 'fins', 'inlays']
+ANALYZE_ACCEPTED = {}
+
+# opp viewer / opp all also write the viewer page for GitHub Pages
+VIEWER["copy_to"] = "docs/index.html"

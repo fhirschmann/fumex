@@ -1,0 +1,1 @@
+openscad-print-project @ git+ssh://git@git.locn.de:2222/3d-print/openscad-print-project.git@v1.1.0
