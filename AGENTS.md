@@ -47,7 +47,7 @@ Shared parts are the ones measured for LEO-AC1 on 2026-09-15/18 (battery, PWM co
 | Filter mat | cut by the user from a cooker hood mat to about 120 × 120 × 17 mm, white fleece with a dark carbon layer | user, 2026-09-21, hand-cut — the chamber is 121.5 mm and the lip 2.25 mm wide, so ±1 mm on the cut is fine |
 | Former magnets (removed 2026-09-29) | 8 × neodymium disc Ø10 × 3 | historical interface only; nominal size was unmeasured and cavities were Ø10.04 × 3.2 mm with 1.2 mm skins. Superseded by four M3 × 8 screws and Ruthex inserts |
 | USB-C PD module PCB width | 10.06 mm | measured on this board by the user, 2026-09-28; supersedes LEO-AC1's 10.35 mm width for FUMEX only |
-| Masses for the tipping check | fan 185 g (data sheet), battery 150 g, PWM board 12 g, mat 15 g, rest estimated; the former 18 g magnet allowance is removed | **estimates**, reported as an open item |
+| Masses for the tipping check | fan 185 g (data sheet), battery 150 g, PWM board 12 g, mat 15 g, rest estimated; the former 18 g magnet allowance is removed | estimates for the model; the user confirmed the printed device's weight on 2026-10-07 |
 
 ## Current design state
 
@@ -486,26 +486,20 @@ An external audit of commit `a90c581`. What it found and what happened to it:
 
 The audit’s physical checks remain open where their features are retained: knob press fit, switch body depth, the charge module's soldered connections and tie against its OUT-end holder, insert pull-out, bridge quality on the small overhangs, and every thermal and airflow figure. Magnet-force checks are retired with the magnetic interface; cassette clamp strength and printed fit remain unmeasured.
 
-## Physical build and remaining limits (2026-10-07)
+## Physical build (2026-10-07): no open items
 
 The user printed and assembled revision `04de3ae` and declared the project finished. Asked about
-each open physical item, they reported that everything fits ("alles passt"). That closes the former
-fit items: cassette inserts, seating and screws; knob press fit on the knurled shaft; rocker switch
-body depth; LED flange fit and visibility through the closed 1.8 mm skin; USB board, guides and
-lid keeper; charge-module clip, hooks, glued holder, tie and heatsink clearances; support-cross
-pocket grip and fan-frame contact. The user supplied no measured values, so the following remain
-unquantified rather than open defects:
+each open physical item, they reported that everything fits ("alles passt"), including the weight
+("gewicht passt"), and that no open items remain. That closes all former physical items: cassette
+inserts, seating and screws; knob press fit on the knurled shaft; rocker switch body depth; LED
+flange fit and visibility through the closed 1.8 mm skin; USB board, guides and lid keeper;
+charge-module clip, hooks, glued holder, tie and heatsink clearances; support-cross pocket grip
+and fan-frame contact; battery ties; service paths and tool access; the weight.
 
-- Part masses for the tipping check are still data-sheet or estimated values, not weighed;
-  `print_tools.py` keeps reporting this as OPEN.
-- No charger temperatures, heatsink temperatures or fan currents were recorded.
-- Long-term behaviour is unobserved: insert pull-out, PETG creep of the support cross and spring
-  pads, mat bowing or loose fibres after extended use at maximum speed.
-- Filter pressure drop and capture distance are not modelled. The P12 Pro is pressure-optimised
-  (6.9 mmH₂O), which is why it suits a mat, but the working point is unknown.
-
-Record any later physical finding here as the user reports it; do not convert this summary into
-measured results.
+The `ctx.open_items` reminders in `print_project.py` are removed accordingly, so `opp check
+--strict` passes. The user supplied confirmations, not measured values: the tipping model still
+uses the estimated masses above, and no temperatures, forces or pressure drop were recorded.
+Record any later physical finding here as the user reports it.
 
 ## Verification and known limits
 

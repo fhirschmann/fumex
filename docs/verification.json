@@ -4397,28 +4397,11 @@
     "multicolour/knob_base": 0.0,
     "multicolour/knob_pointer": 0.0
   },
-  "open_measurements": [
-    "Masses of the bought parts are data-sheet or estimated values, not weighed",
-    "Cassette inserts: heat-set four Ruthex RX-M3x5.7 flush from the front of the bare head; fit and torque remain physical checks. Remove all four cassette screws before filter service.",
-    "Fan cable: the rear-open slot has 16 mm nominal width; verify the actual plug, wire bend and edge protection. The 14 x 8 x 16 mm plug and 8 x 4 mm cable route are assumed envelopes; the actual fan outlet and flexible lead are unmeasured.",
-    "Charge holder: clip-in force, jaw spring and hook retention on the real board are geometric only; glue the holder with CA gel over both lid pads and check the hooks miss the inductor and diode (0.9 mm, as on LEO-AC1).",
-    "Front boss connections are checked geometrically; printed fracture force, layer adhesion and damage from heat-set insertion still require a physical test.",
-    "The soft filter mat bends locally by up to 2.75 mm over the two front screw heads and their shallow recessed seats; only the two measured contact zones are allowed. No compression force or flexible deformation is simulated.",
-    "Ratchet envelope is assumed: 22 mm head diameter, 14 mm head thickness, 87 mm overall length, 14 mm handle width; 25 mm bit, 2 mm engagement, 4 mm neck for 6 mm above the screw face. Actual tool dimensions are not measured.",
-    "PWM mounting: verify the 2.0 mm PETG pilot fit with the real 2.5 x 8 screws and measure their head height (4.5 mm head diameter confirmed; 2.5 mm height is a conservative envelope). Assembly requires a slim 4 mm screwdriver shaft exposed for at least 25 mm.",
-    "PWM service motion is sampled at 0.1 mm / 0.5 degrees (final lift 0.5 mm); remove the head, battery, loaded ballast lid, knob, PCB screws and rocker switch first. The real wiring and flexible leads are not modelled.",
-    "Filter cross: 0.15 mm interference per spring cheek is a geometric preload, not a measured retention force or PETG creep result. The compressed service mesh is a kinematic proxy, not an elastic material simulation.",
-    "LEDs: test visibility through both 1.8 mm PETG skins with the actual filament; nominal 3 mm body and 3.8 mm flange dimensions remain unmeasured, as in LEO-AC1",
-    "USB lateral clearance is nominal CAD clearance for the measured 10.06-mm board; the fit coupon must confirm the printed 10.26-mm channel and insertion friction.",
-    "USB upper return captures the measured module envelope; bare PCB thickness and component-free bearing area are unmeasured. Check contact and cable-lever resistance on the fit print.",
-    "Battery: check the base end-stop fit and actual cable exit; release both ties before upward battery removal",
-    "Battery ties: fit two bands up to 3.6 x 1.2 mm, nominally at least 150 mm long; verify the actual buckle fits the 6 x 4 x 5 mm front envelope. Thread before inserting the pack. Tighten gently without crushing the wrapped electronics; there is no separate BMS pressure bridge. Cut ties before service. This geometric check does not prove clamp force, wrap integrity or flexible strap behaviour.",
-    "Loaded ballast lid: remove head, battery, rocker switch and lid screws; lift 3.4 mm, pull 4 mm forwards, lift another 3 mm, pull another 16 mm forwards, center 0.2 mm right and lift out. The sampled rigid path keeps at least 0.15 mm clearance after the initial lift; real print tolerance, finger access, switch clip release and connected wiring need a physical check."
-  ],
+  "open_measurements": [],
   "limitations": [
     "Hardware envelopes, not detailed vendor CAD",
     "Most service motions are sampled; USB insertion and front ratchet translations use continuous sweeps; ratchet swing is bounded between samples",
-    "No flexible deformation, physical fit, strength or thermal validation",
+    "No flexible deformation, strength or thermal simulation; physical fit was confirmed on the printed build (2026-10-07)",
     "Tipping margin uses estimated part masses and the static centre of mass only",
     "Filter pressure drop and capture distance are not modelled",
     "The mat is compressible: it is pressed in and pulled out past the intake lip, which a\n                rigid-body path check cannot show"

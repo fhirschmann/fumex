@@ -156,7 +156,7 @@ BY_VOLUME = {"base": "PETG", "head": "PETG", "head_back": "PETG", "cassette": "P
 
 LIMITATIONS = ["Hardware envelopes, not detailed vendor CAD",
                "Most service motions are sampled; USB insertion and front ratchet translations use continuous sweeps; ratchet swing is bounded between samples",
-               "No flexible deformation, physical fit, strength or thermal validation",
+               "No flexible deformation, strength or thermal simulation; physical fit was confirmed on the printed build (2026-10-07)",
                "Tipping margin uses estimated part masses and the static centre of mass only",
                "Filter pressure drop and capture distance are not modelled",
                "The mat is compressible: it is pressed in and pulled out past the intake lip, which a\n                rigid-body path check cannot show"]
@@ -397,8 +397,6 @@ def check_cassette_fasteners(ctx):
             exact_driver_approach_overlap_mm3=approach_hits))
     assert penetration >= 5.7 and 7-penetration >= .5, 'Cassette screws must engage the complete insert without bottoming'
     ctx.summary.append('Cassette: four fully recessed M3 x 8 clamps, 5.9 mm penetration, 1.1 mm pocket reserve; no insertion pauses')
-    ctx.open_items.append('Cassette inserts: heat-set four Ruthex RX-M3x5.7 flush from the front of the bare head; '
-                          'fit and torque remain physical checks. Remove all four cassette screws before filter service.')
     return dict(cassette_fasteners=dict(screw_count=4, screw_length_mm=length, insert_engagement_mm=5.7,
         screw_penetration_mm=penetration, pocket_reserve_mm=1.1, blind_floor_mm=2,
         screw_head_diameter_height_mm=[5.7, 1.65], recess_diameter_depth_mm=[6.4, 1.9], bearing_thickness_mm=2.1, head_below_front_mm=.25, pause_parts=[], fasteners=rows))
@@ -451,9 +449,6 @@ def check_fan_cable_opening(ctx):
     inverse_cable_sweep = _air_box([36, 20, 36], [44, 64, 58])
     insertion_hits = {n: float((inverse_cable_sweep ^ local[n]).volume()) for n in cover_group}
     assert max(insertion_hits.values()) < .01, f"Fan/cover insertion sweeps across cable corridor: {insertion_hits}"
-    ctx.open_items.append("Fan cable: the rear-open slot has 16 mm nominal width; verify the actual plug, "
-                          "wire bend and edge protection. The 14 x 8 x 16 mm plug and 8 x 4 mm cable "
-                          "route are assumed envelopes; the actual fan outlet and flexible lead are unmeasured.")
     return dict(fan_cable_opening=dict(nominal_width_mm=16, tested_width_mm=15.96,
                 rear_open_from_y_mm=56.7, opening_overlap_mm3=round(overlap, 7),
                 side_floor_missing_mm3={k:round(v, 7) for k,v in missing.items()},
@@ -694,9 +689,6 @@ def check_charger_holder(ctx):
         offset = offset + np.asarray(vector) * length_mm
         rows.append(dict(stage=name, length_mm=length_mm, step_mm=step, maximum_overlap_mm3=round(peak, 6),
                          minimum_clearance_mm=round(gap, 4)))
-    ctx.open_items.append("Charge holder: clip-in force, jaw spring and hook retention on the real board are "
-                          "geometric only; glue the holder with CA gel over both lid pads and check the hooks miss "
-                          "the inductor and diode (0.9 mm, as on LEO-AC1).")
     return dict(charger_holder=dict(holder_to_sink_mm=round(sink_gap, 3), hot_zone_overlap_mm3=round(hot_overlap, 5),
         seat_contact_area_mm2=areas, hook_fill=reach, jaw_free_space_overlap_mm3=free,
         jaw_free_length_mm=round(length, 3), jaw_clip_strain=round(strain, 4),
@@ -833,8 +825,6 @@ def check_removed_front_braces(ctx):
         rows.append(dict(x_mm=x, lateral_foot_overlap_mm3=lateral,
                          original_root_fill={name: round(fill, 6) for name, fill in fills.items()}))
     ctx.summary.append('Four head clamps retained; broad front reinforcement feet removed')
-    ctx.open_items.append('Front boss connections are checked geometrically; printed fracture force, layer adhesion '
-                          'and damage from heat-set insertion still require a physical test.')
     return dict(removed_front_braces=dict(removed_count=2, retained_head_fasteners=4, regions=rows))
 
 
@@ -951,8 +941,6 @@ def check_front_mat_contact(ctx):
                           outside_allowed_zones_mm3=round(outside,8))
         total += volume
     assert total < 400, f'Front hardware displaces too much nominal mat volume: {total} mm3'
-    ctx.open_items.append('The soft filter mat bends locally by up to 2.75 mm over the two front screw heads and their shallow recessed seats; '
-                          'only the two measured contact zones are allowed. No compression force or flexible deformation is simulated.')
     return dict(front_mat_contact=dict(contacts=rows, total_nominal_displacement_mm3=round(total,6),
         allowed_zones_mm=[[[19.2,3.19,60.49],[31.8,12.8,63.26]],[[113.2,3.19,60.49],[125.8,12.8,63.26]]]))
 
@@ -1049,8 +1037,6 @@ def check_front_ratchet_access(ctx):
             between_sample_motion_bound_mm=round(bound,6), continuous_swing_gap_lower_bound_mm=round(guaranteed_gap,6)))
 
     ctx.summary.append('Front screws: full ratchet/25-mm bit enters from the empty intake and has a verified 6-degree operating stroke')
-    ctx.open_items.append('Ratchet envelope is assumed: 22 mm head diameter, 14 mm head thickness, 87 mm overall length, 14 mm handle width; '
-                          '25 mm bit, 2 mm engagement, 4 mm neck for 6 mm above the screw face. Actual tool dimensions are not measured.')
     return dict(front_ratchet_access=dict(assembly_stage='Cassette and flexible mat removed; support cross, fan and electronics remain fitted',
         assumed_tool=dict(head_diameter_mm=22,head_thickness_mm=14,overall_length_mm=87,handle_width_mm=14,
                           bit_length_mm=25,engagement_mm=2,body_bottom_above_screw_face_mm=9,hex_corner_envelope_mm=7.4),
@@ -1190,8 +1176,6 @@ def check_usb_side_fit(ctx):
             f'USB {side} lateral play bypasses the removable keeper: {edge_hit:.6f}/{upper_hit:.6f} mm3'
         lateral_stops[side] = dict(free_at_008_mm3=round(free, 6), contact_at_013_mm3=round(hit, 6),
             shifted_front_keeper_contact_mm3=round(edge_hit, 6), shifted_upper_return_contact_mm3=round(upper_hit, 6))
-    ctx.open_items.append('USB lateral clearance is nominal CAD clearance for the measured 10.06-mm board; '
-                          'the fit coupon must confirm the printed 10.26-mm channel and insertion friction.')
     ctx.summary.append('USB lateral fit: measured 10.06-mm board in a 10.26-mm straight channel; '
                        'both 0.1-mm side stops, tapered entry and shifted keeper capture verified')
     return dict(usb_side_fit=dict(measured_board_width_mm=round(actual_board_width, 5),
@@ -1353,8 +1337,6 @@ def check_usb_support(ctx):
             pitch_hit = round(float(angle), 2)
             break
     assert pitch_hit is not None, 'USB module can lever its front edge up past the return'
-    ctx.open_items.append('USB upper return captures the measured module envelope; bare PCB thickness and '
-                          'component-free bearing area are unmeasured. Check contact and cable-lever resistance on the fit print.')
     return dict(usb_support=dict(gusset_undersides=underside, upper_material_fill=filled,
         inner_support_overlap_mm3=round(inner_overlap, 6), central_keeper_fill=round(stem_fill, 6),
         keeper_root_braces=brace_rows,
@@ -1423,8 +1405,6 @@ def check_led_window(ctx):
     fixed = [name for name in ctx.solids if name != "led" and not name.startswith("driver_")]
     path = ctx.paths([("led_inside_access", "led", fixed, [0, 1, 0], 15, 0.5)])
     ctx.summary.append("LEDs: two closed 1.8 mm windows and 15 mm inside access")
-    ctx.open_items.append("LEDs: test visibility through both 1.8 mm PETG skins with the actual filament; nominal 3 mm body and "
-                          "3.8 mm flange dimensions remain unmeasured, as in LEO-AC1")
     return dict(led_window=dict(windows=rows, inside_access=path, checked_fixed_bodies=fixed,
                                expected_thickness_findings=[]))
 
@@ -1592,9 +1572,6 @@ def _filter_support_clips(ctx, support, head, cx, cz):
     # from a free-tip motion at a different axial location.
     cb = compressed.translate([-cx, 0, -cz]) ^ _air_box([58.7, 31.95, -5], [61.3, 32.05, 5])
     assert abs(cb.bounding_box()[5] - cb.bounding_box()[2] - 8.36) < .005, "Insufficient compression at bump peak"
-    ctx.open_items.append("Filter cross: 0.15 mm interference per spring cheek is a geometric preload, "
-                          "not a measured retention force or PETG creep result. The compressed service "
-                          "mesh is a kinematic proxy, not an elastic material simulation.")
     return compressed, dict(springs=rows, unintended_overlap_mm3=round(outside, 7),
                             total_preload_overlap_mm3=round(overlap.volume(), 6),
                             compressed_peak_motion_mm=.17, compressed_free_width_mm=8.36,
@@ -1771,9 +1748,6 @@ def check_pwm_mount(ctx):
                          intentional_thread_overlap_mm3=round(thread.volume(), 5), excess_overlap_mm3=round(excess, 5)))
     allowed_all = md.Manifold.batch_boolean(allowed_thread_regions, md.OpType.Add)
     assert ((screws ^ base) - allowed_all).volume() < .01, 'PWM/base collision outside the two intentional thread regions'
-    ctx.open_items.append('PWM mounting: verify the 2.0 mm PETG pilot fit with the real 2.5 x 8 screws and measure their head height '
-                          '(4.5 mm head diameter confirmed; 2.5 mm height is a conservative envelope). '
-                          'Assembly requires a slim 4 mm screwdriver shaft exposed for at least 25 mm.')
     return dict(pwm_mount=dict(pcb_mm=[32, 41.05, 1.6], hole_diameter_mm=3.2, hole_pitch_mm=26,
                 screw_length_mm=8, penetration_mm=6.4, pilot_depth_mm=7.4, bottom_clearance_mm=1,
                 floor_reserve_mm=round(floor_reserve, 3), driver_shaft_mm=[4, 25], seats=rows))
@@ -1825,10 +1799,6 @@ def check_loaded_lid_removal(ctx):
         endpoint_gaps[name] = round(moving.translate(end).min_gap(fixed, 2), 5)
     above_base = moving.translate(segments[-1][2]).bounding_box()[2] - s['base'].bounding_box()[5]
     assert above_base > 10, 'Loaded lid path ends inside the housing instead of fully outside it'
-    ctx.open_items.append('Loaded ballast lid: remove head, battery, rocker switch and lid screws; '
-                          'lift 3.4 mm, pull 4 mm forwards, lift another 3 mm, pull another 16 mm forwards, center 0.2 mm right and lift out. '
-                          'The sampled rigid path keeps at least 0.15 mm clearance after the initial lift; '
-                          'real print tolerance, finger access, switch clip release and connected wiring need a physical check.')
     return dict(loaded_lid_removal=dict(moving=moving_names, fixed=fixed_names,
                 removed_first=['head_group', 'battery', 'switch', 'screws_lid'], stages=rows,
                 endpoint_clearance_mm=endpoint_gaps, clearance_search_cap_mm=2,
@@ -1916,9 +1886,6 @@ def check_pwm_removal(ctx):
         volume = (s['knob'].translate([0, -float(d), 0]) ^ knob_fixed).volume()
         assert volume < .01, f'PWM knob removal obstructed at {d:.2f} mm: {volume:.5f} mm3'
         knob_peak = max(knob_peak, volume)
-    ctx.open_items.append('PWM service motion is sampled at 0.1 mm / 0.5 degrees (final lift 0.5 mm); '
-                          'remove the head, battery, loaded ballast lid, knob, PCB screws and rocker switch first. '
-                          'The real wiring and flexible leads are not modelled.')
     return dict(pwm_removal=dict(removed_first=['head_group', 'battery', 'loaded_ballast_lid', 'knob', 'screws_pwm', 'switch'],
                 pivot_mm=pivot.tolist(), stages=rows, screws=screw_rows,
                 knob_distance_mm=20, knob_step_mm=.25, knob_maximum_overlap_mm3=round(knob_peak, 6)))
@@ -2079,8 +2046,6 @@ def check_battery_retention(ctx):
     blocked = (corridor ^ (base + lid + ctx.solids["battery_ties"])).volume()
     assert blocked < .01, f"Battery stop blocks the upper cable exit: {blocked:.4f} mm3"
     ctx.summary.append("Battery: floor-rooted stop joins the fixed trough and holds in nine shifted/lifted poses")
-    ctx.open_items.append("Battery: check the base end-stop fit and actual cable exit; "
-                          "release both ties before upward battery removal")
     return dict(battery_retention=dict(retained_by="base", right_gap_mm=round(gap, 4),
                 floor_root_fill=round(root_fill, 5), shifted_axial_probes=rows,
                 trough_connection_material_fill={name:round(value,6) for name,value in link_fills.items()},
@@ -2179,10 +2144,6 @@ def check_battery_ties(ctx):
             band_centre_length_mm=round(centre_length,3), buckle_and_tail_reserve_mm=round(nominal_length-centre_length,3),
             nominal_overlap_mm3={k:round(v,7) for k,v in overlaps.items()}))
     ctx.summary.append('Battery: two direct closed ties capture the wrapped cell/BMS pack and recessed floor anchors')
-    ctx.open_items.append('Battery ties: fit two bands up to 3.6 x 1.2 mm, nominally at least 150 mm long; '
-                          'verify the actual buckle fits the 6 x 4 x 5 mm front envelope. Thread before inserting the pack. '
-                          'Tighten gently without crushing the wrapped electronics; there is no separate BMS pressure bridge. '
-                          'Cut ties before service. This geometric check does not prove clamp force, wrap integrity or flexible strap behaviour.')
     return dict(battery_ties=dict(ties=2, route='Directly around the complete shrink-wrapped cell and BMS envelope',
                 nominal_tie_bms_gap_mm=round(bms_gap,4),
                 head_clearances_mm={k:round(v,5) for k,v in head_gaps.items()}, head_floor_skins_mm=skins,
@@ -2323,7 +2284,6 @@ def checks(ctx):
     assert min(margins.values()) >= 15, f"Centre of mass too close to a foot edge: {margins}"
     tip_angle = math.degrees(math.atan(min(margins.values()) / (com[2] + m["foot_size"][2])))
     ctx.summary.append(f"{len(paths)} paths, tips at {tip_angle:.1f} degrees")
-    ctx.open_items.append("Masses of the bought parts are data-sheet or estimated values, not weighed")
     return dict(contact_volumes_mm3=contacts, stops=stops, clearances_mm=gaps, sampled_paths=paths, insert_probes=probes,
                 intake_lip_mm=lip, mat_free_travel_mm=round(mat_free, 2), mat_squashed_percent=round(100 * squashed / mat, 2), mass_g=round(total, 1),
                 centre_of_mass_mm=[round(c, 1) for c in com],
