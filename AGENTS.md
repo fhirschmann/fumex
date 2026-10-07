@@ -486,16 +486,26 @@ An external audit of commit `a90c581`. What it found and what happened to it:
 
 The audit’s physical checks remain open where their features are retained: knob press fit, switch body depth, the charge module's soldered connections and tie against its OUT-end holder, insert pull-out, bridge quality on the small overhangs, and every thermal and airflow figure. Magnet-force checks are retired with the magnetic interface; cassette clamp strength and printed fit remain unmeasured.
 
-## Open items
+## Physical build and remaining limits (2026-10-07)
 
-- Cassette screws: verify actual insert fit, cassette seating, tightening feel and retention on the printed parts. Geometric bearing and engagement checks do not establish pull-out strength or PETG creep. The former magnet-force and magnet-fit items are retired.
-- Part masses for the tipping check are data-sheet or estimated values, not weighed (reported by `print_tools.py` as an OPEN item).
-- The knob bore is nominal 5.8 mm with zero clearance, as in LEO-AC1 — validate the push fit on the real knurled shaft with a test print.
-- Rocker switch body depth behind the panel is still the assumed value from LEO-AC1.
-- LED: verify visibility through the closed 1.8 mm skin with the chosen PETG and actual LED. The former 0.8 mm thin-wall exception is retired; flange fit and light transmission through the deeper windows remain untested.
-- Charge module: verify the clip-in, the hooks against the inductor and diode, the glued holder, solder joints, wire exits, the tie band and clamping pressure at the cool OUT-end holder, the ~0.3 mm heatsink clearance to the head floor and back wall, the free heatsink end and wire slack for the loaded lid's service path. Check temperatures while charging in the closed housing, with the fan on and off; free geometric air corridors do not establish cooling performance.
-- Filter support: check all four post contacts against the real fan frame, pocket fit, bar stiffness and creep, and mat bowing or loose fibres at maximum speed. The sparse cross does not establish that rubbing is impossible.
-- Filter pressure drop and capture distance are not modelled. The P12 Pro is pressure-optimised (6.9 mmH₂O), which is why it suits a mat, but the working point is unknown.
+The user printed and assembled revision `04de3ae` and declared the project finished. Asked about
+each open physical item, they reported that everything fits ("alles passt"). That closes the former
+fit items: cassette inserts, seating and screws; knob press fit on the knurled shaft; rocker switch
+body depth; LED flange fit and visibility through the closed 1.8 mm skin; USB board, guides and
+lid keeper; charge-module clip, hooks, glued holder, tie and heatsink clearances; support-cross
+pocket grip and fan-frame contact. The user supplied no measured values, so the following remain
+unquantified rather than open defects:
+
+- Part masses for the tipping check are still data-sheet or estimated values, not weighed;
+  `print_tools.py` keeps reporting this as OPEN.
+- No charger temperatures, heatsink temperatures or fan currents were recorded.
+- Long-term behaviour is unobserved: insert pull-out, PETG creep of the support cross and spring
+  pads, mat bowing or loose fibres after extended use at maximum speed.
+- Filter pressure drop and capture distance are not modelled. The P12 Pro is pressure-optimised
+  (6.9 mmH₂O), which is why it suits a mat, but the working point is unknown.
+
+Record any later physical finding here as the user reports it; do not convert this summary into
+measured results.
 
 ## Verification and known limits
 

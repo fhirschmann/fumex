@@ -8,6 +8,8 @@ A 120 mm PWM fan pulls the smoke off the soldering iron through a 120 × 120 × 
 
 Designed for a Bambu Lab H2S with AMS in Bambu PETG black and grey. The electronics are the ones from [LEO-AC1](https://github.com/fhirschmann/leo-ac1); only the fan is different.
 
+**Status:** finished. The current revision has been printed and assembled, and all parts fit as designed.
+
 [![Assembly](img/01_assembly.png)](https://fhirschmann.github.io/fumex/)
 
 | Exploded | Back |
