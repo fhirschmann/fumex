@@ -180,10 +180,12 @@ Model: [`fumex.scad`](fumex.scad) (OpenSCAD, parameters at the top), project set
 git clone --recurse-submodules https://github.com/fhirschmann/fumex.git
 cd fumex
 git submodule update --init --recursive          # pinned BOSL2 geometry library
-python3 -m venv .venv
+python3.14 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt   # opp, needs access to the private tools repository
-.venv/bin/opp all      # export and check stl/, asm/, docs/verification.json; islands, overhangs, thickness,
-                       # fins, inlays; Bambu Studio CLI and project 3MF; viewer incl. docs/index.html
+.venv/bin/opp dev      # after every change: changed parts, all checks, viewer, build/preview.png (seconds)
+.venv/bin/opp all      # before printing or committing: export and check stl/, asm/, docs/verification.json;
+                       # islands, overhangs, thickness, fins, inlays; Bambu Studio CLI and project 3MF;
+                       # viewer incl. docs/index.html
 .venv/bin/opp render   # img/, transparent PNGs
 ```
 

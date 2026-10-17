@@ -40,6 +40,7 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "CGAL",
+      "membranes": [],
       "sha256": "7708e55479a809510f77a1ae1ec50806f73784cc68d478ea138462e00c2394fe",
       "quantity": 1,
       "material": "PETG-black",
@@ -74,6 +75,7 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
+      "membranes": [],
       "sha256": "aeeb026f4b8d8fbf1fda5ee644856078bb82b7e21aa4f7c1306c7243cd922dc0",
       "quantity": 1,
       "material": "PETG-grey",
@@ -108,6 +110,7 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
+      "membranes": [],
       "sha256": "91adabe402fac25c19bf9bc19cc1e73dae678eccdb85f9123a16b672e487474b",
       "quantity": 1,
       "material": "PETG-grey",
@@ -142,6 +145,7 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
+      "membranes": [],
       "sha256": "4b2b3d7a5a0fdb8da684ec913d40b817e03e998a95b21b6e99913a28337bd4d7",
       "quantity": 1,
       "material": "PETG-grey",
@@ -176,6 +180,7 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
+      "membranes": [],
       "sha256": "d82651ca43c281b9f688183230a3bac2faa020db5b8b960cee486254dc4c49b6",
       "quantity": 1,
       "material": "PETG-grey",
@@ -210,6 +215,7 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
+      "membranes": [],
       "sha256": "adaeaae7a83a4936711036a15ebe54ea2c98971e5b61930fa93e879a94336cc0",
       "quantity": 4,
       "material": "TPU",
@@ -244,6 +250,7 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
+      "membranes": [],
       "sha256": "21ac5728d533ebca50fc1d67384cc2da189c1ad4e911b0967253badc6064b92c",
       "quantity": 1,
       "material": "PETG-grey",
@@ -259,7 +266,7 @@
         [
           -61.5,
           -61.5,
-          -0.0
+          0.0
         ],
         [
           61.5,
@@ -267,8 +274,8 @@
           9.8
         ]
       ],
-      "volume_mm3": 5316.645,
-      "triangles": 2508,
+      "volume_mm3": 5316.6449,
+      "triangles": 2732,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
@@ -277,11 +284,12 @@
       "cavity_shells": 0,
       "shell_nesting_valid": true,
       "shell_errors": [],
-      "backend": "CGAL",
-      "sha256": "83b621f929b2a056fe760ca3e289596a584c4c891d667d22486377adf426a559",
+      "backend": "Manifold merged",
+      "membranes": [],
+      "sha256": "954c8b94da528e9cf272dee11728013ba0b212960d6448379fec6c58032c59ee",
       "quantity": 1,
       "material": "PETG-grey",
-      "committed_sha256": "83b621f929b2a056fe760ca3e289596a584c4c891d667d22486377adf426a559"
+      "committed_sha256": "954c8b94da528e9cf272dee11728013ba0b212960d6448379fec6c58032c59ee"
     },
     "chg_holder": {
       "size_mm": [
@@ -312,6 +320,7 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
+      "membranes": [],
       "sha256": "16ea86795b579b3976ce90216736a27bebd4403a98ab22b6e05b06c358ee30c3",
       "quantity": 1,
       "material": "PETG-grey",
@@ -335,8 +344,8 @@
           57.2657
         ]
       ],
-      "volume_mm3": 7331.1164,
-      "triangles": 660,
+      "volume_mm3": 7331.1165,
+      "triangles": 682,
       "watertight": true,
       "consistent_winding": true,
       "degenerate_faces": 0,
@@ -345,11 +354,12 @@
       "cavity_shells": 0,
       "shell_nesting_valid": true,
       "shell_errors": [],
-      "backend": "CGAL",
-      "sha256": "e37d7607a7fbd7985a4a5b3b1d97e2096cade6918a8bf2d4989beeb464677d74",
+      "backend": "Manifold merged",
+      "membranes": [],
+      "sha256": "719d302134e70462d01fbd86b9d5abe0419e7d1c9b07af0b0cdd1a2a0170f96f",
       "quantity": 0,
       "material": "PETG-black",
-      "committed_sha256": "e37d7607a7fbd7985a4a5b3b1d97e2096cade6918a8bf2d4989beeb464677d74"
+      "committed_sha256": "719d302134e70462d01fbd86b9d5abe0419e7d1c9b07af0b0cdd1a2a0170f96f"
     },
     "usbc_fit_lid": {
       "size_mm": [
@@ -380,6 +390,7 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
+      "membranes": [],
       "sha256": "854b9ec0f84448be8b64ddd8fd8e47e139d7b073eb3b27853c36b9d621af5d05",
       "quantity": 0,
       "material": "PETG-black",
@@ -416,6 +427,7 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
+      "membranes": [],
       "sha256": "bbf74078b960085a38c648ffd36702bf93d379ae4bca0350fe0bd1c045c79cc8"
     },
     "knob_pointer": {
@@ -447,6 +459,7 @@
       "shell_nesting_valid": true,
       "shell_errors": [],
       "backend": "Manifold",
+      "membranes": [],
       "sha256": "e2c7fc72dfd2df377ec950e95805c31225aa47f943ee2ba98a82364f6ad65f20"
     }
   },
@@ -467,7 +480,7 @@
   },
   "print_poses": {
     "chg_holder": 0.0004,
-    "ball_lid": 0.001
+    "ball_lid": 0.0009
   },
   "assembly_bodies": 36,
   "assembly_pairs": 630,
@@ -3252,21 +3265,21 @@
     "end_stops": [
       {
         "end": "horizontal_negative",
-        "volume_mm3": 158.1786,
+        "volume_mm3": 158.1785,
         "head_contact_mm3": 0.1358,
-        "fan_contact_mm3": 0.31641
+        "fan_contact_mm3": 0.3164
       },
       {
         "end": "horizontal_positive",
-        "volume_mm3": 158.1786,
+        "volume_mm3": 158.1785,
         "head_contact_mm3": 0.1358,
-        "fan_contact_mm3": 0.31641
+        "fan_contact_mm3": 0.3164
       },
       {
         "end": "vertical_negative",
         "volume_mm3": 158.1784,
-        "head_contact_mm3": 0.13581,
-        "fan_contact_mm3": 0.3164
+        "head_contact_mm3": 0.1358,
+        "fan_contact_mm3": 0.31639
       },
       {
         "end": "vertical_positive",
@@ -3368,7 +3381,7 @@
         {
           "end_angle_deg": 90,
           "side": -1,
-          "overlap_mm3": 0.261862,
+          "overlap_mm3": 0.261863,
           "nominal_interference_mm": 0.15,
           "ramp_widths_y_mm": [
             [
@@ -3452,7 +3465,7 @@
         {
           "end_angle_deg": 180,
           "side": -1,
-          "overlap_mm3": 0.261843,
+          "overlap_mm3": 0.261844,
           "nominal_interference_mm": 0.15,
           "ramp_widths_y_mm": [
             [
@@ -3536,7 +3549,7 @@
         {
           "end_angle_deg": 270,
           "side": -1,
-          "overlap_mm3": 0.261862,
+          "overlap_mm3": 0.261863,
           "nominal_interference_mm": 0.15,
           "ramp_widths_y_mm": [
             [
@@ -3578,7 +3591,7 @@
         {
           "end_angle_deg": 270,
           "side": 1,
-          "overlap_mm3": 0.261862,
+          "overlap_mm3": 0.261863,
           "nominal_interference_mm": 0.15,
           "ramp_widths_y_mm": [
             [
@@ -3619,7 +3632,7 @@
         }
       ],
       "unintended_overlap_mm3": 0.0,
-      "total_preload_overlap_mm3": 2.094856,
+      "total_preload_overlap_mm3": 2.094859,
       "compressed_peak_motion_mm": 0.17,
       "compressed_free_width_mm": 8.36,
       "compressed_head_clearance_mm": 0.019997,
@@ -4172,7 +4185,7 @@
   "usb_fit": {
     "nominal_overlap_mm3": {
       "base_lid": 0.0,
-      "base_usb": -0.0,
+      "base_usb": 0.0,
       "lid_usb": 0.0
     },
     "supports": {
