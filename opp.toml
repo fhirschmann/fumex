@@ -1,0 +1,5 @@
+# opp project file (openscad-print-project). The other settings still live in print_project.py.
+
+[project]
+status = "finished"   # active | finished: printed and in use, opp upgrade leaves it on its version
+finished = 2026-10-07
