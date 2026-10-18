@@ -174,7 +174,7 @@ For electronics service, remove the head, cut the two battery ties and lift out 
 
 ## Build from source
 
-Model: [`fumex.scad`](fumex.scad) (OpenSCAD, parameters at the top), project settings and checks: [`print_project.py`](print_project.py). The tools of the skill `openscad-print-project` (`opp`, version pinned in [`requirements.txt`](requirements.txt); not public, they run locally) export and check the meshes, slice with the Bambu Studio CLI and build the [3D assembly viewer](https://fhirschmann.github.io/fumex/), published from [`docs/index.html`](docs/index.html) on GitHub Pages. [BOSL2](https://github.com/BelfrySCAD/BOSL2) supplies the edge profiles and is pinned as the `BOSL2/` Git submodule; initialise it before opening the model in OpenSCAD or running the tools.
+Model: [`fumex.scad`](fumex.scad) (OpenSCAD, parameters at the top), project settings: [`opp.toml`](opp.toml), checks: [`print_project.py`](print_project.py). The tools of the skill `openscad-print-project` (`opp`, version pinned in [`requirements.txt`](requirements.txt); not public, they run locally) export and check the meshes, slice with the Bambu Studio CLI and build the [3D assembly viewer](https://fhirschmann.github.io/fumex/), published from [`docs/index.html`](docs/index.html) on GitHub Pages. [BOSL2](https://github.com/BelfrySCAD/BOSL2) supplies the edge profiles and is pinned as the `BOSL2/` Git submodule; initialise it before opening the model in OpenSCAD or running the tools.
 
 ```sh
 git clone --recurse-submodules https://github.com/fhirschmann/fumex.git
